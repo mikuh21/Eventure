@@ -1262,15 +1262,19 @@
             clone.style.backfaceVisibility = 'visible';
             clone.style.webkitBackfaceVisibility = 'visible';
             clone.style.pointerEvents = 'none';
+            clone.style.width = 'auto';
+            clone.style.height = 'auto';
 
             host.appendChild(clone);
             document.body.appendChild(host);
 
             try {
+                await new Promise(r => setTimeout(r, 500));
                 const canvas = await html2canvas(clone, {
                     useCORS: true,
                     allowTaint: true,
-                    scale: 2,
+                    scale: 1,
+                    imageTimeout: 0,
                     logging: false,
                     backgroundColor: null,
                 });
