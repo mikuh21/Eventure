@@ -1,19 +1,7 @@
 [phases.setup]
 nixPkgs = [
   "php84",
-  "php84Extensions.pdo",
-  "php84Extensions.pgsql",
-  "php84Extensions.pdo_pgsql",
-  "php84Extensions.mbstring",
-  "php84Extensions.tokenizer",
-  "php84Extensions.xml",
-  "php84Extensions.ctype",
-  "php84Extensions.json",
-  "php84Extensions.bcmath",
-  "php84Extensions.gd",
-  "php84Extensions.zip",
-  "php84Extensions.curl",
-  "composer",
+  "php84Packages.composer",
   "nodejs_20"
 ]
 
