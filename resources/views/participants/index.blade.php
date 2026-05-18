@@ -1151,7 +1151,7 @@
                                         data-name="{{ $participant->name }}"
                                         data-event="{{ $selectedEvent->title ?? '' }}"
                                         data-token="{{ $participant->digital_id_token ?? '' }}"
-                                        data-qr="{{ route('participants.digital-id.show', $participant) }}"
+                                        data-qr="{{ route('participants.digital-id.show', $participant, false) }}"
                                         data-resend-url="{{ route('events.participants.resend-digital-id', [$selectedEvent, $participant]) }}"
                                     >
                                         Digital ID

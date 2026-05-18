@@ -57,21 +57,12 @@ class ParticipantDigitalIdController extends Controller
             ]);
         }
 
-        if ($request->query('format') === 'qr' || $request->query('download') === '1') {
-            $qrPng = $this->generatePng($this->qrPayload($participant));
+        if ($request->query('format') === 'qr') {
+            return $this->generateQrResponse($this->qrPayload($participant));
+        }
 
-            if ($request->query('download') === '1') {
-                $filename = 'digital-id-'.$participant->id.'.png';
-
-                return response($qrPng, 200, [
-                    'Content-Type' => 'image/png',
-                    'Content-Disposition' => 'attachment; filename="'.$filename.'"',
-                ]);
-            }
-
-            return response($qrPng, 200, [
-                'Content-Type' => 'image/png',
-            ]);
+        if ($request->query('download') === '1') {
+            return $this->downloadQrResponse($participant);
         }
 
         $payload = $this->qrPayload($participant);
@@ -104,14 +95,7 @@ class ParticipantDigitalIdController extends Controller
             ]);
         }
 
-        $qrPng = $this->generatePng($this->qrPayload($participant));
-
-        $filename = 'digital-id-participant-'.$participant->id.'.png';
-
-        return response($qrPng, 200, [
-            'Content-Type' => 'image/png',
-            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
-        ]);
+        return $this->downloadQrResponse($participant);
     }
 
     public function certificate(string $token, string $type)
@@ -264,6 +248,45 @@ class ParticipantDigitalIdController extends Controller
             ->size(320)
             ->margin(1)
             ->generate($payload);
+    }
+
+    private function generateQrResponse(string $payload)
+    {
+        if ($this->canGeneratePng()) {
+            return response($this->generatePng($payload), 200, [
+                'Content-Type' => 'image/png',
+            ]);
+        }
+
+        return response($this->generateSvg($payload), 200, [
+            'Content-Type' => 'image/svg+xml',
+        ]);
+    }
+
+    private function downloadQrResponse(Participant $participant)
+    {
+        $payload = $this->qrPayload($participant);
+
+        if ($this->canGeneratePng()) {
+            $filename = 'digital-id-participant-'.$participant->id.'.png';
+
+            return response($this->generatePng($payload), 200, [
+                'Content-Type' => 'image/png',
+                'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+            ]);
+        }
+
+        $filename = 'digital-id-participant-'.$participant->id.'.svg';
+
+        return response($this->generateSvg($payload), 200, [
+            'Content-Type' => 'image/svg+xml',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+        ]);
+    }
+
+    private function canGeneratePng(): bool
+    {
+        return extension_loaded('imagick');
     }
 
     private function resolveParticipantFromInput(Request $request): ?Participant
