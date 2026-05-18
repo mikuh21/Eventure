@@ -1324,10 +1324,52 @@
                 editKeywords.value = eventData.keywords || '';
                 editDescription.value = eventData.description || '';
                 editAttendanceType.value = eventData.attendanceType || 'face_to_face';
-                editStartDate.value = eventData.startDate || '';
-                editEndDate.value = eventData.endDate || '';
-                editStartRegistration.value = eventData.startRegistration || '';
-                editEndRegistration.value = eventData.endRegistration || '';
+
+                // Helper to safely set input values and keep format for date/datetime-local
+                var setInput = function(input, value, type) {
+                    if (!input) return;
+                    var v = value || '';
+                    v = v.toString().trim();
+                    if (!v) {
+                        input.value = '';
+                        input.removeAttribute('value');
+                        return;
+                    }
+                    if (type === 'date') {
+                        if (v.indexOf('T') !== -1) v = v.split('T')[0];
+                        if (v.indexOf(' ') !== -1) v = v.split(' ')[0];
+                        // Ensure YYYY-MM-DD
+                        input.value = v;
+                        input.setAttribute('value', v);
+                    } else if (type === 'datetime-local') {
+                        // Normalize to YYYY-MM-DDTHH:MM
+                        v = v.replace(' ', 'T');
+                        if (v.indexOf('Z') !== -1) v = v.split('Z')[0];
+                        if (v.indexOf('+') !== -1) v = v.split('+')[0];
+                        // Trim seconds if present
+                        if (v.indexOf(':') !== -1) {
+                            var parts = v.split(':');
+                            if (parts.length >= 3) {
+                                v = parts[0] + ':' + parts[1];
+                                // Reattach date part if split removed it
+                                var datePart = parts[0].split('T')[0];
+                                if (v.indexOf('T') === -1 && datePart) v = datePart + 'T' + v.split('T')[1];
+                            }
+                        }
+                        if (v.length > 16) v = v.slice(0,16);
+                        input.value = v;
+                        input.setAttribute('value', v);
+                    } else {
+                        input.value = v;
+                        input.setAttribute('value', v);
+                    }
+                };
+
+                setInput(editStartDate, eventData.startDate, 'date');
+                setInput(editEndDate, eventData.endDate, 'date');
+                setInput(editStartRegistration, eventData.startRegistration, 'datetime-local');
+                setInput(editEndRegistration, eventData.endRegistration, 'datetime-local');
+
                 editLocation.value = eventData.location || '';
 
                 // Clear file inputs
@@ -1468,7 +1510,7 @@
                 });
             }
 
-            // Initialize date pickers
+            // Initialize date pickers (apply mobile-only min restrictions)
             var initializeDatePickers = function() {
                 var today = new Date();
                 var tomorrow = new Date(today);
@@ -1476,8 +1518,30 @@
                 var minDate = tomorrow.toISOString().split('T')[0];
                 var minDateTime = tomorrow.toISOString().split('Z')[0].slice(0, 16);
 
-                ['editStartDate', 'editEndDate'].forEach(function(id) {
-                    var input = document.getElementById(id);
+                // Only enforce min on small viewports (mobile web)
+                if (window.matchMedia && window.matchMedia('(max-width: 640px)').matches) {
+                    ['editStartDate', 'editEndDate'].forEach(function(id) {
+                        var input = document.getElementById(id);
+                        if (input) {
+                            var original = input.value || input.getAttribute('value') || '';
+                            input.setAttribute('min', minDate);
+                            if (original) input.value = original;
+                        }
+                    });
+
+                    ['editStartRegistration', 'editEndRegistration'].forEach(function(id) {
+                        var input = document.getElementById(id);
+                        if (input) {
+                            var original = input.value || input.getAttribute('value') || '';
+                            input.setAttribute('min', minDateTime);
+                            if (original) input.value = original;
+                        }
+                    });
+                }
+            };
+            initializeDatePickers();
+
+
                     if (input) {
                         input.setAttribute('min', minDate);
                     }
