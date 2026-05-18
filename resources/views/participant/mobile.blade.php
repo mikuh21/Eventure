@@ -919,11 +919,11 @@
                         </div>
 
                         <h1 class="participant-name">{{ $participant->name }}</h1>
-                        <p class="participant-role">Participant • {{ $participant->event->title }}</p>
+                        <p class="participant-role">{{ ucfirst($participant->participant_type ?? '') }} • {{ $participant->event->title }}</p>
 
                         <div class="card-bottom">
                             <div>
-                                <div class="meta-label">Valid Thru</div>
+                                <div class="meta-label">Valid Until</div>
                                 <div class="meta-value">{{ $validThru }}</div>
                             </div>
 
@@ -942,7 +942,7 @@
                         <p class="participant-email">{{ $participant->email }}</p>
 
                         <div class="back-validity">
-                            <div class="back-validity-label">Valid Thru</div>
+                            <div class="back-validity-label">Valid Until</div>
                             <div class="back-validity-value">{{ $validThru }}</div>
                         </div>
                     </article>
