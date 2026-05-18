@@ -173,6 +173,8 @@ class ParticipantController extends Controller
                 ->with('participant_registered', [
                     'name' => $participant->name,
                     'email' => $participant->email,
+                    'participant_type' => $participant->participant_type,
+                    'institution' => $participant->institution,
                     'event' => $participant->event->title,
                     'digital_id_url' => $mobileDigitalIdUrl,
                     'registered_by_admin' => $isAdminOrStaff,
