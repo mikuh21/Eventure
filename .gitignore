@@ -16,9 +16,12 @@
 /public/build
 /public/hot
 /public/storage
+/storage/fonts/*
+/storage/logs/*
 /storage/*.key
 /storage/pail
 /vendor
 Homestead.json
 Homestead.yaml
+.sail
 Thumbs.db

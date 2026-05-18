@@ -2,7 +2,7 @@
 nixPkgs = [
   "php84",
   "php84Packages.composer",
-  "nodejs_20"
+  "nodejs_22"
 ]
 
 [phases.install]
@@ -12,7 +12,9 @@ cmds = [
 
 [phases.build]
 cmds = [
+  "corepack enable",
   "npm install",
+  "npm rebuild",
   "npm run build"
 ]
 
