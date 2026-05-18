@@ -1238,9 +1238,8 @@
             link.remove();
         };
 
-        const renderFaceDataUrl = async (selector, elementArg) => {
-            // Allow passing either a selector string or a direct element
-            const source = elementArg || (selector ? document.querySelector(selector) : null);
+        const renderFaceDataUrl = async (selector) => {
+            const source = document.querySelector(selector);
 
             if (!source) {
                 throw new Error('Digital ID face not found.');
@@ -1306,133 +1305,32 @@
                 try {
                     setDownloadState(true, 'Preparing your ID...');
                     await waitForCardAssets();
-
-                    var cardElement = document.querySelector('.flip-card');
-                    if (!cardElement) throw new Error('Card not found');
-
-                    // ensure card is not in flipped state for front face capture
-                    var cardInner = cardElement.querySelector('.flip-card-inner');
-                    var wasFlipped = cardInner && cardInner.classList.contains('flipped');
-                    if (wasFlipped) {
-                        cardInner.classList.remove('flipped');
-                        await new Promise(r => setTimeout(r, 300)); // wait for animation
-                    }
-
-                    // clone front and back faces
-                    var frontFaceEl = document.querySelector('.flip-card-front');
-                    var backFaceEl = document.querySelector('.flip-card-back');
-                    var frontClone = frontFaceEl ? frontFaceEl.cloneNode(true) : null;
-                    var backClone = backFaceEl ? backFaceEl.cloneNode(true) : null;
-
-                    // restore flipped state if it was flipped
-                    if (wasFlipped && cardInner) {
-                        cardInner.classList.add('flipped');
-                    }
-
-                    if (!frontClone || !backClone) throw new Error('Card faces not found');
-
-                    // build modal with HTML card faces (not images yet)
+                    const frontDataUrl = await renderFaceDataUrl('.flip-card-front');
+                    await new Promise(r => setTimeout(r, 800));
+                    const backDataUrl = await renderFaceDataUrl('.flip-card-back');
+                    
+                    // build and show modal
                     var existing = document.getElementById('saveIdModal'); if (existing) existing.remove();
                     var overlay = document.createElement('div'); overlay.id='saveIdModal'; overlay.className='save-id-modal-overlay';
-                    var panel = document.createElement('div'); panel.className='save-id-modal-panel'; panel.setAttribute('role','dialog'); panel.setAttribute('aria-modal','true');
-                    var closeBtn = document.createElement('button'); closeBtn.className='save-id-modal-close'; closeBtn.setAttribute('aria-label','Close'); closeBtn.textContent='×';
-                    var title = document.createElement('h3'); title.className='save-id-modal-title'; title.textContent='Save Your Digital ID';
-                    var banner = document.createElement('div'); banner.className='save-id-modal-banner';
-                    var imagesContainer = document.createElement('div'); imagesContainer.className='save-id-images';
-
-                    var frontBlock = document.createElement('div'); frontBlock.className='save-id-image-block';
-                    var frontLabel = document.createElement('div'); frontLabel.className='save-id-image-label'; frontLabel.textContent='Front';
-                    var frontCardContainer = document.createElement('div'); frontCardContainer.className='save-id-card-container'; frontCardContainer.style.maxWidth='92%'; frontCardContainer.style.borderRadius='8px'; frontCardContainer.style.overflow='hidden'; frontCardContainer.appendChild(frontClone);
-                    var frontActions = document.createElement('div'); frontActions.className='save-id-actions-front'; frontActions.style.marginTop='8px';
-                    frontBlock.appendChild(frontLabel); frontBlock.appendChild(frontCardContainer); frontBlock.appendChild(frontActions);
-
-                    var backBlock = document.createElement('div'); backBlock.className='save-id-image-block';
-                    var backLabel = document.createElement('div'); backLabel.className='save-id-image-label'; backLabel.textContent='Back';
-                    var backCardContainer = document.createElement('div'); backCardContainer.className='save-id-card-container'; backCardContainer.style.maxWidth='92%'; backCardContainer.style.borderRadius='8px'; backCardContainer.style.overflow='hidden'; backCardContainer.appendChild(backClone);
-                    var backActions = document.createElement('div'); backActions.className='save-id-actions-back'; backActions.style.marginTop='8px';
-                    backBlock.appendChild(backLabel); backBlock.appendChild(backCardContainer); backBlock.appendChild(backActions);
-
-                    imagesContainer.appendChild(frontBlock); imagesContainer.appendChild(backBlock);
-                    panel.appendChild(closeBtn); panel.appendChild(title); panel.appendChild(banner); panel.appendChild(imagesContainer);
-                    overlay.appendChild(panel);
+                    overlay.innerHTML = '\n                        <div class="save-id-modal-panel" role="dialog" aria-modal="true">\n                            <button class="save-id-modal-close" aria-label="Close">×</button>\n                            <h3 class="save-id-modal-title">Save Your Digital ID</h3>\n                            <div class="save-id-modal-banner"></div>\n                            <div class="save-id-images">\n                                <div class="save-id-image-block">\n                                    <div class="save-id-image-label">Front</div>\n                                    <img class="save-id-image" src="'+frontDataUrl+'" alt="Front" />\n                                    <div class="save-id-actions-front"></div>\n                                </div>\n                                <div class="save-id-image-block">\n                                    <div class="save-id-image-label">Back</div>\n                                    <img class="save-id-image" src="'+backDataUrl+'" alt="Back" />\n                                    <div class="save-id-actions-back"></div>\n                                </div>\n                            </div>\n                        </div>\n                    ';
                     document.body.appendChild(overlay);
 
-                    // inject modal styles if not present
                     if (!document.getElementById('save-id-modal-styles')){
-                        var style=document.createElement('style'); style.id='save-id-modal-styles'; style.innerText='\n                            .save-id-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:flex-end;justify-content:center;z-index:1200}\n                            .save-id-modal-panel{width:100%;max-width:520px;background:#fff;border-radius:12px 12px 0 0;padding:16px 16px 28px;box-shadow:0 -8px 30px rgba(0,0,0,0.4);transform:translateY(100%);transition:transform .28s ease}\n                            .save-id-modal-overlay.show .save-id-modal-panel{transform:translateY(0)}\n                            .save-id-modal-close{position:absolute;right:12px;top:8px;background:none;border:none;font-size:22px;cursor:pointer;color:#000}\n                            .save-id-modal-title{margin:8px 0 6px;font-size:18px;color:#000}\n                            .save-id-modal-banner{margin:6px 0 12px;font-size:13px;color:#065f46}\n                            .save-id-images{display:flex;flex-direction:column;gap:14px}\n                            .save-id-image-block{display:flex;flex-direction:column;align-items:center}\n                            .save-id-image-label{font-weight:700;margin-bottom:6px;color:#000}\n                            .save-id-card-container{background:#fff}\n                            .save-id-actions-front,.save-id-actions-back{margin-top:8px;width:100%;display:flex;justify-content:center}\n                            .save-id-download-btn{background:#0a2342;color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer}\n                        ';
+                        var style=document.createElement('style'); style.id='save-id-modal-styles'; style.innerText='\n                            .save-id-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:flex-end;justify-content:center;z-index:1200}\n                            .save-id-modal-panel{width:100%;max-width:520px;background:#fff;border-radius:12px 12px 0 0;padding:16px 16px 28px;box-shadow:0 -8px 30px rgba(0,0,0,0.4);transform:translateY(100%);transition:transform .28s ease}\n                            .save-id-modal-overlay.show .save-id-modal-panel{transform:translateY(0)}\n                            .save-id-modal-close{position:absolute;right:12px;top:8px;background:none;border:none;font-size:22px;cursor:pointer;color:#000}\n                            .save-id-modal-title{margin:8px 0 6px;font-size:18px;color:#000}\n                            .save-id-modal-banner{margin:6px 0 12px;font-size:13px;color:#065f46}\n                            .save-id-images{display:flex;flex-direction:column;gap:14px}\n                            .save-id-image-block{display:flex;flex-direction:column;align-items:center}\n                            .save-id-image-label{font-weight:700;margin-bottom:6px;color:#000}\n                            .save-id-image{max-width:92%;height:auto;border-radius:8px;border:1px solid #e5e7eb}\n                            .save-id-actions-front,.save-id-actions-back{margin-top:8px}\n                            .save-id-download-btn{background:#0a2342;color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer}\n                        ';
                         document.head.appendChild(style);
                     }
 
-                    // show modal
-                    requestAnimationFrame(function(){ overlay.classList.add('show'); });
-                    closeBtn.addEventListener('click', function(){ overlay.remove(); });
+                    requestAnimationFrame(()=>{ overlay.classList.add('show'); });
+                    overlay.querySelector('.save-id-modal-close').addEventListener('click', ()=>overlay.remove());
 
-                    // helper: convert face HTML element to image and replace it
-                    var faceToImageInPlace = async function(faceElement){
-                        try {
-                            return await renderFaceDataUrl(null, faceElement); // pass element directly
-                        } catch (e) { console.error('Face to image conversion failed:', e); throw e; }
-                    };
-
-                    var page = document.querySelector('.page');
-                    var participantId = page?.dataset.participantId || 'participant';
-
+                    var banner = overlay.querySelector('.save-id-modal-banner');
                     var isIOSPlatform = /iP(hone|od|ad)/.test(navigator.userAgent) || (navigator.platform && /MacIntel/.test(navigator.platform) && navigator.maxTouchPoints > 1);
                     var isAndroidPlatform = /Android/i.test(navigator.userAgent);
-
-                    if (isIOSPlatform){
-                        banner.textContent = 'Long press each card and tap Save to Photos to save your Digital ID';
-                        // add long-press handlers to convert cards to images on demand
-                        [frontCardContainer, backCardContainer].forEach(function(container, idx){
-                            var faceElem = container.querySelector('.flip-card-front') || container.querySelector('.flip-card-back');
-                            var longPressTimer = null;
-                            container.addEventListener('touchstart', function(){
-                                longPressTimer = setTimeout(function(){
-                                    (async function(){
-                                        try {
-                                            var dataUrl = await renderFaceDataUrl(null, faceElem);
-                                            var img = document.createElement('img');
-                                            img.src = dataUrl;
-                                            img.style.maxWidth = '100%';
-                                            img.style.height = 'auto';
-                                            img.style.borderRadius = '8px';
-                                            img.style.border = '1px solid #e5e7eb';
-                                            container.innerHTML = '';
-                                            container.appendChild(img);
-                                        } catch (e) { console.error(e); }
-                                    })();
-                                }, 500);
-                            });
-                            container.addEventListener('touchend', function(){
-                                if (longPressTimer) clearTimeout(longPressTimer);
-                            });
-                            container.addEventListener('touchmove', function(){
-                                if (longPressTimer) clearTimeout(longPressTimer);
-                            });
-                        });
-                    } else if (isAndroidPlatform) {
-                        banner.textContent = 'Download your Digital ID using the buttons below';
-                        var dfBtn = document.createElement('button'); dfBtn.className='save-id-download-btn'; dfBtn.textContent='Download Front'; 
-                        dfBtn.addEventListener('click', function(){
-                            (async function(){
-                                try {
-                                    var dataUrl = await renderFaceDataUrl(null, frontClone);
-                                    downloadDataUrl(dataUrl, 'digital-id-front.png');
-                                } catch (e) { console.error(e); alert('Failed to capture front card'); }
-                            })();
-                        });
-                        frontActions.appendChild(dfBtn);
-
-                        var dbBtn = document.createElement('button'); dbBtn.className='save-id-download-btn'; dbBtn.textContent='Download Back';
-                        dbBtn.addEventListener('click', function(){
-                            (async function(){
-                                try {
-                                    var dataUrl = await renderFaceDataUrl(null, backClone);
-                                    downloadDataUrl(dataUrl, 'digital-id-back.png');
-                                } catch (e) { console.error(e); alert('Failed to capture back card'); }
-                            })();
-                        });
-                        backActions.appendChild(dbBtn);
+                    if (isIOSPlatform) banner.textContent = 'Long press each image and tap Save to Photos to save your Digital ID';
+                    if (isAndroidPlatform){
+                        var frontActions = overlay.querySelector('.save-id-actions-front'); var backActions = overlay.querySelector('.save-id-actions-back');
+                        var dfBtn=document.createElement('button'); dfBtn.className='save-id-download-btn'; dfBtn.textContent='Download Front'; dfBtn.addEventListener('click', ()=>downloadDataUrl(frontDataUrl, 'digital-id-front.png')); frontActions.appendChild(dfBtn);
+                        var dbBtn=document.createElement('button'); dbBtn.className='save-id-download-btn'; dbBtn.textContent='Download Back'; dbBtn.addEventListener('click', ()=>downloadDataUrl(backDataUrl, 'digital-id-back.png')); backActions.appendChild(dbBtn);
                     }
 
                 } catch (error) {
