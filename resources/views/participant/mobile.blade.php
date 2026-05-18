@@ -941,12 +941,14 @@
         </section>
 
         <section class="actions" aria-label="Digital ID actions">
-            <button class="action-link" id="downloadPngButton" type="button" data-default-label="Download PNG">
+            <button class="action-link" id="downloadPngButton" type="button" data-default-label="Save ID">
                 <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <path d="M12 3v11m0 0 4-4m-4 4-4-4M5 17v1a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-                <span>Download PNG</span>
+                <span>Save ID</span>
             </button>
+
+            <div id="ios-save-tip" style="display:none;margin-left:8px;font-size:13px;color:#10b981;align-self:center;">Long press the image to save to Photos</div>
 
             <button class="action-button" id="copyTokenButton" type="button" data-default-label="Copy Token">
                 Copy Token
@@ -1180,7 +1182,7 @@
             });
 
             if (!isDownloading) {
-                setButtonLabel(downloadPngButton, downloadPngButton?.dataset.defaultLabel || 'Download PNG');
+                setButtonLabel(downloadPngButton, downloadPngButton?.dataset.defaultLabel || 'Save ID');
 
                 return;
             }
@@ -1274,14 +1276,48 @@
         };
 
         if (downloadPngButton) {
+            const iosSaveTip = document.getElementById('ios-save-tip');
+
+            function isIOS() {
+                return /iP(hone|od|ad)/.test(navigator.userAgent) || (navigator.platform && /MacIntel/.test(navigator.platform) && navigator.maxTouchPoints > 1);
+            }
+
             downloadPngButton.addEventListener('click', async () => {
                 try {
-                    setDownloadState(true, 'Preparing files...');
-                    await downloadDigitalIdFaces();
+                    setDownloadState(true, 'Saving to photos...');
+
+                    await waitForCardAssets();
+
+                    const frontDataUrl = await renderFaceDataUrl('.flip-card-front');
+                    const backDataUrl = await renderFaceDataUrl('.flip-card-back');
+
+                    if (isIOS()) {
+                        if (iosSaveTip) iosSaveTip.style.display = 'block';
+
+                        const newWin = window.open('', '_blank');
+                        if (newWin) {
+                            const html = `<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1" /><title>Save Digital ID</title></head><body style="margin:0;padding:16px;display:flex;flex-direction:column;align-items:center;gap:12px;background:#fff;">` +
+                                `<img src="${frontDataUrl}" style="max-width:100%;height:auto;display:block" />` +
+                                `<img src="${backDataUrl}" style="max-width:100%;height:auto;display:block" />` +
+                                `</body></html>`;
+                            newWin.document.open();
+                            newWin.document.write(html);
+                            newWin.document.close();
+                        } else {
+                            alert('Unable to open a new tab. Please allow popups and try again.');
+                        }
+                    } else {
+                        // Android and desktop: trigger downloads
+                        downloadDataUrl(frontDataUrl, 'digital-id-front.png');
+                        setTimeout(() => {
+                            downloadDataUrl(backDataUrl, 'digital-id-back.png');
+                        }, 400);
+                    }
                 } catch (error) {
-                    setButtonLabel(downloadPngButton, 'Download failed');
+                    console.error(error);
+                    setButtonLabel(downloadPngButton, 'Save failed');
                     window.setTimeout(() => {
-                        setButtonLabel(downloadPngButton, downloadPngButton.dataset.defaultLabel || 'Download PNG');
+                        setButtonLabel(downloadPngButton, downloadPngButton.dataset.defaultLabel || 'Save ID');
                     }, 1800);
                 } finally {
                     setDownloadState(false);
