@@ -578,55 +578,67 @@
             color: var(--text);
         }
 
-        .survey-close-button {
-            position: relative;
-            z-index: 2;
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            background: #ffffff;
-            color: #3b82f6;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-family: inherit;
-            font-size: 18px;
-            line-height: 1;
-            transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease;
-            padding: 0;
-        }
+        if (downloadPngButton) {
+            const iosSaveTip = document.getElementById('ios-save-tip');
 
-        .survey-close-button:hover,
-        .survey-close-button:focus-visible {
-            background: rgba(255, 255, 255, 0.95);
-            border-color: rgba(59, 130, 246, 0.3);
-            color: #1f2937;
-        }
+            function isIOS() {
+                return /iP(hone|od|ad)/.test(navigator.userAgent) || (navigator.platform && /MacIntel/.test(navigator.platform) && navigator.maxTouchPoints > 1);
+            }
 
-        .survey-form-progress {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-bottom: 18px;
-        }
+            downloadPngButton.addEventListener('click', async () => {
+                try {
+                    setDownloadState(true, 'Saving to photos...');
 
-        .survey-form-progress-bar {
-            width: 0;
-            height: 6px;
-            border-radius: 999px;
-            background: linear-gradient(90deg, #5BA4CF, #10B981);
-            transition: width 0.2s ease;
-        }
+                    await waitForCardAssets();
 
-        .survey-form-step-label {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--muted-soft);
-        }
+                    const inner = document.querySelector('#flipCard .flip-card-inner');
+                    const wasFlipped = inner ? inner.classList.contains('flipped') : false;
 
-        .survey-step {
+                    // Ensure front is visible for capture
+                    if (inner) {
+                        inner.classList.remove('flipped');
+                        await new Promise((r) => requestAnimationFrame(r));
+                    }
+
+                    const frontDataUrl = await renderFaceDataUrl('.flip-card-front');
+
+                    // Ensure back is visible for capture
+                    if (inner) {
+                        inner.classList.add('flipped');
+                        await new Promise((r) => requestAnimationFrame(r));
+                    }
+
+                    const backDataUrl = await renderFaceDataUrl('.flip-card-back');
+
+                    // Restore original flip state
+                    if (inner) {
+                        if (!wasFlipped) inner.classList.remove('flipped');
+                        else inner.classList.add('flipped');
+                        await new Promise((r) => requestAnimationFrame(r));
+                    }
+
+                    // Trigger downloads sequentially
+                    downloadDataUrl(frontDataUrl, 'digital-id-front.png');
+                    setTimeout(() => {
+                        downloadDataUrl(backDataUrl, 'digital-id-back.png');
+                    }, 500);
+
+                    // Show inline iOS tip if needed
+                    if (isIOS() && iosSaveTip) {
+                        iosSaveTip.textContent = 'If the image did not save, long press the image and select Save to Photos';
+                        iosSaveTip.style.display = 'block';
+                    }
+                } catch (error) {
+                    console.error(error);
+                    setButtonLabel(downloadPngButton, 'Save failed');
+                    window.setTimeout(() => {
+                        setButtonLabel(downloadPngButton, downloadPngButton.dataset.defaultLabel || 'Save ID');
+                    }, 1800);
+                } finally {
+                    setDownloadState(false);
+                }
+            });
+        }
             display: none;
         }
 
@@ -948,12 +960,12 @@
                 <span>Save ID</span>
             </button>
 
-            <div id="ios-save-tip" style="display:none;margin-left:8px;font-size:13px;color:#10b981;align-self:center;">Long press the image to save to Photos</div>
-
             <button class="action-button" id="copyTokenButton" type="button" data-default-label="Copy Token">
                 Copy Token
             </button>
         </section>
+
+        <div id="ios-save-tip" style="display:none;width:100%;margin-top:8px;text-align:center;color:#10b981;font-size:12px;">If the image did not save, long press the image and select Save to Photos</div>
 
         <div class="divider"></div>
 

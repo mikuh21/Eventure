@@ -30,35 +30,6 @@
         }
 
         .digital-id-actions {
-            /* Export helpers for html2canvas capture */
-            .export-host {
-                position: fixed;
-                left: -10000px;
-                top: 0;
-                width: 500px;
-                height: 500px;
-                pointer-events: none;
-                z-index: -1;
-            }
-
-            .export-face {
-                position: relative !important;
-                transform: none !important;
-                -webkit-backface-visibility: visible !important;
-                backface-visibility: visible !important;
-                width: 500px !important;
-                height: auto !important;
-                margin: 0 !important;
-                background: white !important;
-                color: #000 !important;
-            }
-
-            #ios-save-tip {
-                display: none;
-                margin-top: 8px;
-                font-size: 13px;
-                color: #065f46;
-            }
             display: flex;
             gap: 12px;
         }
@@ -156,6 +127,37 @@
             color: #10b981;
             font-weight: 600;
             margin-top: 6px;
+        }
+
+        /* Export helpers for html2canvas capture */
+        .export-host {
+            position: fixed;
+            left: -10000px;
+            top: 0;
+            width: 500px;
+            height: 500px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .export-face {
+            position: relative !important;
+            transform: none !important;
+            -webkit-backface-visibility: visible !important;
+            backface-visibility: visible !important;
+            width: 500px !important;
+            height: auto !important;
+            margin: 0 !important;
+            background: white !important;
+            color: #000 !important;
+        }
+
+        #ios-save-tip {
+            display: none;
+            margin-top: 8px;
+            font-size: 13px;
+            color: #065f46;
+            text-align: center;
         }
 
         .digital-id-qr {
@@ -299,7 +301,6 @@
                 @php($hasSubmittedSurvey = $participant->evaluations()->exists())
                 <button id="save-id-btn" class="digital-id-btn digital-id-btn-primary" type="button" {{ !$hasSubmittedSurvey ? 'disabled' : '' }} title="{{ !$hasSubmittedSurvey ? 'Complete the survey first to save' : 'Save ID' }}">Save ID</button>
             </div>
-            <div id="ios-save-tip">Long press the image to save to your Photos</div>
         </div>
 
         @if($hasSubmittedSurvey)
@@ -331,6 +332,7 @@
                 <button type="button" class="digital-id-copy-btn" id="copy-token-btn">Copy</button>
             </div>
             <div class="digital-id-copy-status" id="copy-token-status"></div>
+            <div id="ios-save-tip" style="display:none;margin-top:8px;text-align:center;color:#10b981;font-size:12px;">If the image did not save, long press the image and select Save to Photos</div>
         </div>
 
         <div class="digital-id-qr">
