@@ -158,6 +158,7 @@ class ParticipantController extends Controller
         }
 
         if ($redirectTo) {
+            $isAdminOrStaff = auth()->check() && (auth()->user()->hasRole('admin') || auth()->user()->hasRole('event_staff'));
             return redirect($redirectTo)
                 ->with('status', "Registration successful. Participants' Digital ID is sent on their email.")
                 ->with('participant_registered', [
@@ -165,6 +166,7 @@ class ParticipantController extends Controller
                     'email' => $participant->email,
                     'event' => $participant->event->title,
                     'digital_id_url' => $mobileDigitalIdUrl,
+                    'registered_by_admin' => $isAdminOrStaff,
                 ]);
         }
 

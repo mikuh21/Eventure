@@ -1282,7 +1282,7 @@
                         <p class="participant-confirmation-item"><strong>Event:</strong> {{ $registered['event'] ?? '' }}</p>
 
                         <div class="participant-confirmation-actions">
-                            @if (!empty($registered['digital_id_url']))
+                            @if (!empty($registered['digital_id_url']) && !($registered['registered_by_admin'] ?? false))
                                 <a class="btn btn-primary" href="{{ $registered['digital_id_url'] }}">Open Digital ID</a>
                             @endif
                             <button class="btn" type="button" id="dismissRegistrationSuccessModal">Close</button>
