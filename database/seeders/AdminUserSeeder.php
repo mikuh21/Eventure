@@ -14,17 +14,17 @@ class AdminUserSeeder extends Seeder
             ['email' => 'eventstaff@example.com'],
             [
                 'name' => 'Event Staff',
-                'password' => Hash::make('password'),
+                'password' => bcrypt('password123'),
                 'role' => 'event_staff',
                 'approval_status' => 'approved',
             ]
         );
 
         User::updateOrCreate(
-            ['email' => 'admin@example.com'],
+            ['email' => 'events.inf233@gmail.com'],
             [
                 'name' => 'Admin',
-                'password' => Hash::make('password'),
+                'password' => bcrypt('Events.Inf233E!'),
                 'role' => 'admin',
                 'approval_status' => 'approved',
             ]
