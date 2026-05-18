@@ -1301,32 +1301,38 @@
         };
 
         if (downloadPngButton) {
-            const iosSaveTip = document.getElementById('ios-save-tip');
-
-            function isIOS() {
-                return /iP(hone|od|ad)/.test(navigator.userAgent) || (navigator.platform && /MacIntel/.test(navigator.platform) && navigator.maxTouchPoints > 1);
-            }
-
             downloadPngButton.addEventListener('click', async () => {
                 try {
-                    setDownloadState(true, 'Saving to photos...');
-
+                    setDownloadState(true, 'Preparing your ID...');
                     await waitForCardAssets();
-
                     const frontDataUrl = await renderFaceDataUrl('.flip-card-front');
+                    await new Promise(r => setTimeout(r, 800));
                     const backDataUrl = await renderFaceDataUrl('.flip-card-back');
+                    
+                    // build and show modal
+                    var existing = document.getElementById('saveIdModal'); if (existing) existing.remove();
+                    var overlay = document.createElement('div'); overlay.id='saveIdModal'; overlay.className='save-id-modal-overlay';
+                    overlay.innerHTML = '\n                        <div class="save-id-modal-panel" role="dialog" aria-modal="true">\n                            <button class="save-id-modal-close" aria-label="Close">×</button>\n                            <h3 class="save-id-modal-title">Save Your Digital ID</h3>\n                            <div class="save-id-modal-banner"></div>\n                            <div class="save-id-images">\n                                <div class="save-id-image-block">\n                                    <div class="save-id-image-label">Front</div>\n                                    <img class="save-id-image" src="'+frontDataUrl+'" alt="Front" />\n                                    <div class="save-id-actions-front"></div>\n                                </div>\n                                <div class="save-id-image-block">\n                                    <div class="save-id-image-label">Back</div>\n                                    <img class="save-id-image" src="'+backDataUrl+'" alt="Back" />\n                                    <div class="save-id-actions-back"></div>\n                                </div>\n                            </div>\n                        </div>\n                    ';
+                    document.body.appendChild(overlay);
 
-                    // Trigger downloads for both faces using anchor-download approach
-                    downloadDataUrl(frontDataUrl, 'digital-id-front.png');
-                    setTimeout(() => {
-                        downloadDataUrl(backDataUrl, 'digital-id-back.png');
-                    }, 400);
-
-                    // For iOS, show inline tip if the image did not save automatically
-                    if (isIOS() && iosSaveTip) {
-                        iosSaveTip.textContent = 'If the image did not save, long press the image and select Save to Photos';
-                        iosSaveTip.style.display = 'block';
+                    if (!document.getElementById('save-id-modal-styles')){
+                        var style=document.createElement('style'); style.id='save-id-modal-styles'; style.innerText='\n                            .save-id-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:flex-end;justify-content:center;z-index:1200}\n                            .save-id-modal-panel{width:100%;max-width:520px;background:#fff;border-radius:12px 12px 0 0;padding:16px 16px 28px;box-shadow:0 -8px 30px rgba(0,0,0,0.4);transform:translateY(100%);transition:transform .28s ease}\n                            .save-id-modal-overlay.show .save-id-modal-panel{transform:translateY(0)}\n                            .save-id-modal-close{position:absolute;right:12px;top:8px;background:none;border:none;font-size:22px;cursor:pointer;color:#000}\n                            .save-id-modal-title{margin:8px 0 6px;font-size:18px;color:#000}\n                            .save-id-modal-banner{margin:6px 0 12px;font-size:13px;color:#065f46}\n                            .save-id-images{display:flex;flex-direction:column;gap:14px}\n                            .save-id-image-block{display:flex;flex-direction:column;align-items:center}\n                            .save-id-image-label{font-weight:700;margin-bottom:6px;color:#000}\n                            .save-id-image{max-width:92%;height:auto;border-radius:8px;border:1px solid #e5e7eb}\n                            .save-id-actions-front,.save-id-actions-back{margin-top:8px}\n                            .save-id-download-btn{background:#0a2342;color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer}\n                        ';
+                        document.head.appendChild(style);
                     }
+
+                    requestAnimationFrame(()=>{ overlay.classList.add('show'); });
+                    overlay.querySelector('.save-id-modal-close').addEventListener('click', ()=>overlay.remove());
+
+                    var banner = overlay.querySelector('.save-id-modal-banner');
+                    var isIOSPlatform = /iP(hone|od|ad)/.test(navigator.userAgent) || (navigator.platform && /MacIntel/.test(navigator.platform) && navigator.maxTouchPoints > 1);
+                    var isAndroidPlatform = /Android/i.test(navigator.userAgent);
+                    if (isIOSPlatform) banner.textContent = 'Long press each image and tap Save to Photos to save your Digital ID';
+                    if (isAndroidPlatform){
+                        var frontActions = overlay.querySelector('.save-id-actions-front'); var backActions = overlay.querySelector('.save-id-actions-back');
+                        var dfBtn=document.createElement('button'); dfBtn.className='save-id-download-btn'; dfBtn.textContent='Download Front'; dfBtn.addEventListener('click', ()=>downloadDataUrl(frontDataUrl, 'digital-id-front.png')); frontActions.appendChild(dfBtn);
+                        var dbBtn=document.createElement('button'); dbBtn.className='save-id-download-btn'; dbBtn.textContent='Download Back'; dbBtn.addEventListener('click', ()=>downloadDataUrl(backDataUrl, 'digital-id-back.png')); backActions.appendChild(dbBtn);
+                    }
+
                 } catch (error) {
                     console.error(error);
                     setButtonLabel(downloadPngButton, 'Save failed');
