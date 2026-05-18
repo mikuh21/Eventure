@@ -1620,7 +1620,7 @@
                         if (!el) return;
                         flatpickr(el, {
                             enableTime: true,
-                            time_24hr: true,
+                            time_24hr: false,
                             dateFormat: "Y-m-d\\TH:i",
                             minDate: tomorrow,
                             disableMobile: true,
