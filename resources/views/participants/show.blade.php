@@ -491,7 +491,7 @@
                 </div>
                 <div>
                     <p class="profile-item-label">Participant Type</p>
-                    <p class="profile-item-value">{{ $participant->participant_type ?? 'N/A' }}</p>
+                    <p class="profile-item-value">{{ ucfirst($participant->participant_type ?? '') ?: 'N/A' }}</p>
                 </div>
                 <div>
                     <p class="profile-item-label">Institution</p>
