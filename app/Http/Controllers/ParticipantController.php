@@ -47,6 +47,15 @@ class ParticipantController extends Controller
             }
 
             if ($selectedEvent) {
+                Participant::where('event_id', $selectedEvent->id)
+                    ->whereNull('digital_id_token')
+                    ->cursor()
+                    ->each(function (Participant $participant): void {
+                        $participant->update([
+                            'digital_id_token' => Str::uuid()->toString(),
+                        ]);
+                    });
+
                 $participants = Participant::where('event_id', $selectedEvent->id)
                     ->latest()
                     ->paginate(10)

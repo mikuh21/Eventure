@@ -31,6 +31,29 @@ class Participant extends Model
         return 'digital_id_token';
     }
 
+    public function getRouteKey(): string
+    {
+        if (! $this->digital_id_token) {
+            $this->digital_id_token = Str::uuid()->toString();
+            $this->save();
+        }
+
+        return $this->{$this->getRouteKeyName()};
+    }
+
+    public function resolveRouteBinding($value, $field = null)
+    {
+        $field = $field ?: $this->getRouteKeyName();
+
+        $participant = $this->where($field, $value)->first();
+
+        if (! $participant && $field === $this->getRouteKeyName() && is_numeric($value)) {
+            $participant = $this->where($this->getKeyName(), $value)->first();
+        }
+
+        return $participant;
+    }
+
     protected static function booted(): void
     {
         static::creating(function (Participant $participant): void {
