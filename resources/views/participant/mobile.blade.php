@@ -129,6 +129,7 @@
 
         .flip-card-inner {
             transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            -webkit-transform-style: preserve-3d;
             transform-style: preserve-3d;
             position: relative;
             width: 100%;
@@ -144,8 +145,8 @@
             position: absolute;
             width: 100%;
             height: 100%;
-            backface-visibility: hidden;
             -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
             background: var(--card-gradient);
             border-radius: var(--radius);
             box-shadow: var(--shadow);
@@ -154,11 +155,22 @@
 
         .flip-card-front {
             padding: 20px 24px;
+            z-index: 2;
         }
 
         .flip-card-back {
             transform: rotateY(180deg);
             padding: 20px 24px;
+            z-index: 1;
+        }
+
+        /* When flipped, ensure the back is on top for visibility on WebKit browsers */
+        .flip-card-inner.flipped .flip-card-front {
+            z-index: 1;
+        }
+
+        .flip-card-inner.flipped .flip-card-back {
+            z-index: 2;
         }
 
         .card-circle-lg,
