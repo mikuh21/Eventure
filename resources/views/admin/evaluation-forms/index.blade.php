@@ -1546,7 +1546,7 @@
                 <option value="conference" {{ request('type') === 'conference' ? 'selected' : '' }}>Conference</option>
             </select>
 
-            <button class="btn btn-primary" type="submit">Apply</button>
+            <button class="btn btn-primary" type="button" id="efFiltersApplyBtn">Apply</button>
 
             <span class="ef-showing-text" id="efShowingCount" data-total="{{ $events->count() }}">
                 Showing {{ $events->count() }} of {{ $overview['total_events'] }} event(s)
@@ -1557,7 +1557,7 @@
     <div class="admin-management-page">
         <div class="evaluation-form-grid">
             @forelse($events as $event)
-                <div class="evaluation-form-card" data-event-title="{{ strtolower($event->title) }}">
+                <div class="evaluation-form-card" data-event-title="{{ strtolower($event->title) }}" data-event-type="{{ $event->type }}" data-event-status="{{ $event->isEvaluationFormEnabled() ? 'open' : 'closed' }}">
                     <div class="evaluation-form-header">
                         <div>
                             <h3 class="evaluation-form-title">{{ $event->title }}</h3>
@@ -1953,10 +1953,21 @@
             const searchInput = document.querySelector('input[name="search"]');
             const cards = Array.from(document.querySelectorAll('.evaluation-form-card[data-event-title]'));
             const showingCount = document.getElementById('efShowingCount');
+            const statusSelect = document.querySelector('select[name="status"]');
+            const typeSelect = document.querySelector('select[name="type"]');
+            const applyBtn = document.getElementById('efFiltersApplyBtn');
 
             if (!searchInput || cards.length === 0) return;
 
+            // appliedFilters only change when Apply is clicked
+            let appliedFilters = {
+                status: statusSelect ? statusSelect.value : '',
+                type: typeSelect ? typeSelect.value : ''
+            };
+
             const normalize = (value) => value.toLowerCase().trim();
+
+            const mapType = (val) => val === 'student_event' ? 'standard' : val;
 
             const filterCards = () => {
                 const query = normalize(searchInput.value);
@@ -1965,9 +1976,17 @@
 
                 cards.forEach((card) => {
                     const title = normalize(card.getAttribute('data-event-title') || '');
-                    const isMatch = terms.length === 0 || terms.every((term) => title.includes(term));
-                    card.style.display = isMatch ? '' : 'none';
-                    if (isMatch) visibleCount++;
+                    const cardType = card.getAttribute('data-event-type') || '';
+                    const cardStatus = (card.getAttribute('data-event-status') || '').toLowerCase();
+
+                    const matchesSearch = terms.length === 0 || terms.every((term) => title.includes(term));
+                    const typeFilter = mapType(appliedFilters.type);
+                    const matchesType = !typeFilter || typeFilter === cardType;
+                    const matchesStatus = !appliedFilters.status || appliedFilters.status === cardStatus;
+
+                    const isVisible = matchesSearch && matchesType && matchesStatus;
+                    card.style.display = isVisible ? '' : 'none';
+                    if (isVisible) visibleCount++;
                 });
 
                 if (showingCount) {
@@ -1977,6 +1996,22 @@
             };
 
             searchInput.addEventListener('input', filterCards);
+
+            if (applyBtn) {
+                applyBtn.addEventListener('click', function () {
+                    appliedFilters.status = statusSelect ? statusSelect.value : '';
+                    appliedFilters.type = typeSelect ? typeSelect.value : '';
+                    filterCards();
+                    try {
+                        const params = new URLSearchParams(window.location.search);
+                        if (appliedFilters.type) params.set('type', appliedFilters.type); else params.delete('type');
+                        if (appliedFilters.status) params.set('status', appliedFilters.status); else params.delete('status');
+                        const newUrl = window.location.pathname + '?' + params.toString();
+                        window.history.replaceState({}, '', newUrl);
+                    } catch (err) {}
+                });
+            }
+
             filterCards();
         })();
 

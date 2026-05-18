@@ -935,7 +935,7 @@
                 <option value="conference" {{ request('type') === 'conference' ? 'selected' : '' }}>Conference</option>
             </select>
 
-            <button class="btn btn-primary" type="submit">Apply</button>
+            <button class="btn btn-primary" type="button" id="filtersApplyBtn">Apply</button>
 
             <span class="showing-text" id="showingCount" data-total="{{ $events->count() }}">Showing {{ $events->count() }} event(s)</span>
         </form>
@@ -976,7 +976,7 @@
                             $registrationStatus = $event->isRegistrationOpen() ? 'Open' : 'Closed';
                             $typeLabel = $event->type === 'conference' ? 'Conference' : 'School Event';
                         @endphp
-                        <tr data-event-title="{{ strtolower($event->title) }}">
+                        <tr data-event-title="{{ strtolower($event->title) }}" data-event-type="{{ $event->type }}" data-event-registration="{{ $event->isRegistrationOpen() ? 'open' : 'closed' }}">
                             <td>{{ $event->title }}</td>
                             <td>
                                 <span class="badge-pill {{ $event->type === 'conference' ? 'badge-type-conference' : 'badge-type-student' }}">
@@ -1219,40 +1219,81 @@
             const tableRows = Array.from(document.querySelectorAll('.events-table tbody tr[data-event-title]'));
             const liveSearchEmpty = document.getElementById('liveSearchEmpty');
             const showingCount = document.getElementById('showingCount');
+            const registrationSelect = document.querySelector('select[name="registration"]');
+            const typeSelect = document.querySelector('select[name="type"]');
+            const applyBtn = document.getElementById('filtersApplyBtn');
 
             if (!searchInput || tableRows.length === 0) {
                 return;
             }
 
+            // Applied filters are only set when the user clicks Apply; search works live regardless
+            let appliedFilters = {
+                type: typeSelect ? typeSelect.value : '',
+                registration: registrationSelect ? registrationSelect.value : ''
+            };
+
             const normalize = (value) => value.toLowerCase().trim();
 
-            const filterRowsByTitle = () => {
+            const mapType = (val) => {
+                if (!val) return '';
+                return val === 'student_event' ? 'standard' : val;
+            };
+
+            const filterRows = () => {
                 const query = normalize(searchInput.value);
                 const terms = query === '' ? [] : query.split(/\s+/).filter(Boolean);
                 let visibleCount = 0;
 
                 tableRows.forEach((row) => {
                     const title = normalize(row.getAttribute('data-event-title') || '');
-                    const isMatch = terms.length === 0 || terms.every((term) => title.includes(term));
-                    row.style.display = isMatch ? '' : 'none';
+                    const rowType = row.getAttribute('data-event-type') || '';
+                    const rowRegistration = (row.getAttribute('data-event-registration') || '').toLowerCase();
 
-                    if (isMatch) {
-                        visibleCount += 1;
-                    }
+                    const matchesSearch = terms.length === 0 || terms.every((term) => title.includes(term));
+
+                    const typeFilter = mapType(appliedFilters.type);
+                    const matchesType = !typeFilter || typeFilter === rowType;
+
+                    const matchesRegistration = !appliedFilters.registration || appliedFilters.registration === rowRegistration;
+
+                    const isVisible = matchesSearch && matchesType && matchesRegistration;
+                    row.style.display = isVisible ? '' : 'none';
+
+                    if (isVisible) visibleCount++;
                 });
 
-                if (liveSearchEmpty) {
-                    liveSearchEmpty.style.display = visibleCount === 0 ? '' : 'none';
-                }
-
+                if (liveSearchEmpty) liveSearchEmpty.style.display = visibleCount === 0 ? '' : 'none';
                 if (showingCount) {
                     const total = Number(showingCount.getAttribute('data-total')) || tableRows.length;
                     showingCount.textContent = 'Showing ' + visibleCount + ' of ' + total + ' event(s)';
                 }
             };
 
-            searchInput.addEventListener('input', filterRowsByTitle);
-            filterRowsByTitle();
+            // Live search
+            searchInput.addEventListener('input', filterRows);
+
+            // Apply button applies dropdown filters (client-side) without submitting the form
+            if (applyBtn) {
+                applyBtn.addEventListener('click', function (e) {
+                    appliedFilters.type = typeSelect ? typeSelect.value : '';
+                    appliedFilters.registration = registrationSelect ? registrationSelect.value : '';
+                    filterRows();
+                    // update URL query string without reloading so state is visible
+                    try {
+                        const params = new URLSearchParams(window.location.search);
+                        if (appliedFilters.type) params.set('type', appliedFilters.type); else params.delete('type');
+                        if (appliedFilters.registration) params.set('registration', appliedFilters.registration); else params.delete('registration');
+                        const newUrl = window.location.pathname + '?' + params.toString();
+                        window.history.replaceState({}, '', newUrl);
+                    } catch (err) {
+                        // ignore
+                    }
+                });
+            }
+
+            // Initial filter using server-populated select values
+            filterRows();
         })();
 
         // ── Delete Confirmation Modal ──────────────────────────────────────
