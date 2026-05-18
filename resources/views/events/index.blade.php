@@ -64,6 +64,23 @@
             box-shadow: 0 2px 8px rgba(10,35,66,0.06);
         }
 
+        /* Ensure single-column fields (date/datetime) in modals are block and full width */
+        .single-column label,
+        .single-column input,
+        .single-column select,
+        .single-column textarea {
+            display: block !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+
+        .input-error {
+            color: #c0392b;
+            font-size: 13px;
+            margin-top: 6px;
+            display: none;
+        }
+
         .overview-label {
             color: var(--color-ocean);
             font-size: 12px;
@@ -1109,24 +1126,28 @@
                         <textarea id="editDescription" name="description" rows="3"></textarea>
                     </div>
 
-                    <div class="field">
+                    <div class="field single-column span-2">
                         <label for="editStartDate">Start Date</label>
                         <input id="editStartDate" name="start_date" type="date" required>
+                        <div class="input-error" id="editStartDate_error">Please select a future date</div>
                     </div>
 
-                    <div class="field">
+                    <div class="field single-column span-2">
                         <label for="editEndDate">End Date</label>
                         <input id="editEndDate" name="end_date" type="date" required>
+                        <div class="input-error" id="editEndDate_error">Please select a future date</div>
                     </div>
 
-                    <div class="field">
+                    <div class="field single-column span-2">
                         <label for="editStartRegistration">Start Registration</label>
                         <input id="editStartRegistration" name="start_registration" type="datetime-local" required>
+                        <div class="input-error" id="editStartRegistration_error">Please select a future date</div>
                     </div>
 
-                    <div class="field">
+                    <div class="field single-column span-2">
                         <label for="editEndRegistration">End Registration</label>
                         <input id="editEndRegistration" name="end_registration" type="datetime-local" required>
+                        <div class="input-error" id="editEndRegistration_error">Please select a future date</div>
                     </div>
 
                     <div class="field">
@@ -1491,6 +1512,52 @@
                 });
             };
             initializeDatePickers();
+
+            // iOS fallback: enforce future-only selection for edit modal date fields
+            var enforceFutureSelectionForEdit = function() {
+                var today = new Date();
+                var todayStr = new Date(today.getFullYear(), today.getMonth(), today.getDate()).toISOString().split('T')[0];
+
+                var tomorrow = new Date(today);
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                var minDateLocal = new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 0, 0, 0);
+
+                ['editStartDate', 'editEndDate'].forEach(function(id) {
+                    var el = document.getElementById(id);
+                    if (!el) return;
+                    el.addEventListener('change', function() {
+                        if (!el.value) return;
+                        if (el.value <= todayStr) {
+                            el.value = '';
+                            var err = document.getElementById(id + '_error');
+                            if (err) err.style.display = 'block';
+                            alert('Please select a future date');
+                        } else {
+                            var err = document.getElementById(id + '_error');
+                            if (err) err.style.display = 'none';
+                        }
+                    });
+                });
+
+                ['editStartRegistration', 'editEndRegistration'].forEach(function(id) {
+                    var el = document.getElementById(id);
+                    if (!el) return;
+                    el.addEventListener('change', function() {
+                        if (!el.value) return;
+                        var selected = new Date(el.value);
+                        if (selected <= minDateLocal) {
+                            el.value = '';
+                            var err = document.getElementById(id + '_error');
+                            if (err) err.style.display = 'block';
+                            alert('Please select a future date');
+                        } else {
+                            var err = document.getElementById(id + '_error');
+                            if (err) err.style.display = 'none';
+                        }
+                    });
+                });
+            };
+            enforceFutureSelectionForEdit();
 
             document.addEventListener('keydown', function (e) {
                 if (e.key === 'Escape' && editModal && editModal.classList.contains('is-visible')) {

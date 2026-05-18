@@ -113,6 +113,23 @@
             grid-column: 1 / -1;
         }
 
+        /* Ensure single-column fields (date/datetime) are block and full width */
+        .edit-event-form .single-column label,
+        .edit-event-form .single-column input,
+        .edit-event-form .single-column select,
+        .edit-event-form .single-column textarea {
+            display: block !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+
+        .input-error {
+            color: #c0392b;
+            font-size: 13px;
+            margin-top: 6px;
+            display: none;
+        }
+
         .edit-event-form .form-actions {
             display: flex;
             justify-content: flex-end;
@@ -183,24 +200,28 @@
                 <textarea id="description" name="description" rows="4">{{ old('description', $event->description) }}</textarea>
             </div>
 
-            <div class="field">
+            <div class="field single-column span-2">
                 <label for="start_date">Start Date</label>
                 <input id="start_date" name="start_date" type="date" value="{{ old('start_date', $event->start_date?->format('Y-m-d')) }}" required>
+                <div class="input-error" id="start_date_error">Please select a future date</div>
             </div>
 
-            <div class="field">
+            <div class="field single-column span-2">
                 <label for="end_date">End Date</label>
                 <input id="end_date" name="end_date" type="date" value="{{ old('end_date', $event->end_date?->format('Y-m-d')) }}" required>
+                <div class="input-error" id="end_date_error">Please select a future date</div>
             </div>
 
-            <div class="field">
+            <div class="field single-column span-2">
                 <label for="start_registration">Start Registration</label>
                 <input id="start_registration" name="start_registration" type="datetime-local" value="{{ old('start_registration', $event->start_registration?->format('Y-m-d\\TH:i')) }}" required>
+                <div class="input-error" id="start_registration_error">Please select a future date</div>
             </div>
 
-            <div class="field">
+            <div class="field single-column span-2">
                 <label for="end_registration">End Registration</label>
                 <input id="end_registration" name="end_registration" type="datetime-local" value="{{ old('end_registration', $event->end_registration?->format('Y-m-d\\TH:i')) }}" required>
+                <div class="input-error" id="end_registration_error">Please select a future date</div>
             </div>
 
             <div class="field">
@@ -288,6 +309,52 @@
                 });
             };
             initializeDatePickers();
+
+            // iOS fallback: enforce future-only selection for standalone edit page
+            var enforceFutureSelectionForStandaloneEdit = function() {
+                var today = new Date();
+                var todayStr = new Date(today.getFullYear(), today.getMonth(), today.getDate()).toISOString().split('T')[0];
+
+                var tomorrow = new Date(today);
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                var minDateLocal = new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 0, 0, 0);
+
+                ['start_date', 'end_date'].forEach(function(id) {
+                    var el = document.getElementById(id);
+                    if (!el) return;
+                    el.addEventListener('change', function() {
+                        if (!el.value) return;
+                        if (el.value <= todayStr) {
+                            el.value = '';
+                            var err = document.getElementById(id + '_error');
+                            if (err) err.style.display = 'block';
+                            alert('Please select a future date');
+                        } else {
+                            var err = document.getElementById(id + '_error');
+                            if (err) err.style.display = 'none';
+                        }
+                    });
+                });
+
+                ['start_registration', 'end_registration'].forEach(function(id) {
+                    var el = document.getElementById(id);
+                    if (!el) return;
+                    el.addEventListener('change', function() {
+                        if (!el.value) return;
+                        var selected = new Date(el.value);
+                        if (selected <= minDateLocal) {
+                            el.value = '';
+                            var err = document.getElementById(id + '_error');
+                            if (err) err.style.display = 'block';
+                            alert('Please select a future date');
+                        } else {
+                            var err = document.getElementById(id + '_error');
+                            if (err) err.style.display = 'none';
+                        }
+                    });
+                });
+            };
+            enforceFutureSelectionForStandaloneEdit();
         })();
     </script>
 @endsection
