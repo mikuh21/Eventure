@@ -1979,7 +1979,18 @@
                     const cardType = card.getAttribute('data-event-type') || '';
                     const cardStatus = (card.getAttribute('data-event-status') || '').toLowerCase();
 
-                    const matchesSearch = terms.length === 0 || terms.every((term) => title.includes(term));
+                    // include visible type label (subtitle) in search e.g. 'School Event' or 'Conference'
+                    let typeText = '';
+                    const subtitle = card.querySelector('.evaluation-form-subtitle');
+                    if (subtitle && subtitle.innerText) {
+                        // subtitle contains 'Conference | ...' or 'School Event | ...' so extract first part
+                        typeText = normalize(subtitle.innerText.split('|')[0] || subtitle.innerText);
+                    } else {
+                        typeText = normalize(cardType === 'conference' ? 'conference' : 'school event');
+                    }
+
+                    const searchable = (title + ' ' + typeText).trim();
+                    const matchesSearch = terms.length === 0 || terms.every((term) => searchable.includes(term));
                     const typeFilter = mapType(appliedFilters.type);
                     const matchesType = !typeFilter || typeFilter === cardType;
                     const matchesStatus = !appliedFilters.status || appliedFilters.status === cardStatus;

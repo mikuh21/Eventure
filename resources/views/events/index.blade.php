@@ -1250,7 +1250,18 @@
                     const rowType = row.getAttribute('data-event-type') || '';
                     const rowRegistration = (row.getAttribute('data-event-registration') || '').toLowerCase();
 
-                    const matchesSearch = terms.length === 0 || terms.every((term) => title.includes(term));
+                    // also include visible type label (e.g. 'School Event' or 'Conference') in search
+                    let typeText = '';
+                    const badge = row.querySelector('.badge-pill');
+                    if (badge && badge.innerText) {
+                        typeText = normalize(badge.innerText);
+                    } else {
+                        // fallback map
+                        typeText = normalize(rowType === 'conference' ? 'conference' : 'school event');
+                    }
+
+                    const searchable = (title + ' ' + typeText).trim();
+                    const matchesSearch = terms.length === 0 || terms.every((term) => searchable.includes(term));
 
                     const typeFilter = mapType(appliedFilters.type);
                     const matchesType = !typeFilter || typeFilter === rowType;
