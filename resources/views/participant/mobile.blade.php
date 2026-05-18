@@ -621,7 +621,7 @@
                     downloadDataUrl(frontDataUrl, 'digital-id-front.png');
                     setTimeout(() => {
                         downloadDataUrl(backDataUrl, 'digital-id-back.png');
-                    }, 500);
+                    }, 800);
 
                     // Show inline iOS tip if needed
                     if (isIOS() && iosSaveTip) {
@@ -1251,15 +1251,28 @@
             const clone = source.cloneNode(true);
             clone.classList.add('export-face');
 
+            // Ensure clone is rendered off-screen and not affected by flip transforms
+            clone.style.position = 'fixed';
+            clone.style.left = '-10000px';
+            clone.style.top = '-10000px';
+            clone.style.visibility = 'visible';
+            clone.style.opacity = '1';
+            clone.style.transform = 'none';
+            clone.style.webkitTransform = 'none';
+            clone.style.backfaceVisibility = 'visible';
+            clone.style.webkitBackfaceVisibility = 'visible';
+            clone.style.pointerEvents = 'none';
+
             host.appendChild(clone);
             document.body.appendChild(host);
 
             try {
                 const canvas = await html2canvas(clone, {
-                    backgroundColor: null,
                     useCORS: true,
-                    scale: 3,
+                    allowTaint: true,
+                    scale: 2,
                     logging: false,
+                    backgroundColor: null,
                 });
 
                 return canvas.toDataURL('image/png');

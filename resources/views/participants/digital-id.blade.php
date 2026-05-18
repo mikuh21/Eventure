@@ -430,26 +430,109 @@
                         payloadPre.style.fontSize = '12px';
                     }
 
-                    var host = document.createElement('div');
-                    host.className = 'export-host';
-                    host.appendChild(backEl);
-                    document.body.appendChild(host);
+                    // Helper: capture an element by cloning it into an off-screen host
+                    async function captureElementAsDataUrl(element) {
+                        var host = document.createElement('div');
+                        host.className = 'export-host';
 
-                    // Ensure backEl has export-face class for consistent sizing
-                    backEl.classList.add('export-face');
+                        var clone = element.cloneNode(true);
+                        clone.classList.add('export-face');
 
-                    var opts = { scale: window.devicePixelRatio || 1 };
-                    var canvasFront = await html2canvas(frontEl, opts);
-                    var dataFront = canvasFront.toDataURL('image/png');
+                        // Force renderable off-screen layout to avoid flip/transform issues
+                        clone.style.position = 'fixed';
+                        clone.style.left = '-10000px';
+                        clone.style.top = '-10000px';
+                        clone.style.visibility = 'visible';
+                        clone.style.opacity = '1';
+                        clone.style.transform = 'none';
+                        clone.style.webkitTransform = 'none';
+                        clone.style.backfaceVisibility = 'visible';
+                        clone.style.webkitBackfaceVisibility = 'visible';
+                        clone.style.pointerEvents = 'none';
 
-                    var canvasBack = await html2canvas(backEl, opts);
-                    var dataBack = canvasBack.toDataURL('image/png');
+                        host.appendChild(clone);
+                        document.body.appendChild(host);
+
+                        try {
+                            var canvas = await html2canvas(clone, {
+                                useCORS: true,
+                                allowTaint: true,
+                                scale: 2,
+                                logging: false,
+                                backgroundColor: null,
+                            });
+
+                            return canvas.toDataURL('image/png');
+                        } finally {
+                            host.remove();
+                        }
+                    }
+
+                    // Wait for images and fonts to be ready so html2canvas renders correctly
+                    const frontImages = Array.from(frontEl.querySelectorAll('img'));
+                    await Promise.all(frontImages.map((img) => {
+                        if (img.complete) return Promise.resolve();
+                        return new Promise((res) => {
+                            img.addEventListener('load', res, { once: true });
+                            img.addEventListener('error', res, { once: true });
+                        });
+                    }));
+
+                    if (document.fonts && typeof document.fonts.ready !== 'undefined') {
+                        await document.fonts.ready;
+                    }
+
+                    // Capture front then back sequentially
+                    var dataFront = await captureElementAsDataUrl(frontEl);
+                    await new Promise(function (r) { setTimeout(r, 800); });
+
+                    // Prepare a back-specific clone for capture (hide QR if present, style payload)
+                    var backCaptureSource = frontEl.cloneNode(true);
+                    var qrel2 = backCaptureSource.querySelector('.digital-id-qr');
+                    if (qrel2) qrel2.style.display = 'none';
+                    var payloadPre2 = backCaptureSource.querySelector('.digital-id-payload-pre');
+                    if (payloadPre2) {
+                        payloadPre2.style.background = '#ffffff';
+                        payloadPre2.style.color = '#000000';
+                        payloadPre2.style.padding = '16px';
+                        payloadPre2.style.fontSize = '12px';
+                    }
+
+                    var dataBack = await (async function(){
+                        var host = document.createElement('div');
+                        host.className = 'export-host';
+                        backCaptureSource.classList.add('export-face');
+                        backCaptureSource.style.position = 'fixed';
+                        backCaptureSource.style.left = '-10000px';
+                        backCaptureSource.style.top = '-10000px';
+                        backCaptureSource.style.visibility = 'visible';
+                        backCaptureSource.style.opacity = '1';
+                        backCaptureSource.style.transform = 'none';
+                        backCaptureSource.style.webkitTransform = 'none';
+                        backCaptureSource.style.backfaceVisibility = 'visible';
+                        backCaptureSource.style.webkitBackfaceVisibility = 'visible';
+                        backCaptureSource.style.pointerEvents = 'none';
+                        host.appendChild(backCaptureSource);
+                        document.body.appendChild(host);
+                        try {
+                            var canvas = await html2canvas(backCaptureSource, {
+                                useCORS: true,
+                                allowTaint: true,
+                                scale: 2,
+                                logging: false,
+                                backgroundColor: null,
+                            });
+                            return canvas.toDataURL('image/png');
+                        } finally {
+                            host.remove();
+                        }
+                    })();
 
                     // Trigger downloads for both front and back using anchor-download approach
                     triggerDownload(dataFront, 'digital-id-front-' + participantId + '.png');
                     setTimeout(function () {
                         triggerDownload(dataBack, 'digital-id-back-' + participantId + '.png');
-                    }, 500);
+                    }, 800);
 
                     // For iOS, show a helpful inline tip if the image did not save automatically
                     if (isIOS()) {
@@ -459,8 +542,7 @@
                         }
                     }
 
-                    // cleanup
-                    host.remove();
+                    // cleanup (individual hosts removed by capture helper)
                 } catch (err) {
                     console.error(err);
                     alert('Saving the ID failed. Please try again.');
