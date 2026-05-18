@@ -113,17 +113,6 @@
                 grid-column: auto;
             }
         }
-
-        /* Mobile-specific overrides to ensure date inputs are full-width and readable */
-        @media (max-width: 640px) {
-            .create-event-form input,
-            .create-event-form select,
-            .create-event-form textarea {
-                width: 100%;
-                color: #0A2342;
-                font-size: 15px;
-            }
-        }
     </style>
 @endpush
 
@@ -255,7 +244,7 @@
             typeInput.addEventListener('change', toggleByType);
             toggleByType();
 
-            // Initialize date pickers (apply mobile-only min restrictions)
+            // Initialize date pickers
             var initializeDatePickers = function() {
                 var today = new Date();
                 var tomorrow = new Date(today);
@@ -263,26 +252,19 @@
                 var minDate = tomorrow.toISOString().split('T')[0];
                 var minDateTime = tomorrow.toISOString().split('Z')[0].slice(0, 16);
 
-                // Only enforce min on small viewports (mobile web)
-                if (window.matchMedia && window.matchMedia('(max-width: 640px)').matches) {
-                    ['start_date', 'end_date'].forEach(function(id) {
-                        var input = document.getElementById(id);
-                        if (input) {
-                            var original = input.value || input.getAttribute('value') || '';
-                            input.setAttribute('min', minDate);
-                            if (original) input.value = original;
-                        }
-                    });
+                ['start_date', 'end_date'].forEach(function(id) {
+                    var input = document.getElementById(id);
+                    if (input) {
+                        input.setAttribute('min', minDate);
+                    }
+                });
 
-                    ['start_registration', 'end_registration'].forEach(function(id) {
-                        var input = document.getElementById(id);
-                        if (input) {
-                            var original = input.value || input.getAttribute('value') || '';
-                            input.setAttribute('min', minDateTime);
-                            if (original) input.value = original;
-                        }
-                    });
-                }
+                ['start_registration', 'end_registration'].forEach(function(id) {
+                    var input = document.getElementById(id);
+                    if (input) {
+                        input.setAttribute('min', minDateTime);
+                    }
+                });
             };
             initializeDatePickers();
         })();

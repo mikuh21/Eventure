@@ -127,17 +127,6 @@
                 grid-column: auto;
             }
         }
-
-        /* Mobile-specific overrides to ensure date inputs are full-width and readable */
-        @media (max-width: 640px) {
-            .edit-event-form input,
-            .edit-event-form select,
-            .edit-event-form textarea {
-                width: 100%;
-                color: #0A2342;
-                font-size: 15px;
-            }
-        }
     </style>
 @endpush
 
