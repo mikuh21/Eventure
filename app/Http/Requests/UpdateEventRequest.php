@@ -1,0 +1,37 @@
+<?php
+
+namespace App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+
+class UpdateEventRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    public function rules(): array
+    {
+        return [
+            'type' => ['sometimes', 'required', Rule::in(['standard', 'conference'])],
+            'attendance_type' => ['sometimes', 'required', Rule::in(['face_to_face', 'virtual', 'both'])],
+            'event_title' => ['nullable', 'string', 'max:255'],
+            'conference_title' => ['nullable', 'string', 'max:255'],
+            'theme' => ['nullable', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'event_date' => ['sometimes', 'nullable', 'date'],
+            'start_date' => ['sometimes', 'required', 'date'],
+            'end_date' => ['sometimes', 'required', 'date', 'after_or_equal:start_date'],
+            'start_registration' => ['sometimes', 'required', 'date'],
+            'end_registration' => ['sometimes', 'required', 'date', 'after:start_registration'],
+            'location' => ['sometimes', 'required', 'string', 'max:255'],
+            'poster' => ['nullable', 'image', 'max:5120'],
+            'template_file' => ['nullable', 'file', 'mimes:pdf,doc,docx', 'max:5120'],
+            'department' => ['nullable', 'string', 'max:255'],
+            'program' => ['nullable', 'string', 'max:255'],
+            'keywords' => ['nullable'],
+        ];
+    }
+}
