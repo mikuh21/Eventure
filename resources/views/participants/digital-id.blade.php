@@ -430,11 +430,9 @@
                         var host = document.createElement('div'); host.className='export-host';
                         var clone = element.cloneNode(true); clone.classList.add('export-face');
                         clone.style.position='fixed'; clone.style.left='-9999px'; clone.style.top='-9999px'; clone.style.visibility='visible'; clone.style.opacity='1'; clone.style.transform='none'; clone.style.webkitTransform='none'; clone.style.backfaceVisibility='visible'; clone.style.webkitBackfaceVisibility='visible'; clone.style.pointerEvents='none';
-                        clone.style.width='500px'; clone.style.height='auto';
                         host.appendChild(clone); document.body.appendChild(host);
                         try {
-                            await new Promise(r => setTimeout(r, 500));
-                            const c = await html2canvas(clone, {useCORS:true,allowTaint:true,scale:1,imageTimeout:0,logging:false,backgroundColor:null});
+                            const c = await html2canvas(clone, {useCORS:true,allowTaint:true,scale:2,logging:false,backgroundColor:null});
                             return c.toDataURL('image/png');
                         } finally { host.remove(); }
                     })(frontEl);
@@ -450,13 +448,8 @@
                         var host = document.createElement('div'); host.className='export-host';
                         var clone = element.cloneNode(true); clone.classList.add('export-face');
                         clone.style.position='fixed'; clone.style.left='-9999px'; clone.style.top='-9999px'; clone.style.visibility='visible'; clone.style.opacity='1'; clone.style.transform='none'; clone.style.webkitTransform='none'; clone.style.backfaceVisibility='visible'; clone.style.webkitBackfaceVisibility='visible'; clone.style.pointerEvents='none';
-                        clone.style.width='500px'; clone.style.height='auto';
                         host.appendChild(clone); document.body.appendChild(host);
-                        try { 
-                            await new Promise(r => setTimeout(r, 500));
-                            const c = await html2canvas(clone, {useCORS:true,allowTaint:true,scale:1,imageTimeout:0,logging:false,backgroundColor:null}); 
-                            return c.toDataURL('image/png'); 
-                        } finally { host.remove(); }
+                        try { const c = await html2canvas(clone, {useCORS:true,allowTaint:true,scale:2,logging:false,backgroundColor:null}); return c.toDataURL('image/png'); } finally { host.remove(); }
                     })(backSource);
 
                     // build modal with images
