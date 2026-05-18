@@ -144,6 +144,19 @@
                 grid-column: auto;
             }
         }
+        /* Mobile-only: prevent date inputs from overflowing container */
+        @media (max-width: 980px) {
+            .edit-event-form .single-column input[type="date"],
+            .edit-event-form .single-column input[type="datetime-local"] {
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+            }
+
+            .edit-event-form .field.single-column {
+                overflow: hidden;
+                padding: 0;
+            }
+        }
     </style>
 @endpush
 
@@ -355,6 +368,67 @@
                 });
             };
             enforceFutureSelectionForStandaloneEdit();
+
+            // Load Flatpickr on mobile for standalone edit page
+            var loadFlatpickrOnMobileForStandalone = function() {
+                var isSmall = window.matchMedia('(max-width: 980px)').matches;
+                var isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+                if (!isSmall || !isTouch) return;
+
+                var loadCss = function(href) {
+                    return new Promise(function(resolve) {
+                        var link = document.createElement('link');
+                        link.rel = 'stylesheet';
+                        link.href = href;
+                        link.onload = resolve;
+                        document.head.appendChild(link);
+                    });
+                };
+
+                var loadScript = function(src) {
+                    return new Promise(function(resolve) {
+                        var s = document.createElement('script');
+                        s.src = src;
+                        s.onload = resolve;
+                        document.head.appendChild(s);
+                    });
+                };
+
+                Promise.all([
+                    loadCss('https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css'),
+                    loadScript('https://cdn.jsdelivr.net/npm/flatpickr')
+                ]).then(function() {
+                    var today = new Date();
+                    var tomorrow = new Date(today);
+                    tomorrow.setDate(tomorrow.getDate() + 1);
+
+                    ['start_date','end_date'].forEach(function(id) {
+                        var el = document.getElementById(id);
+                        if (!el) return;
+                        flatpickr(el, {
+                            dateFormat: 'Y-m-d',
+                            minDate: tomorrow,
+                            disableMobile: true,
+                        });
+                    });
+
+                    ['start_registration','end_registration'].forEach(function(id) {
+                        var el = document.getElementById(id);
+                        if (!el) return;
+                        flatpickr(el, {
+                            enableTime: true,
+                            time_24hr: true,
+                            dateFormat: "Y-m-d\\TH:i",
+                            minDate: tomorrow,
+                            disableMobile: true,
+                            minuteIncrement: 1
+                        });
+                    });
+                }).catch(function() {
+                    // fallback handled earlier
+                });
+            };
+            loadFlatpickrOnMobileForStandalone();
         })();
     </script>
 @endsection

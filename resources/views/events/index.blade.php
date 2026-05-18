@@ -168,6 +168,19 @@
             box-sizing: border-box;
         }
 
+        /* Mobile-only: prevent date inputs in modal from overflowing container */
+        @media (max-width: 980px) {
+            .single-column input[type="date"],
+            .single-column input[type="datetime-local"] {
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+            }
+
+            .field.single-column {
+                overflow: hidden;
+                padding: 0;
+            }
+        }
         .events-table {
             width: 100%;
             border-collapse: collapse;
@@ -1558,6 +1571,67 @@
                 });
             };
             enforceFutureSelectionForEdit();
+
+            // Load Flatpickr on mobile to provide a visual minDate in picker UI
+            var loadFlatpickrOnMobileForEdit = function() {
+                var isSmall = window.matchMedia('(max-width: 980px)').matches;
+                var isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+                if (!isSmall || !isTouch) return;
+
+                var loadCss = function(href) {
+                    return new Promise(function(resolve) {
+                        var link = document.createElement('link');
+                        link.rel = 'stylesheet';
+                        link.href = href;
+                        link.onload = resolve;
+                        document.head.appendChild(link);
+                    });
+                };
+
+                var loadScript = function(src) {
+                    return new Promise(function(resolve) {
+                        var s = document.createElement('script');
+                        s.src = src;
+                        s.onload = resolve;
+                        document.head.appendChild(s);
+                    });
+                };
+
+                Promise.all([
+                    loadCss('https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css'),
+                    loadScript('https://cdn.jsdelivr.net/npm/flatpickr')
+                ]).then(function() {
+                    var today = new Date();
+                    var tomorrow = new Date(today);
+                    tomorrow.setDate(tomorrow.getDate() + 1);
+
+                    ['editStartDate','editEndDate'].forEach(function(id) {
+                        var el = document.getElementById(id);
+                        if (!el) return;
+                        flatpickr(el, {
+                            dateFormat: 'Y-m-d',
+                            minDate: tomorrow,
+                            disableMobile: true,
+                        });
+                    });
+
+                    ['editStartRegistration','editEndRegistration'].forEach(function(id) {
+                        var el = document.getElementById(id);
+                        if (!el) return;
+                        flatpickr(el, {
+                            enableTime: true,
+                            time_24hr: true,
+                            dateFormat: "Y-m-d\\TH:i",
+                            minDate: tomorrow,
+                            disableMobile: true,
+                            minuteIncrement: 1
+                        });
+                    });
+                }).catch(function() {
+                    // fallback handled elsewhere
+                });
+            };
+            loadFlatpickrOnMobileForEdit();
 
             document.addEventListener('keydown', function (e) {
                 if (e.key === 'Escape' && editModal && editModal.classList.contains('is-visible')) {
