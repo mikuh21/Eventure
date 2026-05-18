@@ -642,8 +642,39 @@
         }
 
         @media (max-width: 980px) {
-            .edit-event-form-grid {
+            .edit-event-panel {
+                max-width: 100%;
+                margin: 0 8px;
+                border-radius: 12px;
+            }
+
+            .edit-event-header {
+                padding: 16px;
+            }
+
+            .edit-event-form {
                 grid-template-columns: 1fr;
+                padding: 16px;
+                gap: 12px;
+            }
+
+            .edit-event-form input,
+            .edit-event-form select,
+            .edit-event-form textarea {
+                font-size: 15px;
+                padding: 10px 12px;
+                min-height: 44px;
+            }
+
+            .edit-event-form input[type="date"],
+            .edit-event-form input[type="datetime-local"] {
+                min-height: 48px;
+                padding: 8px 10px;
+            }
+
+            .edit-event-actions {
+                padding: 12px;
+                gap: 8px;
             }
         }
 
