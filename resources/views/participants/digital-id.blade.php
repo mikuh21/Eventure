@@ -30,6 +30,35 @@
         }
 
         .digital-id-actions {
+            /* Export helpers for html2canvas capture */
+            .export-host {
+                position: fixed;
+                left: -10000px;
+                top: 0;
+                width: 500px;
+                height: 500px;
+                pointer-events: none;
+                z-index: -1;
+            }
+
+            .export-face {
+                position: relative !important;
+                transform: none !important;
+                -webkit-backface-visibility: visible !important;
+                backface-visibility: visible !important;
+                width: 500px !important;
+                height: auto !important;
+                margin: 0 !important;
+                background: white !important;
+                color: #000 !important;
+            }
+
+            #ios-save-tip {
+                display: none;
+                margin-top: 8px;
+                font-size: 13px;
+                color: #065f46;
+            }
             display: flex;
             gap: 12px;
         }
@@ -268,8 +297,9 @@
             <div class="digital-id-actions">
                 <a class="digital-id-btn digital-id-btn-secondary" href="{{ route('events.participants.show', [$participant->event, $participant]) }}">Back</a>
                 @php($hasSubmittedSurvey = $participant->evaluations()->exists())
-                <a class="digital-id-btn digital-id-btn-primary" href="{{ route('participants.digital-id.download', $participant) }}" {{ !$hasSubmittedSurvey ? 'disabled' : '' }} title="{{ !$hasSubmittedSurvey ? 'Complete the survey first to download' : 'Download QR Code' }}">Download QR PNG</a>
+                <button id="save-id-btn" class="digital-id-btn digital-id-btn-primary" type="button" {{ !$hasSubmittedSurvey ? 'disabled' : '' }} title="{{ !$hasSubmittedSurvey ? 'Complete the survey first to save' : 'Save ID' }}">Save ID</button>
             </div>
+            <div id="ios-save-tip">Long press the image to save to your Photos</div>
         </div>
 
         @if($hasSubmittedSurvey)
@@ -332,6 +362,120 @@
                     }, 2000);
                 } catch (e) {
                     statusEl.textContent = 'Copy failed';
+                }
+            });
+        })();
+    </script>
+
+    <script>
+        (function () {
+            var saveBtn = document.getElementById('save-id-btn');
+            var iosTip = document.getElementById('ios-save-tip');
+            var hasSubmitted = @json($hasSubmittedSurvey);
+            var participantId = @json($participant->id);
+
+            if (!saveBtn) return;
+
+            function isIOS() {
+                return /iP(hone|od|ad)/.test(navigator.userAgent) || (navigator.platform && /MacIntel/.test(navigator.platform) && navigator.maxTouchPoints > 1);
+            }
+
+            function isAndroid() {
+                return /Android/i.test(navigator.userAgent);
+            }
+
+            async function ensureHtml2Canvas() {
+                if (typeof html2canvas !== 'undefined') return;
+                return new Promise(function (resolve, reject) {
+                    var s = document.createElement('script');
+                    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+                    s.onload = resolve;
+                    s.onerror = reject;
+                    document.head.appendChild(s);
+                });
+            }
+
+            function triggerDownload(dataUrl, filename) {
+                var a = document.createElement('a');
+                a.href = dataUrl;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            }
+
+            saveBtn.addEventListener('click', async function () {
+                if (!hasSubmitted) return;
+                saveBtn.disabled = true;
+                var originalText = saveBtn.textContent;
+                saveBtn.textContent = 'Saving to photos...';
+
+                try {
+                    await ensureHtml2Canvas();
+
+                    var frontEl = document.querySelector('.digital-id-card');
+                    if (!frontEl) throw new Error('Digital ID card not found');
+
+                    // Create a back face clone and adjust visuals for export
+                    var backEl = frontEl.cloneNode(true);
+                    var qrel = backEl.querySelector('.digital-id-qr');
+                    if (qrel) qrel.style.display = 'none';
+                    var payloadPre = backEl.querySelector('.digital-id-payload-pre');
+                    if (payloadPre) {
+                        payloadPre.style.background = '#ffffff';
+                        payloadPre.style.color = '#000000';
+                        payloadPre.style.padding = '16px';
+                        payloadPre.style.fontSize = '12px';
+                    }
+
+                    var host = document.createElement('div');
+                    host.className = 'export-host';
+                    host.appendChild(backEl);
+                    document.body.appendChild(host);
+
+                    // Ensure backEl has export-face class for consistent sizing
+                    backEl.classList.add('export-face');
+
+                    var opts = { scale: window.devicePixelRatio || 1 };
+                    var canvasFront = await html2canvas(frontEl, opts);
+                    var dataFront = canvasFront.toDataURL('image/png');
+
+                    var canvasBack = await html2canvas(backEl, opts);
+                    var dataBack = canvasBack.toDataURL('image/png');
+
+                    if (isIOS()) {
+                        if (iosTip) iosTip.style.display = 'block';
+                        // Open a new tab with both images so user can long-press to save
+                        var newWin = window.open('', '_blank');
+                        if (newWin) {
+                            var html = '' +
+                                '<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1" /><title>Save Digital ID</title></head><body style="margin:0;padding:16px;display:flex;flex-direction:column;align-items:center;gap:12px;background:#fff;">' +
+                                '<img src="' + dataFront + '" style="max-width:100%;height:auto;display:block" />' +
+                                '<img src="' + dataBack + '" style="max-width:100%;height:auto;display:block" />' +
+                                '</body></html>';
+                            newWin.document.open();
+                            newWin.document.write(html);
+                            newWin.document.close();
+                        } else {
+                            alert('Unable to open a new tab. Please allow popups and try again.');
+                        }
+                    } else {
+                        // Android and desktop: trigger downloads
+                        triggerDownload(dataFront, 'digital-id-front-' + participantId + '.png');
+                        // small delay to ensure two downloads don't conflict
+                        setTimeout(function () {
+                            triggerDownload(dataBack, 'digital-id-back-' + participantId + '.png');
+                        }, 500);
+                    }
+
+                    // cleanup
+                    host.remove();
+                } catch (err) {
+                    console.error(err);
+                    alert('Saving the ID failed. Please try again.');
+                } finally {
+                    saveBtn.disabled = false;
+                    saveBtn.textContent = originalText;
                 }
             });
         })();
