@@ -1291,27 +1291,16 @@
                     const frontDataUrl = await renderFaceDataUrl('.flip-card-front');
                     const backDataUrl = await renderFaceDataUrl('.flip-card-back');
 
-                    if (isIOS()) {
-                        if (iosSaveTip) iosSaveTip.style.display = 'block';
+                    // Trigger downloads for both faces using anchor-download approach
+                    downloadDataUrl(frontDataUrl, 'digital-id-front.png');
+                    setTimeout(() => {
+                        downloadDataUrl(backDataUrl, 'digital-id-back.png');
+                    }, 400);
 
-                        const newWin = window.open('', '_blank');
-                        if (newWin) {
-                            const html = `<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1" /><title>Save Digital ID</title></head><body style="margin:0;padding:16px;display:flex;flex-direction:column;align-items:center;gap:12px;background:#fff;">` +
-                                `<img src="${frontDataUrl}" style="max-width:100%;height:auto;display:block" />` +
-                                `<img src="${backDataUrl}" style="max-width:100%;height:auto;display:block" />` +
-                                `</body></html>`;
-                            newWin.document.open();
-                            newWin.document.write(html);
-                            newWin.document.close();
-                        } else {
-                            alert('Unable to open a new tab. Please allow popups and try again.');
-                        }
-                    } else {
-                        // Android and desktop: trigger downloads
-                        downloadDataUrl(frontDataUrl, 'digital-id-front.png');
-                        setTimeout(() => {
-                            downloadDataUrl(backDataUrl, 'digital-id-back.png');
-                        }, 400);
+                    // For iOS, show inline tip if the image did not save automatically
+                    if (isIOS() && iosSaveTip) {
+                        iosSaveTip.textContent = 'If the image did not save, long press the image and select Save to Photos';
+                        iosSaveTip.style.display = 'block';
                     }
                 } catch (error) {
                     console.error(error);

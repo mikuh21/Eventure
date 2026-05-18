@@ -443,29 +443,18 @@
                     var canvasBack = await html2canvas(backEl, opts);
                     var dataBack = canvasBack.toDataURL('image/png');
 
+                    // Trigger downloads for both front and back using anchor-download approach
+                    triggerDownload(dataFront, 'digital-id-front-' + participantId + '.png');
+                    setTimeout(function () {
+                        triggerDownload(dataBack, 'digital-id-back-' + participantId + '.png');
+                    }, 500);
+
+                    // For iOS, show a helpful inline tip if the image did not save automatically
                     if (isIOS()) {
-                        if (iosTip) iosTip.style.display = 'block';
-                        // Open a new tab with both images so user can long-press to save
-                        var newWin = window.open('', '_blank');
-                        if (newWin) {
-                            var html = '' +
-                                '<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1" /><title>Save Digital ID</title></head><body style="margin:0;padding:16px;display:flex;flex-direction:column;align-items:center;gap:12px;background:#fff;">' +
-                                '<img src="' + dataFront + '" style="max-width:100%;height:auto;display:block" />' +
-                                '<img src="' + dataBack + '" style="max-width:100%;height:auto;display:block" />' +
-                                '</body></html>';
-                            newWin.document.open();
-                            newWin.document.write(html);
-                            newWin.document.close();
-                        } else {
-                            alert('Unable to open a new tab. Please allow popups and try again.');
+                        if (iosTip) {
+                            iosTip.textContent = 'If the image did not save, long press the image and select Save to Photos';
+                            iosTip.style.display = 'block';
                         }
-                    } else {
-                        // Android and desktop: trigger downloads
-                        triggerDownload(dataFront, 'digital-id-front-' + participantId + '.png');
-                        // small delay to ensure two downloads don't conflict
-                        setTimeout(function () {
-                            triggerDownload(dataBack, 'digital-id-back-' + participantId + '.png');
-                        }, 500);
                     }
 
                     // cleanup
