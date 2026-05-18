@@ -37,25 +37,27 @@
         .edit-event-form select,
         .edit-event-form textarea {
             width: 100%;
-            .edit-event-form select {
-                width: 100%;
-                min-height: 40px;
-                padding: 8px 10px;
-                border: 1px solid #cfe0ef;
-                border-radius: 8px;
-                background: #ffffff;
-                color: var(--color-midnight);
-                font-family: 'Sora', sans-serif;
-                font-size: 14px;
-                box-sizing: border-box;
-                appearance: none;
-                -webkit-appearance: none;
-                -moz-appearance: none;
-                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235BA4CF' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-                background-repeat: no-repeat;
-                background-position: right 12px center;
-                background-size: 14px 14px;
-            }
+            min-height: 40px;
+            padding: 8px 10px;
+            border: 1px solid #cfe0ef;
+            border-radius: 8px;
+            background: #ffffff;
+            color: var(--color-midnight);
+            font-family: 'Sora', sans-serif;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        .edit-event-form select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235BA4CF' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 14px 14px;
+        }
+
         .edit-event-form input[type="file"] {
             min-height: 40px;
             padding: 4px 8px;
