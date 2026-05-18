@@ -214,6 +214,9 @@ class ParticipantController extends Controller
 
     public function confirmation(Request $request, Participant $participant)
     {
+        // Load participant with event relationship
+        $participant = Participant::with('event')->findOrFail($participant->id);
+
         if ($request->expectsJson() || $request->is('api/*')) {
             return response()->json([
                 'participant_id' => $participant->id,
