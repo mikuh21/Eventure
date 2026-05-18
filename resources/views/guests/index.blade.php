@@ -149,6 +149,42 @@
             align-items: center;
         }
 
+        /* Mobile: keep action buttons inline and compact */
+        @media (max-width: 640px) {
+            .guest-actions {
+                flex-wrap: nowrap !important;
+                gap: 6px;
+            }
+
+            .guest-actions .btn-action {
+                padding: 4px 6px !important;
+                font-size: 11px !important;
+                line-height: 1 !important;
+                border-radius: 6px !important;
+                min-width: 0 !important;
+            }
+
+            .guest-actions .btn-view {
+                padding: 4px 8px !important;
+            }
+
+            .guest-actions form {
+                display: inline-flex !important;
+                margin: 0 !important;
+            }
+
+            .btn-delete-icon {
+                width: 28px !important;
+                height: 28px !important;
+                padding: 0 !important;
+            }
+
+            .btn-delete-icon svg {
+                width: 14px !important;
+                height: 14px !important;
+            }
+        }
+
         .btn-action {
             border-radius: 6px;
             padding: 5px 8px;
