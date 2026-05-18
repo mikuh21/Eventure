@@ -183,6 +183,22 @@
                 width: 14px !important;
                 height: 14px !important;
             }
+
+            /* Ensure view and delete buttons are visually the same height and aligned */
+            .guest-actions .btn-action,
+            .guest-actions .btn-delete-icon {
+                height: 34px !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                padding-top: 0 !important;
+                padding-bottom: 0 !important;
+            }
+
+            .guest-actions .btn-view {
+                padding-left: 8px !important;
+                padding-right: 8px !important;
+            }
         }
 
         .btn-action {
