@@ -174,7 +174,7 @@
             <div class="field">
                 <label for="type">Event Type</label>
                 <select id="type" name="type">
-                    <option value="standard" {{ old('type', $event->type) === 'standard' ? 'selected' : '' }}>School Event</option>
+                    <option value="school_event" {{ old('type', $event->type) === 'school_event' ? 'selected' : '' }}>School Event</option>
                     <option value="conference" {{ old('type', $event->type) === 'conference' ? 'selected' : '' }}>Conference</option>
                 </select>
             </div>

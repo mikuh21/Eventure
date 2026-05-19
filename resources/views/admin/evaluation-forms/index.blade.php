@@ -1967,7 +1967,7 @@
 
             const normalize = (value) => value.toLowerCase().trim();
 
-            const mapType = (val) => val === 'student_event' ? 'standard' : val;
+            const mapType = (val) => val === 'student_event' ? 'school_event' : val;
 
             const filterCards = () => {
                 const query = normalize(searchInput.value);

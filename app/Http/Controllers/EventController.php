@@ -35,10 +35,10 @@ class EventController extends Controller
             $normalizedType = strtolower($typeFilter);
 
             if ($normalizedType === 'student_event') {
-                $normalizedType = 'standard';
+                $normalizedType = 'school_event';
             }
 
-            $allowedTypes = ['standard', 'conference'];
+            $allowedTypes = ['school_event', 'conference'];
             if (in_array($normalizedType, $allowedTypes, true)) {
                 $eventsQuery->where('type', $normalizedType);
             }
@@ -106,7 +106,6 @@ class EventController extends Controller
                     'conference_title' => $event->conference_title,
                     'theme' => $event->theme,
                     'description' => $event->description,
-                    'event_date' => $event->event_date,
                     'start_date' => $event->start_date,
                     'end_date' => $event->end_date,
                     'start_registration' => $event->start_registration,
@@ -326,7 +325,7 @@ class EventController extends Controller
     private function buildEventData(array $validated, Request $request, ?Event $event = null): array
     {
         $data = [
-            'type' => $validated['type'] ?? $event?->type ?? 'standard',
+            'type' => $validated['type'] ?? $event?->type ?? 'school_event',
             'attendance_type' => $validated['attendance_type'] ?? $event?->attendance_type ?? 'face_to_face',
             'event_title' => $validated['event_title'] ?? $event?->event_title,
             'conference_title' => $validated['conference_title'] ?? $event?->conference_title,
@@ -334,7 +333,6 @@ class EventController extends Controller
             'description' => $validated['description'] ?? $event?->description,
             'department' => $validated['department'] ?? $event?->department,
             'program' => $validated['program'] ?? $event?->program,
-            'event_date' => $validated['event_date'] ?? $event?->event_date,
             'start_date' => $validated['start_date'] ?? $event?->start_date,
             'end_date' => $validated['end_date'] ?? $event?->end_date,
             'start_registration' => $validated['start_registration'] ?? $event?->start_registration,
@@ -343,7 +341,7 @@ class EventController extends Controller
             'keywords' => $this->normalizeKeywords($validated['keywords'] ?? $event?->keywords),
         ];
 
-        if ($data['type'] === 'standard') {
+        if ($data['type'] === 'school_event') {
             $data['conference_title'] = null;
             $data['theme'] = null;
 
@@ -360,7 +358,7 @@ class EventController extends Controller
             }
         }
 
-        if ($data['type'] === 'standard' && ! $data['event_title']) {
+        if ($data['type'] === 'school_event' && ! $data['event_title']) {
             throw ValidationException::withMessages([
                 'event_title' => 'The school event title field is required.',
             ]);

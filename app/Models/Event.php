@@ -28,7 +28,6 @@ class Event extends Model
         'description',
         'department',
         'program',
-        'event_date',
         'start_date',
         'end_date',
         'start_registration',
@@ -45,7 +44,6 @@ class Event extends Model
     ];
 
     protected $casts = [
-        'event_date' => 'date',
         'start_date' => 'date',
         'end_date' => 'date',
         'start_registration' => 'datetime',
@@ -162,8 +160,8 @@ class Event extends Model
 
     public function dateRangeLabel(): string
     {
-        $startDate = $this->start_date ?? $this->event_date;
-        $endDate = $this->end_date ?? $this->start_date ?? $this->event_date;
+        $startDate = $this->start_date;
+        $endDate = $this->end_date ?? $this->start_date;
 
         if (!$startDate) {
             return 'TBA';
@@ -198,8 +196,8 @@ class Event extends Model
 
         // Backward compatibility for older events that do not yet have window values.
         // Keep registration open until the event date ends.
-        if ($this->event_date) {
-            return $now->lte($this->event_date->copy()->endOfDay());
+        if ($this->start_date) {
+            return $now->lte($this->start_date->copy()->endOfDay());
         }
 
         return true;
@@ -218,13 +216,13 @@ class Event extends Model
             $query->whereNull('start_registration')
                 ->orWhereNull('end_registration');
 
-            $query->whereDate('event_date', '>=', $now->toDateString());
+            $query->whereDate('start_date', '>=', $now->toDateString());
         });
     }
 
     public function hasEnded(): bool
     {
-        $endDate = $this->end_date ?? $this->start_date ?? $this->event_date;
+        $endDate = $this->end_date ?? $this->start_date;
         return $endDate?->lt(now()->startOfDay()) ?? false;
     }
 
@@ -244,7 +242,7 @@ class Event extends Model
             return 'Completed';
         }
 
-        if ($this->event_date?->isToday()) {
+        if ($this->start_date?->isToday()) {
             return 'Ongoing';
         }
 

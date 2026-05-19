@@ -12,7 +12,7 @@ class SurveyActivationService
     public function activateDueEvents(): Collection
     {
         $events = Event::query()
-            ->whereDate('event_date', '<', now()->toDateString())
+            ->whereDate('start_date', '<', now()->toDateString())
             ->whereNull('survey_activated_at')
             ->get();
 

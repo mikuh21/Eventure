@@ -19,7 +19,7 @@ class EventSeeder extends Seeder
                 'title' => $faker->unique()->sentence(3),
             ], [
                 'description' => $faker->paragraph(),
-                'event_date' => $faker->dateTimeBetween('+1 days', '+90 days')->format('Y-m-d'),
+                'start_date' => $faker->dateTimeBetween('+1 days', '+90 days')->format('Y-m-d'),
                 'location' => $faker->city(),
                 'created_by' => $admin?->id,
             ]);

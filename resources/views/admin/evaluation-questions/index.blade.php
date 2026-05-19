@@ -163,8 +163,8 @@
                                 <td>
                                     @if($event->end_registration)
                                         {{ $event->end_registration->format('F d, Y') }}
-                                    @elseif($event->event_date)
-                                        {{ $event->event_date->format('F d, Y') }}
+                                    @elseif($event->start_date)
+                                        {{ $event->start_date->format('F d, Y') }}
                                     @else
                                         Open
                                     @endif

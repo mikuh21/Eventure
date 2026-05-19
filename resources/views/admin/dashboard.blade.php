@@ -715,7 +715,7 @@
             ['y' => 130, 'val' => round($chartMax * 0.5)],
             ['y' => 175, 'val' => round($chartMax * 0.25)],
         ];
-        $fallbackEvent = \App\Models\Event::query()->orderByDesc('event_date')->first();
+        $fallbackEvent = \App\Models\Event::query()->orderByDesc('start_date')->first();
         $participantsNavUrl = $fallbackEvent
             ? \App\Support\PreviewAuth::appendToUrl(route('events.participants.index', $fallbackEvent, false), $previewAuthQuery)
             : \App\Support\PreviewAuth::appendToUrl(route('participants.index', [], false), $previewAuthQuery);

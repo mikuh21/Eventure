@@ -771,7 +771,7 @@
     $isEventsRoute = request()->routeIs('events.*') && ! $isParticipantsRoute;
     $routeEvent = request()->route('event');
     $currentEvent = $routeEvent instanceof \App\Models\Event ? $routeEvent : null;
-    $fallbackEvent = $currentEvent ?? \App\Models\Event::query()->orderByDesc('event_date')->first();
+    $fallbackEvent = $currentEvent ?? \App\Models\Event::query()->orderByDesc('start_date')->first();
     $participantsNavUrl = $fallbackEvent
         ? \App\Support\PreviewAuth::appendToUrl(route('events.participants.index', $fallbackEvent, false), $previewAuthQuery)
         : \App\Support\PreviewAuth::appendToUrl(route('participants.index', [], false), $previewAuthQuery);

@@ -80,7 +80,7 @@ class EvaluationQuestion extends Model
 
     public static function normalizeEventType(string $eventType): string
     {
-        return $eventType === 'standard' ? self::EVENT_TYPE_SCHOOL : $eventType;
+        return $eventType === 'school_event' ? self::EVENT_TYPE_SCHOOL : $eventType;
     }
 
     public static function ensureDefaultTemplatesForEventType(string $eventType): void
