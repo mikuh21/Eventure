@@ -256,7 +256,7 @@
                 <label for="poster">Event Poster</label>
                 <input id="poster" name="poster" type="file" accept="image/*">
                 @if ($event->poster_path)
-                    <p><a class="btn" href="{{ asset('storage/'.$event->poster_path) }}" target="_blank">View Current Poster</a></p>
+                    <p><a class="btn" href="{{ \Illuminate\Support\Facades\Storage::url($event->poster_path) }}" target="_blank">View Current Poster</a></p>
                 @endif
             </div>
 
