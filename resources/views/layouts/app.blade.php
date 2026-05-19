@@ -773,7 +773,7 @@
     $fallbackEvent = $currentEvent ?? \App\Models\Event::query()->orderByDesc('event_date')->first();
     $participantsNavUrl = $fallbackEvent
         ? \App\Support\PreviewAuth::appendToUrl(route('events.participants.index', $fallbackEvent, false), $previewAuthQuery)
-        : \App\Support\PreviewAuth::appendToUrl(route('events.index', [], false), $previewAuthQuery);
+        : \App\Support\PreviewAuth::appendToUrl(route('participants.index', [], false), $previewAuthQuery);
     $suppressGlobalAlertsForParticipantsModal = request()->routeIs('events.participants.index')
         && (session()->has('participant_registered') || $errors->has('name') || $errors->has('email') || $errors->has('registration'));
 @endphp

@@ -1067,6 +1067,8 @@
 @section('content')
     @php
         $contextEvent = $selectedEvent ?? $event;
+        $formAction = $event ? route('events.participants.index', $event) : route('participants.index');
+        $clearLink = $event ? route('events.participants.index', $event) : route('participants.index');
     @endphp
 
     <div class="card">
@@ -1080,7 +1082,7 @@
             @endif
         </div>
 
-        <form class="participants-filter-wrap" action="{{ route('events.participants.index', $event) }}" method="GET">
+        <form class="participants-filter-wrap" action="{{ $formAction }}" method="GET">
             <label for="event_id">Filter by event</label>
             <select id="event_id" name="event_id" class="participants-filter-select" onchange="this.form.submit()">
                 <option value="">-- Select an Event --</option>
@@ -1096,7 +1098,7 @@
             <div class="participants-filter-info">
                 <span>
                     Viewing participants for: <strong>{{ $selectedEvent->title }}</strong>
-                    <a class="participants-clear-link" href="{{ route('events.participants.index', $event) }}">x Clear</a>
+                    <a class="participants-clear-link" href="{{ $clearLink }}">x Clear</a>
                 </span>
                 <span class="participants-count">{{ number_format($participants->total()) }} participant(s) registered</span>
             </div>

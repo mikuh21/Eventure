@@ -20,7 +20,7 @@ class ParticipantController extends Controller
         return $baseUrl.'/p/'.rawurlencode($token);
     }
 
-    public function index(Request $request, Event $event)
+    public function index(Request $request, ?Event $event = null)
     {
         $wantsJson = $request->expectsJson() || $request->is('api/*');
         $eventsQuery = Event::query();
@@ -63,7 +63,7 @@ class ParticipantController extends Controller
             }
         }
 
-        if ($wantsJson && ! $selectedEvent) {
+        if ($wantsJson && ! $selectedEvent && $event) {
             $selectedEvent = $event;
             $participants = $event->participants()
                 ->latest()

@@ -75,6 +75,10 @@ Route::middleware(['auth', 'admin'])->group(function (): void {
     Route::get('events/{event}/submissions', [EventController::class, 'submissions'])
         ->name('events.submissions.index');
 
+    // Participants index without event (shows empty state or allows event selection)
+    Route::get('participants', [ParticipantController::class, 'index'])
+        ->name('participants.index');
+
     Route::resource('events.participants', ParticipantController::class)
         ->except(['create', 'store']);
 

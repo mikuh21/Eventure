@@ -224,7 +224,7 @@
         $initials  = $initials !== '' ? $initials : 'AD';
 
         $fallbackEvent      = \App\Models\Event::query()->orderByDesc('start_date')->first();
-        $participantsNavUrl = $fallbackEvent ? route('events.participants.index', $fallbackEvent) : route('events.index');
+        $participantsNavUrl = $fallbackEvent ? route('events.participants.index', $fallbackEvent) : route('participants.index');
 
         // Bar chart: top 10 events by participants
         $chartEvents  = $eventsBreakdown->sortByDesc('participants_count')->take(10)->values();
