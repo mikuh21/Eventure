@@ -763,7 +763,8 @@
         ? (collect(explode(' ', trim($adminName)))->filter()->map(fn ($part) => strtoupper(substr($part, 0, 1)))->take(2)->implode('') ?: 'AD')
         : '';
     $flashMessage = session('status') ?? session('success');
-    $isParticipantsRoute = request()->routeIs('events.participants.*')
+    $isParticipantsRoute = request()->routeIs('participants.index')
+        || request()->routeIs('events.participants.*')
         || request()->routeIs('participants.submissions.*')
         || request()->routeIs('participants.evaluations.*')
         || request()->routeIs('participants.digital-id.*');
