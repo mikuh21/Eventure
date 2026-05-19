@@ -1100,7 +1100,7 @@
                     <div class="field">
                         <label for="editType">Event Type</label>
                         <select id="editType" name="type">
-                            <option value="standard">School Event</option>
+                            <option value="school_event">School Event</option>
                             <option value="conference">Conference</option>
                         </select>
                     </div>
