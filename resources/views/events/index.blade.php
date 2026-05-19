@@ -1018,6 +1018,8 @@
                                                     data-start-registration="{{ $event->start_registration?->format('Y-m-d\\TH:i') }}"
                                                     data-end-registration="{{ $event->end_registration?->format('Y-m-d\\TH:i') }}"
                                                     data-location="{{ $event->location }}"
+                                                    data-poster-path="{{ $event->poster_path }}"
+                                                    data-template-file-path="{{ $event->template_file_path }}"
                                                 >Edit</button>
                                             @endif
                                             @if (!auth()->user()->hasRole('event_staff') || $event->created_by === auth()->id())
@@ -1420,6 +1422,21 @@
                 editPoster.value = '';
                 editTemplateFile.value = '';
 
+                // Show current poster if exists
+                if (eventData.posterPath) {
+                    currentPosterContainer.innerHTML = '<p style="font-size:12px;margin-bottom:4px;color:#666;">Current Poster:</p><img src="https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/event-posters/' + eventData.posterPath + '" style="width:100px;height:100px;object-fit:contain;border:1px solid #ddd;border-radius:4px;">';
+                } else {
+                    currentPosterContainer.innerHTML = '';
+                }
+
+                // Show current template if exists and conference
+                if (eventData.templateFilePath && eventData.eventType === 'conference') {
+                    var ext = eventData.templateFilePath.split('.').pop();
+                    currentTemplateContainer.innerHTML = '<p style="font-size:12px;margin-bottom:4px;color:#666;">Current Template:</p><a href="/events/' + eventData.eventId + '/download-template" style="font-size:12px;color:#2563eb;text-decoration:underline;">📄 Conference-Paper-Template.' + ext + '</a>';
+                } else {
+                    currentTemplateContainer.innerHTML = '';
+                }
+
                 // Show/hide fields based on event type
                 toggleFieldsByType();
 
@@ -1470,7 +1487,9 @@
                         endDate: editButton.dataset.endDate,
                         startRegistration: editButton.dataset.startRegistration,
                         endRegistration: editButton.dataset.endRegistration,
-                        location: editButton.dataset.location
+                        location: editButton.dataset.location,
+                        posterPath: editButton.dataset.posterPath,
+                        templateFilePath: editButton.dataset.templateFilePath
                     };
                     openEditModal(eventData);
                 }
