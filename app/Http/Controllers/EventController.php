@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateEventRequest;
 use App\Models\Event;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class EventController extends Controller
@@ -375,7 +376,11 @@ class EventController extends Controller
                 Storage::disk('s3')->delete($event->poster_path);
             }
 
-            $data['poster_path'] = $request->file('poster')->store('', 's3');
+            $data['poster_path'] = $request->file('poster')->storeAs(
+                'event-posters',
+                Str::random(40) . '.' . $request->file('poster')->getClientOriginalExtension(),
+                's3'
+            );
         }
 
         if ($request->hasFile('template_file')) {
@@ -383,7 +388,11 @@ class EventController extends Controller
                 Storage::disk('s3')->delete($event->template_file_path);
             }
 
-            $data['template_file_path'] = Storage::disk('s3')->putFile('event-templates', $request->file('template_file'));
+            $data['template_file_path'] = $request->file('template_file')->storeAs(
+                'event-templates',
+                Str::random(40) . '.' . $request->file('template_file')->getClientOriginalExtension(),
+                's3'
+            );
         }
 
         if ($data['type'] !== 'conference') {

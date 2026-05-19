@@ -379,7 +379,7 @@
                         <div class="card-live lift-hover reveal rounded-2xl overflow-hidden hover:brightness-110 transition group" data-reveal>
                             @if($event->poster_path)
                                 <div class="h-48 overflow-hidden">
-                                    <img src="https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/event-posters/{{ $event->poster_path }}" alt="{{ $event->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                                    <img src="https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/{{ $event->poster_path }}" alt="{{ $event->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                                 </div>
                             @endif
                             <div class="p-6">
@@ -436,7 +436,7 @@
                         <div class="card lift-hover reveal rounded-2xl overflow-hidden hover:brightness-110 transition group flex flex-col" data-reveal>
                             @if($event->poster_path)
                                 <div class="h-48 overflow-hidden relative">
-                                    <img src="https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/event-posters/{{ $event->poster_path }}" alt="{{ $event->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                                    <img src="https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/{{ $event->poster_path }}" alt="{{ $event->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                                     @if($event->isRegistrationOpen())
                                         <span class="absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider text-em4" style="background:rgba(0,0,0,0.5)">
                                             Open
@@ -495,7 +495,7 @@
                         <div class="card lift-hover reveal rounded-2xl p-6 flex flex-col md:flex-row md:items-center gap-6 hover:brightness-110 transition" data-reveal>
                             @if($event->poster_path)
                                 <div class="w-full md:w-40 h-28 rounded-xl overflow-hidden flex-shrink-0">
-                                    <img src="https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/event-posters/{{ $event->poster_path }}" alt="{{ $event->title }}" class="w-full h-full object-cover">
+                                    <img src="https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/{{ $event->poster_path }}" alt="{{ $event->title }}" class="w-full h-full object-cover">
                                 </div>
                             @endif
                             <div class="flex-1 min-w-0">
