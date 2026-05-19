@@ -12,10 +12,12 @@ return new class extends Migration
         // Convert existing 'standard' values to 'school_event'
         DB::table('events')->where('type', 'standard')->update(['type' => 'school_event']);
 
-        // Update the enum to use 'school_event' instead of 'standard'
-        Schema::table('events', function (Blueprint $table): void {
-            $table->enum('type', ['school_event', 'conference'])->default('school_event')->change();
-        });
+        // Update the enum constraint using PostgreSQL-compatible statements
+        DB::statement('ALTER TABLE events DROP CONSTRAINT IF EXISTS events_type_check');
+        DB::statement("ALTER TABLE events ALTER COLUMN type TYPE varchar(255)");
+        DB::statement("ALTER TABLE events ALTER COLUMN type SET DEFAULT 'school_event'");
+        DB::statement("ALTER TABLE events ALTER COLUMN type SET NOT NULL");
+        DB::statement("ALTER TABLE events ADD CONSTRAINT events_type_check CHECK (type IN ('school_event', 'conference'))");
     }
 
     public function down(): void
@@ -23,8 +25,10 @@ return new class extends Migration
         // Revert back to 'standard'
         DB::table('events')->where('type', 'school_event')->update(['type' => 'standard']);
 
-        Schema::table('events', function (Blueprint $table): void {
-            $table->enum('type', ['standard', 'conference'])->default('standard')->change();
-        });
+        DB::statement('ALTER TABLE events DROP CONSTRAINT IF EXISTS events_type_check');
+        DB::statement("ALTER TABLE events ALTER COLUMN type TYPE varchar(255)");
+        DB::statement("ALTER TABLE events ALTER COLUMN type SET DEFAULT 'standard'");
+        DB::statement("ALTER TABLE events ALTER COLUMN type SET NOT NULL");
+        DB::statement("ALTER TABLE events ADD CONSTRAINT events_type_check CHECK (type IN ('standard', 'conference'))");
     }
 };
