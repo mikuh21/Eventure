@@ -185,7 +185,7 @@ class EventController extends Controller
         $event->loadCount('participants');
         $event->setAttribute('average_rating', $event->averageRating());
         $event->setAttribute('registration_open', $event->isRegistrationOpen());
-        $event->setAttribute('template_download_url', $event->template_file_path ? route('events.template.download', $event) : null);
+        $event->setAttribute('template_download_url', $event->template_file_path ? route('events.download-template', $event) : null);
         $event->setAttribute('poster_url', $event->poster_path ? 'https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/event-posters/' . $event->poster_path : null);
 
         if (! $wantsJson) {
