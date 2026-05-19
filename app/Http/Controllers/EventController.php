@@ -383,12 +383,12 @@ class EventController extends Controller
                 Storage::disk('s3')->delete($event->template_file_path);
             }
 
-            $data['template_file_path'] = $request->file('template_file')->store('event-templates', 's3');
+            $data['template_file_path'] = Storage::disk('s3')->putFile('event-templates', $request->file('template_file'));
         }
 
         if ($data['type'] !== 'conference') {
             if ($event?->template_file_path) {
-                Storage::disk('public')->delete($event->template_file_path);
+                Storage::disk('s3')->delete($event->template_file_path);
             }
 
             $data['template_file_path'] = null;
