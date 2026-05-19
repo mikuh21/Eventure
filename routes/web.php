@@ -16,6 +16,63 @@ use App\Http\Controllers\SubmissionController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', LandingController::class)->name('landing');
+Route::get('events/{event}/template/download', [EventController::class, 'downloadTemplate'])->name('events.download-template-public');
+Route::get('events/{event}/template/download', [EventController::class, 'downloadTemplate'])->name('events.download-template-public');
+
+Route::get('participant/events', [EventController::class, 'index'])
+    ->name('participants.public.events');
+
+Route::middleware('guest')->group(function (): void {
+    Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
+    Route::post('login', [AuthenticatedSessionController::class, 'store']);
+
+    if (app()->environment(['local', 'testing'])) {
+        Route::get('login/test-as/{role}', [AuthenticatedSessionController::class, 'testLoginAs'])
+            ->name('login.test-as.quick');
+        Route::post('login/test-as', [AuthenticatedSessionController::class, 'testLoginAs'])->name('login.test-as');
+    }
+});
+
+Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
+    ->middleware('auth')
+    ->name('logout');
+
+Route::get('events/{event}/participants/create', [ParticipantController::class, 'create'])
+    ->name('events.participants.create');
+
+Route::post('events/{event}/participants', [ParticipantController::class, 'store'])
+    ->name('events.participants.store');
+
+Route::get('participants/{participant}/confirmation', [ParticipantController::class, 'confirmation'])
+    ->name('participants.confirmation.show');
+
+Route::get('participants/{participant}/digital-id', [ParticipantDigitalIdController::class, 'show'])
+    ->name('participants.digital-id.show');
+
+Route::get('participants/{participant}/digital-id/download', [ParticipantDigitalIdController::class, 'download'])
+    ->name('participants.digital-id.download');
+
+Route::get('certificate/{token}/{type}', [ParticipantDigitalIdController::class, 'certificate'])
+    ->name('participants.certificate.show');
+
+Route::get('participants/{participant}/evaluations/create', [EvaluationController::class, 'create'])
+    ->name('participants.evaluations.create');
+
+Route::post('participants/{participant}/evaluations', [EvaluationController::class, 'store'])
+    ->name('participants.evaluations.store');
+
+Route::get('/p/{token}', [MobileParticipantController::class, 'show'])
+    ->name('participant.mobile');
+
+Route::middleware(['auth', 'admin'])->group(function (): void {
+    Route::get('dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::get('admin/analytics/events', [AdminController::class, 'eventAnalytics'])
+        ->name('admin.analytics.events');
+
+    Route::resource('events', EventController::class);
+
+    Route::get('events/{event}/template/download', [EventController::class, 'downloadTemplate'])
+        ->name('events.download-template');
 
     Route::get('events/{event}/submissions', [EventController::class, 'submissions'])
         ->name('events.submissions.index');
