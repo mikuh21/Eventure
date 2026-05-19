@@ -112,7 +112,7 @@ class EventController extends Controller
                     'end_registration' => $event->end_registration,
                     'registration_open' => $event->isRegistrationOpen(),
                     'location' => $event->location,
-                    'poster_url' => $event->poster_path ? Storage::url($event->poster_path) : null,
+                    'poster_url' => $event->poster_path ? Storage::disk('s3')->url($event->poster_path) : null,
                     'template_download_url' => $event->template_file_path ? route('events.template.download', $event) : null,
                     'keywords' => $event->keywords,
                     'created_at' => $event->created_at,
@@ -185,7 +185,7 @@ class EventController extends Controller
         $event->setAttribute('average_rating', $event->averageRating());
         $event->setAttribute('registration_open', $event->isRegistrationOpen());
         $event->setAttribute('template_download_url', $event->template_file_path ? route('events.template.download', $event) : null);
-        $event->setAttribute('poster_url', $event->poster_path ? Storage::url($event->poster_path) : null);
+        $event->setAttribute('poster_url', $event->poster_path ? Storage::disk('s3')->url($event->poster_path) : null);
 
         if (! $wantsJson) {
             $participants = $event->participants()->latest()->paginate(10);
@@ -372,18 +372,18 @@ class EventController extends Controller
 
         if ($request->hasFile('poster')) {
             if ($event?->poster_path) {
-                Storage::disk('public')->delete($event->poster_path);
+                Storage::disk('s3')->delete($event->poster_path);
             }
 
-            $data['poster_path'] = $request->file('poster')->store('event-posters', 'public');
+            $data['poster_path'] = $request->file('poster')->store('event-posters', 's3');
         }
 
         if ($request->hasFile('template_file')) {
             if ($event?->template_file_path) {
-                Storage::disk('public')->delete($event->template_file_path);
+                Storage::disk('s3')->delete($event->template_file_path);
             }
 
-            $data['template_file_path'] = $request->file('template_file')->store('event-templates', 'public');
+            $data['template_file_path'] = $request->file('template_file')->store('event-templates', 's3');
         }
 
         if ($data['type'] !== 'conference') {
