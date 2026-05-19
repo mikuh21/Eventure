@@ -70,7 +70,7 @@ Route::middleware(['auth', 'admin'])->group(function (): void {
     Route::resource('events', EventController::class);
 
     Route::get('events/{event}/template/download', [EventController::class, 'downloadTemplate'])
-        ->name('events.template.download');
+        ->name('events.download-template');
 
     Route::get('events/{event}/submissions', [EventController::class, 'submissions'])
         ->name('events.submissions.index');

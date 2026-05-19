@@ -540,7 +540,7 @@
                             </iframe>
                         </div>
                         <div class="event-asset-actions">
-                            <a class="btn" href="{{ route('events.template.download', $event) }}" style="font-family: 'Sora', sans-serif;">Download Conference Template</a>
+                            <a class="btn" href="{{ route('events.download-template', $event) }}" style="font-family: 'Sora', sans-serif;">Download Conference Template</a>
                         </div>
                     @else
                         <div class="asset-placeholder">No conference template uploaded yet.</div>

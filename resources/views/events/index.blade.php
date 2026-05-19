@@ -1432,7 +1432,7 @@
                 // Show current template if exists and conference
                 if (eventData.templateFilePath && eventData.eventType === 'conference') {
                     var ext = eventData.templateFilePath.split('.').pop();
-                    currentTemplateContainer.innerHTML = '<p style="font-size:12px;margin-bottom:4px;color:#666;">Current Template:</p><a href="/events/' + eventData.eventId + '/download-template" style="font-size:12px;color:#2563eb;text-decoration:underline;">📄 Conference-Paper-Template.' + ext + '</a>';
+                    currentTemplateContainer.innerHTML = '<p style="font-size:12px;margin-bottom:4px;color:#666;">Current Template:</p><a href="/events/' + eventData.eventId + '/template/download" style="font-size:12px;color:#2563eb;text-decoration:underline;">📄 Conference-Paper-Template.' + ext + '</a>';
                 } else {
                     currentTemplateContainer.innerHTML = '';
                 }

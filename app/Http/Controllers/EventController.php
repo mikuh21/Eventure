@@ -320,7 +320,8 @@ class EventController extends Controller
         abort_if($event->type !== 'conference', 404);
         abort_if(! $event->template_file_path, 404, 'No template file uploaded for this conference event.');
 
-        return Storage::disk('event-templates')->download($event->template_file_path);
+        $extension = pathinfo($event->template_file_path, PATHINFO_EXTENSION);
+        return Storage::disk('event-templates')->download($event->template_file_path, 'Conference-Paper-Template.' . $extension);
     }
 
     private function buildEventData(array $validated, Request $request, ?Event $event = null): array
