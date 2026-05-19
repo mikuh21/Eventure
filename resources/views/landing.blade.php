@@ -589,6 +589,8 @@
                 <h4 class="font-semibold mb-3 text-sm text-em3">Platform</h4>
                 <ul class="space-y-2 text-sm" style="color:rgba(255,255,255,0.5)">
                     <!-- Browse Events login removed for participants -->
+                    <li><a href="#ongoing" class="hover:text-em4 transition">Ongoing</a></li>
+                    <li><a href="#upcoming" class="hover:text-em4 transition">Upcoming</a></li>
                     <li><a href="#features" class="hover:text-em4 transition">Features</a></li>
                 </ul>
             </div>
