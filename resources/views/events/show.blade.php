@@ -530,9 +530,17 @@
                 <div class="event-asset-card">
                     <h3 class="event-asset-title">Conference Template File</h3>
                     @if ($event->template_file_path)
-                        <p class="template-file-name">{{ basename($event->template_file_path) }}</p>
+                        <div class="template-preview" style="margin-bottom: 1rem;">
+                            <iframe 
+                                src="https://docs.google.com/viewer?url=https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/event-templates/{{ $event->template_file_path }}&embedded=true"
+                                width="100%" 
+                                height="400px"
+                                frameborder="0"
+                                style="border-radius: 8px;">
+                            </iframe>
+                        </div>
                         <div class="event-asset-actions">
-                            <a class="btn" href="{{ route('events.template.download', $event) }}">Download Conference Template</a>
+                            <a class="btn" href="{{ route('events.template.download', $event) }}" style="font-family: 'Sora', sans-serif;">Download Conference Template</a>
                         </div>
                     @else
                         <div class="asset-placeholder">No conference template uploaded yet.</div>
