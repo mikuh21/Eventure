@@ -379,7 +379,7 @@
                         <div class="card-live lift-hover reveal rounded-2xl overflow-hidden hover:brightness-110 transition group" data-reveal>
                             @if($event->poster_path)
                                 <div class="h-48 overflow-hidden">
-                                    <img src="https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/{{ $event->poster_path }}" alt="{{ $event->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                                    <img src="https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/event-posters/{{ $event->poster_path }}" alt="{{ $event->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                                 </div>
                             @endif
                             <div class="p-6">
@@ -395,7 +395,7 @@
                                     <p><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 10h18"></path></svg></span> {{ $event->dateRangeLabel() }}</p>
                                     <p><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></span> {{ $event->participants_count ?? $event->participants->count() }} attendees</p>
                                     @if($event->type === 'conference' && $event->template_file_path)
-                                        <p><a href="https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/{{ $event->template_file_path }}" download class="inline-flex items-center gap-1 underline hover:opacity-80 transition"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline><path d="M9 15l3 3 5-5"></path></svg></span> Conference Paper Template</a></p>
+                                        <p><a href="https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/event-templates/{{ $event->template_file_path }}" download class="inline-flex items-center gap-1 underline hover:opacity-80 transition"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline><path d="M9 15l3 3 5-5"></path></svg></span> Conference Paper Template</a></p>
                                     @endif
                                 </div>
                                 <a href="{{ route('events.participants.create', $event) }}" class="mt-4 inline-block px-5 py-2.5 bg-live text-white rounded-[10px] text-sm font-semibold hover:brightness-110 transition">
@@ -436,7 +436,7 @@
                         <div class="card lift-hover reveal rounded-2xl overflow-hidden hover:brightness-110 transition group flex flex-col" data-reveal>
                             @if($event->poster_path)
                                 <div class="h-48 overflow-hidden relative">
-                                    <img src="https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/{{ $event->poster_path }}" alt="{{ $event->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                                    <img src="https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/event-posters/{{ $event->poster_path }}" alt="{{ $event->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                                     @if($event->isRegistrationOpen())
                                         <span class="absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider text-em4" style="background:rgba(0,0,0,0.5)">
                                             Open
@@ -461,7 +461,7 @@
                                         <p><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18h1a3 3 0 0 0 0-6h-1a1.5 1.5 0 0 1 0-3h4a5 5 0 0 0 0-10h-4z"></path><circle cx="7.5" cy="9" r="1"></circle><circle cx="10" cy="6.5" r="1"></circle><circle cx="14" cy="6.5" r="1"></circle></svg></span> {{ $event->theme }}</p>
                                     @endif
                                     @if($event->type === 'conference' && $event->template_file_path)
-                                        <p><a href="https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/{{ $event->template_file_path }}" download class="inline-flex items-center gap-1 underline hover:opacity-80 transition"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline><path d="M9 15l3 3 5-5"></path></svg></span> Conference Paper Template</a></p>
+                                        <p><a href="https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/event-templates/{{ $event->template_file_path }}" download class="inline-flex items-center gap-1 underline hover:opacity-80 transition"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline><path d="M9 15l3 3 5-5"></path></svg></span> Conference Paper Template</a></p>
                                     @endif
                                 </div>
                                 <div class="mt-auto">
@@ -495,7 +495,7 @@
                         <div class="card lift-hover reveal rounded-2xl p-6 flex flex-col md:flex-row md:items-center gap-6 hover:brightness-110 transition" data-reveal>
                             @if($event->poster_path)
                                 <div class="w-full md:w-40 h-28 rounded-xl overflow-hidden flex-shrink-0">
-                                    <img src="https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/{{ $event->poster_path }}" alt="{{ $event->title }}" class="w-full h-full object-cover">
+                                    <img src="https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/event-posters/{{ $event->poster_path }}" alt="{{ $event->title }}" class="w-full h-full object-cover">
                                 </div>
                             @endif
                             <div class="flex-1 min-w-0">
@@ -513,7 +513,7 @@
                                         <span><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12 3.8 2.57 5.2 5.74.83-4.16 4.05.98 5.72L12 16.9l-5.13 2.7.98-5.72L3.69 9.83l5.74-.83L12 3.8z" fill="currentColor" stroke="none"></path></svg></span> {{ $event->averageRating() }}/5</span>
                                     @endif
                                     @if($event->type === 'conference' && $event->template_file_path)
-                                        <a href="https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/{{ $event->template_file_path }}" download class="inline-flex items-center gap-1 underline hover:opacity-80 transition"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline><path d="M9 15l3 3 5-5"></path></svg></span> Conference Paper Template</a>
+                                        <a href="https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/event-templates/{{ $event->template_file_path }}" download class="inline-flex items-center gap-1 underline hover:opacity-80 transition"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline><path d="M9 15l3 3 5-5"></path></svg></span> Conference Paper Template</a>
                                     @endif
                                 </div>
                             </div>

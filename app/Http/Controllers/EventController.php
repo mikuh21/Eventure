@@ -270,11 +270,11 @@ class EventController extends Controller
         $wantsJson = $request->expectsJson() || $request->is('api/*');
 
         if ($event->poster_path) {
-            Storage::disk('public')->delete($event->poster_path);
+            Storage::disk('event-posters')->delete($event->poster_path);
         }
 
         if ($event->template_file_path) {
-            Storage::disk('public')->delete($event->template_file_path);
+            Storage::disk('event-templates')->delete($event->template_file_path);
         }
 
         $event->delete();
@@ -320,7 +320,7 @@ class EventController extends Controller
         abort_if($event->type !== 'conference', 404);
         abort_if(! $event->template_file_path, 404, 'No template file uploaded for this conference event.');
 
-        return response()->download(storage_path('app/public/'.$event->template_file_path));
+        return Storage::disk('event-templates')->download($event->template_file_path);
     }
 
     private function buildEventData(array $validated, Request $request, ?Event $event = null): array
@@ -373,26 +373,22 @@ class EventController extends Controller
 
         if ($request->hasFile('poster')) {
             if ($event?->poster_path) {
-                Storage::disk('s3')->delete($event->poster_path);
+                Storage::disk('event-posters')->delete($event->poster_path);
             }
 
-            $data['poster_path'] = $request->file('poster')->storeAs(
-                'event-posters',
-                Str::random(40) . '.' . $request->file('poster')->getClientOriginalExtension(),
-                's3'
-            );
+            $filename = Str::random(40) . '.' . $request->file('poster')->getClientOriginalExtension();
+            Storage::disk('event-posters')->putFileAs('', $request->file('poster'), $filename);
+            $data['poster_path'] = $filename;
         }
 
         if ($request->hasFile('template_file')) {
             if ($event?->template_file_path) {
-                Storage::disk('s3')->delete($event->template_file_path);
+                Storage::disk('event-templates')->delete($event->template_file_path);
             }
 
-            $data['template_file_path'] = $request->file('template_file')->storeAs(
-                'event-templates',
-                Str::random(40) . '.' . $request->file('template_file')->getClientOriginalExtension(),
-                's3'
-            );
+            $filename = Str::random(40) . '.' . $request->file('template_file')->getClientOriginalExtension();
+            Storage::disk('event-templates')->putFileAs('', $request->file('template_file'), $filename);
+            $data['template_file_path'] = $filename;
         }
 
         if ($data['type'] !== 'conference') {
