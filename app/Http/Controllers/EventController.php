@@ -320,13 +320,7 @@ class EventController extends Controller
         abort_if($event->type !== 'conference', 404);
         abort_if(! $event->template_file_path, 404, 'No template file uploaded for this conference event.');
 
-        $extension = pathinfo($event->template_file_path, PATHINFO_EXTENSION);
-        $url = 'https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/event-templates/' . $event->template_file_path;
-        $contents = file_get_contents($url);
-        
-        return response($contents)
-            ->header('Content-Type', 'application/octet-stream')
-            ->header('Content-Disposition', 'attachment; filename="Conference-Paper-Template.' . $extension . '"');
+        return Storage::disk('event-templates')->download($event->template_file_path);
     }
 
     private function buildEventData(array $validated, Request $request, ?Event $event = null): array
