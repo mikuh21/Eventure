@@ -411,7 +411,7 @@
                             <div>
                                 <h3 class="text-lg font-bold text-white">No ongoing event right now</h3>
                                 <p class="mt-1 text-sm" style="color:rgba(255,255,255,0.6)">
-                                    Check back soon or explore upcoming events to reserve your seat.
+                                    Check back soon or explore upcoming events to register.
                                 </p>
                                 <a href="#upcoming" class="mt-4 inline-block px-5 py-2.5 rounded-[10px] text-sm font-semibold text-live hover:brightness-110 transition" style="background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.35)">
                                     See Upcoming Events
