@@ -174,6 +174,7 @@
             <div class="field">
                 <label for="type">Event Type</label>
                 <select id="type" name="type">
+                    <option value="">Select Event Type</option>
                     <option value="school_event" {{ old('type', $event->type) === 'school_event' ? 'selected' : '' }}>School Event</option>
                     <option value="conference" {{ old('type', $event->type) === 'conference' ? 'selected' : '' }}>Conference</option>
                 </select>
@@ -256,15 +257,27 @@
                 <label for="poster">Event Poster</label>
                 <input id="poster" name="poster" type="file" accept="image/*">
                 @if ($event->poster_path)
-                    <p><a class="btn" href="https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/event-posters/{{ $event->poster_path }}" target="_blank">View Current Poster</a></p>
+                    <div class="mt-2">
+                        <p class="text-sm mb-2">Current Poster:</p>
+                        <img src="https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/event-posters/{{ $event->poster_path }}" class="w-32 h-32 object-contain border border-gray-300 rounded">
+                    </div>
                 @endif
             </div>
 
             <div class="field" id="template-file-field">
                 <label for="template_file">Conference Template (DOC/PDF)</label>
                 <input id="template_file" name="template_file" type="file" accept=".pdf,.doc,.docx">
-                @if ($event->template_file_path)
-                    <p><a class="btn" href="{{ route('events.template.download', $event) }}">Download Current Template</a></p>
+                @if ($event->type === 'conference' && $event->template_file_path)
+                    <div class="mt-2">
+                        <p class="text-sm mb-2">Current Template:</p>
+                        <a href="{{ route('events.template.download', $event) }}" class="text-blue-600 underline text-sm flex items-center gap-1">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                                <polyline points="13 2 13 9 20 9"></polyline>
+                            </svg>
+                            Conference-Paper-Template.{{ pathinfo($event->template_file_path, PATHINFO_EXTENSION) }}
+                        </a>
+                    </div>
                 @endif
             </div>
 
