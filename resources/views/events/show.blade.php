@@ -459,7 +459,7 @@
             <div class="event-view-item">
                 <span class="event-view-label">Registration Status</span>
                 <span class="event-view-value">
-                    <span class="event-status-pill {{ $event->registration_open ? 'event-status-open' : 'event-status-closed' }}">{{ $event->registration_open ? 'Open' : 'Closed' }}</span>
+                    <span class="event-status-pill {{ $event->isRegistrationOpen() ? 'event-status-open' : 'event-status-closed' }}">{{ $event->isRegistrationOpen() ? 'Open' : 'Closed' }}</span>
                 </span>
             </div>
             <div class="event-view-item">
