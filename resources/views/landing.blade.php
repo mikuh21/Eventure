@@ -712,7 +712,7 @@
 
     <!-- Template Download Modal -->
     <div id="templateDownloadModal" class="template-modal-overlay fixed inset-0 bg-black/50 hidden items-center justify-center z-[9999]">
-        <div class="template-modal-content bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl">
+        <div class="template-modal-content bg-white rounded-2xl p-8 max-w-lg w-full mx-4 shadow-2xl">
             <h2 class="text-2xl font-bold text-gray-900 mb-2">Download Conference Paper Template</h2>
             <p class="text-gray-600 mb-6">Are you a registered guest?</p>
             
