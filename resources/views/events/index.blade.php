@@ -931,7 +931,7 @@
 
             <select class="filter-select" name="type">
                 <option value="">All Types</option>
-                <option value="student_event" {{ request('type') === 'student_event' ? 'selected' : '' }}>School Event</option>
+                <option value="school_event" {{ request('type') === 'school_event' ? 'selected' : '' }}>School Event</option>
                 <option value="conference" {{ request('type') === 'conference' ? 'selected' : '' }}>Conference</option>
             </select>
 
@@ -1239,7 +1239,7 @@
 
             const mapType = (val) => {
                 if (!val) return '';
-                return val === 'student_event' ? 'standard' : val;
+                return val;
             };
 
             const filterRows = () => {

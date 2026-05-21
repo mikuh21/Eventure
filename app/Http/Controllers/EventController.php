@@ -86,7 +86,7 @@ class EventController extends Controller
 
         $overview = [
             'total_events' => Event::count(),
-            'student_events' => Event::query()->where('type', 'standard')->count(),
+            'student_events' => Event::query()->where('type', 'school_event')->count(),
             'conference_events' => Event::query()->where('type', 'conference')->count(),
         ];
 
