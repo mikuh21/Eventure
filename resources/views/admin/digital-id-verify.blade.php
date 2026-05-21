@@ -308,6 +308,118 @@
             padding: 22px;
         }
     }
+
+    .fab-qr-scanner {
+        position: fixed;
+        right: 20px;
+        bottom: 20px;
+        z-index: 1200;
+        width: 56px;
+        height: 56px;
+        border: 0;
+        border-radius: 999px;
+        background: var(--ef-ocean);
+        color: #ffffff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 10px 24px rgba(10, 35, 66, 0.24);
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        transform: translateZ(0);
+        transition: background-color 160ms ease, box-shadow 160ms ease;
+    }
+
+    .fab-qr-scanner:hover,
+    .fab-qr-scanner:focus-visible {
+        background: var(--ef-midnight);
+        box-shadow: 0 12px 28px rgba(10, 35, 66, 0.28);
+    }
+
+    .fab-qr-scanner:focus-visible {
+        outline: 3px solid rgba(91, 164, 207, 0.35);
+        outline-offset: 3px;
+    }
+
+    .fab-qr-scanner svg {
+        width: 24px;
+        height: 24px;
+        pointer-events: none;
+    }
+
+    .qr-scanner-modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(10, 35, 66, 0.55);
+        z-index: 1300;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition: opacity 180ms ease, visibility 0s linear 180ms;
+    }
+
+    .qr-scanner-modal.is-visible {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transition: opacity 180ms ease;
+    }
+
+    .qr-scanner-panel {
+        background: #ffffff;
+        border-radius: 16px;
+        width: 100%;
+        max-width: 380px;
+        padding: 28px 18px 18px;
+        box-shadow: 0 8px 40px rgba(10, 35, 66, 0.18);
+        position: relative;
+        text-align: center;
+    }
+
+    .qr-scanner-title {
+        margin: 0 0 18px;
+        font-size: 1.2rem;
+        color: var(--ef-ocean);
+        font-family: 'Sora', sans-serif;
+    }
+
+    .qr-scanner-close {
+        position: absolute;
+        top: 12px;
+        right: 16px;
+        background: none;
+        border: none;
+        font-size: 24px;
+        color: var(--ef-steel);
+        cursor: pointer;
+    }
+
+    .qr-scan-status {
+        margin-top: 16px;
+        font-size: 14px;
+        color: #065f46;
+        min-height: 24px;
+        font-family: 'Sora', sans-serif;
+    }
+
+    @media (max-width: 900px) {
+        .fab-qr-scanner {
+            right: 14px;
+            bottom: 14px;
+            width: 50px;
+            height: 50px;
+        }
+
+        .qr-scanner-panel {
+            max-width: 98vw;
+            padding: 18px 10px 12px;
+        }
+    }
 </style>
 @endpush
 
@@ -377,19 +489,47 @@
             @endif
         </div>
     </div>
+
+    <button id="openQrScannerFab" class="fab-qr-scanner" type="button" title="Scan QR for Verification" aria-label="Scan QR for Verification">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="3" width="7" height="7" rx="2"></rect>
+            <rect x="14" y="3" width="7" height="7" rx="2"></rect>
+            <rect x="14" y="14" width="7" height="7" rx="2"></rect>
+            <rect x="3" y="14" width="7" height="7" rx="2"></rect>
+        </svg>
+    </button>
+
+    <div id="qrScannerModal" class="qr-scanner-modal" aria-hidden="true">
+        <div class="qr-scanner-panel" role="dialog" aria-modal="true" aria-labelledby="qrScannerTitle">
+            <button id="closeQrScannerModal" class="qr-scanner-close" type="button" aria-label="Close QR Scanner">&times;</button>
+            <h2 id="qrScannerTitle" class="qr-scanner-title">Scan Digital ID</h2>
+            <div id="qr-reader" style="width:100%;max-width:340px;margin:auto;"></div>
+            <div id="qr-scan-status" class="qr-scan-status" aria-live="polite"></div>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const pasteButton = document.getElementById('pasteTokenBtn');
         const tokenInput = document.getElementById('token');
         const status = document.getElementById('pasteTokenStatus');
+        const qrFab = document.getElementById('openQrScannerFab');
+        const qrModal = document.getElementById('qrScannerModal');
+        const qrCloseButton = document.getElementById('closeQrScannerModal');
+        const qrStatus = document.getElementById('qr-scan-status');
+        const csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
+        const csrfToken = csrfTokenMeta ? csrfTokenMeta.getAttribute('content') : '';
+        
+        let qrScanner = null;
 
         if (!pasteButton || !tokenInput || !status) {
             return;
         }
 
+        // Paste button functionality for manual token entry
         pasteButton.addEventListener('click', async function () {
             status.classList.remove('error');
             status.textContent = '';
@@ -420,6 +560,176 @@
                 status.textContent = 'Clipboard permission denied. Please paste manually.';
             }
         });
+
+        // QR Scanner functionality
+        const startQrScanner = function () {
+            if (!qrModal || !window.Html5Qrcode || qrScanner) {
+                return;
+            }
+
+            qrScanner = new Html5Qrcode('qr-reader');
+            qrScanner.start(
+                { facingMode: 'environment' },
+                { fps: 10, qrbox: 220 },
+                function (decodedText) {
+                    if (!qrStatus) {
+                        return;
+                    }
+
+                    qrStatus.innerText = 'Checking...';
+                    qrStatus.style.color = '#065f46';
+
+                    if (qrScanner) {
+                        qrScanner.stop().then(function () {
+                            qrScanner.clear();
+                            qrScanner = null;
+                        }).catch(function () {
+                            qrScanner = null;
+                        });
+                    }
+
+                    fetch("{{ route('admin.digital-id.scan') }}", {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify({ payload: decodedText })
+                    })
+                        .then(function (response) {
+                            return response.json().then(function (data) {
+                                if (!response.ok) {
+                                    var message = (data && data.message) ? data.message : 'Invalid QR code.';
+                                    throw new Error(message);
+                                }
+
+                                return data;
+                            });
+                        })
+                        .then(function (data) {
+                            qrStatus.innerText = (data && data.message) ? data.message : 'Verification successful.';
+                            qrStatus.style.color = '#065f46';
+
+                            // Update the page with participant details
+                            if (data.participant) {
+                                updateVerificationResult(data.participant);
+                            }
+
+                            window.setTimeout(function () {
+                                closeQrModal();
+                            }, 1200);
+                        })
+                        .catch(function (error) {
+                            qrStatus.innerText = error.message || 'Scan failed. Try again.';
+                            qrStatus.style.color = '#b91c1c';
+
+                            window.setTimeout(function () {
+                                startQrScanner();
+                            }, 900);
+                        });
+                },
+                function () {}
+            ).catch(function () {
+                if (qrStatus) {
+                    qrStatus.innerText = 'Unable to access the camera in this preview.';
+                    qrStatus.style.color = '#b91c1c';
+                }
+                qrScanner = null;
+            });
+        };
+
+        const stopQrScanner = function () {
+            if (!qrScanner) {
+                return;
+            }
+
+            qrScanner.stop().then(function () {
+                qrScanner.clear();
+                qrScanner = null;
+            }).catch(function () {
+                qrScanner = null;
+            });
+        };
+
+        const openQrModal = function () {
+            if (!qrModal) {
+                return;
+            }
+
+            qrModal.classList.add('is-visible');
+            qrModal.setAttribute('aria-hidden', 'false');
+
+            if (qrStatus) {
+                qrStatus.innerText = '';
+            }
+
+            window.setTimeout(startQrScanner, 150);
+        };
+
+        const closeQrModal = function () {
+            if (!qrModal) {
+                return;
+            }
+
+            qrModal.classList.remove('is-visible');
+            qrModal.setAttribute('aria-hidden', 'true');
+            stopQrScanner();
+        };
+
+        const updateVerificationResult = function (participant) {
+            // Build result HTML
+            const resultHtml = `
+                <div class="verify-id-result success">
+                    <p class="verify-id-result-title">✓ Verified</p>
+                    <p class="verify-id-name">${participant.name}</p>
+                    <p class="verify-id-event">${participant.event_name}</p>
+                    <div class="verify-id-attendance">
+                        <span class="badge-pill ${participant.attended ? 'badge-attended-yes' : 'badge-attended-no'}">
+                            ${participant.attended ? 'Attended' : 'Not Attended'}
+                        </span>
+                    </div>
+                </div>
+            `;
+
+            // Remove existing result if present
+            const existingResult = document.querySelector('.verify-id-result');
+            if (existingResult) {
+                existingResult.remove();
+            }
+
+            // Add new result after the form
+            const verifyForm = document.querySelector('form[action*="verify/check"]');
+            if (verifyForm) {
+                verifyForm.insertAdjacentHTML('afterend', resultHtml);
+            }
+        };
+
+        // Event listeners for QR scanner
+        if (qrFab) {
+            qrFab.addEventListener('click', openQrModal);
+        }
+
+        if (qrCloseButton) {
+            qrCloseButton.addEventListener('click', closeQrModal);
+        }
+
+        // Close modal on escape key
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && qrModal && qrModal.classList.contains('is-visible')) {
+                closeQrModal();
+            }
+        });
+
+        // Close modal on background click
+        if (qrModal) {
+            qrModal.addEventListener('click', function (e) {
+                if (e.target === qrModal) {
+                    closeQrModal();
+                }
+            });
+        }
     });
 </script>
 @endpush
