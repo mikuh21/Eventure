@@ -175,7 +175,43 @@
             opacity: 0;
             pointer-events: none;
             transition: opacity 250ms ease, transform 250ms ease, filter 250ms ease;
-            z-index: 60;
+            z-index: 999;
+        }
+
+        .template-modal-overlay {
+            opacity: 0;
+            transition: opacity 300ms ease;
+        }
+        .template-modal-overlay.show {
+            opacity: 1;
+        }
+
+        .template-modal-content {
+            transform: translateY(20px);
+            opacity: 0;
+            transition: opacity 300ms ease, transform 300ms ease;
+        }
+        .template-modal-overlay.show .template-modal-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .paste-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            color: #6b7280;
+            cursor: pointer;
+            transition: color 200ms ease;
+            flex-shrink: 0;
+        }
+        .paste-btn:hover {
+            color: #1b6ca8;
+        }
+        .paste-btn.success {
+            color: #16a34a;
         }
         .scroll-top-btn.is-visible {
             opacity: 1;
@@ -675,8 +711,8 @@
     </script>
 
     <!-- Template Download Modal -->
-    <div id="templateDownloadModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
-        <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl">
+    <div id="templateDownloadModal" class="template-modal-overlay fixed inset-0 bg-black/50 hidden items-center justify-center z-[9999]">
+        <div class="template-modal-content bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl">
             <h2 class="text-2xl font-bold text-gray-900 mb-2">Download Conference Paper Template</h2>
             <p class="text-gray-600 mb-6">Are you a registered guest?</p>
             
@@ -685,12 +721,26 @@
                     <label for="guestToken" class="block text-sm font-medium text-gray-700 mb-2">
                         Enter your Guest Token
                     </label>
-                    <input 
-                        type="text" 
-                        id="guestToken" 
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-em4 focus:border-transparent outline-none"
-                        placeholder="Paste your digital ID token here"
-                    >
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            id="guestToken" 
+                            class="w-full px-4 py-2 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-em4 focus:border-transparent outline-none"
+                            placeholder="Paste your digital ID token here"
+                        >
+                        <button
+                            type="button"
+                            id="pasteTokenBtn"
+                            class="paste-btn absolute right-1 top-1/2 transform -translate-y-1/2"
+                            title="Paste from clipboard"
+                            aria-label="Paste token from clipboard"
+                        >
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
+                                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                            </svg>
+                        </button>
+                    </div>
                     <p id="tokenError" class="mt-2 text-sm text-red-600 hidden"></p>
                 </div>
                 
@@ -720,7 +770,53 @@
         const templateDownloadBtn = document.getElementById('templateDownloadBtn');
         const templateDownloadCancel = document.getElementById('templateDownloadCancel');
         const tokenError = document.getElementById('tokenError');
+        const pasteTokenBtn = document.getElementById('pasteTokenBtn');
+        const scrollTopBtn = document.getElementById('scrollTopBtn');
         let currentEventId = null;
+
+        function openModal() {
+            currentEventId = event?.target?.dataset?.eventId;
+            guestTokenInput.value = '';
+            tokenError.classList.add('hidden');
+            tokenError.textContent = '';
+            
+            // Show modal
+            templateModal.classList.remove('hidden');
+            templateModal.style.display = 'flex';
+            
+            // Trigger animation
+            setTimeout(() => {
+                templateModal.classList.add('show');
+            }, 10);
+            
+            // Hide body scrollbar
+            document.body.style.overflow = 'hidden';
+            
+            // Hide scroll-to-top button pointer events
+            if (scrollTopBtn) {
+                scrollTopBtn.style.pointerEvents = 'none';
+            }
+            
+            guestTokenInput.focus();
+        }
+
+        function closeModal() {
+            // Fade out animation
+            templateModal.classList.remove('show');
+            
+            setTimeout(() => {
+                templateModal.classList.add('hidden');
+                templateModal.style.display = 'none';
+                
+                // Restore body scrollbar
+                document.body.style.overflow = '';
+                
+                // Restore scroll-to-top button pointer events
+                if (scrollTopBtn && scrollTopBtn.classList.contains('is-visible')) {
+                    scrollTopBtn.style.pointerEvents = 'auto';
+                }
+            }, 300);
+        }
 
         // Open modal on button click
         document.querySelectorAll('.template-download-btn').forEach(btn => {
@@ -730,23 +826,59 @@
                 guestTokenInput.value = '';
                 tokenError.classList.add('hidden');
                 tokenError.textContent = '';
+                
+                // Show modal
                 templateModal.classList.remove('hidden');
                 templateModal.style.display = 'flex';
+                
+                // Trigger animation
+                setTimeout(() => {
+                    templateModal.classList.add('show');
+                }, 10);
+                
+                // Hide body scrollbar
+                document.body.style.overflow = 'hidden';
+                
+                // Hide scroll-to-top button pointer events
+                if (scrollTopBtn) {
+                    scrollTopBtn.style.pointerEvents = 'none';
+                }
+                
                 guestTokenInput.focus();
             });
         });
 
         // Close modal on cancel
         templateDownloadCancel.addEventListener('click', () => {
-            templateModal.classList.add('hidden');
-            templateModal.style.display = 'none';
+            closeModal();
         });
 
         // Close modal on background click
         templateModal.addEventListener('click', (e) => {
             if (e.target === templateModal) {
-                templateModal.classList.add('hidden');
-                templateModal.style.display = 'none';
+                closeModal();
+            }
+        });
+
+        // Paste button functionality
+        pasteTokenBtn.addEventListener('click', async () => {
+            try {
+                const text = await navigator.clipboard.readText();
+                guestTokenInput.value = text.trim();
+                tokenError.classList.add('hidden');
+                tokenError.textContent = '';
+                guestTokenInput.focus();
+                
+                // Show success feedback
+                const originalColor = pasteTokenBtn.style.color;
+                pasteTokenBtn.classList.add('success');
+                
+                setTimeout(() => {
+                    pasteTokenBtn.classList.remove('success');
+                }, 1500);
+            } catch (err) {
+                // Clipboard permission denied or no content
+                console.debug('Clipboard paste not available:', err);
             }
         });
 
@@ -786,8 +918,7 @@
                     a.remove();
                     
                     // Close modal
-                    templateModal.classList.add('hidden');
-                    templateModal.style.display = 'none';
+                    closeModal();
                 } else {
                     const errorData = await response.json();
                     tokenError.textContent = errorData.error || 'An error occurred. Please try again.';
