@@ -2390,32 +2390,25 @@
                 const rowsContainer = document.createElement('div');
                 rowsContainer.className = 'event-questions-section-rows';
 
-                // Special handling for 1-5 Likert Rating (Session Feedback) in school_event
-                if ((section === 'Session Feedback' || section === '1-5 Likert Rating') && eventType === 'school_event') {
-                    const matrixQuestion = questions.find(q => q.is_matrix && q.matrix_items);
-                    if (matrixQuestion) {
-                        // Create individual rows for each matrix item
-                        matrixQuestion.matrix_items.forEach((item, idx) => {
-                            const subQuestion = {
-                                ...matrixQuestion,
-                                question: item,
-                                is_matrix: false,
-                                matrix_items: null,
-                                id: matrixQuestion.id + '_sub_' + idx,
-                                field_key: null,
-                                matrix_parent_id: matrixQuestion.id,
-                                matrix_question_text: matrixQuestion.question,
-                                matrix_item_index: idx,
-                                is_matrix_item: true
-                            };
-                            rowsContainer.appendChild(createQuestionRow(subQuestion, section, idx + 1, eventType));
-                        });
-                    } else {
-                        // Fallback to regular questions if no matrix found
-                        questions.forEach((q, idx) => {
-                            rowsContainer.appendChild(createQuestionRow(q, section, idx + 1, eventType));
-                        });
-                    }
+                // Handle both single questions and matrix questions uniformly
+                const matrixQuestion = questions.find(q => q.is_matrix && q.matrix_items);
+                if (matrixQuestion && (section === 'Session Feedback' || section === '1-5 Likert Rating')) {
+                    // Create individual rows for each matrix item
+                    matrixQuestion.matrix_items.forEach((item, idx) => {
+                        const subQuestion = {
+                            ...matrixQuestion,
+                            question: item,
+                            is_matrix: false,
+                            matrix_items: null,
+                            id: matrixQuestion.id + '_sub_' + idx,
+                            field_key: null,
+                            matrix_parent_id: matrixQuestion.id,
+                            matrix_question_text: matrixQuestion.question,
+                            matrix_item_index: idx,
+                            is_matrix_item: true
+                        };
+                        rowsContainer.appendChild(createQuestionRow(subQuestion, section, idx + 1, eventType));
+                    });
                 } else {
                     questions.forEach((q, idx) => {
                         rowsContainer.appendChild(createQuestionRow(q, section, idx + 1, eventType));
@@ -2434,7 +2427,7 @@
                     const nextOrder = rowsContainer.querySelectorAll('.question-edit-row').length + 1;
                     const newRow = createQuestionRow({
                         question: '',
-                        type: (eventType === 'school_event' && section === 'Session Feedback') ? 'likert' : 'text',
+                        type: 'text',
                         is_required: false,
                         is_matrix: false,
                         matrix_items: null
@@ -2473,16 +2466,12 @@
                         grouped[section].push(q);
                     });
 
-                    // Ensure school_event always has all four sections
+                    // Ensure both school_event and conference have all four sections
                     let sections;
-                    if (eventType === 'school_event') {
-                        sections = ['Participant Information', 'Event Details', 'Session Feedback', 'Open-ended Feedback'];
-                        sections.forEach(section => {
-                            if (!grouped[section]) grouped[section] = [];
-                        });
-                    } else {
-                        sections = Object.keys(grouped);
-                    }
+                    sections = ['Participant Information', 'Event Details', 'Session Feedback', 'Open-ended Feedback'];
+                    sections.forEach(section => {
+                        if (!grouped[section]) grouped[section] = [];
+                    });
 
                     sections.forEach((section, idx) => {
                         const tab = document.createElement('button');
