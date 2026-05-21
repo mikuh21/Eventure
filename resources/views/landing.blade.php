@@ -14,6 +14,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Eventure — Empowering Events. Connecting People.</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -395,7 +396,7 @@
                                     <p><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 10h18"></path></svg></span> {{ $event->dateRangeLabel() }}</p>
                                     <p><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></span> {{ $event->participants_count ?? $event->participants->count() }} attendees</p>
                                     @if($event->type === 'conference' && $event->template_file_path)
-                                        <p><a href="{{ url('events/' . $event->id . '/template/download') }}" class="inline-flex items-center gap-1 underline hover:opacity-80 transition"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline><path d="M9 15l3 3 5-5"></path></svg></span> Conference Paper Template</a></p>
+                                        <p><button type="button" class="template-download-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline><path d="M9 15l3 3 5-5"></path></svg></span> Conference Paper Template</button></p>
                                     @endif
                                 </div>
                                 @if($event->end_registration && now()->gt($event->end_registration))
@@ -467,7 +468,7 @@
                                         <p><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18h1a3 3 0 0 0 0-6h-1a1.5 1.5 0 0 1 0-3h4a5 5 0 0 0 0-10h-4z"></path><circle cx="7.5" cy="9" r="1"></circle><circle cx="10" cy="6.5" r="1"></circle><circle cx="14" cy="6.5" r="1"></circle></svg></span> {{ $event->theme }}</p>
                                     @endif
                                     @if($event->type === 'conference' && $event->template_file_path)
-                                        <p><a href="{{ url('events/' . $event->id . '/template/download') }}" class="inline-flex items-center gap-1 underline hover:opacity-80 transition"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline><path d="M9 15l3 3 5-5"></path></svg></span> Conference Paper Template</a></p>
+                                        <p><button type="button" class="template-download-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline><path d="M9 15l3 3 5-5"></path></svg></span> Conference Paper Template</button></p>
                                     @endif
                                 </div>
                                 <div class="mt-auto">
@@ -519,7 +520,7 @@
                                         <span><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12 3.8 2.57 5.2 5.74.83-4.16 4.05.98 5.72L12 16.9l-5.13 2.7.98-5.72L3.69 9.83l5.74-.83L12 3.8z" fill="currentColor" stroke="none"></path></svg></span> {{ $event->averageRating() }}/5</span>
                                     @endif
                                     @if($event->type === 'conference' && $event->template_file_path)
-                                        <a href="{{ url('events/' . $event->id . '/template/download') }}" class="inline-flex items-center gap-1 underline hover:opacity-80 transition"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline><path d="M9 15l3 3 5-5"></path></svg></span> Conference Paper Template</a>
+                                        <button type="button" class="template-download-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline><path d="M9 15l3 3 5-5"></path></svg></span> Conference Paper Template</button>
                                     @endif
                                 </div>
                             </div>
@@ -670,6 +671,143 @@
             });
 
             revealItems.forEach((el) => revealObserver.observe(el));
+        });
+    </script>
+
+    <!-- Template Download Modal -->
+    <div id="templateDownloadModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl">
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">Download Conference Paper Template</h2>
+            <p class="text-gray-600 mb-6">Are you a registered guest?</p>
+            
+            <div class="space-y-4">
+                <div>
+                    <label for="guestToken" class="block text-sm font-medium text-gray-700 mb-2">
+                        Enter your Guest Token
+                    </label>
+                    <input 
+                        type="text" 
+                        id="guestToken" 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-em4 focus:border-transparent outline-none"
+                        placeholder="Paste your digital ID token here"
+                    >
+                    <p id="tokenError" class="mt-2 text-sm text-red-600 hidden"></p>
+                </div>
+                
+                <div class="flex gap-3 pt-4">
+                    <button 
+                        type="button" 
+                        id="templateDownloadCancel" 
+                        class="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition"
+                    >
+                        Cancel
+                    </button>
+                    <button 
+                        type="button" 
+                        id="templateDownloadBtn" 
+                        class="flex-1 px-4 py-2.5 bg-em4 text-white rounded-lg font-medium hover:brightness-110 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        Download
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const templateModal = document.getElementById('templateDownloadModal');
+        const guestTokenInput = document.getElementById('guestToken');
+        const templateDownloadBtn = document.getElementById('templateDownloadBtn');
+        const templateDownloadCancel = document.getElementById('templateDownloadCancel');
+        const tokenError = document.getElementById('tokenError');
+        let currentEventId = null;
+
+        // Open modal on button click
+        document.querySelectorAll('.template-download-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                currentEventId = btn.dataset.eventId;
+                guestTokenInput.value = '';
+                tokenError.classList.add('hidden');
+                tokenError.textContent = '';
+                templateModal.classList.remove('hidden');
+                templateModal.style.display = 'flex';
+                guestTokenInput.focus();
+            });
+        });
+
+        // Close modal on cancel
+        templateDownloadCancel.addEventListener('click', () => {
+            templateModal.classList.add('hidden');
+            templateModal.style.display = 'none';
+        });
+
+        // Close modal on background click
+        templateModal.addEventListener('click', (e) => {
+            if (e.target === templateModal) {
+                templateModal.classList.add('hidden');
+                templateModal.style.display = 'none';
+            }
+        });
+
+        // Handle download
+        templateDownloadBtn.addEventListener('click', async () => {
+            const token = guestTokenInput.value.trim();
+            
+            if (!token) {
+                tokenError.textContent = 'Token is required. Please enter your guest token.';
+                tokenError.classList.remove('hidden');
+                return;
+            }
+
+            templateDownloadBtn.disabled = true;
+            templateDownloadBtn.textContent = 'Downloading...';
+
+            try {
+                const response = await fetch(`/events/${currentEventId}/template/download/verify`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                    },
+                    body: JSON.stringify({ token })
+                });
+
+                if (response.ok) {
+                    // File download
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'Conference-Paper-Template.' + (currentEventId || 'doc');
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    a.remove();
+                    
+                    // Close modal
+                    templateModal.classList.add('hidden');
+                    templateModal.style.display = 'none';
+                } else {
+                    const errorData = await response.json();
+                    tokenError.textContent = errorData.error || 'An error occurred. Please try again.';
+                    tokenError.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Download error:', error);
+                tokenError.textContent = 'Network error. Please try again.';
+                tokenError.classList.remove('hidden');
+            } finally {
+                templateDownloadBtn.disabled = false;
+                templateDownloadBtn.textContent = 'Download';
+            }
+        });
+
+        // Allow Enter key to download
+        guestTokenInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !templateDownloadBtn.disabled) {
+                templateDownloadBtn.click();
+            }
         });
     </script>
 </body>

@@ -325,6 +325,45 @@ class EventController extends Controller
         return Storage::disk('event-templates')->download($event->template_file_path, 'Conference-Paper-Template.' . $extension);
     }
 
+    public function verifyAndDownloadTemplate(Event $event, Request $request)
+    {
+        abort_if($event->type !== 'conference', 404);
+        abort_if(! $event->template_file_path, 404, 'No template file uploaded for this conference event.');
+
+        $token = trim($request->input('token', ''));
+
+        if (empty($token)) {
+            return response()->json([
+                'error' => 'Token is required. Please enter your guest token.'
+            ], 422);
+        }
+
+        // Look up the guest by token
+        $guest = $event->guests()
+            ->where('digital_token', $token)
+            ->first();
+
+        if (!$guest) {
+            return response()->json([
+                'error' => 'Invalid or unapproved token. Please check your guest token and try again.'
+            ], 403);
+        }
+
+        // Check that the guest is approved
+        if ($guest->status !== 'approved') {
+            return response()->json([
+                'error' => 'Invalid or unapproved token. Please check your guest token and try again.'
+            ], 403);
+        }
+
+        // Return the file download
+        $extension = pathinfo($event->template_file_path, PATHINFO_EXTENSION);
+        return Storage::disk('event-templates')->download(
+            $event->template_file_path,
+            'Conference-Paper-Template.' . $extension
+        );
+    }
+
     private function buildEventData(array $validated, Request $request, ?Event $event = null): array
     {
         $data = [

@@ -18,6 +18,8 @@ class Guest extends Model
         'email',
         'role',
         'bio',
+        'digital_token',
+        'status',
     ];
 
     public function event(): BelongsTo

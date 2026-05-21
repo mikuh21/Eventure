@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', LandingController::class)->name('landing');
 Route::get('events/{event}/template/download', [EventController::class, 'downloadTemplate'])->name('events.download-template-public');
+Route::post('events/{event}/template/download/verify', [EventController::class, 'verifyAndDownloadTemplate'])->name('events.template.verify-download');
 
 Route::get('participant/events', [EventController::class, 'index'])
     ->name('participants.public.events');
