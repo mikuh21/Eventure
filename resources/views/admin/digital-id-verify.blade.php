@@ -318,7 +318,7 @@
         height: 56px;
         border: 0;
         border-radius: 999px;
-        background: var(--ef-ocean);
+        background: #1B6CA8;
         color: #ffffff;
         display: inline-flex;
         align-items: center;
@@ -333,7 +333,7 @@
 
     .fab-qr-scanner:hover,
     .fab-qr-scanner:focus-visible {
-        background: var(--ef-midnight);
+        background: #0A2342;
         box-shadow: 0 12px 28px rgba(10, 35, 66, 0.28);
     }
 
