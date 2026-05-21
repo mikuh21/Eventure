@@ -2566,7 +2566,7 @@
                             const matrixRows = rows.filter(row => row.dataset.section === 'Session Feedback' && row.dataset.isMatrixItem === 'true');
                             const nonMatrixRows = rows.filter(row => row.dataset.isMatrixItem !== 'true');
 
-                    if (eventType === 'school_event' && matrixRows.length > 0) {
+                    if ((eventType === 'school_event' || eventType === 'conference') && matrixRows.length > 0) {
                         const matrixItems = matrixRows
                             .sort((a, b) => parseInt(a.querySelector('.sort-order-input').value, 10) - parseInt(b.querySelector('.sort-order-input').value, 10))
                             .map(row => row.querySelector('.question-text-input').value.trim())
