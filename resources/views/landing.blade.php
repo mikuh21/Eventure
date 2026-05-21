@@ -725,7 +725,7 @@
                         <input 
                             type="text" 
                             id="guestToken" 
-                            class="w-full px-4 py-2 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-em4 focus:border-transparent outline-none font-mono"
+                            class="w-full px-4 py-2 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-em4 focus:border-transparent outline-none font-mono placeholder:font-sans"
                             placeholder="Paste your digital ID token here"
                         >
                         <button
