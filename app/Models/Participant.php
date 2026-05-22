@@ -77,4 +77,9 @@ class Participant extends Model
     {
         return $this->hasMany(Evaluation::class);
     }
+
+    public function hasSubmittedSurvey(): bool
+    {
+        return $this->evaluations()->exists();
+    }
 }

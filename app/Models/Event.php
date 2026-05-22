@@ -187,11 +187,14 @@ class Event extends Model
 
     public function isRegistrationOpen(): bool
     {
-        $now = now();
+        $now = now('Asia/Manila');
 
         // Preferred behavior: explicit registration window controls open/close.
         if ($this->start_registration && $this->end_registration) {
-            return $now->between($this->start_registration, $this->end_registration);
+            return $now->between(
+                \Carbon\Carbon::parse($this->start_registration)->setTimezone('Asia/Manila'),
+                \Carbon\Carbon::parse($this->end_registration)->setTimezone('Asia/Manila')
+            );
         }
 
         // Backward compatibility for older events that do not yet have window values.
@@ -205,7 +208,7 @@ class Event extends Model
 
     public function scopeRegistrationOpen(Builder $query): Builder
     {
-        $now = now();
+        $now = now('Asia/Manila');
 
         return $query->where(function (Builder $query) use ($now): void {
             $query->whereNotNull('start_registration')
@@ -223,7 +226,7 @@ class Event extends Model
     public function hasEnded(): bool
     {
         $endDate = $this->end_date ?? $this->start_date;
-        return $endDate?->lt(now()->startOfDay()) ?? false;
+        return $endDate?->lt(now('Asia/Manila')->startOfDay()) ?? false;
     }
 
     public function isSurveyActive(): bool

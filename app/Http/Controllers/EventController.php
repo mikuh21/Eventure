@@ -21,7 +21,7 @@ class EventController extends Controller
         $search = trim((string) $request->string('search'));
         $typeFilter = trim((string) $request->string('type'));
         $registrationFilter = trim((string) $request->string('registration'));
-        $now = now();
+        $now = now('Asia/Manila');
 
         $eventsQuery = Event::query();
 
@@ -82,8 +82,8 @@ class EventController extends Controller
         $events = $eventsQuery
             ->orderByRaw("
                 CASE
-                    WHEN start_date::date = CURRENT_DATE THEN 0
-                    WHEN end_date::date < CURRENT_DATE THEN 2
+                    WHEN start_date::date = (NOW() AT TIME ZONE 'Asia/Manila')::date THEN 0
+                    WHEN end_date::date < (NOW() AT TIME ZONE 'Asia/Manila')::date THEN 2
                     ELSE 1
                 END ASC
             ")

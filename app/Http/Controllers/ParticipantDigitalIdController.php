@@ -111,7 +111,7 @@ class ParticipantDigitalIdController extends Controller
             ->where('digital_id_token', $token)
             ->firstOrFail();
 
-        if (! $participant->event->hasEnded() && ! $participant->evaluations()->exists()) {
+        if (! $participant->hasSubmittedSurvey()) {
             abort(403, 'Certificate is not available yet.');
         }
 

@@ -25,7 +25,7 @@ class MobileParticipantController extends Controller
         $questions = $participant->event?->getActiveEvaluationQuestions() ?? collect();
         $sections = $questions->groupBy('section');
         $surveyAction = route('participants.evaluations.store', $participant);
-        $certificateAvailable = $participant->event->hasEnded() || $evaluation;
+        $certificateAvailable = $participant->hasSubmittedSurvey();
         $certificateType = $participant->event->certificateRouteType();
         $qrUrl = route('participants.digital-id.show', $participant) . '?format=qr';
         $validThru = optional($participant->event->end_registration)->format('m/d') ?? 'N/A';

@@ -298,7 +298,7 @@
             <h1 class="digital-id-title">Digital ID</h1>
             <div class="digital-id-actions">
                 <a class="digital-id-btn digital-id-btn-secondary" href="{{ route('events.participants.show', [$participant->event, $participant]) }}">Back</a>
-                @php($hasSubmittedSurvey = $participant->evaluations()->exists())
+                @php($hasSubmittedSurvey = $participant->hasSubmittedSurvey())
                 <button id="save-id-btn" class="digital-id-btn digital-id-btn-primary" type="button" {{ !$hasSubmittedSurvey ? 'disabled' : '' }} title="{{ !$hasSubmittedSurvey ? 'Complete the survey first to save' : 'Save ID' }}">Save ID</button>
             </div>
         </div>

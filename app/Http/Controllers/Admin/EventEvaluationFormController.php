@@ -39,7 +39,7 @@ class EventEvaluationFormController extends Controller
         }
 
         $eventsQuery = Event::query()
-            ->orderByRaw("CASE WHEN end_date < NOW() THEN 1 ELSE 0 END ASC")
+            ->orderByRaw("CASE WHEN start_date::date = (NOW() AT TIME ZONE 'Asia/Manila')::date THEN 0 WHEN end_date::date < (NOW() AT TIME ZONE 'Asia/Manila')::date THEN 2 ELSE 1 END ASC")
             ->orderBy('start_date', 'asc')
             ->withCount(['participants', 'guests'])
             ->when($hasEventIdColumn, fn ($query) => $query->with(['evaluationQuestions']))
