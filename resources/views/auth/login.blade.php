@@ -261,15 +261,21 @@
             position: fixed;
             inset: 0;
             background: rgba(10, 35, 66, 0.7);
-            display: none;
+            display: flex;
             align-items: center;
             justify-content: center;
             padding: 22px;
             z-index: 40;
+            visibility: hidden;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 180ms ease, visibility 180ms ease;
         }
 
         .modal-overlay.is-visible {
-            display: flex;
+            visibility: visible;
+            opacity: 1;
+            pointer-events: auto;
         }
 
         .modal-card {
@@ -280,6 +286,14 @@
             border-radius: 18px;
             padding: 24px;
             box-shadow: 0 24px 50px rgba(10, 35, 66, 0.22);
+            transform: translateY(12px) scale(0.98);
+            opacity: 0;
+            transition: transform 180ms ease, opacity 180ms ease;
+        }
+
+        .modal-overlay.is-visible .modal-card {
+            transform: translateY(0) scale(1);
+            opacity: 1;
         }
 
         .modal-title {
