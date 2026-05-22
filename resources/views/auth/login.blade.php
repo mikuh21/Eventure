@@ -451,7 +451,10 @@
                     <div class="input-with-icon">
                         <input id="password" name="password" type="password" placeholder="Enter your password" required>
                         <button type="button" class="password-toggle" id="passwordToggle" aria-label="Show password">
-                            👁️
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M12 5C7 5 2.73 8.11 1 12c1.73 3.89 6 7 11 7s9.27-3.11 11-7c-1.73-3.89-6-7-11-7Zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M12 9.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5Z" fill="currentColor"/>
+                            </svg>
                         </button>
                     </div>
                 </div>
@@ -508,11 +511,14 @@
         const cancelForgotPassword = document.getElementById('cancelForgotPassword');
         const openForgotModal = {{ session('forgotPasswordModal') ? 'true' : 'false' }};
 
+        const eyeIcon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 5C7 5 2.73 8.11 1 12c1.73 3.89 6 7 11 7s9.27-3.11 11-7c-1.73-3.89-6-7-11-7Zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 9.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5Z" fill="currentColor"/></svg>';
+        const eyeOffIcon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M17.94 17.94C16.18 19.18 14.17 20 12 20c-5 0-9.27-3.11-11-7 1.11-2.5 2.77-4.58 4.75-6.02" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M6.1 6.1C7.82 4.82 9.87 4 12 4c5 0 9.27 3.11 11 7-0.57 1.29-1.34 2.45-2.27 3.47" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M9.88 9.88a2.5 2.5 0 0 0 3.53 3.53" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M2 2l20 20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+
         if (passwordToggle && passwordInput) {
             passwordToggle.addEventListener('click', () => {
                 const isPassword = passwordInput.type === 'password';
                 passwordInput.type = isPassword ? 'text' : 'password';
-                passwordToggle.textContent = isPassword ? '🙈' : '👁️';
+                passwordToggle.innerHTML = isPassword ? eyeOffIcon : eyeIcon;
             });
         }
 
