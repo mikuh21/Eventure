@@ -1133,7 +1133,7 @@
                 @else
                     <div class="survey-pending">
                         <p class="survey-state-title">Certificate Not Yet Available</p>
-                        <p class="survey-state-copy">Certificates will be downloadable after the event ends or once feedback is submitted.</p>
+                        <p class="survey-state-copy">Certificates will be downloadable once feedback survey is submitted.</p>
                     </div>
                 @endif
             </div>
