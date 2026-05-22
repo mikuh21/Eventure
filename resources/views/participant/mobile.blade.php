@@ -1112,6 +1112,9 @@
                             <h3 class="survey-step-title">{{ $section }}</h3>
 
                             @foreach ($sectionQuestions as $question)
+                                @if ($section === 'Session Feedback' && ! $question->is_matrix && in_array($question->renderingType(), ['likert', 'rating']))
+                                    @continue
+                                @endif
                                 @if ($question->is_matrix && $section === 'Session Feedback' && is_array($question->matrix_items))
                                     @foreach ($question->matrix_items as $itemIndex => $item)
                                         <div class="survey-question" data-question-id="{{ $question->id }}_{{ $itemIndex }}" data-required="{{ $question->is_required ? 'true' : 'false' }}">
