@@ -259,6 +259,38 @@
             z-index: 1;
         }
 
+        .survey-form-progress {
+            padding: 16px 20px 8px;
+            background: #fff;
+            border-bottom: 1px solid #eee;
+        }
+
+        .survey-form-step-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 8px;
+            font-family: 'Sora', sans-serif;
+        }
+
+        .survey-form-progress-bar {
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 999px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .survey-form-progress-bar::after {
+            content: '';
+            display: block;
+            height: 100%;
+            width: var(--progress, 0%);
+            background: #1e3a5f;
+            border-radius: 999px;
+            transition: width 0.3s ease;
+        }
+
         .meta-label,
         .token-label,
         .back-validity-label {
@@ -1409,7 +1441,7 @@
             }
 
             if (surveyFormProgressBar) {
-                surveyFormProgressBar.style.width = `${((activeSurveyStep + 1) / totalSteps) * 100}%`;
+                surveyFormProgressBar.style.setProperty('--progress', `${((activeSurveyStep + 1) / totalSteps) * 100}%`);
             }
 
             if (surveyFormError) {
