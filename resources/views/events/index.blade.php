@@ -1576,72 +1576,20 @@
             // Initialize date pickers
             var initializeDatePickers = function() {
                 var today = new Date();
-                var todayDateTime = new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().split('Z')[0].slice(0, 16);
-                var tomorrow = new Date(today);
-                tomorrow.setDate(tomorrow.getDate() + 1);
-                var minDate = tomorrow.toISOString().split('T')[0];
-                var minDateTime = tomorrow.toISOString().split('Z')[0].slice(0, 16);
+                var todayDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().split('T')[0];
 
                 ['editStartDate', 'editEndDate'].forEach(function(id) {
                     var input = document.getElementById(id);
                     if (input) {
-                        input.setAttribute('min', minDate);
-                    }
-                });
-
-                ['editStartRegistration', 'editEndRegistration'].forEach(function(id) {
-                    var input = document.getElementById(id);
-                    if (input) {
-                        input.setAttribute('min', todayDateTime);
+                        input.setAttribute('min', todayDate);
                     }
                 });
             };
             initializeDatePickers();
 
-            // iOS fallback: enforce date validation for edit modal date fields
+            // Date validation disabled for edit modal - allows editing events to any date
             var enforceFutureSelectionForEdit = function() {
-                var today = new Date();
-                var todayStr = new Date(today.getFullYear(), today.getMonth(), today.getDate()).toISOString().split('T')[0];
-                var todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0);
-
-                var tomorrow = new Date(today);
-                tomorrow.setDate(tomorrow.getDate() + 1);
-                var minDateLocal = new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 0, 0, 0);
-
-                ['editStartDate', 'editEndDate'].forEach(function(id) {
-                    var el = document.getElementById(id);
-                    if (!el) return;
-                    el.addEventListener('change', function() {
-                        if (!el.value) return;
-                        if (el.value <= todayStr) {
-                            el.value = '';
-                            var err = document.getElementById(id + '_error');
-                            if (err) err.style.display = 'block';
-                            alert('Please select a future date');
-                        } else {
-                            var err = document.getElementById(id + '_error');
-                            if (err) err.style.display = 'none';
-                        }
-                    });
-                });
-
-                ['editStartRegistration', 'editEndRegistration'].forEach(function(id) {
-                    var el = document.getElementById(id);
-                    if (!el) return;
-                    el.addEventListener('change', function() {
-                        if (!el.value) return;
-                        var selected = new Date(el.value);
-                        if (selected < todayStart) {
-                            el.value = '';
-                            var err = document.getElementById(id + '_error');
-                            if (err) err.style.display = 'block';
-                            alert('Please select today or a future date');
-                        } else {
-                            var err = document.getElementById(id + '_error');
-                            if (err) err.style.display = 'none';
-                        }
-                    });
-                });
+                // No validation for edit modal
             };
             enforceFutureSelectionForEdit();
 
@@ -1675,15 +1623,13 @@
                     loadScript('https://cdn.jsdelivr.net/npm/flatpickr')
                 ]).then(function() {
                     var today = new Date();
-                    var tomorrow = new Date(today);
-                    tomorrow.setDate(tomorrow.getDate() + 1);
 
                     ['editStartDate','editEndDate'].forEach(function(id) {
                         var el = document.getElementById(id);
                         if (!el) return;
                         flatpickr(el, {
                             dateFormat: 'Y-m-d',
-                            minDate: tomorrow,
+                            minDate: today,
                             disableMobile: true,
                         });
                     });
