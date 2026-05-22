@@ -719,6 +719,13 @@
             box-sizing: border-box;
         }
 
+        .survey-form-input[readonly] {
+            opacity: 0.84;
+            color: rgba(191, 223, 255, 0.85);
+            background: rgba(255, 255, 255, 0.03);
+            cursor: default;
+        }
+
         .survey-form-input[type=date],
         .survey-form-input[type=time] {
             width: 100%;
@@ -1071,6 +1078,18 @@
 
                 <form action="{{ $surveyAction }}" method="POST" id="mobileSurveyForm" novalidate>
                     @csrf
+                    @php
+                        $event = $participant->event;
+                        $startDate = \Carbon\Carbon::parse($event->start_date)->setTimezone('Asia/Manila');
+                        $endDate = \Carbon\Carbon::parse($event->end_date)->setTimezone('Asia/Manila');
+                        if ($startDate->isSameDay($endDate)) {
+                            $eventDateDisplay = $startDate->format('F j, Y');
+                        } elseif ($startDate->isSameMonth($endDate)) {
+                            $eventDateDisplay = $startDate->format('F j') . '-' . $endDate->format('j, Y');
+                        } else {
+                            $eventDateDisplay = $startDate->format('F j, Y') . ' - ' . $endDate->format('F j, Y');
+                        }
+                    @endphp
                     <div class="survey-form-progress">
                         <div class="survey-form-step-label" id="surveyStepLabel">Step 1 of {{ $sections->count() }}</div>
                         <div class="survey-form-progress-bar" id="surveyFormProgressBar"></div>
@@ -1121,12 +1140,17 @@
                                             @endforeach
                                         </div>
                                     @else
+                                        @php
+                                            $isEventDetailsDateField = $section === 'Event Details' && $question->renderingType() === 'date';
+                                        @endphp
                                         <input
                                             id="question_{{ $question->id }}"
                                             name="answers[{{ $question->id }}]"
-                                            type="{{ in_array($question->renderingType(), ['date', 'time']) ? $question->renderingType() : 'text' }}"
+                                            type="{{ $isEventDetailsDateField ? 'text' : (in_array($question->renderingType(), ['date', 'time']) ? $question->renderingType() : 'text') }}"
                                             class="survey-form-input"
                                             placeholder="{{ $question->placeholder }}"
+                                            value="{{ $isEventDetailsDateField ? $eventDateDisplay : '' }}"
+                                            {{ $isEventDetailsDateField ? 'readonly' : '' }}
                                             {{ $question->is_required ? 'required' : '' }}
                                             @if ($question->isProgramQuestion()) aria-label="{{ $question->question }}" @endif
                                         >
