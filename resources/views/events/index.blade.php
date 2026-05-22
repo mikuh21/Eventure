@@ -1576,6 +1576,7 @@
             // Initialize date pickers
             var initializeDatePickers = function() {
                 var today = new Date();
+                var todayDateTime = today.toISOString().split('Z')[0].slice(0, 16);
                 var tomorrow = new Date(today);
                 tomorrow.setDate(tomorrow.getDate() + 1);
                 var minDate = tomorrow.toISOString().split('T')[0];
@@ -1591,16 +1592,17 @@
                 ['editStartRegistration', 'editEndRegistration'].forEach(function(id) {
                     var input = document.getElementById(id);
                     if (input) {
-                        input.setAttribute('min', minDateTime);
+                        input.setAttribute('min', todayDateTime);
                     }
                 });
             };
             initializeDatePickers();
 
-            // iOS fallback: enforce future-only selection for edit modal date fields
+            // iOS fallback: enforce date validation for edit modal date fields
             var enforceFutureSelectionForEdit = function() {
                 var today = new Date();
                 var todayStr = new Date(today.getFullYear(), today.getMonth(), today.getDate()).toISOString().split('T')[0];
+                var todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0);
 
                 var tomorrow = new Date(today);
                 tomorrow.setDate(tomorrow.getDate() + 1);
@@ -1629,11 +1631,11 @@
                     el.addEventListener('change', function() {
                         if (!el.value) return;
                         var selected = new Date(el.value);
-                        if (selected <= minDateLocal) {
+                        if (selected < todayStart) {
                             el.value = '';
                             var err = document.getElementById(id + '_error');
                             if (err) err.style.display = 'block';
-                            alert('Please select a future date');
+                            alert('Please select today or a future date');
                         } else {
                             var err = document.getElementById(id + '_error');
                             if (err) err.style.display = 'none';
@@ -1693,7 +1695,7 @@
                             enableTime: true,
                             time_24hr: false,
                             dateFormat: "Y-m-d\\TH:i",
-                            minDate: tomorrow,
+                            minDate: today,
                             disableMobile: true,
                             minuteIncrement: 1
                         });
