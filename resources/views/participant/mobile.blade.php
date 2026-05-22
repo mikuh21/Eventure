@@ -1245,10 +1245,10 @@
                 </div>
 
                 @if ($certificateAvailable)
-                    <a class="survey-button cert-download-btn" href="{{ route('participants.certificate.show', ['token' => $participant->digital_id_token, 'type' => $certificateType]) }}" target="_blank">
-                        View Certificate
-                    </a>
-                    <p id="cert-ios-tip" style="display:none;font-size:12px;color:#10b981;text-align:center;margin-top:8px;">Open the certificate in a new tab, then use your browser share/save option.</p>
+                    <button type="button" class="survey-button cert-download-btn" data-cert-url="{{ route('participants.certificate.show', ['token' => $participant->digital_id_token, 'type' => $certificateType]) }}">
+                        Download Certificate
+                    </button>
+                    <p id="cert-ios-tip" style="display:none;font-size:12px;color:#10b981;text-align:center;margin-top:8px;">PDF opened in new tab. Tap the share icon and select "Save to Files" to keep it.</p>
                 @else
                     <div class="survey-pending">
                         <p class="survey-state-title">Certificate Not Yet Available</p>
@@ -1717,6 +1717,51 @@
                 }, 2600);
             };
 
+            function downloadCertificate(url) {
+                const btn = document.querySelector('.cert-download-btn');
+                if (btn) {
+                    btn.textContent = 'Downloading...';
+                    btn.disabled = true;
+                }
+
+                const isIOS = /iP(hone|od|ad)/.test(navigator.userAgent) ||
+                    (navigator.platform && /MacIntel/.test(navigator.platform) && navigator.maxTouchPoints > 1);
+
+                if (isIOS) {
+                    // iOS: open in same window and let user save via share button
+                    window.location.href = url;
+                } else {
+                    // Android/Desktop: use hidden iframe to trigger download
+                    const iframe = document.createElement('iframe');
+                    iframe.style.display = 'none';
+                    iframe.src = url;
+                    document.body.appendChild(iframe);
+                    setTimeout(() => {
+                        document.body.removeChild(iframe);
+                        if (btn) {
+                            btn.textContent = 'Download Certificate';
+                            btn.disabled = false;
+                        }
+                    }, 3000);
+                }
+
+                if (btn && isIOS) {
+                    setTimeout(() => {
+                        btn.textContent = 'Download Certificate';
+                        btn.disabled = false;
+                    }, 2000);
+                }
+            }
+
+            document.addEventListener('click', function(e) {
+                const btn = e.target.closest('.cert-download-btn');
+                if (btn) {
+                    e.preventDefault();
+                    const url = btn.dataset.certUrl || btn.getAttribute('href');
+                    downloadCertificate(url);
+                }
+            });
+
             mobileSurveyForm.addEventListener('submit', async (event) => {
                 if (!validateCurrentStep()) {
                     event.preventDefault();
@@ -1787,8 +1832,8 @@
                                         </svg>
                                         <span>${certTitle}</span>
                                     </div>
-                                    <a class="survey-button cert-download-btn" href="${certUrl}" target="_blank">View Certificate</a>
-                                    <p id="cert-ios-tip" style="display:none;font-size:12px;color:#10b981;text-align:center;margin-top:8px;">Open the certificate in a new tab, then use your browser share/save option.</p>
+                                    <button type="button" class="survey-button cert-download-btn" data-cert-url="${certUrl}">Download Certificate</button>
+                                    <p id="cert-ios-tip" style="display:none;font-size:12px;color:#10b981;text-align:center;margin-top:8px;">PDF opened in new tab. Tap the share icon and select \"Save to Files\" to keep it.</p>
                                 `;
                             }
                         }

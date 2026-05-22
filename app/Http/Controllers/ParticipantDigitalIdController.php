@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\Participant;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -99,6 +100,12 @@ class ParticipantDigitalIdController extends Controller
 
     public function certificate(string $token, string $type)
     {
+        $fontCacheDir = storage_path('framework/fonts');
+        if (! file_exists($fontCacheDir)) {
+            @mkdir($fontCacheDir, 0775, true);
+        }
+        foreach (glob($fontCacheDir.'/*') as $file) { @unlink($file); }
+
         $participant = Participant::query()
             ->with(['event'])
             ->where('digital_id_token', $token)
@@ -139,11 +146,35 @@ class ParticipantDigitalIdController extends Controller
             ];
         }
 
-        return view('participants.certificate-view', [
+        $pdf = Pdf::loadView('participants.certificate', [
             'participant' => $participant,
-            'pages' => $pages,
             'eventDate' => $eventDate,
             'eventLocation' => $eventLocation,
+            'pages' => $pages,
+        ]);
+
+        $pdf->setPaper([0, 0, 841.89, 595.28], 'landscape');
+        $pdf->setOptions([
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled' => true,
+            'defaultFont' => 'Montserrat',
+            'dpi' => 150,
+            'fontDir' => $fontCacheDir,
+            'fontCache' => $fontCacheDir,
+        ]);
+
+        $filename = match ($participant->event->attendance_type ?? Event::ATTENDANCE_FACE_TO_FACE) {
+            Event::ATTENDANCE_VIRTUAL => 'certificate-of-participation-'.Str::slug($participant->name ?: 'participant').'.pdf',
+            Event::ATTENDANCE_BOTH => 'certificates-'.Str::slug($participant->name ?: 'participant').'.pdf',
+            default => 'certificate-of-attendance-'.Str::slug($participant->name ?: 'participant').'.pdf',
+        };
+
+        return response($pdf->output(), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Cache-Control' => 'no-cache, no-store, must-revalidate',
+            'Pragma' => 'no-cache',
+            'Expires' => '0',
         ]);
     }
 
