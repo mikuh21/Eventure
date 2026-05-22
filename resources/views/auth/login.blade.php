@@ -643,20 +643,16 @@
                     return;
                 }
 
+                event.preventDefault();
+
                 if (sendPasswordBtn) {
                     sendPasswordBtn.disabled = true;
                     sendPasswordBtn.textContent = 'Sending...';
                 }
-            });
-        }
 
-        if (sendPasswordBtn) {
-            sendPasswordBtn.addEventListener('click', () => {
-                if (!forgotPasswordForm || !forgotPasswordForm.checkValidity()) {
-                    return;
-                }
-                sendPasswordBtn.disabled = true;
-                sendPasswordBtn.textContent = 'Sending...';
+                setTimeout(() => {
+                    forgotPasswordForm.submit();
+                }, 0);
             });
         }
 
