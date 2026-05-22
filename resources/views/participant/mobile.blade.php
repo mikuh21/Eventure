@@ -1259,16 +1259,47 @@
         </section>
 
         @if (!empty($pages))
-            <div id="certificateCanvas" style="position:fixed;left:-9999px;top:0;width:842px;background:#fff;z-index:-1;">
+            <div id="certificateCanvas" style="position:fixed;left:-9999px;top:0;width:841px;background:#0d2d55;z-index:-1;overflow:hidden;font-family:'Sora',sans-serif;">
                 @foreach ($pages as $page)
-                    <div class="cert-page" style="width:842px;min-height:595px;padding:60px;font-family:serif;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;border:20px solid #1B6CA8;margin-bottom:20px;">
-                        <h1 style="font-size:36px;color:#1B6CA8;margin:0 0 8px;">Certificate of {{ $page['certificateType'] }}</h1>
-                        <p style="font-size:14px;color:#666;margin:0 0 32px;">This is to certify that</p>
-                        <h2 style="font-size:48px;color:#0A2342;margin:0 0 24px;font-style:italic;">{{ $participant->name }}</h2>
-                        <p style="font-size:16px;color:#333;max-width:600px;line-height:1.6;margin:0 0 32px;">{{ $page['description'] }}</p>
-                        <p style="font-size:14px;color:#666;margin:0;">{{ $eventDate }} • {{ $eventLocation }}</p>
-                        <div style="margin-top:48px;border-top:1px solid #1B6CA8;padding-top:12px;width:200px;">
-                            <p style="font-size:12px;color:#999;margin:0;">Authorized Signature</p>
+                    <div class="cert-page" style="position:relative;width:841px;min-height:595px;padding:60px;background:#0d2d55;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;border:1.5px solid #00C896;margin-bottom:20px;box-sizing:border-box;">
+                        <div style="position:absolute;top:18px;left:18px;right:18px;bottom:18px;border:1px solid #C9A84C;pointer-events:none;"></div>
+                        <div style="position:absolute;top:-60px;right:-60px;width:220px;height:220px;border-radius:50%;background:#1B6CA8;opacity:0.4;"></div>
+                        <div style="position:absolute;bottom:-60px;left:-60px;width:200px;height:200px;border-radius:50%;background:#1B6CA8;opacity:0.3;"></div>
+                        <div style="position:relative;z-index:2;width:100%;">
+                            <p style="font-family:'Sora',sans-serif;font-weight:700;font-size:10px;letter-spacing:5px;color:#ffffff;margin:0;">EVENTURE</p>
+                            <div style="width:80px;height:1px;background:#00C896;margin:8px auto 0;"></div>
+                        </div>
+                        <div style="position:relative;z-index:2;width:100%;padding-top:16px;">
+                            <p style="font-family:'Sora',sans-serif;font-weight:700;font-size:36px;letter-spacing:4px;color:#ffffff;margin:0;">CERTIFICATE OF {{ strtoupper($page['certificateType']) }}</p>
+                        </div>
+                        <div style="position:relative;z-index:2;width:100%;padding-top:14px;">
+                            <p style="font-family:'Sora',sans-serif;font-weight:400;font-size:8px;letter-spacing:3px;color:#00C896;margin:0;">THIS CERTIFICATE IS AWARDED TO</p>
+                        </div>
+                        <div style="position:relative;z-index:2;width:100%;padding-top:14px;">
+                            <p style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:32px;color:#ffffff;margin:0;">{{ $participant->name }}</p>
+                        </div>
+                        <div style="position:relative;z-index:2;width:100%;padding-top:14px;">
+                            <div style="width:160px;height:1px;background:#00C896;margin:0 auto;"></div>
+                        </div>
+                        <div style="position:relative;z-index:2;width:100%;padding-top:16px;padding-left:100px;padding-right:100px;">
+                            <p style="font-family:'Sora',sans-serif;font-weight:400;font-size:9px;line-height:1.7;color:#d0e8f8;margin:0;">{{ $page['description'] }}</p>
+                        </div>
+                        <div style="position:relative;z-index:2;width:100%;padding-top:20px;padding-left:60px;padding-right:60px;">
+                            <table width="100%" cellpadding="0" cellspacing="0" style="color:#ffffff;">
+                                <tr>
+                                    <td style="text-align:left;width:50%;vertical-align:top;">
+                                        <p style="font-family:'Sora',sans-serif;font-size:7px;letter-spacing:2px;color:#00C896;margin:0;">EVENT DATE</p>
+                                        <p style="font-family:'Sora',sans-serif;font-weight:700;font-size:11px;color:#ffffff;margin:4px 0 0;">{{ $eventDate }}</p>
+                                    </td>
+                                    <td style="text-align:right;width:50%;vertical-align:top;">
+                                        <p style="font-family:'Sora',sans-serif;font-size:7px;letter-spacing:2px;color:#00C896;margin:0;">LOCATION</p>
+                                        <p style="font-family:'Sora',sans-serif;font-weight:700;font-size:11px;color:#ffffff;margin:4px 0 0;">{{ $eventLocation }}</p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div style="position:relative;z-index:2;width:100%;padding-top:16px;">
+                            <p style="font-family:'Sora',sans-serif;font-size:6px;color:rgba(255,255,255,0.4);letter-spacing:1px;margin:0;">Powered by Eventure</p>
                         </div>
                     </div>
                 @endforeach
