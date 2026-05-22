@@ -557,7 +557,6 @@
         <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="forgotPasswordTitle">
             <h2 class="modal-title" id="forgotPasswordTitle">Forgot Password</h2>
             <p class="modal-copy">Enter the email address for your Event Staff account and we will send you a new password.</p>
-            <div id="forgotToastContainer"></div>
 
             @if ($errors->any() && old('forgot_password'))
                 <div class="modal-error">
@@ -615,7 +614,6 @@
 
         const forgotPasswordForm = document.getElementById('forgotPasswordForm');
         const sendPasswordBtn = document.getElementById('sendPasswordBtn');
-        const forgotToastContainer = document.getElementById('forgotToastContainer');
         const forgotPasswordStatus = {!! session('status') ? json_encode(session('status')) : 'null' !!};
 
         if (sendPasswordBtn) {
@@ -658,7 +656,7 @@
 
         if (forgotPasswordStatus && forgotPasswordModal) {
             toggleForgotModal(true);
-            showToast(forgotPasswordStatus, 'success', 4000, forgotToastContainer || forgotPasswordModal);
+            showToast(forgotPasswordStatus, 'success', 4000, forgotPasswordModal);
         }
 
         if (openForgotModal && forgotPasswordModal) {
