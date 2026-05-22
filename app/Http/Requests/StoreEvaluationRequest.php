@@ -23,7 +23,12 @@ class StoreEvaluationRequest extends FormRequest
         ];
 
         foreach ($this->activeQuestions() as $question) {
-            $rules['answers.'.$question->id] = $this->rulesForQuestion($question->type, $question->is_required);
+            if ($question->is_matrix) {
+                $rules['answers.'.$question->id] = [$question->is_required ? 'required' : 'nullable', 'array'];
+                $rules['answers.'.$question->id.'.*'] = ['required', 'integer', 'between:1,5'];
+            } else {
+                $rules['answers.'.$question->id] = $this->rulesForQuestion($question->type, $question->is_required);
+            }
         }
 
         if (count($rules) === 4) {

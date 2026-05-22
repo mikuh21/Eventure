@@ -241,6 +241,8 @@ class EvaluationController extends Controller
         $rating = $validated['rating'] ?? $existingEvaluation?->rating;
         $feedback = $validated['feedback'] ?? $existingEvaluation?->feedback;
 
+        $matrixRatings = [];
+
         foreach ($questions as $question) {
             $value = data_get($validated, 'answers.'.$question->id);
 
@@ -261,6 +263,18 @@ class EvaluationController extends Controller
             if ($question->field_key === 'feedback' && isset($answers[$question->id])) {
                 $feedback = (string) $answers[$question->id];
             }
+
+            if ($question->is_matrix && $question->type === EvaluationQuestion::TYPE_LIKERT && is_array($value)) {
+                foreach ($value as $matrixValue) {
+                    if (is_numeric($matrixValue)) {
+                        $matrixRatings[] = (int) $matrixValue;
+                    }
+                }
+            }
+        }
+
+        if ($rating === null && count($matrixRatings) > 0) {
+            $rating = (int) round(array_sum($matrixRatings) / count($matrixRatings));
         }
 
         return [

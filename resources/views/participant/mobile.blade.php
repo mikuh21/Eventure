@@ -1046,8 +1046,8 @@
                         <svg class="icon-lg" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                             <path d="m5 12 4.5 4.5L19 7" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
-                        <p class="survey-state-title success">Survey Submitted</p>
-                        <p class="survey-state-copy">Thank you for your feedback!</p>
+                        <p class="survey-state-title success">Thank you! Your feedback has been submitted successfully.</p>
+                        <p class="survey-state-copy">Your responses have been recorded. You can now download your certificate below.</p>
                     </div>
                 @elseif ($surveyAvailable && $questions->isNotEmpty())
                     <button class="survey-button" id="openSurveyButton" type="button">Take Feedback Survey</button>
