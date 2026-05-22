@@ -144,9 +144,7 @@ class EvaluationController extends Controller
             ], 201);
         }
 
-        return redirect()
-            ->route('participants.digital-id.show', $participant)
-            ->with('status', 'Evaluation saved successfully.');
+        return redirect()->back()->with('success', 'Evaluation submitted successfully');
     }
 
     public function show(Request $request, Participant $participant, Evaluation $evaluation)
