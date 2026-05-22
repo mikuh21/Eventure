@@ -178,7 +178,8 @@
         }
 
         input[type='email'],
-        input[type='password'] {
+        input[type='password'],
+        input[type='text'] {
             width: 100%;
             box-sizing: border-box;
             border: 1px solid rgba(88, 164, 207, 0.35);
@@ -197,7 +198,8 @@
         }
 
         input[type='email']:focus,
-        input[type='password']:focus {
+        input[type='password']:focus,
+        input[type='text']:focus {
             border-color: rgba(27, 108, 168, 0.8);
             box-shadow: 0 0 0 3px rgba(88, 164, 207, 0.22);
             background: #f8fcff;
