@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\GuestDigitalIdMail;
 use App\Models\Event;
 use App\Models\Guest;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 class GuestController extends Controller
 {
@@ -104,11 +107,16 @@ class GuestController extends Controller
         // Set role server-side based on event type
         $validated['role'] = $event->type === 'conference' ? 'Presenter' : 'Exhibitor';
 
+        $validated['status'] = 'approved';
+        $validated['digital_token'] = Str::uuid()->toString();
+
         $guest = Guest::create($validated);
+
+        Mail::to($guest->email)->send(new GuestDigitalIdMail($guest));
 
         return redirect()
             ->route('guests.index', ['event_id' => $guest->event_id])
-            ->with('status', 'Guest added successfully.');
+            ->with('status', 'Guest added successfully. A digital ID has been sent to the guest email.');
     }
 
     public function show(Guest $guest)
