@@ -435,7 +435,7 @@
                                         <p><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 18h6"/><path d="M10 13h4"/><path d="M5.2 9a6.8 6.8 0 1 1 13.6 0c0 2.3-1.2 4.3-3.1 5.5l-.5.3v2.4a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-2.4l-.5-.3A6.8 6.8 0 0 1 5.2 9z"/></svg></span> {{ $event->theme }}</p>
                                     @endif
                                     @if($event->type === 'conference' && $event->keywords)
-                                        <p><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 12a4 4 0 0 1 4-4h2a4 4 0 0 1 0 8h-2a4 4 0 0 1-4-4z"/><path d="M14 12h6"/><path d="M20 12l-2-2"/><path d="M20 12l-2 2"/></svg></span> {{ is_array($event->keywords) ? implode(', ', $event->keywords) : $event->keywords }}</p>
+                                        <p><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span> {{ is_array($event->keywords) ? implode(', ', $event->keywords) : $event->keywords }}</p>
                                     @endif
                                     @if($event->type === 'conference' && $event->template_file_path)
                                         <p><button type="button" class="template-download-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline><path d="M9 15l3 3 5-5"></path></svg></span> Conference Paper Template</button></p>
@@ -514,7 +514,7 @@
                                         <p><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 18h6"/><path d="M10 13h4"/><path d="M5.2 9a6.8 6.8 0 1 1 13.6 0c0 2.3-1.2 4.3-3.1 5.5l-.5.3v2.4a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-2.4l-.5-.3A6.8 6.8 0 0 1 5.2 9z"/></svg></span> {{ $event->theme }}</p>
                                     @endif
                                     @if($event->type === 'conference' && $event->keywords)
-                                        <p><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 12a4 4 0 0 1 4-4h2a4 4 0 0 1 0 8h-2a4 4 0 0 1-4-4z"/><path d="M14 12h6"/><path d="M20 12l-2-2"/><path d="M20 12l-2 2"/></svg></span> {{ is_array($event->keywords) ? implode(', ', $event->keywords) : $event->keywords }}</p>
+                                        <p><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span> {{ is_array($event->keywords) ? implode(', ', $event->keywords) : $event->keywords }}</p>
                                     @endif
                                     @if($event->type === 'conference' && $event->template_file_path)
                                         <p><button type="button" class="template-download-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline><path d="M9 15l3 3 5-5"></path></svg></span> Conference Paper Template</button></p>
@@ -572,7 +572,7 @@
                                         <span><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 18h6"/><path d="M10 13h4"/><path d="M5.2 9a6.8 6.8 0 1 1 13.6 0c0 2.3-1.2 4.3-3.1 5.5l-.5.3v2.4a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-2.4l-.5-.3A6.8 6.8 0 0 1 5.2 9z"/></svg></span> {{ $event->theme }}</span>
                                     @endif
                                     @if($event->type === 'conference' && $event->keywords)
-                                        <span><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 12a4 4 0 0 1 4-4h2a4 4 0 0 1 0 8h-2a4 4 0 0 1-4-4z"/><path d="M14 12h6"/><path d="M20 12l-2-2"/><path d="M20 12l-2 2"/></svg></span> {{ is_array($event->keywords) ? implode(', ', $event->keywords) : $event->keywords }}</span>
+                                        <span><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span> {{ is_array($event->keywords) ? implode(', ', $event->keywords) : $event->keywords }}</span>
                                     @endif
                                     <span><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></span> {{ $event->participants_count ?? $event->participants->count() }} attended</span>
                                     @if($event->averageRating())
