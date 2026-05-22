@@ -205,6 +205,65 @@ class GuestController extends Controller
             ->with('status', 'Guest deleted successfully.');
     }
 
+    public function approve(Request $request, Event $event, Guest $guest)
+    {
+        if (! $this->guestModuleReady()) {
+            return back()->withErrors(['guests' => 'Guest module tables are not ready yet.']);
+        }
+
+        // Check event consistency
+        abort_if($guest->event_id !== $event->id, 404);
+
+        // Authorization: admin or event_staff who owns the event
+        if (! auth()->check() || (! auth()->user()->hasRole('admin') && (! auth()->user()->hasRole('event_staff') || $event->created_by !== auth()->id()))) {
+            return $request->expectsJson() || $request->is('api/*')
+                ? response()->json(['message' => 'Unauthorized'], 403)
+                : back()->with('error', 'You do not have permission to approve this guest.');
+        }
+
+        $guest->update([
+            'status' => 'approved',
+        ]);
+
+        if (! $guest->digital_token) {
+            $guest->update(['digital_token' => Str::uuid()->toString()]);
+            $guest->refresh();
+        }
+
+        Mail::to($guest->email)->send(new GuestDigitalIdMail($guest->loadMissing('event')));
+
+        if ($request->expectsJson() || $request->is('api/*')) {
+            return response()->json(['message' => 'Guest approved and digital ID email sent.']);
+        }
+
+        return back()->with('status', 'Guest approved and digital ID email sent.');
+    }
+
+    public function deny(Request $request, Event $event, Guest $guest)
+    {
+        if (! $this->guestModuleReady()) {
+            return back()->withErrors(['guests' => 'Guest module tables are not ready yet.']);
+        }
+
+        // Check event consistency
+        abort_if($guest->event_id !== $event->id, 404);
+
+        // Authorization: admin or event_staff who owns the event
+        if (! auth()->check() || (! auth()->user()->hasRole('admin') && (! auth()->user()->hasRole('event_staff') || $event->created_by !== auth()->id()))) {
+            return $request->expectsJson() || $request->is('api/*')
+                ? response()->json(['message' => 'Unauthorized'], 403)
+                : back()->with('error', 'You do not have permission to deny this guest.');
+        }
+
+        $guest->delete();
+
+        if ($request->expectsJson() || $request->is('api/*')) {
+            return response()->json(['message' => 'Guest denied and removed.']);
+        }
+
+        return back()->with('status', 'Guest denied and removed.');
+    }
+
     private function guestModuleReady(): bool
     {
         return Schema::hasTable('guests') && Schema::hasTable('guest_evaluations');

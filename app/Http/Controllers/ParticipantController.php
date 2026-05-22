@@ -26,7 +26,7 @@ class ParticipantController extends Controller
         $eventsQuery = Event::query();
         
         // Event Staff can only see events they created
-        if (auth()->user()->hasRole('event_staff')) {
+        if (auth()->check() && auth()->user()->hasRole('event_staff')) {
             $eventsQuery->where('created_by', auth()->id());
         }
         
@@ -39,7 +39,7 @@ class ParticipantController extends Controller
             $selectedEvent = Event::find((int) $request->query('event_id'));
 
             // Event Staff can only view participants of events they created
-            if ($selectedEvent && auth()->user()->hasRole('event_staff') && $selectedEvent->created_by !== auth()->id()) {
+            if ($selectedEvent && auth()->check() && auth()->user()->hasRole('event_staff') && $selectedEvent->created_by !== auth()->id()) {
                 if (!$wantsJson) {
                     return back()->with('error', 'You do not have access to this event\'s participants.');
                 }
@@ -97,7 +97,7 @@ class ParticipantController extends Controller
     public function create(Request $request, Event $event)
     {
         // Check permission: Event Staff can only add participants to their own events
-        if (auth()->user()->hasRole('event_staff') && $event->created_by !== auth()->id()) {
+        if (auth()->check() && auth()->user()->hasRole('event_staff') && $event->created_by !== auth()->id()) {
             return $request->expectsJson() || $request->is('api/*')
                 ? response()->json(['message' => 'Unauthorized'], 403)
                 : back()->with('error', 'You do not have permission to add participants to this event.');
@@ -119,7 +119,7 @@ class ParticipantController extends Controller
     public function store(StoreParticipantRequest $request, Event $event)
     {
         // Check permission: Event Staff can only add participants to their own events
-        if (auth()->user()->hasRole('event_staff') && $event->created_by !== auth()->id()) {
+        if (auth()->check() && auth()->user()->hasRole('event_staff') && $event->created_by !== auth()->id()) {
             return $request->expectsJson() || $request->is('api/*')
                 ? response()->json(['message' => 'Unauthorized'], 403)
                 : back()->with('error', 'You do not have permission to add participants to this event.');
@@ -146,17 +146,36 @@ class ParticipantController extends Controller
                 ->withErrors(['registration' => $message]);
         }
 
-        $participant = $event->participants()->create([
-            ...$request->validated(),
-            'attended' => false,
-        ]);
+        $isAdminOrStaff = auth()->check() && (
+            auth()->user()->hasRole('admin')
+            || (auth()->user()->hasRole('event_staff') && $event->created_by === auth()->id())
+        );
 
-        $mobileDigitalIdUrl = $this->mobileDigitalIdUrl($participant->digital_id_token);
+        if ($isAdminOrStaff) {
+            $participant = $event->participants()->create([
+                ...$request->validated(),
+                'attended' => false,
+                'status' => 'approved',
+                'approved_at' => now(),
+            ]);
 
-        Mail::to($participant->email)->send(new ParticipantRegisteredMail(
-            participant: $participant->fresh('event'),
-            digitalIdUrl: $mobileDigitalIdUrl,
-        ));
+            // Ensure token exists (model will generate on creating when status=approved)
+            $participant->refresh();
+
+            $mobileDigitalIdUrl = $this->mobileDigitalIdUrl($participant->digital_id_token);
+
+            Mail::to($participant->email)->send(new ParticipantRegisteredMail(
+                participant: $participant->fresh('event'),
+                digitalIdUrl: $mobileDigitalIdUrl,
+            ));
+        } else {
+            // Landing/public registration: create as pending (no email yet)
+            $participant = $event->participants()->create([
+                ...$request->validated(),
+                'attended' => false,
+                'status' => 'pending',
+            ]);
+        }
 
         if ($wantsJson) {
             return response()->json([
@@ -236,7 +255,7 @@ class ParticipantController extends Controller
     public function edit(Request $request, Event $event, Participant $participant)
     {
         // Check permission: Event Staff can only edit participants in their own events
-        if (auth()->user()->hasRole('event_staff') && $event->created_by !== auth()->id()) {
+        if (auth()->check() && auth()->user()->hasRole('event_staff') && $event->created_by !== auth()->id()) {
             return $request->expectsJson() || $request->is('api/*')
                 ? response()->json(['message' => 'Unauthorized'], 403)
                 : back()->with('error', 'You do not have permission to modify participants in this event.');
@@ -257,7 +276,7 @@ class ParticipantController extends Controller
     public function update(UpdateParticipantRequest $request, Event $event, Participant $participant)
     {
         // Check permission: Event Staff can only update participants in their own events
-        if (auth()->user()->hasRole('event_staff') && $event->created_by !== auth()->id()) {
+        if (auth()->check() && auth()->user()->hasRole('event_staff') && $event->created_by !== auth()->id()) {
             return $request->expectsJson() || $request->is('api/*')
                 ? response()->json(['message' => 'Unauthorized'], 403)
                 : back()->with('error', 'You do not have permission to modify participants in this event.');
@@ -284,7 +303,7 @@ class ParticipantController extends Controller
     public function destroy(Request $request, Event $event, Participant $participant)
     {
         // Check permission: Event Staff can only delete participants in their own events
-        if (auth()->user()->hasRole('event_staff') && $event->created_by !== auth()->id()) {
+        if (auth()->check() && auth()->user()->hasRole('event_staff') && $event->created_by !== auth()->id()) {
             return $request->expectsJson() || $request->is('api/*')
                 ? response()->json(['message' => 'Unauthorized'], 403)
                 : back()->with('error', 'You do not have permission to modify participants in this event.');
@@ -342,6 +361,65 @@ class ParticipantController extends Controller
         }
 
         return back()->with('status', $message);
+    }
+
+    public function approve(Request $request, Event $event, Participant $participant)
+    {
+        $this->ensureParticipantBelongsToEvent($event, $participant);
+
+        // Authorization: admin or event_staff who owns the event
+        if (! auth()->check() || (! auth()->user()->hasRole('admin') && (! auth()->user()->hasRole('event_staff') || $event->created_by !== auth()->id()))) {
+            return $request->expectsJson() || $request->is('api/*')
+                ? response()->json(['message' => 'Unauthorized'], 403)
+                : back()->with('error', 'You do not have permission to approve this participant.');
+        }
+
+        $participant->update([
+            'status' => 'approved',
+            'approved_at' => now(),
+        ]);
+
+        if (! $participant->digital_id_token) {
+            $participant->update([
+                'digital_id_token' => Str::uuid()->toString(),
+            ]);
+            $participant->refresh();
+        }
+
+        $digitalIdUrl = $this->mobileDigitalIdUrl($participant->digital_id_token);
+
+        Mail::to($participant->email)->send(new ParticipantRegisteredMail(
+            participant: $participant->loadMissing('event'),
+            digitalIdUrl: $digitalIdUrl,
+        ));
+
+        if ($request->expectsJson() || $request->is('api/*')) {
+            return response()->json([
+                'message' => 'Participant approved and digital ID email sent.',
+            ]);
+        }
+
+        return back()->with('status', 'Participant approved and digital ID email sent.');
+    }
+
+    public function deny(Request $request, Event $event, Participant $participant)
+    {
+        $this->ensureParticipantBelongsToEvent($event, $participant);
+
+        // Authorization: admin or event_staff who owns the event
+        if (! auth()->check() || (! auth()->user()->hasRole('admin') && (! auth()->user()->hasRole('event_staff') || $event->created_by !== auth()->id()))) {
+            return $request->expectsJson() || $request->is('api/*')
+                ? response()->json(['message' => 'Unauthorized'], 403)
+                : back()->with('error', 'You do not have permission to deny this participant.');
+        }
+
+        $participant->delete();
+
+        if ($request->expectsJson() || $request->is('api/*')) {
+            return response()->json(['message' => 'Participant denied and removed.']);
+        }
+
+        return back()->with('status', 'Participant denied and removed.');
     }
 
     private function ensureParticipantBelongsToEvent(Event $event, Participant $participant): void

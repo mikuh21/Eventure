@@ -19,6 +19,7 @@ class Participant extends Model
         'email',
         'event_id',
         'digital_id_token',
+        'status',
         'attended',
     ];
 
@@ -57,7 +58,9 @@ class Participant extends Model
     protected static function booted(): void
     {
         static::creating(function (Participant $participant): void {
-            if (! $participant->digital_id_token) {
+            // Only generate a digital id token automatically when the participant
+            // is being created with an approved status (admin/staff-created).
+            if (($participant->status ?? null) === 'approved' && ! $participant->digital_id_token) {
                 $participant->digital_id_token = Str::uuid()->toString();
             }
         });

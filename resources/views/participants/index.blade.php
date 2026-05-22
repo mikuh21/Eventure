@@ -1134,7 +1134,7 @@
                     </tr>
                 @else
                     @foreach ($participants as $participant)
-                        <tr>
+                        <tr data-participant-id="{{ $participant->id }}">
                             <td>{{ $participant->name }}</td>
                             <td class="cell-muted">{{ $participant->email }}</td>
                             <td>
@@ -1158,6 +1158,16 @@
                                     >
                                         Digital ID
                                     </button>
+                                    @if (($participant->status ?? 'approved') === 'pending' && (auth()->user()->hasRole('admin') || (auth()->user()->hasRole('event_staff') && $selectedEvent->created_by === auth()->id())))
+                                        <form class="js-approve-form" action="{{ route('events.participants.approve', [$selectedEvent, $participant]) }}" method="POST" style="display:inline;" data-participant-name="{{ $participant->name }}">
+                                            @csrf
+                                            <button class="btn-action" type="submit">Approve</button>
+                                        </form>
+                                        <form class="js-deny-form" action="{{ route('events.participants.deny', [$selectedEvent, $participant]) }}" method="POST" style="display:inline;" data-participant-name="{{ $participant->name }}">
+                                            @csrf
+                                            <button class="btn-action btn-delete" type="submit">Deny</button>
+                                        </form>
+                                    @endif
                                     <form id="delete-form-{{ $participant->id }}" action="{{ route('events.participants.destroy', [$selectedEvent, $participant]) }}" method="POST" style="display:inline;">
                                         @csrf
                                         @method('DELETE')
@@ -1193,6 +1203,33 @@
             @endif
         @endif
     </div>
+
+    <!-- Approve Confirmation Modal -->
+    <div id="approveConfirmModal" class="delete-confirm-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="approveConfirmTitle">
+        <div class="delete-confirm-panel">
+            <h2 id="approveConfirmTitle" class="delete-confirm-title">Approve Participant</h2>
+            <p class="delete-confirm-body">Are you sure you want to approve <span id="approveConfirmName" class="delete-confirm-name"></span>? An email with the Digital ID will be sent.</p>
+            <div class="delete-confirm-actions">
+                <button type="button" class="btn-delete-cancel" id="approveConfirmCancel">Cancel</button>
+                <button type="button" class="btn-delete-confirm" id="approveConfirmSubmit">Yes, Approve</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Deny Confirmation Modal -->
+    <div id="denyConfirmModal" class="delete-confirm-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="denyConfirmTitle">
+        <div class="delete-confirm-panel">
+            <h2 id="denyConfirmTitle" class="delete-confirm-title">Deny Participant</h2>
+            <p class="delete-confirm-body">Are you sure you want to deny and remove <span id="denyConfirmName" class="delete-confirm-name"></span>?</p>
+            <div class="delete-confirm-actions">
+                <button type="button" class="btn-delete-cancel" id="denyConfirmCancel">Cancel</button>
+                <button type="button" class="btn-delete-confirm" id="denyConfirmSubmit">Yes, Deny</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast container -->
+    <div id="toastContainer" style="position:fixed; top:16px; right:16px; z-index:1400"></div>
 
     @if ($selectedEvent)
         @php
@@ -1890,6 +1927,151 @@
                 if (event.key === 'Escape' && deleteModal && deleteModal.classList.contains('is-visible')) {
                     closeDeleteModal();
                 }
+            });
+
+            // ── Approve / Deny Confirmation Modals & AJAX handlers ─────────────────
+            var approveModal = document.getElementById('approveConfirmModal');
+            var approveNameEl = document.getElementById('approveConfirmName');
+            var approveCancel = document.getElementById('approveConfirmCancel');
+            var approveSubmit = document.getElementById('approveConfirmSubmit');
+            var pendingApproveForm = null;
+
+            var denyModal = document.getElementById('denyConfirmModal');
+            var denyNameEl = document.getElementById('denyConfirmName');
+            var denyCancel = document.getElementById('denyConfirmCancel');
+            var denySubmit = document.getElementById('denyConfirmSubmit');
+            var pendingDenyForm = null;
+
+            function showToast(message, type = 'info', duration = 4000) {
+                var toastContainer = document.getElementById('toastContainer');
+                if (!toastContainer) return;
+                var toast = document.createElement('div');
+                toast.className = 'modal-floating-label modal-floating-' + type + ' modal-toast';
+                toast.textContent = message;
+                toastContainer.appendChild(toast);
+
+                window.setTimeout(function () {
+                    toast.classList.add('is-hiding');
+                }, duration - 400);
+
+                window.setTimeout(function () {
+                    if (toast && toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
+                    }
+                }, duration);
+            }
+
+            document.querySelectorAll('form.js-approve-form').forEach(function (form) {
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    pendingApproveForm = form;
+                    if (approveNameEl) approveNameEl.innerText = form.dataset.participantName || 'this participant';
+                    if (approveModal) {
+                        approveModal.classList.add('is-visible');
+                        approveModal.setAttribute('aria-hidden', 'false');
+                        document.body.style.overflow = 'hidden';
+                    }
+                });
+            });
+
+            if (approveCancel) approveCancel.addEventListener('click', function () {
+                if (!approveModal) return;
+                approveModal.classList.remove('is-visible');
+                approveModal.setAttribute('aria-hidden', 'true');
+                document.body.style.overflow = '';
+                pendingApproveForm = null;
+            });
+
+            if (approveSubmit) approveSubmit.addEventListener('click', function () {
+                if (!pendingApproveForm) return;
+                var url = pendingApproveForm.action;
+                var formData = new FormData(pendingApproveForm);
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Accept': 'application/json'
+                    },
+                    body: formData,
+                    credentials: 'same-origin'
+                }).then(function (resp) {
+                    return resp.json().then(function (data) { return { status: resp.status, data: data }; });
+                }).then(function (result) {
+                    if (result.status >= 200 && result.status < 300) {
+                        showToast(result.data.message || 'Approved and email sent.', 'success');
+                        // remove row
+                        var row = pendingApproveForm.closest('tr');
+                        if (row) row.parentNode.removeChild(row);
+                    } else {
+                        showToast(result.data.message || 'Failed to approve.', 'error');
+                    }
+                }).catch(function (err) {
+                    showToast('Error approving participant.', 'error');
+                }).finally(function () {
+                    if (approveModal) {
+                        approveModal.classList.remove('is-visible');
+                        approveModal.setAttribute('aria-hidden', 'true');
+                        document.body.style.overflow = '';
+                    }
+                    pendingApproveForm = null;
+                });
+            });
+
+            document.querySelectorAll('form.js-deny-form').forEach(function (form) {
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    pendingDenyForm = form;
+                    if (denyNameEl) denyNameEl.innerText = form.dataset.participantName || 'this participant';
+                    if (denyModal) {
+                        denyModal.classList.add('is-visible');
+                        denyModal.setAttribute('aria-hidden', 'false');
+                        document.body.style.overflow = 'hidden';
+                    }
+                });
+            });
+
+            if (denyCancel) denyCancel.addEventListener('click', function () {
+                if (!denyModal) return;
+                denyModal.classList.remove('is-visible');
+                denyModal.setAttribute('aria-hidden', 'true');
+                document.body.style.overflow = '';
+                pendingDenyForm = null;
+            });
+
+            if (denySubmit) denySubmit.addEventListener('click', function () {
+                if (!pendingDenyForm) return;
+                var url = pendingDenyForm.action;
+                var formData = new FormData(pendingDenyForm);
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Accept': 'application/json'
+                    },
+                    body: formData,
+                    credentials: 'same-origin'
+                }).then(function (resp) {
+                    return resp.json().then(function (data) { return { status: resp.status, data: data }; });
+                }).then(function (result) {
+                    if (result.status >= 200 && result.status < 300) {
+                        showToast(result.data.message || 'Participant denied.', 'success');
+                        var row = pendingDenyForm.closest('tr');
+                        if (row) row.parentNode.removeChild(row);
+                    } else {
+                        showToast(result.data.message || 'Failed to deny participant.', 'error');
+                    }
+                }).catch(function (err) {
+                    showToast('Error denying participant.', 'error');
+                }).finally(function () {
+                    if (denyModal) {
+                        denyModal.classList.remove('is-visible');
+                        denyModal.setAttribute('aria-hidden', 'true');
+                        document.body.style.overflow = '';
+                    }
+                    pendingDenyForm = null;
+                });
             });
 
             syncQrFabWithModalState();

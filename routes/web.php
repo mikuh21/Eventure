@@ -89,6 +89,23 @@ Route::middleware(['auth', 'admin'])->group(function (): void {
     Route::post('events/{event}/participants/{participant}/resend-digital-id', [ParticipantController::class, 'resendDigitalIdEmail'])
         ->name('events.participants.resend-digital-id');
 
+    // Approve / Deny endpoints (auth required) for event staff or admins
+    Route::post('events/{event}/participants/{participant}/approve', [ParticipantController::class, 'approve'])
+        ->middleware('auth')
+        ->name('events.participants.approve');
+
+    Route::post('events/{event}/participants/{participant}/deny', [ParticipantController::class, 'deny'])
+        ->middleware('auth')
+        ->name('events.participants.deny');
+
+    Route::post('events/{event}/guests/{guest}/approve', [GuestController::class, 'approve'])
+        ->middleware('auth')
+        ->name('events.guests.approve');
+
+    Route::post('events/{event}/guests/{guest}/deny', [GuestController::class, 'deny'])
+        ->middleware('auth')
+        ->name('events.guests.deny');
+
     Route::resource('guests', GuestController::class);
 
     Route::resource('guests.evaluations', GuestEvaluationController::class);
