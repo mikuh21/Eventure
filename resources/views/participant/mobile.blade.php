@@ -1128,7 +1128,7 @@
                                             <div class="survey-form-likert survey-form-vertical">
                                                 @foreach ([1, 2, 3, 4, 5] as $i)
                                                     <label class="survey-form-likert-option">
-                                                        <input type="radio" id="question_{{ $question->id }}_{{ $itemIndex }}_{{ $i }}" name="answers[{{ $question->id }}][]" value="{{ $i }}" {{ $question->is_required ? 'required' : '' }}>
+                                                        <input type="radio" id="question_{{ $question->id }}_{{ $itemIndex }}_{{ $i }}" name="answers[{{ $question->id }}][{{ $itemIndex }}]" value="{{ $i }}" {{ $question->is_required ? 'required' : '' }}>
                                                         <span>{{ $sessionFeedbackRatingLabels[$i] }}</span>
                                                     </label>
                                                 @endforeach
