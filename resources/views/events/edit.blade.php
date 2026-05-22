@@ -315,11 +315,15 @@
             // Initialize date pickers
             var initializeDatePickers = function() {
                 var today = new Date();
+                var todayStr = today.toISOString().split('T')[0];
+                var todayDateTime = today.toISOString().split('Z')[0].slice(0, 16);
+                
                 var tomorrow = new Date(today);
                 tomorrow.setDate(tomorrow.getDate() + 1);
                 var minDate = tomorrow.toISOString().split('T')[0];
                 var minDateTime = tomorrow.toISOString().split('Z')[0].slice(0, 16);
 
+                // Start Date and End Date must be tomorrow or later
                 ['start_date', 'end_date'].forEach(function(id) {
                     var input = document.getElementById(id);
                     if (input) {
@@ -327,16 +331,17 @@
                     }
                 });
 
+                // Start Registration and End Registration can be today or later
                 ['start_registration', 'end_registration'].forEach(function(id) {
                     var input = document.getElementById(id);
                     if (input) {
-                        input.setAttribute('min', minDateTime);
+                        input.setAttribute('min', todayDateTime);
                     }
                 });
             };
             initializeDatePickers();
 
-            // iOS fallback: enforce future-only selection for standalone edit page
+            // iOS fallback: enforce date validation for standalone edit page
             var enforceFutureSelectionForStandaloneEdit = function() {
                 var today = new Date();
                 var todayStr = new Date(today.getFullYear(), today.getMonth(), today.getDate()).toISOString().split('T')[0];
@@ -344,7 +349,9 @@
                 var tomorrow = new Date(today);
                 tomorrow.setDate(tomorrow.getDate() + 1);
                 var minDateLocal = new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 0, 0, 0);
+                var todayDateLocal = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0);
 
+                // Start Date and End Date must be tomorrow or later
                 ['start_date', 'end_date'].forEach(function(id) {
                     var el = document.getElementById(id);
                     if (!el) return;
@@ -362,17 +369,19 @@
                     });
                 });
 
+                // Start Registration and End Registration can be today or later
                 ['start_registration', 'end_registration'].forEach(function(id) {
                     var el = document.getElementById(id);
                     if (!el) return;
                     el.addEventListener('change', function() {
                         if (!el.value) return;
                         var selected = new Date(el.value);
-                        if (selected <= minDateLocal) {
+                        // Allow today or any time after today (>= todayDateLocal)
+                        if (selected < todayDateLocal) {
                             el.value = '';
                             var err = document.getElementById(id + '_error');
                             if (err) err.style.display = 'block';
-                            alert('Please select a future date');
+                            alert('Please select today or a future date');
                         } else {
                             var err = document.getElementById(id + '_error');
                             if (err) err.style.display = 'none';
@@ -415,6 +424,7 @@
                     var tomorrow = new Date(today);
                     tomorrow.setDate(tomorrow.getDate() + 1);
 
+                    // Start Date and End Date: minDate is tomorrow
                     ['start_date','end_date'].forEach(function(id) {
                         var el = document.getElementById(id);
                         if (!el) return;
@@ -425,6 +435,7 @@
                         });
                     });
 
+                    // Start Registration and End Registration: minDate is today
                     ['start_registration','end_registration'].forEach(function(id) {
                         var el = document.getElementById(id);
                         if (!el) return;
@@ -432,7 +443,7 @@
                             enableTime: true,
                             time_24hr: false,
                             dateFormat: "Y-m-d\\TH:i",
-                            minDate: tomorrow,
+                            minDate: today,
                             disableMobile: true,
                             minuteIncrement: 1
                         });
