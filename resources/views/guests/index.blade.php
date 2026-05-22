@@ -399,6 +399,7 @@
         .guest-modal-form textarea {
             min-height: 92px;
             resize: vertical;
+            font-family: 'Sora', sans-serif;
         }
 
         .guest-modal-form input:focus,
@@ -749,6 +750,7 @@
             .guest-modal-form textarea {
                 min-height: 36px;
                 font-size: 13px;
+                font-family: 'Sora', sans-serif;
             }
 
             .guest-actions {
