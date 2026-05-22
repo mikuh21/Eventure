@@ -1076,9 +1076,11 @@
             }
 
             let currentParticipantActionUrl = participantActionBase;
+            const nameLabel = document.querySelector('label[for="landingName"]');
 
             function setFormType(type, eventType = 'standard') {
                 if (type === 'guest') {
+                    nameLabel.textContent = 'Guest Name';
                     participantTypeField.classList.add('hidden');
                     landingInstitutionField.classList.add('hidden');
                     guestRoleField.classList.remove('hidden');
@@ -1089,6 +1091,7 @@
                     landingRegistrationForm.querySelector('[name="institution"]')?.removeAttribute('required');
                     landingRegistrationForm.querySelector('[name="role"]')?.setAttribute('required', 'required');
                 } else {
+                    nameLabel.textContent = 'Name';
                     participantTypeField.classList.remove('hidden');
                     landingInstitutionField.classList.remove('hidden');
                     guestRoleField.classList.add('hidden');
