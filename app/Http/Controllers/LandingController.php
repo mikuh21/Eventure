@@ -8,7 +8,7 @@ class LandingController extends Controller
 {
     public function __invoke()
     {
-        $today = now()->startOfDay();
+        $today = now('Asia/Manila')->startOfDay();
 
         $ongoingEvents = Event::query()
             ->whereDate('start_date', $today)
