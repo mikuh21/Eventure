@@ -130,8 +130,8 @@
             border: 1px solid var(--line);
             border-radius: 18px;
             padding: 30px;
-            box-shadow: 0 16px 30px rgba(10, 35, 66, 0.12);
-        }
+            box-shadow: 0 16px 30px rgba(10, 35, 66, 0.12);            position: relative;
+            overflow: visible;        }
 
         .title {
             margin: 0;
@@ -322,6 +322,50 @@
             flex: 1 1 0;
         }
 
+        .modal-floating-label {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            max-width: min(360px, calc(100% - 40px));
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            box-shadow: 0 10px 24px rgba(10, 35, 66, 0.2);
+            z-index: 20;
+            animation: toast-in 180ms ease-out;
+            transition: opacity 220ms ease, transform 220ms ease;
+        }
+
+        .modal-floating-label.is-hiding {
+            opacity: 0;
+            transform: translateY(-6px);
+        }
+
+        @keyframes toast-in {
+            from {
+                opacity: 0;
+                transform: translateY(-6px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-floating-success {
+            background: #ecfdf5;
+            border: 1px solid #34d399;
+            color: #065f46;
+        }
+
+        .modal-floating-error {
+            background: #fef2f2;
+            border: 1px solid #fca5a5;
+            color: #991b1b;
+        }
+
         .modal-error {
             border-radius: 11px;
             padding: 12px 14px;
@@ -405,9 +449,9 @@
         }
 
         .alert-error {
-            background: rgba(127, 29, 29, 0.28);
+            background: rgba(127, 29, 29, 0.12);
             border: 1px solid rgba(248, 113, 113, 0.34);
-            color: #fee2e2;
+            color: #0a2342;
         }
 
         .alert-error ul {
@@ -443,18 +487,22 @@
 
     <main class="page-wrap">
         <section class="login-card" aria-label="Sign in card">
-            @if (session('status'))
-                <div class="alert-success">{{ session('status') }}</div>
-            @endif
-
             @if ($errors->any() && ! old('forgot_password'))
+                @php
+                    $loginErrors = $errors->all();
+                    $showSimpleInvalid = count($loginErrors) === 1 && $loginErrors[0] === 'The provided credentials do not match our records.';
+                @endphp
                 <div class="alert-error">
-                    <strong>Please fix the following:</strong>
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
+                    @if ($showSimpleInvalid)
+                        Invalid credentials.
+                    @else
+                        <strong>Please fix the following:</strong>
+                        <ul>
+                            @foreach ($loginErrors as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    @endif
                 </div>
             @endif
 
@@ -509,6 +557,7 @@
         <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="forgotPasswordTitle">
             <h2 class="modal-title" id="forgotPasswordTitle">Forgot Password</h2>
             <p class="modal-copy">Enter the email address for your Event Staff account and we will send you a new password.</p>
+            <div id="forgotToastContainer"></div>
 
             @if ($errors->any() && old('forgot_password'))
                 <div class="modal-error">
@@ -516,7 +565,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('password.email', [], false) }}" method="POST" novalidate>
+            <form id="forgotPasswordForm" action="{{ route('password.email', [], false) }}" method="POST" novalidate>
                 @csrf
                 <input type="hidden" name="forgot_password" value="1">
                 <div class="field">
@@ -525,7 +574,7 @@
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn-ghost" id="cancelForgotPassword">Cancel</button>
-                    <button type="submit" class="btn-primary">Send Password</button>
+                    <button type="submit" class="btn-primary" id="sendPasswordBtn">Send Password</button>
                 </div>
             </form>
         </div>
@@ -562,6 +611,53 @@
 
         if (cancelForgotPassword) {
             cancelForgotPassword.addEventListener('click', () => toggleForgotModal(false));
+        }
+
+        const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+        const sendPasswordBtn = document.getElementById('sendPasswordBtn');
+        const forgotToastContainer = document.getElementById('forgotToastContainer');
+        const forgotPasswordStatus = {{ session('status') ? json_encode(session('status')) : 'null' }};
+
+        function showToast(message, type = 'success', duration = 4000, container = document.body) {
+            if (!message) return;
+            const toast = document.createElement('div');
+            toast.className = 'modal-floating-label modal-floating-' + type + ' modal-toast';
+            toast.textContent = message;
+            container.appendChild(toast);
+            window.setTimeout(() => toast.classList.add('is-hiding'), duration);
+            window.setTimeout(() => {
+                if (toast && toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, duration + 280);
+        }
+
+        if (forgotPasswordForm) {
+            forgotPasswordForm.addEventListener('submit', (event) => {
+                if (!forgotPasswordForm.checkValidity()) {
+                    return;
+                }
+
+                if (sendPasswordBtn) {
+                    sendPasswordBtn.disabled = true;
+                    sendPasswordBtn.textContent = 'Sending...';
+                }
+            });
+        }
+
+        if (sendPasswordBtn) {
+            sendPasswordBtn.addEventListener('click', () => {
+                if (!forgotPasswordForm || !forgotPasswordForm.checkValidity()) {
+                    return;
+                }
+                sendPasswordBtn.disabled = true;
+                sendPasswordBtn.textContent = 'Sending...';
+            });
+        }
+
+        if (forgotPasswordStatus && forgotPasswordModal) {
+            toggleForgotModal(true);
+            showToast(forgotPasswordStatus, 'success', 4000, forgotToastContainer || forgotPasswordModal);
         }
 
         if (openForgotModal && forgotPasswordModal) {
