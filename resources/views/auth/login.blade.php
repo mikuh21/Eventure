@@ -185,6 +185,7 @@
             background: #ffffff;
             color: #0a2342;
             padding: 12px 13px;
+            padding-right: 48px;
             font: inherit;
             outline: none;
             transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
@@ -207,9 +208,11 @@
 
         .password-toggle {
             position: absolute;
-            right: 12px;
+            right: 10px;
             top: 50%;
             transform: translateY(-50%);
+            width: 36px;
+            height: 36px;
             border: none;
             background: transparent;
             cursor: pointer;
@@ -217,8 +220,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 6px;
-            font-size: 1rem;
+            padding: 0;
         }
 
         .password-toggle:hover {
@@ -236,6 +238,7 @@
             background: transparent;
             color: var(--accent);
             font: inherit;
+            font-size: 0.9rem;
             font-weight: 700;
             cursor: pointer;
             padding: 0;
