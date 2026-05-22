@@ -618,6 +618,11 @@
         const forgotToastContainer = document.getElementById('forgotToastContainer');
         const forgotPasswordStatus = {{ session('status') ? json_encode(session('status')) : 'null' }};
 
+        if (sendPasswordBtn) {
+            sendPasswordBtn.disabled = false;
+            sendPasswordBtn.textContent = 'Send Password';
+        }
+
         function showToast(message, type = 'success', duration = 4000, container = document.body) {
             if (!message) return;
             const toast = document.createElement('div');
