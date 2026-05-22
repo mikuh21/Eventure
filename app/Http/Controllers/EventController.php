@@ -337,6 +337,7 @@ class EventController extends Controller
         abort_if(! $event->template_file_path, 404, 'No template file uploaded for this conference event.');
 
         $token = trim($request->input('token', ''));
+        $token = $this->normalizeGuestToken($token);
 
         if (empty($token)) {
             return response()->json([
@@ -344,9 +345,9 @@ class EventController extends Controller
             ], 422);
         }
 
-        // Look up the guest by token
+        // Look up the guest by token, normalizing the stored value for safe comparison.
         $guest = $event->guests()
-            ->where('digital_token', $token)
+            ->whereRaw('LOWER(digital_token) = ?', [mb_strtolower($token)])
             ->first();
 
         if (!$guest) {
@@ -368,6 +369,15 @@ class EventController extends Controller
             $event->template_file_path,
             'Conference-Paper-Template.' . $extension
         );
+    }
+
+    private function normalizeGuestToken(string $token): string
+    {
+        if (preg_match('/[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}/', $token, $matches)) {
+            return mb_strtolower($matches[0]);
+        }
+
+        return mb_strtolower(trim($token));
     }
 
     private function buildEventData(array $validated, Request $request, ?Event $event = null): array
