@@ -227,17 +227,6 @@ class EvaluationQuestion extends Model
                         'Networking opportunities',
                     ],
                 ],
-                [
-                    'question' => 'Overall Conference Rating',
-                    'field_key' => null,
-                    'type' => self::TYPE_RATING,
-                    'placeholder' => null,
-                    'help_text' => 'Rate: Excellent (5), Good (4), Satisfactory (3), Needs Improvement (2), Poor (1)',
-                    'is_required' => true,
-                    'section' => 'Session Feedback',
-                    'is_matrix' => false,
-                    'matrix_items' => null,
-                ],
                 // Open-ended Section
                 [
                     'question' => 'What did you find most valuable about this conference?',
