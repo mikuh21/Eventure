@@ -180,12 +180,13 @@
         input[type='email'],
         input[type='password'] {
             width: 100%;
+            box-sizing: border-box;
             border: 1px solid rgba(88, 164, 207, 0.35);
             border-radius: 10px;
             background: #ffffff;
             color: #0a2342;
             padding: 12px 13px;
-            padding-right: 48px;
+            padding-right: 58px;
             font: inherit;
             outline: none;
             transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
@@ -204,6 +205,7 @@
 
         .input-with-icon {
             position: relative;
+            width: 100%;
         }
 
         .password-toggle {
@@ -211,8 +213,8 @@
             right: 10px;
             top: 50%;
             transform: translateY(-50%);
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             border: none;
             background: transparent;
             cursor: pointer;
@@ -221,6 +223,13 @@
             align-items: center;
             justify-content: center;
             padding: 0;
+            box-sizing: border-box;
+        }
+
+        .password-toggle svg {
+            display: block;
+            width: 20px;
+            height: 20px;
         }
 
         .password-toggle:hover {
