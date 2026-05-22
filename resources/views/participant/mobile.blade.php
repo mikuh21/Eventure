@@ -261,21 +261,21 @@
 
         .survey-form-progress {
             padding: 16px 20px 8px;
-            background: #fff;
-            border-bottom: 1px solid #eee;
+            background: transparent;
+            border-bottom: none;
         }
 
         .survey-form-step-label {
             font-size: 13px;
             font-weight: 600;
-            color: #64748b;
+            color: #94a3b8;
             margin-bottom: 8px;
             font-family: 'Sora', sans-serif;
         }
 
         .survey-form-progress-bar {
             height: 6px;
-            background: #e2e8f0;
+            background: rgba(255, 255, 255, 0.15);
             border-radius: 999px;
             overflow: hidden;
             position: relative;
@@ -286,7 +286,7 @@
             display: block;
             height: 100%;
             width: var(--progress, 0%);
-            background: #1e3a5f;
+            background: #38bdf8;
             border-radius: 999px;
             transition: width 0.3s ease;
         }
