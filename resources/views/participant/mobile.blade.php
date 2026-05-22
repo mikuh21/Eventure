@@ -1245,9 +1245,10 @@
                 </div>
 
                 @if ($certificateAvailable)
-                    <a class="survey-button" href="{{ route('participants.certificate.show', ['token' => $participant->digital_id_token, 'type' => $certificateType]) }}">
+                    <a class="survey-button cert-download-btn" href="{{ route('participants.certificate.show', ['token' => $participant->digital_id_token, 'type' => $certificateType]) }}">
                         Download Certificate
                     </a>
+                    <p id="cert-ios-tip" style="display:none;font-size:12px;color:#10b981;text-align:center;margin-top:8px;">PDF opened in new tab. Tap the share icon and select "Save to Files" to keep it.</p>
                 @else
                     <div class="survey-pending">
                         <p class="survey-state-title">Certificate Not Yet Available</p>
@@ -1716,6 +1717,66 @@
                 }, 2600);
             };
 
+            const registerCertDownloadButtons = () => {
+                const buttons = document.querySelectorAll('.cert-download-btn');
+                buttons.forEach((btn) => {
+                    if (btn.dataset.certBound) return;
+                    btn.dataset.certBound = '1';
+                    btn.addEventListener('click', async function(e) {
+                        e.preventDefault();
+                        const url = this.getAttribute('href') || this.dataset.href;
+                        const originalText = this.textContent;
+                        this.textContent = 'Preparing...';
+                        this.style.pointerEvents = 'none';
+
+                        const isIOS = /iP(hone|od|ad)/.test(navigator.userAgent) || (navigator.platform && /MacIntel/.test(navigator.platform) && navigator.maxTouchPoints > 1);
+                        const isAndroid = /Android/i.test(navigator.userAgent);
+
+                        try {
+                            const resp = await fetch(url, { credentials: 'same-origin' });
+                            if (!resp.ok) throw new Error('Failed to fetch certificate');
+                            const blob = await resp.blob();
+                            const blobUrl = URL.createObjectURL(blob);
+
+                            if (isAndroid) {
+                                const a = document.createElement('a');
+                                a.href = blobUrl;
+                                a.download = 'Certificate.pdf';
+                                document.body.appendChild(a);
+                                a.click();
+                                a.remove();
+                                URL.revokeObjectURL(blobUrl);
+                            } else if (isIOS) {
+                                const newTab = window.open(blobUrl, '_blank');
+                                if (!newTab) {
+                                    window.location.href = url;
+                                }
+                                const tip = document.getElementById('cert-ios-tip');
+                                if (tip) {
+                                    tip.style.display = 'block';
+                                    setTimeout(() => { tip.style.display = 'none'; }, 5000);
+                                }
+                            } else {
+                                const a = document.createElement('a');
+                                a.href = blobUrl;
+                                a.download = 'Certificate.pdf';
+                                document.body.appendChild(a);
+                                a.click();
+                                a.remove();
+                                URL.revokeObjectURL(blobUrl);
+                            }
+                        } catch(err) {
+                            window.open(url, '_blank');
+                        } finally {
+                            this.textContent = originalText;
+                            this.style.pointerEvents = '';
+                        }
+                    });
+                });
+            };
+
+            registerCertDownloadButtons();
+
             mobileSurveyForm.addEventListener('submit', async (event) => {
                 if (!validateCurrentStep()) {
                     event.preventDefault();
@@ -1786,7 +1847,8 @@
                                         </svg>
                                         <span>${certTitle}</span>
                                     </div>
-                                    <a class="survey-button" href="${certUrl}">Download Certificate</a>
+                                    <a class="survey-button cert-download-btn" href="${certUrl}">Download Certificate</a>
+                                    <p id="cert-ios-tip" style="display:none;font-size:12px;color:#10b981;text-align:center;margin-top:8px;">PDF opened in new tab. Tap the share icon and select \"Save to Files\" to keep it.</p>
                                 `;
                             }
                         }
