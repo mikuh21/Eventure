@@ -753,6 +753,10 @@
             gap: 12px;
         }
 
+        .survey-form-vertical {
+            grid-template-columns: 1fr !important;
+        }
+
         .survey-form-likert-option,
         .survey-form-radio-option {
             display: inline-flex;
@@ -1089,6 +1093,14 @@
                         } else {
                             $eventDateDisplay = $startDate->format('F j, Y') . ' - ' . $endDate->format('F j, Y');
                         }
+
+                        $sessionFeedbackRatingLabels = [
+                            1 => '1 (Poor)',
+                            2 => '2 (Needs Improvement)',
+                            3 => '3 (Satisfactory)',
+                            4 => '4 (Good)',
+                            5 => '5 (Excellent)',
+                        ];
                     @endphp
                     <div class="survey-form-progress">
                         <div class="survey-form-step-label" id="surveyStepLabel">Step 1 of {{ $sections->count() }}</div>
@@ -1100,63 +1112,88 @@
                             <h3 class="survey-step-title">{{ $section }}</h3>
 
                             @foreach ($sectionQuestions as $question)
-                                <div class="survey-question" data-question-id="{{ $question->id }}" data-required="{{ $question->is_required ? 'true' : 'false' }}">
-                                    <label class="survey-question-label" for="question_{{ $question->id }}">
-                                        {{ $question->question }}
-                                        @if ($question->is_required)
-                                            <span class="required-star">*</span>
+                                @if ($question->is_matrix && $section === 'Session Feedback' && is_array($question->matrix_items))
+                                    @foreach ($question->matrix_items as $itemIndex => $item)
+                                        <div class="survey-question" data-question-id="{{ $question->id }}_{{ $itemIndex }}" data-required="{{ $question->is_required ? 'true' : 'false' }}">
+                                            <label class="survey-question-label" for="question_{{ $question->id }}_{{ $itemIndex }}">
+                                                {{ $item }}
+                                                @if ($question->is_required)
+                                                    <span class="required-star">*</span>
+                                                @endif
+                                            </label>
+
+                                            <div class="survey-form-likert survey-form-vertical">
+                                                @foreach ([1, 2, 3, 4, 5] as $i)
+                                                    <label class="survey-form-likert-option">
+                                                        <input type="radio" id="question_{{ $question->id }}_{{ $itemIndex }}_{{ $i }}" name="answers[{{ $question->id }}][{{ $itemIndex }}]" value="{{ $i }}" {{ $question->is_required ? 'required' : '' }}>
+                                                        <span>{{ $sessionFeedbackRatingLabels[$i] }}</span>
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                @else
+                                    <div class="survey-question" data-question-id="{{ $question->id }}" data-required="{{ $question->is_required ? 'true' : 'false' }}">
+                                        <label class="survey-question-label" for="question_{{ $question->id }}">
+                                            {{ $question->question }}
+                                            @if ($question->is_required)
+                                                <span class="required-star">*</span>
+                                            @endif
+                                        </label>
+
+                                        @if ($question->help_text && $section !== 'Session Feedback')
+                                            <p class="survey-question-help{{ in_array($question->renderingType(), ['likert', 'rating']) ? ' text-center' : '' }}">{{ $question->help_text }}</p>
                                         @endif
-                                    </label>
 
-                                    @if ($question->help_text)
-                                        <p class="survey-question-help{{ in_array($question->renderingType(), ['likert', 'rating']) ? ' text-center' : '' }}">{{ $question->help_text }}</p>
-                                    @endif
-
-                                    @if (in_array($question->renderingType(), ['likert', 'rating']))
-                                        <div class="survey-form-likert">
-                                            @foreach ([1, 2, 3, 4, 5] as $i)
-                                                <label class="survey-form-likert-option">
-                                                    <input type="radio" id="question_{{ $question->id }}_{{ $i }}" name="answers[{{ $question->id }}]" value="{{ $i }}" {{ $question->is_required ? 'required' : '' }}>
-                                                    <span>{{ $i }}</span>
-                                                </label>
-                                            @endforeach
-                                        </div>
-                                    @elseif ($question->renderingType() === 'textarea')
-                                        <textarea
-                                            id="question_{{ $question->id }}"
-                                            name="answers[{{ $question->id }}]"
-                                            class="survey-form-textarea"
-                                            placeholder="{{ $question->placeholder }}"
-                                            {{ $question->is_required ? 'required' : '' }}
-                                            @if ($question->isProgramQuestion()) aria-label="{{ $question->question }}" @endif
-                                        ></textarea>
-                                    @elseif ($question->renderingType() === 'radio' && is_array($question->matrix_items))
-                                        <div class="survey-form-radio-group">
-                                            @foreach ($question->matrix_items as $item)
-                                                <label class="survey-form-radio-option">
-                                                    <input type="radio" name="answers[{{ $question->id }}]" value="{{ $item }}" {{ $question->is_required ? 'required' : '' }}>
-                                                    <span>{{ $item }}</span>
-                                                </label>
-                                            @endforeach
-                                        </div>
-                                    @else
-                                        @php
-                                            $isEventDetailsDateField = $section === 'Event Details' && $question->renderingType() === 'date';
-                                            $isEventDetailsVenueField = $section === 'Event Details' && trim(strtolower($question->question)) === 'venue';
-                                        @endphp
-                                        <input
-                                            id="question_{{ $question->id }}"
-                                            name="answers[{{ $question->id }}]"
-                                            type="{{ $isEventDetailsDateField || $isEventDetailsVenueField ? 'text' : (in_array($question->renderingType(), ['date', 'time']) ? $question->renderingType() : 'text') }}"
-                                            class="survey-form-input"
-                                            placeholder="{{ $question->placeholder }}"
-                                            value="{{ $isEventDetailsDateField ? $eventDateDisplay : ($isEventDetailsVenueField ? $event->location : '') }}"
-                                            {{ $isEventDetailsDateField || $isEventDetailsVenueField ? 'readonly' : '' }}
-                                            {{ $question->is_required ? 'required' : '' }}
-                                            @if ($question->isProgramQuestion()) aria-label="{{ $question->question }}" @endif
-                                        >
-                                    @endif
-                                </div>
+                                        @if (in_array($question->renderingType(), ['likert', 'rating']))
+                                            @php
+                                                $optionClass = $section === 'Session Feedback' ? ' survey-form-vertical' : '';
+                                            @endphp
+                                            <div class="survey-form-likert{{ $optionClass }}">
+                                                @foreach ([1, 2, 3, 4, 5] as $i)
+                                                    <label class="survey-form-likert-option">
+                                                        <input type="radio" id="question_{{ $question->id }}_{{ $i }}" name="answers[{{ $question->id }}]" value="{{ $i }}" {{ $question->is_required ? 'required' : '' }}>
+                                                        <span>{{ $section === 'Session Feedback' ? $sessionFeedbackRatingLabels[$i] : $i }}</span>
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                        @elseif ($question->renderingType() === 'textarea')
+                                            <textarea
+                                                id="question_{{ $question->id }}"
+                                                name="answers[{{ $question->id }}]"
+                                                class="survey-form-textarea"
+                                                placeholder="{{ $question->placeholder }}"
+                                                {{ $question->is_required ? 'required' : '' }}
+                                                @if ($question->isProgramQuestion()) aria-label="{{ $question->question }}" @endif
+                                            ></textarea>
+                                        @elseif ($question->renderingType() === 'radio' && is_array($question->matrix_items))
+                                            <div class="survey-form-radio-group">
+                                                @foreach ($question->matrix_items as $item)
+                                                    <label class="survey-form-radio-option">
+                                                        <input type="radio" name="answers[{{ $question->id }}]" value="{{ $item }}" {{ $question->is_required ? 'required' : '' }}>
+                                                        <span>{{ $item }}</span>
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                        @else
+                                            @php
+                                                $isEventDetailsDateField = $section === 'Event Details' && $question->renderingType() === 'date';
+                                                $isEventDetailsVenueField = $section === 'Event Details' && trim(strtolower($question->question)) === 'venue';
+                                            @endphp
+                                            <input
+                                                id="question_{{ $question->id }}"
+                                                name="answers[{{ $question->id }}]"
+                                                type="{{ $isEventDetailsDateField || $isEventDetailsVenueField ? 'text' : (in_array($question->renderingType(), ['date', 'time']) ? $question->renderingType() : 'text') }}"
+                                                class="survey-form-input"
+                                                placeholder="{{ $question->placeholder }}"
+                                                value="{{ $isEventDetailsDateField ? $eventDateDisplay : ($isEventDetailsVenueField ? $event->location : '') }}"
+                                                {{ $isEventDetailsDateField || $isEventDetailsVenueField ? 'readonly' : '' }}
+                                                {{ $question->is_required ? 'required' : '' }}
+                                                @if ($question->isProgramQuestion()) aria-label="{{ $question->question }}" @endif
+                                            >
+                                        @endif
+                                    </div>
+                                @endif
                             @endforeach
                         </div>
                     @endforeach
