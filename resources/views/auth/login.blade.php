@@ -616,7 +616,7 @@
         const forgotPasswordForm = document.getElementById('forgotPasswordForm');
         const sendPasswordBtn = document.getElementById('sendPasswordBtn');
         const forgotToastContainer = document.getElementById('forgotToastContainer');
-        const forgotPasswordStatus = {{ session('status') ? json_encode(session('status')) : 'null' }};
+        const forgotPasswordStatus = {!! session('status') ? json_encode(session('status')) : 'null' !!};
 
         if (sendPasswordBtn) {
             sendPasswordBtn.disabled = false;

@@ -23,7 +23,7 @@
                         <td style="padding:24px;">
                             <p style="margin:0 0 14px; font-size:16px; color:#0A2342;">Hello {{ $user->name }},</p>
                             <p style="margin:0 0 18px; font-size:14px; line-height:1.6; color:#1B6CA8;">
-                                Your Event Staff account has been created successfully.
+                                A new password has been generated for your Event Staff account. Use the password below to sign in.
                             </p>
 
                             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f5faff; border:1px solid #bfdfff; border-radius:12px; margin:0 0 18px;">
@@ -45,8 +45,6 @@
 
                             <p style="margin:0 0 6px; font-size:12px; color:#5BA4CF;">If the button does not work, copy and paste this URL:</p>
                             <p style="margin:0 0 14px; font-size:12px; color:#0A2342; word-break:break-all;">{{ route('login') }}</p>
-
-                            <p style="margin:0; font-size:13px; line-height:1.5; color:#1B6CA8;">Please change your password after first login for security.</p>
                         </td>
                     </tr>
 
