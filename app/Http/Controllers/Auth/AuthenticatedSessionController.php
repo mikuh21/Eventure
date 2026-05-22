@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Mail\EventStaffCredentialsMail;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
@@ -15,6 +18,40 @@ class AuthenticatedSessionController extends Controller
     public function create(): View
     {
         return view('auth.login');
+    }
+
+    public function forgotPasswordForm(): View
+    {
+        return view('auth.login')->with('forgotPasswordModal', true);
+    }
+
+    public function sendForgotPassword(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'email' => ['required', 'email'],
+        ]);
+
+        $user = User::query()
+            ->where('email', $request->input('email'))
+            ->where('role', User::ROLE_EVENT_STAFF)
+            ->first();
+
+        if (! $user) {
+            return back()
+                ->withInput()
+                ->withErrors(['email' => 'Please enter the email associated with your Event Staff account.'])
+                ->with('forgotPasswordModal', true);
+        }
+
+        $password = Str::random(12);
+        $user->password = $password;
+        $user->save();
+
+        Mail::to($user->email)->send(new EventStaffCredentialsMail($user, $password));
+
+        return back()
+            ->with('status', 'A new password has been sent to your Event Staff email.')
+            ->with('forgotPasswordModal', true);
     }
 
     public function store(Request $request): RedirectResponse

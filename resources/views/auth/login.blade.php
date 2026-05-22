@@ -201,25 +201,107 @@
             background: #f8fcff;
         }
 
-        .remember-row {
+        .input-with-icon {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            color: var(--muted);
             display: flex;
             align-items: center;
-            gap: 9px;
-            margin: 4px 0 16px;
+            justify-content: center;
+            padding: 6px;
+            font-size: 1rem;
         }
 
-        .remember-row input {
-            width: 16px;
-            height: 16px;
-            accent-color: var(--accent);
-            margin: 0;
+        .password-toggle:hover {
+            color: var(--accent);
         }
 
-        .remember-row label {
-            margin: 0;
+        .forgot-row {
+            display: flex;
+            justify-content: flex-end;
+            margin: 8px 0 18px;
+        }
+
+        .link-button {
+            border: none;
+            background: transparent;
+            color: var(--accent);
+            font: inherit;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .link-button:hover {
+            color: var(--accent-strong);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 35, 66, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 22px;
+            z-index: 40;
+        }
+
+        .modal-overlay.is-visible {
+            display: flex;
+        }
+
+        .modal-card {
+            width: 100%;
+            max-width: 420px;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: 0 24px 50px rgba(10, 35, 66, 0.22);
+        }
+
+        .modal-title {
+            margin: 0 0 10px;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .modal-copy {
+            margin: 0 0 18px;
             color: var(--muted);
-            font-weight: 500;
-            font-size: 0.88rem;
+            line-height: 1.6;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 18px;
+        }
+
+        .modal-actions .btn-ghost,
+        .modal-actions .btn-primary {
+            flex: 1 1 0;
+        }
+
+        .modal-error {
+            border-radius: 11px;
+            padding: 12px 14px;
+            margin-bottom: 14px;
+            font-size: 0.9rem;
+            background: rgba(248, 113, 113, 0.18);
+            border: 1px solid rgba(248, 113, 113, 0.34);
+            color: #7f1d1d;
         }
 
         .btn-primary {
@@ -337,7 +419,7 @@
                 <div class="alert-success">{{ session('status') }}</div>
             @endif
 
-            @if ($errors->any())
+            @if ($errors->any() && ! old('forgot_password'))
                 <div class="alert-error">
                     <strong>Please fix the following:</strong>
                     <ul>
@@ -366,12 +448,16 @@
 
                 <div class="field">
                     <label for="password">Password</label>
-                    <input id="password" name="password" type="password" placeholder="Enter your password" required>
+                    <div class="input-with-icon">
+                        <input id="password" name="password" type="password" placeholder="Enter your password" required>
+                        <button type="button" class="password-toggle" id="passwordToggle" aria-label="Show password">
+                            👁️
+                        </button>
+                    </div>
                 </div>
 
-                <div class="remember-row">
-                    <input id="remember" name="remember" type="checkbox" value="1">
-                    <label for="remember">Remember me</label>
+                <div class="forgot-row">
+                    <button type="button" class="link-button" id="forgotPasswordToggle">Forgot Password?</button>
                 </div>
 
                 <button class="btn-primary" type="submit">Sign In</button>
@@ -387,5 +473,72 @@
             @endif
         </section>
     </main>
+
+    <div class="modal-overlay" id="forgotPasswordModal" aria-hidden="true">
+        <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="forgotPasswordTitle">
+            <h2 class="modal-title" id="forgotPasswordTitle">Forgot Password</h2>
+            <p class="modal-copy">Enter the email address for your Event Staff account and we will send you a new password.</p>
+
+            @if ($errors->any() && old('forgot_password'))
+                <div class="modal-error">
+                    {{ $errors->first('email') }}
+                </div>
+            @endif
+
+            <form action="{{ route('password.email', [], false) }}" method="POST" novalidate>
+                @csrf
+                <input type="hidden" name="forgot_password" value="1">
+                <div class="field">
+                    <label for="forgot_email">Event Staff Email</label>
+                    <input id="forgot_email" name="email" type="email" value="{{ old('email') }}" placeholder="you@example.com" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-ghost" id="cancelForgotPassword">Cancel</button>
+                    <button type="submit" class="btn-primary">Send Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const passwordInput = document.getElementById('password');
+        const passwordToggle = document.getElementById('passwordToggle');
+        const forgotPasswordToggle = document.getElementById('forgotPasswordToggle');
+        const forgotPasswordModal = document.getElementById('forgotPasswordModal');
+        const cancelForgotPassword = document.getElementById('cancelForgotPassword');
+        const openForgotModal = {{ session('forgotPasswordModal') ? 'true' : 'false' }};
+
+        if (passwordToggle && passwordInput) {
+            passwordToggle.addEventListener('click', () => {
+                const isPassword = passwordInput.type === 'password';
+                passwordInput.type = isPassword ? 'text' : 'password';
+                passwordToggle.textContent = isPassword ? '🙈' : '👁️';
+            });
+        }
+
+        const toggleForgotModal = (show) => {
+            if (!forgotPasswordModal) return;
+            forgotPasswordModal.classList.toggle('is-visible', show);
+            forgotPasswordModal.setAttribute('aria-hidden', show ? 'false' : 'true');
+        };
+
+        if (forgotPasswordToggle) {
+            forgotPasswordToggle.addEventListener('click', () => toggleForgotModal(true));
+        }
+
+        if (cancelForgotPassword) {
+            cancelForgotPassword.addEventListener('click', () => toggleForgotModal(false));
+        }
+
+        if (openForgotModal && forgotPasswordModal) {
+            toggleForgotModal(true);
+        }
+
+        document.addEventListener('click', (event) => {
+            if (event.target === forgotPasswordModal) {
+                toggleForgotModal(false);
+            }
+        });
+    </script>
 </body>
 </html>

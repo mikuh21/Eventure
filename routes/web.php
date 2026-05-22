@@ -25,6 +25,8 @@ Route::get('participant/events', [EventController::class, 'index'])
 Route::middleware('guest')->group(function (): void {
     Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
     Route::post('login', [AuthenticatedSessionController::class, 'store']);
+    Route::get('forgot-password', [AuthenticatedSessionController::class, 'forgotPasswordForm'])->name('password.request');
+    Route::post('forgot-password', [AuthenticatedSessionController::class, 'sendForgotPassword'])->name('password.email');
 
     if (app()->environment(['local', 'testing'])) {
         Route::get('login/test-as/{role}', [AuthenticatedSessionController::class, 'testLoginAs'])
