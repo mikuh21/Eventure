@@ -224,15 +224,22 @@
             inset: 0;
             background: rgba(10, 35, 66, 0.55);
             z-index: 9998;
-            display: none;
+            display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
             overflow-y: auto;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 180ms ease, visibility 0s linear 180ms;
         }
 
         .landing-registration-modal-overlay.is-visible {
-            display: flex;
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transition: opacity 180ms ease;
         }
 
         .landing-registration-modal {
@@ -244,6 +251,14 @@
             box-shadow: 0 30px 70px rgba(10, 35, 66, 0.18);
             overflow: hidden;
             border: 1px solid rgba(27,108,168,0.18);
+            transform: translateY(10px) scale(0.98);
+            opacity: 0;
+            transition: transform 220ms ease, opacity 220ms ease;
+        }
+
+        .landing-registration-modal-overlay.is-visible .landing-registration-modal {
+            transform: translateY(0) scale(1);
+            opacity: 1;
         }
 
         .landing-registration-body {
