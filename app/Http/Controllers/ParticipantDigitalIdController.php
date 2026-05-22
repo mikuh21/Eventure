@@ -169,7 +169,14 @@ class ParticipantDigitalIdController extends Controller
             default => 'certificate-of-attendance-'.Str::slug($participant->name ?: 'participant').'.pdf',
         };
 
-        return $pdf->download($filename);
+        return response($pdf->output(), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Content-Transfer-Encoding' => 'binary',
+            'Accept-Ranges' => 'bytes',
+            'Cache-Control' => 'private, max-age=0, must-revalidate',
+            'Pragma' => 'public',
+        ]);
     }
 
     public function scan(Request $request)
