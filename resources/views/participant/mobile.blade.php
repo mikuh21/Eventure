@@ -1227,7 +1227,14 @@
         </div>
 
         <section class="survey-section">
-            <p class="survey-label">Certificate</p>
+            @php
+                $certificateTitle = match ($attendanceType) {
+                    'virtual' => 'Certificate of Participation',
+                    'both' => 'Certificate of Attendance & Participation',
+                    default => 'Certificate of Attendance',
+                };
+            @endphp
+            <p class="survey-label">{{ $certificateTitle }}</p>
 
             <div class="survey-card">
                 <div class="survey-title">
@@ -1237,11 +1244,9 @@
                     <span>Download Your Certificate</span>
                 </div>
 
-                <p class="survey-subtext">{{ $participant->event->getCertificateType() }}</p>
-
                 @if ($certificateAvailable)
                     <a class="survey-button" href="{{ route('participants.certificate.show', ['token' => $participant->digital_id_token, 'type' => $certificateType]) }}">
-                        Download {{ $participant->event->getCertificateType() }}
+                        Download Certificate
                     </a>
                 @else
                     <div class="survey-pending">
@@ -1766,7 +1771,10 @@
                         const pageEl = document.querySelector('.page');
                         const certUrl = pageEl?.dataset?.certificateUrl || '';
                         const certType = pageEl?.dataset?.certificateType || '';
-                        const certSection = surveySections.find(s => s.querySelector('.survey-label') && s.querySelector('.survey-label').textContent.trim() === 'Certificate');
+                        const certSection = Array.from(document.querySelectorAll('section.survey-section')).find(s => {
+                            const svg = s.querySelector('svg');
+                            return svg && svg.querySelector('path[d*="M4 5h16v14H4V5"]');
+                        });
                         if (certSection) {
                             const certCard = certSection.querySelector('.survey-card');
                             if (certCard) {
@@ -1777,8 +1785,7 @@
                                         </svg>
                                         <span>Download Your Certificate</span>
                                     </div>
-                                    <p class="survey-subtext">${certType.replace(/-/g, ' ')}</p>
-                                    <a class="survey-button" href="${certUrl}">Download ${certType ? certType.replace(/-/g, ' ') : 'Certificate'}</a>
+                                    <a class="survey-button" href="${certUrl}">Download Certificate</a>
                                 `;
                             }
                         }

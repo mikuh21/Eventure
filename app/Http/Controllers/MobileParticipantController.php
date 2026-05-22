@@ -27,9 +27,10 @@ class MobileParticipantController extends Controller
         $surveyAction = route('participants.evaluations.store', $participant);
         $certificateAvailable = $participant->hasSubmittedSurvey();
         $certificateType = $participant->event->certificateRouteType();
+        $attendanceType = $participant->event->attendance_type ?? 'face_to_face';
         $qrUrl = route('participants.digital-id.show', $participant) . '?format=qr';
         $validThru = optional($participant->event->end_registration)->format('m/d') ?? 'N/A';
 
-        return view('participant.mobile', compact('participant', 'digitalId', 'evaluation', 'surveyAvailable', 'questions', 'sections', 'surveyAction', 'certificateAvailable', 'certificateType', 'qrUrl', 'validThru'));
+        return view('participant.mobile', compact('participant', 'digitalId', 'evaluation', 'surveyAvailable', 'questions', 'sections', 'surveyAction', 'certificateAvailable', 'certificateType', 'attendanceType', 'qrUrl', 'validThru'));
     }
 }
