@@ -423,7 +423,7 @@
                                 <div class="flex items-center gap-2 mb-3">
                                     <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wider text-live" style="background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3)">
                                         <span class="w-2 h-2 rounded-full bg-live pulse-live"></span>
-                                        LIVE
+                                        Today
                                     </span>
                                 </div>
                                 <h3 class="text-xl font-bold text-white mb-2">{{ $event->title }}</h3>
