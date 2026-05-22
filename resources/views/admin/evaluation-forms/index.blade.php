@@ -1859,17 +1859,13 @@
                     const hasParticipants = this.getAttribute('data-has-participants') === 'true';
                     const eventTitle = this.getAttribute('data-event-title') || 'this event';
                     if (!hasParticipants) {
-                        showToast('Cannot open evaluation form: No attended participants found for ' + eventTitle, 'warning', 5000);
                         e.preventDefault();
+                        showToast('Cannot open evaluation form: No attended participants found for ' + eventTitle, 'warning', 5000);
                         return;
                     }
+
+                    // Allow natural form submission - do not prevent default
                     showToast('Opening evaluation form and sending emails to attended participants...', 'info', 3000);
-                    this.innerHTML = '<span style="display: inline-block; width: 12px; height: 12px; border: 2px solid #ffffff; border-radius: 50%; border-top-color: transparent; animation: spin 1s linear infinite; margin-right: 8px;"></span>Opening...';
-                    this.disabled = true;
-                    setTimeout(() => {
-                        this.disabled = false;
-                        this.innerHTML = 'Open Form';
-                    }, 5000);
                 });
             });
         });
