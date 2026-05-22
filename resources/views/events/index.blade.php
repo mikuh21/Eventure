@@ -1576,7 +1576,7 @@
             // Initialize date pickers
             var initializeDatePickers = function() {
                 var today = new Date();
-                var todayDateTime = today.toISOString().split('Z')[0].slice(0, 16);
+                var todayDateTime = new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().split('Z')[0].slice(0, 16);
                 var tomorrow = new Date(today);
                 tomorrow.setDate(tomorrow.getDate() + 1);
                 var minDate = tomorrow.toISOString().split('T')[0];
