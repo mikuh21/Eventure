@@ -1142,15 +1142,16 @@
                                     @else
                                         @php
                                             $isEventDetailsDateField = $section === 'Event Details' && $question->renderingType() === 'date';
+                                            $isEventDetailsVenueField = $section === 'Event Details' && trim(strtolower($question->question)) === 'venue';
                                         @endphp
                                         <input
                                             id="question_{{ $question->id }}"
                                             name="answers[{{ $question->id }}]"
-                                            type="{{ $isEventDetailsDateField ? 'text' : (in_array($question->renderingType(), ['date', 'time']) ? $question->renderingType() : 'text') }}"
+                                            type="{{ $isEventDetailsDateField || $isEventDetailsVenueField ? 'text' : (in_array($question->renderingType(), ['date', 'time']) ? $question->renderingType() : 'text') }}"
                                             class="survey-form-input"
                                             placeholder="{{ $question->placeholder }}"
-                                            value="{{ $isEventDetailsDateField ? $eventDateDisplay : '' }}"
-                                            {{ $isEventDetailsDateField ? 'readonly' : '' }}
+                                            value="{{ $isEventDetailsDateField ? $eventDateDisplay : ($isEventDetailsVenueField ? $event->location : '') }}"
+                                            {{ $isEventDetailsDateField || $isEventDetailsVenueField ? 'readonly' : '' }}
                                             {{ $question->is_required ? 'required' : '' }}
                                             @if ($question->isProgramQuestion()) aria-label="{{ $question->question }}" @endif
                                         >
