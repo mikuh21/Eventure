@@ -435,10 +435,14 @@
                                         <p><button type="button" class="template-download-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline><path d="M9 15l3 3 5-5"></path></svg></span> Conference Paper Template</button></p>
                                     @endif
                                 </div>
-                                @if($event->end_registration && now()->gt($event->end_registration))
-                                    <span class="mt-4 inline-block px-5 py-2.5 rounded-[10px] text-sm font-semibold cursor-not-allowed" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.35)">
+                                @if(now()->lt($event->start_registration))
+                                    <button disabled class="mt-4 inline-block px-5 py-2.5 rounded-[10px] text-sm font-semibold cursor-not-allowed" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.35)">
+                                        Registration Not Yet Open
+                                    </button>
+                                @elseif(now()->gt($event->end_registration))
+                                    <button disabled class="mt-4 inline-block px-5 py-2.5 rounded-[10px] text-sm font-semibold cursor-not-allowed" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.35)">
                                         Registration Closed
-                                    </span>
+                                    </button>
                                 @else
                                     <a href="{{ route('events.participants.create', $event) }}" class="mt-4 inline-block px-5 py-2.5 bg-live text-white rounded-[10px] text-sm font-semibold hover:brightness-110 transition">
                                         Register Now
@@ -508,14 +512,18 @@
                                     @endif
                                 </div>
                                 <div class="mt-auto">
-                                    @if($event->isRegistrationOpen())
+                                    @if(now()->lt($event->start_registration))
+                                        <button disabled class="block w-full text-center px-5 py-2.5 rounded-[10px] text-sm font-semibold cursor-not-allowed" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.35)">
+                                            Registration Not Yet Open
+                                        </button>
+                                    @elseif(now()->gt($event->end_registration))
+                                        <button disabled class="block w-full text-center px-5 py-2.5 rounded-[10px] text-sm font-semibold cursor-not-allowed" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.35)">
+                                            Registration Closed
+                                        </button>
+                                    @else
                                         <a href="{{ route('events.participants.create', $event) }}" class="block w-full text-center px-5 py-2.5 rounded-[10px] text-sm font-semibold text-em4 hover:bg-em4/25 transition" style="background:rgba(27,108,168,0.15);border:1px solid rgba(27,108,168,0.35)">
                                             Register Now
                                         </a>
-                                    @else
-                                        <span class="block w-full text-center px-5 py-2.5 rounded-[10px] text-sm cursor-not-allowed" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.35)">
-                                            Registration Closed
-                                        </span>
                                     @endif
                                 </div>
                             </div>

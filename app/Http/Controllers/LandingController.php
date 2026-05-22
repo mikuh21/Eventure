@@ -12,7 +12,6 @@ class LandingController extends Controller
 
         $ongoingEvents = Event::query()
             ->whereDate('start_date', $today)
-            ->orWhereBetween('start_date', [$today, $today])
             ->withCount('participants')
             ->orderBy('start_date', 'asc')
             ->get();
