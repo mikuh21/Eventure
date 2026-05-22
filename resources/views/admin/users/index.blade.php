@@ -242,12 +242,12 @@
                     <form id="registerEventStaffForm" method="POST" action="{{ route('admin.users.store') }}">
                 @csrf
                 <div style="margin-bottom: 16px;">
-                    <label for="staffName" style="display: block; margin-bottom: 4px; font-weight: 600; color: var(--color-midnight);">Full Name</label>
-                    <input type="text" id="staffName" name="name" required style="width: 100%; padding: 8px 12px; border: 1px solid var(--color-sky); border-radius: 6px; font-size: 14px;">
+                    <label for="staffName" style="display: block; margin-bottom: 4px; font-weight: 600; color: var(--color-midnight); font-family: 'Sora', sans-serif;">Full Name</label>
+                    <input type="text" id="staffName" name="name" required style="width: 100%; padding: 8px 12px; border: 1px solid var(--color-sky); border-radius: 6px; font-size: 14px; font-family: 'Sora', sans-serif;">
                 </div>
                 <div style="margin-bottom: 20px;">
-                    <label for="staffEmail" style="display: block; margin-bottom: 4px; font-weight: 600; color: var(--color-midnight);">Email</label>
-                    <input type="email" id="staffEmail" name="email" required style="width: 100%; padding: 8px 12px; border: 1px solid var(--color-sky); border-radius: 6px; font-size: 14px;">
+                    <label for="staffEmail" style="display: block; margin-bottom: 4px; font-weight: 600; color: var(--color-midnight); font-family: 'Sora', sans-serif;">Email</label>
+                    <input type="email" id="staffEmail" name="email" required style="width: 100%; padding: 8px 12px; border: 1px solid var(--color-sky); border-radius: 6px; font-size: 14px; font-family: 'Sora', sans-serif;">
                 </div>
                 <div id="registrationError" style="display: none; margin-bottom: 16px; padding: 8px 12px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; color: #dc3545; font-size: 14px;"></div>
                 <div class="delete-confirm-actions">
