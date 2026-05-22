@@ -1634,7 +1634,7 @@
                                         </button>
                                     </form>
                                     <span style="font-size: 12px; color: #999;">
-                                        Opened at {{ $event->evaluation_form_enabled_at?->format('M d, Y H:i') }}
+                                        Opened at {{ $event->evaluation_form_enabled_at?->format('M d, Y g:i A') }}
                                     </span>
                                 @else
                                     @if($event->getAttendedParticipants()->isEmpty())
