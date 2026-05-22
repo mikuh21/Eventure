@@ -1276,7 +1276,7 @@
                             <p style="font-family:'Sora',sans-serif;font-weight:400;font-size:8px;letter-spacing:3px;color:#00C896;margin:0;">THIS CERTIFICATE IS AWARDED TO</p>
                         </div>
                         <div style="position:relative;z-index:2;width:100%;padding-top:14px;">
-                            <p style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:32px;color:#ffffff;margin:0;">{{ $participant->name }}</p>
+                            <p style="font-family:'Brush Script MT',cursive;font-weight:700;font-size:32px;color:#ffffff;margin:0;">{{ $participant->name }}</p>
                         </div>
                         <div style="position:relative;z-index:2;width:100%;padding-top:14px;">
                             <div style="width:160px;height:1px;background:#00C896;margin:0 auto;"></div>
