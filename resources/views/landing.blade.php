@@ -236,12 +236,23 @@
         }
 
         .landing-registration-modal {
-            width: min(760px, 100%);
+            width: min(900px, 100%);
+            max-width: 900px;
+            max-height: calc(100vh - 40px);
             background: #ffffff;
             border-radius: 24px;
             box-shadow: 0 30px 70px rgba(10, 35, 66, 0.18);
             overflow: hidden;
             border: 1px solid rgba(27,108,168,0.18);
+        }
+
+        .landing-registration-body {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 0;
+            min-height: auto;
+            max-height: calc(100vh - 160px);
+            overflow-y: auto;
         }
 
         .landing-registration-header {
@@ -275,7 +286,9 @@
             display: grid;
             grid-template-columns: 1.1fr 0.9fr;
             gap: 0;
-            min-height: 100%;
+            min-height: auto;
+            max-height: calc(100vh - 160px);
+            overflow-y: auto;
         }
 
         .landing-registration-panel {

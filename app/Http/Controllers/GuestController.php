@@ -107,16 +107,13 @@ class GuestController extends Controller
         // Set role server-side based on event type
         $validated['role'] = $event->type === 'conference' ? 'Presenter' : 'Exhibitor';
 
-        $validated['status'] = 'approved';
-        $validated['digital_token'] = Str::uuid()->toString();
+        $validated['status'] = 'pending';
 
         $guest = Guest::create($validated);
 
-        Mail::to($guest->email)->send(new GuestDigitalIdMail($guest));
-
         return redirect()
             ->route('guests.index', ['event_id' => $guest->event_id])
-            ->with('status', 'Guest added successfully. A digital ID has been sent to the guest email.');
+            ->with('status', 'Guest registration submitted successfully. Pending approval is required before a digital ID is issued.');
     }
 
     public function show(Guest $guest)

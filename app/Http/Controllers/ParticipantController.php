@@ -146,63 +146,36 @@ class ParticipantController extends Controller
                 ->withErrors(['registration' => $message]);
         }
 
-        $isAdminOrStaff = auth()->check() && (
-            auth()->user()->hasRole('admin')
-            || (auth()->user()->hasRole('event_staff') && $event->created_by === auth()->id())
-        );
-
-        if ($isAdminOrStaff) {
-            $participant = $event->participants()->create([
-                ...$request->validated(),
-                'attended' => false,
-                'status' => 'approved',
-                'approved_at' => now(),
-            ]);
-
-            // Ensure token exists (model will generate on creating when status=approved)
-            $participant->refresh();
-
-            $mobileDigitalIdUrl = $this->mobileDigitalIdUrl($participant->digital_id_token);
-
-            Mail::to($participant->email)->send(new ParticipantRegisteredMail(
-                participant: $participant->fresh('event'),
-                digitalIdUrl: $mobileDigitalIdUrl,
-            ));
-        } else {
-            // Landing/public registration: create as pending (no email yet)
-            $participant = $event->participants()->create([
-                ...$request->validated(),
-                'attended' => false,
-                'status' => 'pending',
-            ]);
-        }
+        $participant = $event->participants()->create([
+            ...$request->validated(),
+            'attended' => false,
+            'status' => 'pending',
+        ]);
 
         if ($wantsJson) {
             return response()->json([
-                'message' => "Registration successful. Participants' Digital ID is sent on their email.",
+                'message' => 'Registration successful. Pending approval is required before a digital ID is sent.',
                 'data' => $participant,
-                'digital_id_url' => $mobileDigitalIdUrl,
             ], 201);
         }
 
         if ($redirectTo) {
             $isAdminOrStaff = auth()->check() && (auth()->user()->hasRole('admin') || auth()->user()->hasRole('event_staff'));
             return redirect($redirectTo)
-                ->with('status', "Registration successful. Participants' Digital ID is sent on their email.")
+                ->with('status', 'Registration successful. Pending approval is required before a digital ID is sent.')
                 ->with('participant_registered', [
                     'name' => $participant->name,
                     'email' => $participant->email,
                     'participant_type' => $participant->participant_type,
                     'institution' => $participant->institution,
                     'event' => $participant->event->title,
-                    'digital_id_url' => $mobileDigitalIdUrl,
                     'registered_by_admin' => $isAdminOrStaff,
                 ]);
         }
 
         return redirect()
             ->route('participants.confirmation.show', $participant)
-            ->with('status', "Registration successful. Participants' Digital ID is sent on their email.");
+            ->with('status', 'Registration successful. Pending approval is required before a digital ID is sent.');
     }
 
     public function show(Request $request, Event $event, Participant $participant)
