@@ -1246,9 +1246,9 @@
 
                 @if ($certificateAvailable)
                     <button type="button" class="survey-button cert-download-btn" data-cert-url="{{ route('participants.certificate.show', ['token' => $participant->digital_id_token, 'type' => $certificateType]) }}">
-                        Download Certificate
+                        Save Certificate
                     </button>
-                    <p id="cert-ios-tip" style="display:none;font-size:12px;color:#10b981;text-align:center;margin-top:8px;">PDF opened in new tab. Tap the share icon and select "Save to Files" to keep it.</p>
+                    <p id="cert-ios-tip" style="display:none;font-size:12px;color:#10b981;text-align:center;margin-top:8px;">Image generated. Long press the preview and select "Save to Photos" or "Save Image".</p>
                 @else
                     <div class="survey-pending">
                         <p class="survey-state-title">Certificate Not Yet Available</p>
@@ -1258,6 +1258,22 @@
             </div>
         </section>
 
+        @if (!empty($pages))
+            <div id="certificateCanvas" style="position:fixed;left:-9999px;top:0;width:842px;background:#fff;z-index:-1;">
+                @foreach ($pages as $page)
+                    <div class="cert-page" style="width:842px;min-height:595px;padding:60px;font-family:serif;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;border:20px solid #1B6CA8;margin-bottom:20px;">
+                        <h1 style="font-size:36px;color:#1B6CA8;margin:0 0 8px;">Certificate of {{ $page['certificateType'] }}</h1>
+                        <p style="font-size:14px;color:#666;margin:0 0 32px;">This is to certify that</p>
+                        <h2 style="font-size:48px;color:#0A2342;margin:0 0 24px;font-style:italic;">{{ $participant->name }}</h2>
+                        <p style="font-size:16px;color:#333;max-width:600px;line-height:1.6;margin:0 0 32px;">{{ $page['description'] }}</p>
+                        <p style="font-size:14px;color:#666;margin:0;">{{ $eventDate }} • {{ $eventLocation }}</p>
+                        <div style="margin-top:48px;border-top:1px solid #1B6CA8;padding-top:12px;width:200px;">
+                            <p style="font-size:12px;color:#999;margin:0;">Authorized Signature</p>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @endif
         <footer class="footer">
             <div class="wordmark">
                 <span class="wordmark-event">Even</span><span class="wordmark-flow">ture</span>
@@ -1717,49 +1733,89 @@
                 }, 2600);
             };
 
-            function downloadCertificate(url) {
+            async function downloadCertificate(url) {
                 const btn = document.querySelector('.cert-download-btn');
                 if (btn) {
-                    btn.textContent = 'Downloading...';
+                    btn.textContent = 'Saving...';
                     btn.disabled = true;
                 }
 
                 const isIOS = /iP(hone|od|ad)/.test(navigator.userAgent) ||
                     (navigator.platform && /MacIntel/.test(navigator.platform) && navigator.maxTouchPoints > 1);
 
-                if (isIOS) {
-                    // iOS: open in same window and let user save via share button
-                    window.location.href = url;
-                } else {
-                    // Android/Desktop: use hidden iframe to trigger download
-                    const iframe = document.createElement('iframe');
-                    iframe.style.display = 'none';
-                    iframe.src = url;
-                    document.body.appendChild(iframe);
-                    setTimeout(() => {
-                        document.body.removeChild(iframe);
-                        if (btn) {
-                            btn.textContent = 'Download Certificate';
-                            btn.disabled = false;
-                        }
-                    }, 3000);
-                }
+                try {
+                    const pages = document.querySelectorAll('#certificateCanvas .cert-page');
 
-                if (btn && isIOS) {
-                    setTimeout(() => {
-                        btn.textContent = 'Download Certificate';
+                    for (let i = 0; i < pages.length; i++) {
+                        const canvas = await html2canvas(pages[i], {
+                            scale: 2,
+                            useCORS: true,
+                            allowTaint: true,
+                            backgroundColor: '#ffffff',
+                            logging: false,
+                        });
+
+                        const dataUrl = canvas.toDataURL('image/png');
+                        const filename = pages.length > 1
+                            ? 'certificate-' + (i === 0 ? 'attendance' : 'participation') + '.png'
+                            : 'certificate.png';
+
+                        if (isIOS) {
+                            showCertModal(dataUrl, filename, i === pages.length - 1);
+                        } else {
+                            const a = document.createElement('a');
+                            a.href = dataUrl;
+                            a.download = filename;
+                            document.body.appendChild(a);
+                            a.click();
+                            a.remove();
+                            if (i < pages.length - 1) await new Promise(r => setTimeout(r, 800));
+                        }
+                    }
+
+                    if (!isIOS && btn) {
+                        btn.textContent = 'Saved!';
+                        setTimeout(() => {
+                            if (btn) {
+                                btn.textContent = 'Save Certificate';
+                                btn.disabled = false;
+                            }
+                        }, 2000);
+                    }
+                } catch (err) {
+                    console.error(err);
+                    if (btn) {
+                        btn.textContent = 'Save Certificate';
                         btn.disabled = false;
-                    }, 2000);
+                    }
                 }
+            }
+
+            function showCertModal(dataUrl, filename, isLast) {
+                const existing = document.getElementById('certSaveModal');
+                if (existing) existing.remove();
+
+                const modal = document.createElement('div');
+                modal.id = 'certSaveModal';
+                modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:2000;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;';
+                modal.innerHTML = `
+                    <p style="color:#10b981;font-size:14px;font-weight:700;margin:0 0 12px;text-align:center;">Long press the image below and tap "Save to Photos"</p>
+                    <img src="${dataUrl}" style="max-width:100%;max-height:70vh;border-radius:8px;object-fit:contain;" alt="Certificate"/>
+                    <button onclick="this.closest('#certSaveModal').remove(); document.querySelector('.cert-download-btn').textContent='Save Certificate'; document.querySelector('.cert-download-btn').disabled=false;" 
+                        style="margin-top:16px;background:#1B6CA8;color:#fff;border:none;padding:12px 24px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;">
+                        Close
+                    </button>
+                `;
+                document.body.appendChild(modal);
             }
 
             document.addEventListener('click', function(e) {
                 const btn = e.target.closest('.cert-download-btn');
-                if (btn) {
-                    e.preventDefault();
-                    const url = btn.dataset.certUrl || btn.getAttribute('href');
-                    downloadCertificate(url);
-                }
+                if (!btn) return;
+                e.preventDefault();
+
+                const url = btn.dataset.certUrl || btn.getAttribute('href');
+                downloadCertificate(url);
             });
 
             mobileSurveyForm.addEventListener('submit', async (event) => {
@@ -1832,8 +1888,8 @@
                                         </svg>
                                         <span>${certTitle}</span>
                                     </div>
-                                    <button type="button" class="survey-button cert-download-btn" data-cert-url="${certUrl}">Download Certificate</button>
-                                    <p id="cert-ios-tip" style="display:none;font-size:12px;color:#10b981;text-align:center;margin-top:8px;">PDF opened in new tab. Tap the share icon and select \"Save to Files\" to keep it.</p>
+                                    <button type="button" class="survey-button cert-download-btn" data-cert-url="${certUrl}">Save Certificate</button>
+                                    <p id="cert-ios-tip" style="display:none;font-size:12px;color:#10b981;text-align:center;margin-top:8px;">Image generated. Long press the preview and select "Save to Photos" or "Save Image".</p>
                                 `;
                             }
                         }
