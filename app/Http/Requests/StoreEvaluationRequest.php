@@ -54,7 +54,7 @@ class StoreEvaluationRequest extends FormRequest
         return EvaluationQuestion::query()
             ->where('is_active', true)
             ->where('is_guest_question', false)
-            ->forEventType($event->type)
+            ->where('event_id', $event->id)
             ->orderBy('sort_order')
             ->orderBy('id')
             ->get();
