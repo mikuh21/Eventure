@@ -1234,14 +1234,14 @@
                     default => 'Certificate of Attendance',
                 };
             @endphp
-            <p class="survey-label">{{ $certificateTitle }}</p>
+            <p class="survey-label">Certificate</p>
 
             <div class="survey-card">
                 <div class="survey-title">
                     <svg class="icon-lg" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                         <path d="M4 5h16v14H4V5Zm4 4H6v6h2v-6Zm4 0H10v6h2v-6Zm4 0h-2v6h2v-6Z" stroke="#5BA4CF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
-                    <span>Download Your Certificate</span>
+                    <span>{{ $certificateTitle }}</span>
                 </div>
 
                 @if ($certificateAvailable)
@@ -1778,12 +1778,13 @@
                         if (certSection) {
                             const certCard = certSection.querySelector('.survey-card');
                             if (certCard) {
+                                const certTitle = certType === 'participation' ? 'Certificate of Participation' : (certType === 'attendance-participation' ? 'Certificate of Attendance & Participation' : 'Certificate of Attendance');
                                 certCard.innerHTML = `
                                     <div class="survey-title">
                                         <svg class="icon-lg" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                                             <path d="M4 5h16v14H4V5Zm4 4H6v6h2v-6Zm4 0H10v6h2v-6Zm4 0h-2v6h2v-6Z" stroke="#5BA4CF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                                         </svg>
-                                        <span>Download Your Certificate</span>
+                                        <span>${certTitle}</span>
                                     </div>
                                     <a class="survey-button" href="${certUrl}">Download Certificate</a>
                                 `;
