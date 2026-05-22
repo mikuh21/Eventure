@@ -133,6 +133,10 @@ class EvaluationController extends Controller
         $validated = $request->validated();
         $evaluation = $participant->evaluations()->create($this->prepareEvaluationPayload($validated, $event));
 
+        if ($request->expectsJson()) {
+            return response()->json(['success' => true, 'message' => 'Evaluation submitted successfully'], 201);
+        }
+
         if ($wantsJson) {
             return response()->json([
                 'message' => 'Evaluation created successfully.',

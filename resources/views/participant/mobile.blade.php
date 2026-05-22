@@ -952,7 +952,7 @@
     </style>
 </head>
 <body>
-    <main class="page" data-participant-name="{{ addslashes($participant->name) }}" data-participant-id="{{ $participant->id }}" data-token="{{ $digitalId->token }}">
+    <main class="page" data-participant-name="{{ addslashes($participant->name) }}" data-participant-id="{{ $participant->id }}" data-token="{{ $digitalId->token }}" data-certificate-url="{{ route('participants.certificate.show', ['token' => $participant->digital_id_token, 'type' => $certificateType]) }}" data-certificate-type="{{ $certificateType }}">
         <nav class="topbar" aria-label="Participant navigation">
             <div class="wordmark">
                 <span class="wordmark-event">Even</span><span class="wordmark-flow">ture</span>
@@ -1687,9 +1687,117 @@
         }
 
         if (mobileSurveyForm) {
-            mobileSurveyForm.addEventListener('submit', (event) => {
+            const showToast = (message, type = 'success') => {
+                const toast = document.createElement('div');
+                toast.className = 'survey-toast ' + type;
+                toast.textContent = message;
+                Object.assign(toast.style, {
+                    position: 'fixed',
+                    right: '20px',
+                    bottom: '20px',
+                    padding: '12px 16px',
+                    borderRadius: '10px',
+                    background: type === 'success' ? 'rgba(16,185,129,0.95)' : 'rgba(220,38,38,0.95)',
+                    color: '#fff',
+                    zIndex: 1600,
+                    boxShadow: '0 8px 30px rgba(0,0,0,0.4)',
+                    fontWeight: 700,
+                });
+                document.body.appendChild(toast);
+                setTimeout(() => {
+                    toast.style.transition = 'opacity 300ms ease';
+                    toast.style.opacity = '0';
+                    setTimeout(() => toast.remove(), 300);
+                }, 2600);
+            };
+
+            mobileSurveyForm.addEventListener('submit', async (event) => {
                 if (!validateCurrentStep()) {
                     event.preventDefault();
+                    return;
+                }
+
+                event.preventDefault();
+
+                const submitBtn = surveySubmitButton;
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.dataset.origLabel = submitBtn.textContent;
+                    submitBtn.textContent = 'Submitting...';
+                }
+
+                try {
+                    const formData = new FormData(mobileSurveyForm);
+                    const resp = await fetch(mobileSurveyForm.action, {
+                        method: 'POST',
+                        credentials: 'same-origin',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                        },
+                        body: formData,
+                    });
+
+                    let payload = null;
+                    try { payload = await resp.json(); } catch (e) { payload = null; }
+
+                    if (resp.ok) {
+                        // Close modal
+                        closeSurvey();
+
+                        // Replace Feedback Survey section with success card
+                        const surveySections = Array.from(document.querySelectorAll('section.survey-section'));
+                        const feedbackSection = surveySections.find(s => s.querySelector('.survey-label') && s.querySelector('.survey-label').textContent.trim() === 'Feedback Survey');
+                        if (feedbackSection) {
+                            const card = feedbackSection.querySelector('.survey-card');
+                            if (card) {
+                                card.innerHTML = `
+                                    <div class="survey-submitted" style="padding:20px;">
+                                        <svg class="icon-lg" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="display:block;margin:0 auto 12px;">
+                                            <path d="m5 12 4.5 4.5L19 7" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                        <p class="survey-state-title success" style="margin:0 0 8px;font-size:18px;font-weight:700;color:#fff;">Feedback Submitted!</p>
+                                        <p class="survey-state-copy" style="margin:0;font-size:14px;color:var(--muted);">Thank you for taking the time to share your experience.</p>
+                                    </div>
+                                `;
+                            }
+                        }
+
+                        // Show/enable certificate download button
+                        const pageEl = document.querySelector('.page');
+                        const certUrl = pageEl?.dataset?.certificateUrl || '';
+                        const certType = pageEl?.dataset?.certificateType || '';
+                        const certSection = surveySections.find(s => s.querySelector('.survey-label') && s.querySelector('.survey-label').textContent.trim() === 'Certificate');
+                        if (certSection) {
+                            const certCard = certSection.querySelector('.survey-card');
+                            if (certCard) {
+                                certCard.innerHTML = `
+                                    <div class="survey-title">
+                                        <svg class="icon-lg" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                            <path d="M4 5h16v14H4V5Zm4 4H6v6h2v-6Zm4 0H10v6h2v-6Zm4 0h-2v6h2v-6Z" stroke="#5BA4CF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                        <span>Download Your Certificate</span>
+                                    </div>
+                                    <p class="survey-subtext">${certType.replace(/-/g, ' ')}</p>
+                                    <a class="survey-button" href="${certUrl}">Download ${certType ? certType.replace(/-/g, ' ') : 'Certificate'}</a>
+                                `;
+                            }
+                        }
+
+                        showToast('Feedback submitted successfully!', 'success');
+                    } else {
+                        const msg = (payload && (payload.message || (payload.errors ? Object.values(payload.errors).flat().join(' ') : null))) || 'Submission failed';
+                        showToast(msg, 'error');
+                        if (submitBtn) {
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = submitBtn.dataset.origLabel || 'Submit Feedback';
+                        }
+                    }
+                } catch (err) {
+                    showToast('Submission failed. Please try again.', 'error');
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = submitBtn.dataset.origLabel || 'Submit Feedback';
+                    }
                 }
             });
         }
