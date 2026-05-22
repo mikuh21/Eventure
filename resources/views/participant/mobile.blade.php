@@ -260,7 +260,7 @@
         }
 
         .survey-form-progress {
-            padding: 16px 20px 8px;
+            padding: 16px 20px 24px;
             background: transparent;
             border-bottom: none;
         }
@@ -716,6 +716,22 @@
             color: var(--text);
             padding: 12px 14px;
             font: inherit;
+            box-sizing: border-box;
+        }
+
+        .survey-form-input[type=date],
+        .survey-form-input[type=time] {
+            width: 100%;
+            min-height: 46px;
+            box-sizing: border-box;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.04);
+            padding: 12px 14px;
+            color: var(--text);
+            font: inherit;
+            appearance: none;
+            -webkit-appearance: none;
         }
 
         .survey-form-textarea {
