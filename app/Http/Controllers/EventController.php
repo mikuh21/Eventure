@@ -80,7 +80,13 @@ class EventController extends Controller
         }
 
         $events = $eventsQuery
-            ->orderByRaw("CASE WHEN end_date::timestamp < NOW() THEN 1 ELSE 0 END ASC")
+            ->orderByRaw("
+                CASE
+                    WHEN start_date::date = CURRENT_DATE THEN 0
+                    WHEN end_date::date < CURRENT_DATE THEN 2
+                    ELSE 1
+                END ASC
+            ")
             ->orderBy('start_date', 'asc')
             ->paginate(10);
 
