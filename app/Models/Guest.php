@@ -19,6 +19,7 @@ class Guest extends Model
         'role',
         'bio',
         'conference_paper_path',
+        'conference_paper_original_name',
         'digital_token',
         'status',
     ];

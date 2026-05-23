@@ -103,8 +103,10 @@ class GuestController extends Controller
         $validated['status'] = 'pending';
 
         if ($request->hasFile('conference_paper')) {
+            $originalFileName = $request->file('conference_paper')->getClientOriginalName();
             $validated['conference_paper_path'] = $request->file('conference_paper')
                 ->store('conference_papers', 'event-templates');
+            $validated['conference_paper_original_name'] = $originalFileName;
         }
 
         $guest = Guest::create($validated);
@@ -174,7 +176,7 @@ class GuestController extends Controller
             abort(404);
         }
 
-        $originalName = basename($guest->conference_paper_path);
+        $originalName = $guest->conference_paper_original_name ?? basename($guest->conference_paper_path);
         $disk = Storage::disk('event-templates');
 
         if (!$disk->exists($guest->conference_paper_path)) {
@@ -182,7 +184,13 @@ class GuestController extends Controller
         }
 
         try {
-            $url = $disk->temporaryUrl($guest->conference_paper_path, now()->addMinutes(5));
+            $url = $disk->temporaryUrl(
+                $guest->conference_paper_path,
+                now()->addMinutes(5),
+                [
+                    'ResponseContentDisposition' => 'attachment; filename="' . $originalName . '"',
+                ]
+            );
             return redirect($url);
         } catch (\Exception $e) {
             return $disk->download($guest->conference_paper_path, $originalName);
