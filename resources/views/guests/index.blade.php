@@ -376,6 +376,36 @@
             background-image: none;
         }
 
+        .guest-modal-form input[type="file"] {
+            padding: 8px 10px;
+            border-radius: 8px;
+            background: #ffffff;
+            color: var(--color-midnight);
+            font-family: 'Sora', sans-serif;
+            font-size: 14px;
+            border: 1px solid #cfe0ef;
+        }
+
+        .guest-modal-form input[type="file"]::file-selector-button,
+        .guest-modal-form input[type="file"]::-webkit-file-upload-button {
+            margin-right: 8px;
+            padding: 8px 12px;
+            border: 1px solid #cfe0ef;
+            border-radius: 8px;
+            background: #f8fafc;
+            color: var(--color-midnight);
+            cursor: pointer;
+            font-family: 'Sora', sans-serif;
+            font-size: 14px;
+            transition: background-color 160ms ease, border-color 160ms ease;
+        }
+
+        .guest-modal-form input[type="file"]:hover::file-selector-button,
+        .guest-modal-form input[type="file"]:hover::-webkit-file-upload-button {
+            background: #eef4fb;
+            border-color: var(--color-steel-blue);
+        }
+
         .guest-modal-form select {
             width: 100%;
             min-height: 40px;
