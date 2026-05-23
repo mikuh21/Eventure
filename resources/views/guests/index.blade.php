@@ -579,8 +579,8 @@
         .guest-modal-form-actions .btn,
         .guest-modal-form-actions .btn-primary {
             font-family: 'Sora', sans-serif;
-            font-size: 13px;
-            padding: 6px 14px;
+            font-size: 14px;
+            padding: 10px 14px;
         }
 
         #openGuestModal:disabled {
