@@ -22,6 +22,12 @@ Route::post('events/{event}/template/download/verify', [EventController::class, 
 Route::get('participant/events', [EventController::class, 'index'])
     ->name('participants.public.events');
 
+Route::post('register/participant', [ParticipantController::class, 'publicStore'])
+    ->name('public.participant.store');
+
+Route::post('register/guest', [GuestController::class, 'publicStore'])
+    ->name('public.guest.store');
+
 Route::middleware('guest')->group(function (): void {
     Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
     Route::post('login', [AuthenticatedSessionController::class, 'store']);

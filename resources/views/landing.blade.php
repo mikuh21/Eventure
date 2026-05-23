@@ -937,6 +937,329 @@
         </svg>
     </button>
 
+    <!-- Landing Registration Modal -->
+    <div id="landingRegistrationModal" class="landing-registration-modal-overlay" aria-hidden="true">
+        <div class="landing-registration-modal">
+            <div class="landing-registration-header">
+                <div>
+                    <h2 class="landing-registration-title">Register for this event</h2>
+                    <p class="text-sm text-slate-500 mt-2">Choose how you would like to register and complete the correct form.</p>
+                </div>
+                <button type="button" id="landingRegistrationClose" class="landing-registration-close" aria-label="Close registration">×</button>
+            </div>
+            <div class="landing-registration-body overflow-y-auto max-h-[calc(100vh-140px)]">
+                <div class="landing-registration-panel space-y-6">
+                    <div id="landingRegistrationTypeSelection" class="space-y-4">
+                        <p class="text-sm text-slate-500">Register as:</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <button type="button" class="landing-registration-option rounded-2xl border border-slate-200 p-4 text-left transition hover:border-em4 hover:bg-slate-50" data-registration-type="participant">
+                                <div class="text-sm font-semibold text-slate-900">Participant</div>
+                                <p class="text-sm text-slate-600 mt-2">Register as a participant and request approval for a digital ID.</p>
+                            </button>
+                            <button type="button" class="landing-registration-option rounded-2xl border border-slate-200 p-4 text-left transition hover:border-em4 hover:bg-slate-50" data-registration-type="guest">
+                                <div class="text-sm font-semibold text-slate-900">Guest</div>
+                                <p class="text-sm text-slate-600 mt-2">Register as a guest speaker or exhibitor for the event.</p>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="landingRegistrationFormPanel" class="hidden space-y-4">
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between gap-3">
+                                <div>
+                                    <p class="text-sm text-slate-500">You are registering as</p>
+                                    <h3 id="landingFormTypeLabel" class="text-lg font-semibold text-slate-900">Participant</h3>
+                                </div>
+                                <button type="button" class="text-sm text-em4 hover:underline" id="landingRegistrationBack">Change</button>
+                            </div>
+                            <div class="rounded-2xl bg-slate-50 p-4 text-sm text-slate-700 space-y-2">
+                                <p class="font-semibold text-slate-900" id="landingFormEventName">Event title</p>
+                                <p id="landingFormEventDate" class="text-slate-600">Date range</p>
+                                <p id="landingFormEventLocation" class="text-slate-600">Location</p>
+                                <div class="flex flex-wrap items-center gap-2 mt-2 text-xs font-semibold uppercase tracking-wide text-em4">
+                                    <span class="px-2 py-1 rounded-full bg-em4/10 text-em4" id="landingFormEventStatus">Open</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <form id="landingRegistrationForm" class="landing-registration-form space-y-4" method="POST" action="{{ route('public.participant.store') }}">
+                            @csrf
+                            <input type="hidden" name="event_id" id="landingEventId" value="">
+                            <input type="hidden" name="registration_type" id="landingRegistrationType" value="participant">
+
+                            <div class="landing-registration-field">
+                                <label for="landingName">Name</label>
+                                <input id="landingName" name="name" type="text" placeholder="Full name" required>
+                            </div>
+
+                            <div class="landing-registration-field" id="participantTypeField">
+                                <label for="landingParticipantType">Participant Type</label>
+                                <select id="landingParticipantType" name="participant_type" required>
+                                    <option value="">Select type</option>
+                                    <option value="faculty">Faculty</option>
+                                    <option value="student">Student</option>
+                                </select>
+                            </div>
+
+                            <div class="landing-registration-field">
+                                <label for="landingEmail">Email</label>
+                                <input id="landingEmail" name="email" type="email" placeholder="Email address" required>
+                            </div>
+
+                            <div class="landing-registration-field" id="landingInstitutionField">
+                                <label for="landingInstitution">School / University</label>
+                                <input id="landingInstitution" name="institution" type="text" placeholder="School or university" required>
+                            </div>
+
+                            <div id="landingGuestEventField" class="landing-registration-field hidden">
+                                <label for="landingGuestEvent">Event</label>
+                                <input id="landingGuestEvent" type="text" readonly>
+                            </div>
+
+                            <div id="landingGuestRoleField" class="landing-registration-field hidden">
+                                <label for="landingGuestRole">Role</label>
+                                <input id="landingGuestRole" name="role" type="text" readonly required>
+                            </div>
+
+                            <div id="landingGuestBioField" class="landing-registration-field hidden">
+                                <label for="landingGuestBio">Bio / Notes</label>
+                                <textarea id="landingGuestBio" name="bio" rows="4" placeholder="Short bio or notes"></textarea>
+                            </div>
+
+                            <div class="landing-registration-field flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                                <button type="submit" class="landing-registration-submit" id="landingRegistrationSubmit">Register</button>
+                                <button type="button" class="btn-secondary inline-flex justify-center rounded-[10px] border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-slate-100" id="landingRegistrationCancel">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="landing-registration-info">
+                    <div>
+                        <p class="landing-registration-section-title">Event Summary</p>
+                        <h3 class="text-lg font-semibold text-slate-900" id="landingEventTitle">Event title</h3>
+                        <p class="text-sm text-slate-600 mt-2" id="landingEventDate">Date range</p>
+                        <p class="text-sm text-slate-600" id="landingEventLocation">Location</p>
+                    </div>
+                    <div>
+                        <p class="landing-registration-section-title">Registration</p>
+                        <span class="landing-registration-pill" id="landingRegistrationStatus">Open</span>
+                    </div>
+                    <div class="landing-registration-footer">
+                        <p>Once your registration is submitted, you will receive confirmation here. Registrations are reviewed and approved by event staff before a digital ID is issued.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="landingToastContainer" style="position:fixed; top:20px; right:20px; z-index:10000; display:grid; gap:12px;"></div>
+    <script>
+        (function () {
+            const modal = document.getElementById('landingRegistrationModal');
+            const closeBtn = document.getElementById('landingRegistrationClose');
+            const cancelBtn = document.getElementById('landingRegistrationCancel');
+            const openButtons = document.querySelectorAll('.open-registration-modal');
+            const registrationTypeInput = document.getElementById('landingRegistrationType');
+            const registrationTypeOptions = document.querySelectorAll('.landing-registration-option');
+            const participantTypeField = document.getElementById('participantTypeField');
+            const landingInstitutionField = document.getElementById('landingInstitutionField');
+            const guestEventField = document.getElementById('landingGuestEventField');
+            const guestRoleField = document.getElementById('landingGuestRoleField');
+            const guestBioField = document.getElementById('landingGuestBioField');
+            const eventTitle = document.getElementById('landingEventTitle');
+            const eventDate = document.getElementById('landingEventDate');
+            const eventLocation = document.getElementById('landingEventLocation');
+            const registrationStatus = document.getElementById('landingRegistrationStatus');
+            const landingEventId = document.getElementById('landingEventId');
+            const landingRegistrationForm = document.getElementById('landingRegistrationForm');
+            const landingRegistrationSubmit = document.getElementById('landingRegistrationSubmit');
+            const toastContainer = document.getElementById('landingToastContainer');
+            const landingFormTypeLabel = document.getElementById('landingFormTypeLabel');
+            const landingFormEventName = document.getElementById('landingFormEventName');
+            const landingFormEventDate = document.getElementById('landingFormEventDate');
+            const landingFormEventLocation = document.getElementById('landingFormEventLocation');
+            const landingFormEventStatus = document.getElementById('landingFormEventStatus');
+            const landingGuestEvent = document.getElementById('landingGuestEvent');
+            const landingGuestRole = document.getElementById('landingGuestRole');
+            const landingRegistrationTypeSelection = document.getElementById('landingRegistrationTypeSelection');
+            const landingRegistrationFormPanel = document.getElementById('landingRegistrationFormPanel');
+            const landingRegistrationBack = document.getElementById('landingRegistrationBack');
+            const participantPublicUrl = '{{ route('public.participant.store') }}';
+            const guestPublicUrl = '{{ route('public.guest.store') }}';
+            let currentEventType = 'standard';
+
+            function showToast(message, type = 'success') {
+                const toast = document.createElement('div');
+                toast.className = 'landing-toast ' + type;
+                toast.textContent = message;
+                toastContainer.appendChild(toast);
+                setTimeout(() => toast.classList.add('is-visible'), 10);
+                setTimeout(() => { if (toast.parentNode) toast.remove(); }, 4200);
+            }
+
+            function resetForm() {
+                landingRegistrationForm.reset();
+                landingGuestRole.value = '';
+                landingGuestEvent.value = '';
+                registrationTypeInput.value = 'participant';
+                landingRegistrationForm.action = participantPublicUrl;
+                landingRegistrationSubmit.textContent = 'Register';
+                landingFormTypeLabel.textContent = 'Participant';
+                landingGuestEventField.classList.add('hidden');
+                guestRoleField.classList.add('hidden');
+                guestBioField.classList.add('hidden');
+                participantTypeField.classList.remove('hidden');
+                landingInstitutionField.classList.remove('hidden');
+                document.getElementById('landingParticipantType').required = true;
+                document.getElementById('landingInstitution').required = true;
+                landingGuestRole.required = false;
+                landingRegistrationTypeSelection.classList.remove('hidden');
+                landingRegistrationFormPanel.classList.add('hidden');
+                landingRegistrationBack.classList.add('hidden');
+                registrationTypeOptions.forEach((option) => option.classList.remove('border-em4', 'bg-slate-50'));
+                registrationTypeOptions[0]?.classList.add('border-em4', 'bg-slate-50');
+            }
+
+            function updateEventDetails(title, dateText, locationText, statusText) {
+                eventTitle.textContent = title;
+                eventDate.textContent = dateText;
+                eventLocation.textContent = locationText;
+                registrationStatus.textContent = statusText;
+                landingFormEventName.textContent = title;
+                landingFormEventDate.textContent = dateText;
+                landingFormEventLocation.textContent = locationText;
+                landingFormEventStatus.textContent = statusText;
+                landingGuestEvent.value = `${title} · ${dateText}`;
+            }
+
+            function setFormType(type, eventType = 'standard') {
+                currentEventType = eventType;
+                registrationTypeInput.value = type;
+                landingFormTypeLabel.textContent = type === 'guest' ? 'Guest' : 'Participant';
+                landingRegistrationSubmit.textContent = type === 'guest' ? 'Save Guest' : 'Register';
+                landingRegistrationForm.action = type === 'guest' ? guestPublicUrl : participantPublicUrl;
+
+                if (type === 'guest') {
+                    participantTypeField.classList.add('hidden');
+                    landingInstitutionField.classList.add('hidden');
+                    guestEventField.classList.remove('hidden');
+                    guestRoleField.classList.remove('hidden');
+                    guestBioField.classList.remove('hidden');
+                    document.getElementById('landingParticipantType').required = false;
+                    document.getElementById('landingInstitution').required = false;
+                    landingGuestRole.required = true;
+                    landingGuestRole.value = eventType === 'conference' ? 'Presenter' : 'Exhibitor';
+                } else {
+                    participantTypeField.classList.remove('hidden');
+                    landingInstitutionField.classList.remove('hidden');
+                    guestEventField.classList.add('hidden');
+                    guestRoleField.classList.add('hidden');
+                    guestBioField.classList.add('hidden');
+                    document.getElementById('landingParticipantType').required = true;
+                    document.getElementById('landingInstitution').required = true;
+                    landingGuestRole.required = false;
+                    landingGuestRole.value = '';
+                }
+            }
+
+            function showFormPanel() {
+                landingRegistrationTypeSelection.classList.add('hidden');
+                landingRegistrationFormPanel.classList.remove('hidden');
+                landingRegistrationBack.classList.remove('hidden');
+            }
+
+            function openRegistrationModal(button) {
+                const eventId = button.dataset.eventId;
+                const title = button.dataset.eventTitle || 'Event title';
+                const dateText = button.dataset.eventDateRange || 'Date range';
+                const locationText = button.dataset.eventLocation || 'Location';
+                const statusText = button.dataset.eventStatus || 'Open';
+                currentEventType = button.dataset.eventType || 'standard';
+
+                landingEventId.value = eventId;
+                updateEventDetails(title, dateText, locationText, statusText);
+                resetForm();
+                setFormType('participant', currentEventType);
+                modal.classList.add('is-visible');
+                modal.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeRegistrationModal() {
+                modal.classList.remove('is-visible');
+                modal.setAttribute('aria-hidden', 'true');
+                document.body.style.overflow = '';
+                resetForm();
+            }
+
+            openButtons.forEach((button) => {
+                button.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    openRegistrationModal(button);
+                });
+            });
+
+            registrationTypeOptions.forEach((option) => {
+                option.addEventListener('click', () => {
+                    const type = option.dataset.registrationType;
+                    registrationTypeOptions.forEach((item) => item.classList.remove('border-em4', 'bg-slate-50'));
+                    option.classList.add('border-em4', 'bg-slate-50');
+                    setFormType(type, currentEventType);
+                    showFormPanel();
+                });
+            });
+
+            backButton.addEventListener('click', () => {
+                landingRegistrationFormPanel.classList.add('hidden');
+                landingRegistrationTypeSelection.classList.remove('hidden');
+                landingRegistrationBack.classList.add('hidden');
+            });
+
+            closeBtn.addEventListener('click', closeRegistrationModal);
+            cancelBtn.addEventListener('click', closeRegistrationModal);
+            modal.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    closeRegistrationModal();
+                }
+            });
+
+            landingRegistrationForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                const formData = new FormData(landingRegistrationForm);
+                landingRegistrationSubmit.disabled = true;
+                landingRegistrationSubmit.textContent = 'Submitting...';
+                try {
+                    const response = await fetch(landingRegistrationForm.action, {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        },
+                        body: formData,
+                        credentials: 'same-origin'
+                    });
+                    const data = await response.json();
+                    if (response.ok) {
+                        showToast(data.message || 'Registration submitted successfully.', 'success');
+                        landingRegistrationForm.reset();
+                        setFormType(registrationTypeInput.value, currentEventType);
+                        closeRegistrationModal();
+                    } else {
+                        showToast(data.message || 'Registration failed. Please check your details.', 'error');
+                    }
+                } catch (error) {
+                    console.error(error);
+                    showToast('Network error. Please try again.', 'error');
+                } finally {
+                    landingRegistrationSubmit.disabled = false;
+                    landingRegistrationSubmit.textContent = registrationTypeInput.value === 'guest' ? 'Save Guest' : 'Register';
+                }
+            });
+
+            resetForm();
+        })();
+    </script>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const revealItems = document.querySelectorAll('[data-reveal]');

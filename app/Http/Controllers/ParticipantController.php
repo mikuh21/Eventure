@@ -8,6 +8,7 @@ use App\Mail\ParticipantRegisteredMail;
 use App\Models\Event;
 use App\Models\Participant;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
@@ -176,6 +177,36 @@ class ParticipantController extends Controller
         return redirect()
             ->route('participants.confirmation.show', $participant)
             ->with('status', 'Registration successful. Pending approval is required before a digital ID is sent.');
+    }
+
+    public function publicStore(Request $request)
+    {
+        $validated = $request->validate([
+            'event_id' => ['required', 'exists:events,id'],
+            'name' => ['required', 'string', 'max:255'],
+            'participant_type' => ['required', Rule::in(['faculty', 'student'])],
+            'email' => ['required', 'email', 'max:255', Rule::unique('participants', 'email')->where(fn ($query) => $query->where('event_id', $request->input('event_id')))],
+            'institution' => ['required', 'string', 'max:255'],
+        ]);
+
+        $event = Event::findOrFail($validated['event_id']);
+
+        if (! $event->isRegistrationOpen()) {
+            return response()->json([
+                'message' => 'Registration is closed for this event.',
+            ], 422);
+        }
+
+        $participant = $event->participants()->create([
+            ...$validated,
+            'status' => 'pending',
+            'attended' => false,
+        ]);
+
+        return response()->json([
+            'message' => 'Registration submitted! You will receive your Digital ID via email once your registration is approved.',
+            'data' => $participant,
+        ], 201);
     }
 
     public function show(Request $request, Event $event, Participant $participant)

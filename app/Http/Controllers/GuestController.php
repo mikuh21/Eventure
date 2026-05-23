@@ -80,6 +80,34 @@ class GuestController extends Controller
         ]));
     }
 
+    public function publicStore(Request $request)
+    {
+        $validated = $request->validate([
+            'event_id' => ['required', 'exists:events,id'],
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255'],
+            'bio' => ['nullable', 'string'],
+        ]);
+
+        $event = Event::findOrFail($validated['event_id']);
+
+        if (! $event->isRegistrationOpen()) {
+            return response()->json([
+                'message' => 'Registration is closed for this event.',
+            ], 422);
+        }
+
+        $validated['role'] = $event->type === 'conference' ? 'Presenter' : 'Exhibitor';
+        $validated['status'] = 'pending';
+
+        $guest = Guest::create($validated);
+
+        return response()->json([
+            'message' => 'Registration submitted! You will receive your Digital ID via email once your registration is approved.',
+            'data' => $guest,
+        ], 201);
+    }
+
     public function store(Request $request): RedirectResponse
     {
         if (! $this->guestModuleReady()) {
