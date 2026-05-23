@@ -692,6 +692,16 @@
             border-color: #991b1b;
         }
 
+        .btn-approve-confirm {
+            border-color: #16a34a;
+            background: #16a34a;
+        }
+
+        .btn-approve-confirm:hover {
+            background: #15803d;
+            border-color: #15803d;
+        }
+
         /* Mobile Responsive Styles */
         @media (max-width: 768px) {
             .guest-actions {
@@ -1003,7 +1013,7 @@
             <p class="delete-confirm-body">Are you sure you want to approve <span id="approveConfirmName" class="delete-confirm-name"></span>? An email with the Digital ID will be sent.</p>
             <div class="delete-confirm-actions">
                 <button type="button" class="btn-delete-cancel" id="approveConfirmCancel">Cancel</button>
-                <button type="button" class="btn-delete-confirm" id="approveConfirmSubmit">Yes, Approve</button>
+                <button type="button" class="btn-delete-confirm btn-approve-confirm" id="approveConfirmSubmit">Yes, Approve</button>
             </div>
         </div>
     </div>
@@ -1143,6 +1153,17 @@
                 pendingApproveForm = null;
             });
 
+            if (approveModal) {
+                approveModal.addEventListener('click', function (e) {
+                    if (e.target === approveModal) {
+                        approveModal.classList.remove('is-visible');
+                        approveModal.setAttribute('aria-hidden', 'true');
+                        document.body.style.overflow = '';
+                        pendingApproveForm = null;
+                    }
+                });
+            }
+
             if (approveSubmit) approveSubmit.addEventListener('click', function () {
                 if (!pendingApproveForm) return;
                 var url = pendingApproveForm.action;
@@ -1198,6 +1219,17 @@
                 document.body.style.overflow = '';
                 pendingDenyForm = null;
             });
+
+            if (denyModal) {
+                denyModal.addEventListener('click', function (e) {
+                    if (e.target === denyModal) {
+                        denyModal.classList.remove('is-visible');
+                        denyModal.setAttribute('aria-hidden', 'true');
+                        document.body.style.overflow = '';
+                        pendingDenyForm = null;
+                    }
+                });
+            }
 
             if (denySubmit) denySubmit.addEventListener('click', function () {
                 if (!pendingDenyForm) return;
