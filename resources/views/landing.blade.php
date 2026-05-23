@@ -947,18 +947,18 @@
                 </div>
                 <button type="button" id="landingRegistrationClose" class="landing-registration-close" aria-label="Close registration">×</button>
             </div>
-            <div class="landing-registration-body overflow-y-auto max-h-[calc(100vh-140px)]">
+            <div class="landing-registration-body overflow-y-auto max-h-[calc(100vh-140px)] grid gap-6 lg:grid-cols-[1.35fr_0.85fr]">
                 <div class="landing-registration-panel space-y-6">
                     <div id="landingRegistrationTypeSelection" class="space-y-4">
                         <p class="text-sm text-slate-500">Register as:</p>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <button type="button" class="landing-registration-option rounded-2xl border border-slate-200 p-4 text-left transition hover:border-em4 hover:bg-slate-50" data-registration-type="participant">
+                            <button type="button" class="landing-registration-option rounded-2xl border border-slate-200 p-4 text-left transition-all duration-200 ease-in-out hover:border-em4 hover:bg-slate-50" data-registration-type="participant">
                                 <div class="text-sm font-semibold text-slate-900">Participant</div>
                                 <p class="text-sm text-slate-600 mt-2">Register as a participant and request approval for a digital ID.</p>
                             </button>
-                            <button type="button" class="landing-registration-option rounded-2xl border border-slate-200 p-4 text-left transition hover:border-em4 hover:bg-slate-50" data-registration-type="guest">
+                            <button type="button" class="landing-registration-option rounded-2xl border border-slate-200 p-4 text-left transition-all duration-200 ease-in-out hover:border-em4 hover:bg-slate-50" data-registration-type="guest">
                                 <div class="text-sm font-semibold text-slate-900">Guest</div>
-                                <p class="text-sm text-slate-600 mt-2">Register as a guest speaker or exhibitor for the event.</p>
+                                <p class="text-sm text-slate-600 mt-2" id="landingGuestOptionDescription">Register as a guest speaker or exhibitor for the event.</p>
                             </button>
                         </div>
                     </div>
@@ -976,7 +976,7 @@
                                 <p class="font-semibold text-slate-900" id="landingFormEventName">Event title</p>
                                 <p id="landingFormEventDate" class="text-slate-600">Date range</p>
                                 <p id="landingFormEventLocation" class="text-slate-600">Location</p>
-                                <div class="flex flex-wrap items-center gap-2 mt-2 text-xs font-semibold uppercase tracking-wide text-em4">
+                                <div class="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-wide text-em4">
                                     <span class="px-2 py-1 rounded-full bg-em4/10 text-em4" id="landingFormEventStatus">Open</span>
                                 </div>
                             </div>
@@ -1011,14 +1011,9 @@
                                 <input id="landingInstitution" name="institution" type="text" placeholder="School or university" required>
                             </div>
 
-                            <div id="landingGuestEventField" class="landing-registration-field hidden">
-                                <label for="landingGuestEvent">Event</label>
-                                <input id="landingGuestEvent" type="text" readonly>
-                            </div>
-
                             <div id="landingGuestRoleField" class="landing-registration-field hidden">
                                 <label for="landingGuestRole">Role</label>
-                                <input id="landingGuestRole" name="role" type="text" readonly required>
+                                <input id="landingGuestRole" name="role" type="text" readonly class="bg-slate-100 text-slate-500 border border-slate-200 rounded-lg px-3 py-2 cursor-not-allowed" required>
                             </div>
 
                             <div id="landingGuestBioField" class="landing-registration-field hidden">
@@ -1034,11 +1029,11 @@
                     </div>
                 </div>
 
-                <div class="landing-registration-info">
-                    <div>
+                <div class="landing-registration-info space-y-4">
+                    <div class="space-y-2">
                         <p class="landing-registration-section-title">Event Summary</p>
                         <h3 class="text-lg font-semibold text-slate-900" id="landingEventTitle">Event title</h3>
-                        <p class="text-sm text-slate-600 mt-2" id="landingEventDate">Date range</p>
+                        <p class="text-sm text-slate-600" id="landingEventDate">Date range</p>
                         <p class="text-sm text-slate-600" id="landingEventLocation">Location</p>
                     </div>
                     <div>
@@ -1046,7 +1041,7 @@
                         <span class="landing-registration-pill" id="landingRegistrationStatus">Open</span>
                     </div>
                     <div class="landing-registration-footer">
-                        <p>Once your registration is submitted, you will receive confirmation here. Registrations are reviewed and approved by event staff before a digital ID is issued.</p>
+                        <p>Once your registration is submitted, you will receive confirmation here. Registrations are reviewed and approved by admin or event staff before a digital ID is issued.</p>
                     </div>
                 </div>
             </div>
@@ -1063,7 +1058,6 @@
             const registrationTypeOptions = document.querySelectorAll('.landing-registration-option');
             const participantTypeField = document.getElementById('participantTypeField');
             const landingInstitutionField = document.getElementById('landingInstitutionField');
-            const guestEventField = document.getElementById('landingGuestEventField');
             const guestRoleField = document.getElementById('landingGuestRoleField');
             const guestBioField = document.getElementById('landingGuestBioField');
             const eventTitle = document.getElementById('landingEventTitle');
@@ -1079,8 +1073,8 @@
             const landingFormEventDate = document.getElementById('landingFormEventDate');
             const landingFormEventLocation = document.getElementById('landingFormEventLocation');
             const landingFormEventStatus = document.getElementById('landingFormEventStatus');
-            const landingGuestEvent = document.getElementById('landingGuestEvent');
             const landingGuestRole = document.getElementById('landingGuestRole');
+            const landingGuestOptionDescription = document.getElementById('landingGuestOptionDescription');
             const landingRegistrationTypeSelection = document.getElementById('landingRegistrationTypeSelection');
             const landingRegistrationFormPanel = document.getElementById('landingRegistrationFormPanel');
             const landingRegistrationBack = document.getElementById('landingRegistrationBack');
@@ -1100,12 +1094,10 @@
             function resetForm() {
                 landingRegistrationForm.reset();
                 landingGuestRole.value = '';
-                landingGuestEvent.value = '';
                 registrationTypeInput.value = 'participant';
                 landingRegistrationForm.action = participantPublicUrl;
                 landingRegistrationSubmit.textContent = 'Register';
                 landingFormTypeLabel.textContent = 'Participant';
-                landingGuestEventField.classList.add('hidden');
                 guestRoleField.classList.add('hidden');
                 guestBioField.classList.add('hidden');
                 participantTypeField.classList.remove('hidden');
@@ -1117,7 +1109,6 @@
                 landingRegistrationFormPanel.classList.add('hidden');
                 landingRegistrationBack.classList.add('hidden');
                 registrationTypeOptions.forEach((option) => option.classList.remove('border-em4', 'bg-slate-50'));
-                registrationTypeOptions[0]?.classList.add('border-em4', 'bg-slate-50');
             }
 
             function updateEventDetails(title, dateText, locationText, statusText) {
@@ -1129,7 +1120,6 @@
                 landingFormEventDate.textContent = dateText;
                 landingFormEventLocation.textContent = locationText;
                 landingFormEventStatus.textContent = statusText;
-                landingGuestEvent.value = `${title} · ${dateText}`;
             }
 
             function setFormType(type, eventType = 'standard') {
@@ -1142,7 +1132,6 @@
                 if (type === 'guest') {
                     participantTypeField.classList.add('hidden');
                     landingInstitutionField.classList.add('hidden');
-                    guestEventField.classList.remove('hidden');
                     guestRoleField.classList.remove('hidden');
                     guestBioField.classList.remove('hidden');
                     document.getElementById('landingParticipantType').required = false;
@@ -1152,7 +1141,6 @@
                 } else {
                     participantTypeField.classList.remove('hidden');
                     landingInstitutionField.classList.remove('hidden');
-                    guestEventField.classList.add('hidden');
                     guestRoleField.classList.add('hidden');
                     guestBioField.classList.add('hidden');
                     document.getElementById('landingParticipantType').required = true;
@@ -1169,17 +1157,20 @@
             }
 
             function openRegistrationModal(button) {
-                const eventId = button.dataset.eventId;
+                const eventIdValue = button.dataset.eventId;
                 const title = button.dataset.eventTitle || 'Event title';
                 const dateText = button.dataset.eventDateRange || 'Date range';
                 const locationText = button.dataset.eventLocation || 'Location';
                 const statusText = button.dataset.eventStatus || 'Open';
                 currentEventType = button.dataset.eventType || 'standard';
 
-                landingEventId.value = eventId;
+                landingEventId.value = eventIdValue;
                 updateEventDetails(title, dateText, locationText, statusText);
                 resetForm();
                 setFormType('participant', currentEventType);
+                landingGuestOptionDescription.textContent = currentEventType === 'conference'
+                    ? 'Register as a Presenter for the event.'
+                    : 'Register as an Exhibitor for the event.';
                 modal.classList.add('is-visible');
                 modal.setAttribute('aria-hidden', 'false');
                 document.body.style.overflow = 'hidden';
@@ -1209,7 +1200,7 @@
                 });
             });
 
-            backButton.addEventListener('click', () => {
+            landingRegistrationBack.addEventListener('click', () => {
                 landingRegistrationFormPanel.classList.add('hidden');
                 landingRegistrationTypeSelection.classList.remove('hidden');
                 landingRegistrationBack.classList.add('hidden');
