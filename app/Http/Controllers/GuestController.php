@@ -144,13 +144,21 @@ class GuestController extends Controller
         // Set role server-side based on event type
         $validated['role'] = $event->type === 'conference' ? 'Presenter' : 'Exhibitor';
 
-        $validated['status'] = 'pending';
+        // Directly added guests by admin/event staff are approved immediately
+        $validated['status'] = 'approved';
 
         $guest = Guest::create($validated);
 
+        if (! $guest->digital_token) {
+            $guest->update(['digital_token' => Str::uuid()->toString()]);
+            $guest->refresh();
+        }
+
+        Mail::to($guest->email)->send(new GuestDigitalIdMail($guest->loadMissing('event')));
+
         return redirect()
             ->route('guests.index', ['event_id' => $guest->event_id])
-            ->with('status', 'Guest registration submitted successfully. Pending approval is required before a digital ID is issued.');
+            ->with('status', 'Guest added successfully and digital ID email has been sent.');
     }
 
     public function show(Guest $guest)
@@ -235,7 +243,18 @@ class GuestController extends Controller
             'email' => ['required', 'email', 'max:255'],
             'role' => ['required', 'string', 'max:100'],
             'bio' => ['nullable', 'string'],
+            'conference_paper' => ['nullable', 'file', 'mimes:pdf,doc,docx', 'max:10240'],
         ]);
+
+        if ($request->hasFile('conference_paper')) {
+            if ($guest->conference_paper_path) {
+                Storage::disk('event-templates')->delete($guest->conference_paper_path);
+            }
+
+            $validated['conference_paper_path'] = $request->file('conference_paper')
+                ->store('conference_papers', 'event-templates');
+            $validated['conference_paper_original_name'] = $request->file('conference_paper')->getClientOriginalName();
+        }
 
         $guest->update($validated);
 

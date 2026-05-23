@@ -325,12 +325,15 @@
         }
 
         .guest-modal {
-            width: min(760px, 100%);
+            width: min(580px, 100%);
+            max-width: 580px;
+            max-height: 85vh;
+            overflow-y: auto;
             background: #ffffff;
             border: 1px solid var(--color-sky);
             border-radius: 12px;
             box-shadow: 0 18px 45px rgba(10, 35, 66, 0.22);
-            padding: 18px;
+            padding: 16px 20px;
             transform: translateY(10px) scale(0.98);
             opacity: 0;
             transition: transform 220ms ease, opacity 220ms ease;
@@ -375,7 +378,7 @@
         .guest-modal-form {
             display: grid;
             grid-template-columns: minmax(0, 1fr);
-            gap: 14px;
+            gap: 12px;
             align-items: start;
             margin-top: 10px;
             min-width: 0;
@@ -402,7 +405,7 @@
         .guest-modal-form input {
             width: 100%;
             min-height: 40px;
-            padding: 8px 10px;
+            padding: 7px 10px;
             border: 1px solid #cfe0ef;
             border-radius: 8px;
             background: #ffffff;
@@ -433,14 +436,14 @@
         .guest-modal-form input[type="file"]::file-selector-button,
         .guest-modal-form input[type="file"]::-webkit-file-upload-button {
             margin-right: 8px;
-            padding: 8px 12px;
+            padding: 7px 10px;
             border: 1px solid #cfe0ef;
             border-radius: 8px;
             background: #f8fafc;
             color: var(--color-midnight);
             cursor: pointer;
             font-family: 'Sora', sans-serif;
-            font-size: 14px;
+            font-size: 13px;
             transition: background-color 160ms ease, border-color 160ms ease;
         }
 
@@ -453,7 +456,7 @@
         .guest-modal-form select {
             width: 100%;
             min-height: 40px;
-            padding: 8px 10px;
+            padding: 7px 10px;
             border: 1px solid #cfe0ef;
             border-radius: 8px;
             background: #ffffff;
@@ -471,7 +474,7 @@
         }
 
         .guest-modal-form textarea {
-            min-height: 92px;
+            min-height: 72px;
             resize: vertical;
             font-family: 'Sora', sans-serif;
         }
@@ -512,9 +515,9 @@
             background: #ffffff;
             color: var(--color-ocean);
             border-radius: 8px;
-            padding: 9px 18px;
+            padding: 7px 16px;
             font-family: 'Sora', sans-serif;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             cursor: pointer;
             transition: background 160ms ease, border-color 160ms ease;
@@ -531,6 +534,8 @@
         .guest-modal-form-actions .btn,
         .guest-modal-form-actions .btn-primary {
             font-family: 'Sora', sans-serif;
+            font-size: 13px;
+            padding: 7px 16px;
         }
 
         #openGuestModal:disabled {
@@ -1010,7 +1015,7 @@
                                 <td>
                                     <div class="guest-actions">
                                     <div class="guest-actions-row">
-                                        <button class="btn-action btn-view" type="button" data-guest-id="{{ $guest->id }}" data-guest-name="{{ $guest->name }}" data-guest-email="{{ $guest->email }}" data-guest-role="{{ $guest->role }}" data-guest-bio="{{ $guest->bio }}" data-guest-event="{{ $guest->event->title }}" data-guest-event-id="{{ $guest->event_id }}" onclick="openViewGuestModal(this)">View</button>
+                                        <button class="btn-action btn-view" type="button" data-guest-id="{{ $guest->id }}" data-guest-name="{{ $guest->name }}" data-guest-email="{{ $guest->email }}" data-guest-role="{{ $guest->role }}" data-guest-bio="{{ $guest->bio }}" data-guest-event="{{ $guest->event->title }}" data-guest-event-id="{{ $guest->event_id }}" data-guest-paper-path="{{ $guest->conference_paper_path }}" data-guest-paper-original-name="{{ $guest->conference_paper_original_name }}" onclick="openViewGuestModal(this)">View</button>
                                         <form id="delete-form-guest-{{ $guest->id }}" action="{{ route('guests.destroy', $guest) }}" method="POST" style="display:inline;">
                                             @csrf
                                             @method('DELETE')
@@ -1164,7 +1169,7 @@
                 <button class="guest-modal-close" type="button" id="closeViewGuestModal" aria-label="Close guest modal">&times;</button>
             </div>
 
-            <form id="editGuestForm" class="guest-modal-form">
+            <form id="editGuestForm" class="guest-modal-form" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 
@@ -1194,7 +1199,13 @@
 
                 <div class="field field-full">
                     <label for="view_guest_bio">Bio / Notes</label>
-                    <textarea id="view_guest_bio" name="bio" rows="4"></textarea>
+                    <textarea id="view_guest_bio" name="bio" rows="3"></textarea>
+                </div>
+
+                <div class="field field-full" id="view_guest_submission_field">
+                    <label id="view_guest_submission_label" for="view_guest_conference_paper">Submission (optional)</label>
+                    <div id="view_guest_submission_link" class="guest-modal-view-field-value" style="display:none; margin-bottom: 8px;"></div>
+                    <input id="view_guest_conference_paper" name="conference_paper" type="file" accept=".pdf,.doc,.docx">
                 </div>
 
                 <div class="guest-modal-form-actions" style="margin-top: 16px;">
@@ -1425,12 +1436,33 @@
             const bio = button.dataset.guestBio;
             const event = button.dataset.guestEvent;
             const eventId = button.dataset.guestEventId;
+            const paperPath = button.dataset.guestPaperPath;
+            const paperOriginalName = button.dataset.guestPaperOriginalName;
 
             document.getElementById('view_guest_name').value = name;
             document.getElementById('view_guest_email').value = email;
             document.getElementById('view_guest_role').value = role;
             document.getElementById('view_guest_bio').value = bio || '';
             document.getElementById('view_guest_event_id').value = eventId;
+
+            const submissionLabel = document.getElementById('view_guest_submission_label');
+            const submissionLink = document.getElementById('view_guest_submission_link');
+            const paperInput = document.getElementById('view_guest_conference_paper');
+
+            if (paperPath) {
+                const displayName = paperOriginalName || paperPath.split('/').pop();
+                submissionLabel.textContent = 'Update Submission';
+                submissionLink.style.display = 'block';
+                submissionLink.innerHTML = '<a href="/guests/' + currentGuestId + '/download-paper" target="_blank">' + displayName + '</a>';
+            } else {
+                submissionLabel.textContent = 'Submission (optional)';
+                submissionLink.style.display = 'none';
+                submissionLink.innerHTML = '';
+            }
+
+            if (paperInput) {
+                paperInput.value = null;
+            }
 
             const form = document.getElementById('editGuestForm');
             form.action = '/guests/' + currentGuestId;
