@@ -1123,7 +1123,7 @@
                     guestRoleField.appendChild(guestRoleLabel);
                     guestRoleField.appendChild(landingGuestRole);
                     const emailField = document.getElementById('landingEmail').closest('.landing-registration-field');
-                    (emailField || landingInstitutionField).insertAdjacentElement('afterend', guestRoleField);
+                    document.getElementById('landingEmail').closest('.landing-registration-field').insertAdjacentElement('afterend', guestRoleField);
                 }
 
                 if (!guestBioField) {
