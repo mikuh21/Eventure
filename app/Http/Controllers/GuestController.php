@@ -131,6 +131,7 @@ class GuestController extends Controller
             'email' => ['required', 'email', 'max:255'],
             'role' => ['required', 'string', 'max:100'],
             'bio' => ['nullable', 'string'],
+            'conference_paper' => ['nullable', 'file', 'mimes:pdf,doc,docx', 'max:10240'],
         ]);
 
         // Check permission: Event Staff can only add guests to their own events

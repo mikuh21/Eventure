@@ -307,10 +307,10 @@
             inset: 0;
             background: rgba(10, 35, 66, 0.38);
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
-            padding: 20px;
-            overflow: visible;
+            padding: 40px 20px;
+            overflow-y: auto;
             z-index: 90;
             opacity: 0;
             visibility: hidden;
@@ -326,7 +326,7 @@
         }
 
         .guest-modal {
-            width: 90vw;
+            width: 95vw;
             max-width: 680px;
             max-height: none;
             overflow: visible;
@@ -334,10 +334,26 @@
             border: 1px solid var(--color-sky);
             border-radius: 12px;
             box-shadow: 0 18px 45px rgba(10, 35, 66, 0.22);
-            padding: 16px 20px;
+            padding: 0;
             transform: translateY(10px) scale(0.98);
             opacity: 0;
             transition: transform 220ms ease, opacity 220ms ease;
+        }
+
+        .guest-modal-header {
+            padding: 20px 24px;
+        }
+
+        .guest-modal-body {
+            padding: 0 24px;
+        }
+
+        .guest-modal-footer {
+            padding: 16px 24px;
+        }
+
+        .guest-modal-footer.guest-modal-form-actions {
+            justify-content: flex-end;
         }
 
         .guest-modal-overlay.is-visible .guest-modal {
@@ -383,7 +399,7 @@
             align-items: start;
             margin-top: 10px;
             min-width: 0;
-            padding: 0 24px 16px;
+            padding: 0;
             width: 100%;
             box-sizing: border-box;
         }
@@ -448,6 +464,12 @@
             font-family: 'Sora', sans-serif;
             font-size: 14px;
             border: 1px solid #cfe0ef;
+        }
+
+        .guest-modal-form input[type="file"][disabled] {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
         }
 
         .guest-modal-form input[type="file"]::file-selector-button,
@@ -1101,56 +1123,63 @@
                     ?: $errors->first('guests');
             @endphp
 
-            @if ($guestModalErrorMessage)
-                <div class="guest-modal-error">{{ $guestModalErrorMessage }}</div>
-            @endif
-
-            <div class="header-row">
+            <div class="guest-modal-header header-row">
                 <h2 id="addGuestModalTitle" class="guest-modal-title">Add Guest</h2>
                 <button class="guest-modal-close" type="button" id="closeGuestModal" aria-label="Close add guest modal">&times;</button>
             </div>
 
-            <form class="guest-modal-form" action="{{ route('guests.store') }}" method="POST">
-                @csrf
+            <div class="guest-modal-body">
+                @if ($guestModalErrorMessage)
+                    <div class="guest-modal-error">{{ $guestModalErrorMessage }}</div>
+                @endif
 
-                <div class="field field-full">
-                    <label for="modal_guest_event_id">Event</label>
-                    <select id="modal_guest_event_id" name="event_id" required>
-                        <option value="">Select event</option>
-                        @foreach ($upcomingEvents as $item)
-                            <option value="{{ $item->id }}" {{ (string) old('event_id', request('event_id')) === (string) $item->id ? 'selected' : '' }}>
-                                {{ $item->title }} ({{ $item->dateRangeLabel() }})
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+                <form class="guest-modal-form" action="{{ route('guests.store') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
 
-                <div class="field">
-                    <label for="modal_guest_name">Guest Name</label>
-                    <input id="modal_guest_name" name="name" type="text" value="{{ old('name') }}" required>
-                </div>
+                    <div class="field field-full">
+                        <label for="modal_guest_event_id">Event</label>
+                        <select id="modal_guest_event_id" name="event_id" required>
+                            <option value="">Select event</option>
+                            @foreach ($upcomingEvents as $item)
+                                <option value="{{ $item->id }}" {{ (string) old('event_id', request('event_id')) === (string) $item->id ? 'selected' : '' }}>
+                                    {{ $item->title }} ({{ $item->dateRangeLabel() }})
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
 
-                <div class="field">
-                    <label for="modal_guest_email">Email</label>
-                    <input id="modal_guest_email" name="email" type="email" value="{{ old('email') }}" required>
-                </div>
+                    <div class="field">
+                        <label for="modal_guest_name">Guest Name</label>
+                        <input id="modal_guest_name" name="name" type="text" value="{{ old('name') }}" required>
+                    </div>
 
-                <div class="field field-full">
-                    <label for="modal_guest_role">Role</label>
-                    <div class="guest-modal-form-readonly" id="guestRoleDisplay">Exhibitor</div>
-                    <input id="guestRoleInput" name="role" type="hidden" value="Exhibitor">
-                </div>
+                    <div class="field">
+                        <label for="modal_guest_email">Email</label>
+                        <input id="modal_guest_email" name="email" type="email" value="{{ old('email') }}" required>
+                    </div>
 
-                <div class="field field-full">
-                    <label for="modal_guest_bio">Bio / Notes</label>
-                    <textarea id="modal_guest_bio" name="bio" rows="4">{{ old('bio') }}</textarea>
-                </div>
+                    <div class="field field-full">
+                        <label for="modal_guest_role">Role</label>
+                        <div class="guest-modal-form-readonly" id="guestRoleDisplay">Exhibitor</div>
+                        <input id="guestRoleInput" name="role" type="hidden" value="Exhibitor">
+                    </div>
 
-                <div class="guest-modal-form-actions">
-                    <button class="btn btn-cancel" type="button" id="cancelGuestModal">Cancel</button>
-                    <button class="btn btn-primary" type="submit">Save Guest</button>
-                </div>
-            </form>
+                    <div class="field field-full">
+                        <label for="modal_guest_bio">Bio / Notes</label>
+                        <textarea id="modal_guest_bio" name="bio" rows="2">{{ old('bio') }}</textarea>
+                    </div>
+
+                    <div style="margin-bottom: 16px;">
+                        <label style="display:block; font-weight:600; font-size:13px; margin-bottom:6px;">Submission <span style="color:#999; font-weight:400;">(optional)</span></label>
+                        <input type="file" name="conference_paper" accept=".pdf,.doc,.docx" style="width:100%; box-sizing:border-box;">
+                    </div>
+
+                    <div class="guest-modal-footer guest-modal-form-actions">
+                        <button class="btn btn-cancel" type="button" id="cancelGuestModal">Cancel</button>
+                        <button class="btn btn-primary" type="submit">Save Guest</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -1199,57 +1228,59 @@
     <!-- View/Edit Guest Modal -->
     <div class="guest-modal-overlay" id="viewGuestModal" aria-hidden="true">
         <div class="guest-modal" role="dialog" aria-modal="true" aria-labelledby="viewGuestModalTitle">
-            <div class="header-row">
+            <div class="guest-modal-header header-row">
                 <h2 id="viewGuestModalTitle" class="guest-modal-title">Guest Details</h2>
                 <button class="guest-modal-close" type="button" id="closeViewGuestModal" aria-label="Close guest modal">&times;</button>
             </div>
 
-            <form id="editGuestForm" class="guest-modal-form" enctype="multipart/form-data">
-                @csrf
-                @method('PUT')
+            <div class="guest-modal-body">
+                <form id="editGuestForm" class="guest-modal-form" enctype="multipart/form-data">
+                    @csrf
+                    @method('PUT')
 
-                <div class="field field-full">
-                    <label for="view_guest_event_id">Event</label>
-                    <select id="view_guest_event_id" name="event_id" required disabled>
-                        @foreach ($events as $item)
-                            <option value="{{ $item->id }}">{{ $item->title }} ({{ $item->dateRangeLabel() }})</option>
-                        @endforeach
-                    </select>
-                </div>
+                    <div class="field field-full">
+                        <label for="view_guest_event_id">Event</label>
+                        <select id="view_guest_event_id" name="event_id" required disabled>
+                            @foreach ($events as $item)
+                                <option value="{{ $item->id }}">{{ $item->title }} ({{ $item->dateRangeLabel() }})</option>
+                            @endforeach
+                        </select>
+                    </div>
 
-                <div class="field field-full">
-                    <label for="view_guest_name">Guest Name</label>
-                    <input id="view_guest_name" name="name" type="text" required>
-                </div>
+                    <div class="field field-full">
+                        <label for="view_guest_name">Guest Name</label>
+                        <input id="view_guest_name" name="name" type="text" required>
+                    </div>
 
-                <div class="field field-full">
-                    <label for="view_guest_email">Email</label>
-                    <input id="view_guest_email" name="email" type="email" required>
-                </div>
+                    <div class="field field-full">
+                        <label for="view_guest_email">Email</label>
+                        <input id="view_guest_email" name="email" type="email" required>
+                    </div>
 
-                <div class="field field-full">
-                    <label for="view_guest_role">Role</label>
-                    <input id="view_guest_role" name="role" type="text" required readonly>
-                </div>
+                    <div class="field field-full">
+                        <label for="view_guest_role">Role</label>
+                        <input id="view_guest_role" name="role" type="text" required readonly>
+                    </div>
 
-                <div class="field field-full">
-                    <label for="view_guest_bio">Bio / Notes</label>
-                    <textarea id="view_guest_bio" name="bio" rows="3"></textarea>
-                </div>
+                    <div class="field field-full">
+                        <label for="view_guest_bio">Bio / Notes</label>
+                        <textarea id="view_guest_bio" name="bio" rows="2"></textarea>
+                    </div>
 
-                <div class="field field-full" id="view_guest_submission_field">
-                    <label id="view_guest_submission_label" for="view_guest_conference_paper">Submission (optional)</label>
-                    <div id="view_guest_submission_link" class="guest-modal-view-field-value" style="display:none; margin-bottom: 8px;"></div>
-                    <input id="view_guest_conference_paper" name="conference_paper" type="file" accept=".pdf,.doc,.docx">
-                </div>
+                    <div class="field field-full" id="view_guest_submission_field">
+                        <label id="view_guest_submission_label" for="view_guest_conference_paper">Submission</label>
+                        <div id="view_guest_submission_link" class="guest-modal-view-field-value" style="display:none; margin-bottom: 8px; border:none; padding:0;"></div>
+                        <input id="view_guest_conference_paper" name="conference_paper" type="file" accept=".pdf,.doc,.docx" disabled>
+                    </div>
 
-                <div class="guest-modal-form-actions" style="margin-top: 16px;">
-                    <button class="btn btn-cancel" type="button" id="closeViewGuestModalBtn">Close</button>
-                    <button class="btn btn-primary" type="button" id="editGuestBtn" style="display: none;">Edit Guest</button>
-                    <button class="btn btn-primary" type="submit" id="saveGuestBtn" style="display: none;">Save Changes</button>
-                    <button class="btn btn-cancel btn-cancel-edit" type="button" id="cancelEditBtn" style="display: none;">Cancel</button>
-                </div>
-            </form>
+                    <div class="guest-modal-footer guest-modal-form-actions">
+                        <button class="btn btn-cancel" type="button" id="closeViewGuestModalBtn">Close</button>
+                        <button class="btn btn-primary" type="button" id="editGuestBtn" style="display: none;">Edit Guest</button>
+                        <button class="btn btn-primary" type="submit" id="saveGuestBtn" style="display: none;">Save Changes</button>
+                        <button class="btn btn-cancel btn-cancel-edit" type="button" id="cancelEditBtn" style="display: none;">Cancel</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -1523,6 +1554,7 @@
             document.getElementById('view_guest_email').readOnly = true;
             document.getElementById('view_guest_role').readOnly = true;
             document.getElementById('view_guest_bio').readOnly = true;
+            document.getElementById('view_guest_conference_paper').disabled = true;
 
             document.getElementById('editGuestBtn').style.display = 'inline-block';
             document.getElementById('closeViewGuestModalBtn').style.display = 'inline-block';
@@ -1539,6 +1571,7 @@
             document.getElementById('view_guest_email').readOnly = false;
             document.getElementById('view_guest_role').readOnly = true;
             document.getElementById('view_guest_bio').readOnly = false;
+            document.getElementById('view_guest_conference_paper').disabled = false;
 
             document.getElementById('editGuestBtn').style.display = 'none';
             document.getElementById('closeViewGuestModalBtn').style.display = 'none';
