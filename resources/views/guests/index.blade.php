@@ -703,9 +703,8 @@
         }
 
         .modal-floating-label {
-            position: absolute;
-            top: 20px;
-            right: 20px;
+            position: relative;
+            min-width: 280px;
             max-width: min(420px, calc(100% - 40px));
             border-radius: 10px;
             padding: 10px 14px;
@@ -713,14 +712,47 @@
             font-size: 13px;
             line-height: 1.4;
             box-shadow: 0 10px 24px rgba(10, 35, 66, 0.2);
-            z-index: 3;
-            animation: toast-in 180ms ease-out;
+            color: inherit;
+            opacity: 0;
+            transform: translateY(-6px);
+            animation: toast-in 180ms ease-out forwards;
             transition: opacity 220ms ease, transform 220ms ease;
         }
 
         .modal-floating-label.is-hiding {
             opacity: 0;
             transform: translateY(-6px);
+        }
+
+        .modal-toast {
+            position: relative;
+            margin: 0;
+            pointer-events: none;
+            opacity: 1;
+        }
+
+        .modal-floating-success {
+            color: #065f46;
+            background: #ecfdf5;
+            border: 1px solid #34d399;
+        }
+
+        .modal-floating-error {
+            color: #991b1b;
+            background: #fef2f2;
+            border: 1px solid #fca5a5;
+        }
+
+        .modal-floating-info {
+            color: #0c4a6e;
+            background: #e0f2fe;
+            border: 1px solid #7dd3fc;
+        }
+
+        .modal-floating-warning {
+            color: #92400e;
+            background: #fef3c7;
+            border: 1px solid #fde68a;
         }
 
         @keyframes toast-in {
@@ -732,30 +764,6 @@
                 opacity: 1;
                 transform: translateY(0);
             }
-        }
-
-        .modal-floating-error {
-            background: #fef2f2;
-            border: 1px solid #fca5a5;
-            color: #991b1b;
-        }
-
-        .modal-floating-success {
-            background: #ecfdf5;
-            border: 1px solid #34d399;
-            color: #065f46;
-        }
-
-        .modal-floating-info {
-            background: #eff6ff;
-            border: 1px solid #93c5fd;
-            color: #1d4ed8;
-        }
-
-        .modal-floating-warning {
-            background: #fefce8;
-            border: 1px solid #fde68a;
-            color: #92400e;
         }
 
         /* Mobile Responsive Styles */
@@ -1177,15 +1185,18 @@
                 toast.className = 'modal-floating-label modal-floating-' + type + ' modal-toast';
                 toast.textContent = message;
                 toastContainer.appendChild(toast);
+                setTimeout(function () {
+                    toast.classList.add('is-visible');
+                }, 10);
 
                 window.setTimeout(function () {
+                    if (!toast) return;
                     toast.classList.add('is-hiding');
-                }, duration - 400);
-
-                window.setTimeout(function () {
-                    if (toast && toast.parentNode) {
-                        toast.parentNode.removeChild(toast);
-                    }
+                    window.setTimeout(function () {
+                        if (toast && toast.parentNode) {
+                            toast.parentNode.removeChild(toast);
+                        }
+                    }, 220);
                 }, duration);
             }
 
