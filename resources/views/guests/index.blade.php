@@ -326,8 +326,8 @@
         }
 
         .guest-modal {
-            width: 98vw;
-            max-width: 820px;
+            width: min(980px, 95vw);
+            max-width: 980px;
             max-height: none;
             overflow: visible;
             background: #ffffff;
