@@ -10,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class GuestController extends Controller
@@ -87,6 +88,7 @@ class GuestController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255'],
             'bio' => ['nullable', 'string'],
+            'conference_paper' => ['nullable', 'file', 'mimes:pdf,doc,docx', 'max:10240'],
         ]);
 
         $event = Event::findOrFail($validated['event_id']);
@@ -99,6 +101,11 @@ class GuestController extends Controller
 
         $validated['role'] = $event->type === 'conference' ? 'Presenter' : 'Exhibitor';
         $validated['status'] = 'pending';
+
+        if ($request->hasFile('conference_paper')) {
+            $validated['conference_paper_path'] = $request->file('conference_paper')
+                ->store('conference_papers', 'event-templates');
+        }
 
         $guest = Guest::create($validated);
 

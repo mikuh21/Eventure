@@ -1050,6 +1050,7 @@
             const landingInstitutionField = document.getElementById('landingInstitutionField');
             let guestRoleField = null;
             let guestBioField = null;
+            let guestPaperField = null;
             let landingGuestRole = null;
             const eventTitle = document.getElementById('landingEventTitle');
             const eventDate = document.getElementById('landingEventDate');
@@ -1090,6 +1091,10 @@
                 if (guestBioField && guestBioField.parentNode) {
                     guestBioField.remove();
                     guestBioField = null;
+                }
+                if (guestPaperField && guestPaperField.parentNode) {
+                    guestPaperField.remove();
+                    guestPaperField = null;
                 }
                 landingGuestRole = null;
                 participantTypeField.classList.remove('hidden');
@@ -1154,6 +1159,33 @@
                     guestRoleField.insertAdjacentElement('afterend', guestBioField);
                     landingInstitutionField.classList.add('hidden');
                     landingInstitutionField.style.display = 'none';
+
+                    if (currentEventType === 'conference') {
+                        if (!guestPaperField) {
+                            guestPaperField = document.createElement('div');
+                            guestPaperField.className = 'landing-registration-field';
+                            guestPaperField.id = 'landingGuestPaperField';
+
+                            const paperLabel = document.createElement('label');
+                            paperLabel.setAttribute('for', 'landingGuestPaper');
+                            paperLabel.textContent = 'Conference Paper';
+
+                            const paperSubtext = document.createElement('p');
+                            paperSubtext.style.cssText = 'font-size:0.7rem;color:#64748b;margin:0 0 4px;';
+                            paperSubtext.textContent = 'Upload your conference paper (PDF, DOC, DOCX — max 10MB)';
+
+                            const paperInput = document.createElement('input');
+                            paperInput.id = 'landingGuestPaper';
+                            paperInput.name = 'conference_paper';
+                            paperInput.type = 'file';
+                            paperInput.accept = '.pdf,.doc,.docx';
+
+                            guestPaperField.appendChild(paperLabel);
+                            guestPaperField.appendChild(paperSubtext);
+                            guestPaperField.appendChild(paperInput);
+                            guestBioField.insertAdjacentElement('afterend', guestPaperField);
+                        }
+                    }
                 }
             }
 
@@ -1174,12 +1206,18 @@
                     guestBioField.classList.remove('hidden');
                     document.getElementById('landingParticipantType').required = false;
                     document.getElementById('landingInstitution').required = false;
+                    landingRegistrationForm.enctype = 'multipart/form-data';
                     landingGuestRole.required = true;
                     landingGuestRole.value = eventType === 'conference' ? 'Presenter' : 'Exhibitor';
                     landingGuestRole.className = 'bg-slate-100 text-slate-500 border border-slate-200 rounded-lg px-3 py-1.5 text-sm cursor-not-allowed';
                     guestBioField.querySelector('textarea').rows = 2;
                     landingInstitutionField.classList.add('hidden');
                 } else {
+                    participantTypeField.style.display = '';
+                    landingInstitutionField.style.display = '';
+                    participantTypeField.classList.remove('hidden');
+                    landingInstitutionField.classList.remove('hidden');
+                    landingRegistrationForm.enctype = 'application/x-www-form-urlencoded';
                     participantTypeField.style.display = '';
                     landingInstitutionField.style.display = '';
                     participantTypeField.classList.remove('hidden');
@@ -1191,6 +1229,10 @@
                     if (guestBioField && guestBioField.parentNode) {
                         guestBioField.remove();
                         guestBioField = null;
+                    }
+                    if (guestPaperField && guestPaperField.parentNode) {
+                        guestPaperField.remove();
+                        guestPaperField = null;
                     }
                     landingGuestRole = null;
                     document.getElementById('landingParticipantType').required = true;
