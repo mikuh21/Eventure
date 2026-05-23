@@ -156,8 +156,13 @@
         }
 
         .guest-actions-row .btn-action,
+        .guest-actions-row .btn-delete-icon,
         .guest-actions-row form {
             margin: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 32px;
         }
 
         .guest-actions-row .btn-delete-icon {
@@ -248,8 +253,8 @@
         }
 
         .btn-delete-icon {
-            width: 28px;
-            height: 28px;
+            width: 32px;
+            height: 32px;
             padding: 0;
             display: inline-flex;
             align-items: center;
