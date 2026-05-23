@@ -13,7 +13,7 @@
                     <tr>
                         <td style="background:linear-gradient(135deg, #1B6CA8 0%, #0A2342 80%); padding:20px 24px;">
                             <p style="margin:0; font-size:24px; font-weight:700; letter-spacing:-0.02em; color:#ffffff;">
-                                <span style="color:#ffffff;">Event</span><span style="color:#5BA4CF;">Flow</span>
+                                <span style="color:#ffffff;">Event</span><span style="color:#5BA4CF;">ure</span>
                             </p>
                             <p style="margin:8px 0 0; font-size:13px; color:#bfdfff;">Event Staff Account Credentials</p>
                         </td>
