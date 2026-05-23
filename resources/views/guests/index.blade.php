@@ -341,15 +341,15 @@
         }
 
         .guest-modal-header {
-            padding: 12px 20px;
+            padding: 10px 20px;
         }
 
         .guest-modal-body {
-            padding: 0 20px;
+            padding: 8px 20px;
         }
 
         .guest-modal-footer {
-            padding: 12px 20px;
+            padding: 10px 20px;
         }
 
         .guest-modal-footer.guest-modal-form-actions {
@@ -397,7 +397,7 @@
             grid-template-columns: minmax(0, 1fr);
             gap: 8px;
             align-items: start;
-            margin-top: 8px;
+            margin-top: 0;
             min-width: 0;
             padding: 0;
             width: 100%;
@@ -631,12 +631,12 @@
         }
 
         .guest-modal-view-field {
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
 
         .guest-modal-view-field label {
             display: block;
-            margin: 0 0 6px;
+            margin: 0 0 4px;
             color: var(--color-midnight);
             font-family: 'Sora', sans-serif;
             font-size: 13px;
@@ -644,7 +644,7 @@
         }
 
         .guest-modal-view-field-value {
-            padding: 8px 10px;
+            padding: 6px 10px;
             background: var(--color-ice-white);
             border: 1px solid var(--color-sky);
             border-radius: 8px;
@@ -1169,7 +1169,7 @@
                         <textarea id="modal_guest_bio" name="bio" rows="2">{{ old('bio') }}</textarea>
                     </div>
 
-                    <div style="margin-bottom: 12px;">
+                    <div style="margin-bottom: 10px;">
                         <label style="display:block; font-weight:600; font-size:13px; margin-bottom:4px;">Submission <span style="color:#999; font-weight:400;">(optional)</span></label>
                         <input type="file" name="conference_paper" accept=".pdf,.doc,.docx" style="width:100%; box-sizing:border-box;">
                     </div>
