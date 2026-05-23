@@ -462,8 +462,10 @@
 
         .guest-modal-form input[type="file"] {
             width: 100%;
+            min-height: 40px;
+            padding: 4px 8px;
+            cursor: pointer;
             box-sizing: border-box;
-            padding: 8px 10px;
             border-radius: 8px;
             background: #ffffff;
             color: var(--color-midnight);
@@ -480,22 +482,24 @@
 
         .guest-modal-form input[type="file"]::file-selector-button,
         .guest-modal-form input[type="file"]::-webkit-file-upload-button {
-            margin-right: 8px;
-            padding: 7px 10px;
-            border: 1px solid #cfe0ef;
-            border-radius: 8px;
-            background: #f8fafc;
-            color: var(--color-midnight);
-            cursor: pointer;
             font-family: 'Sora', sans-serif;
-            font-size: 13px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #ffffff;
+            background: #1B6CA8;
+            border: 1px solid #1B6CA8;
+            border-radius: 6px;
+            padding: 0 10px;
+            height: 30px;
+            margin-right: 10px;
+            cursor: pointer;
             transition: background-color 160ms ease, border-color 160ms ease;
         }
 
         .guest-modal-form input[type="file"]:hover::file-selector-button,
         .guest-modal-form input[type="file"]:hover::-webkit-file-upload-button {
-            background: #eef4fb;
-            border-color: var(--color-steel-blue);
+            background: #0f5e95;
+            border-color: #0f5e95;
         }
 
         .guest-modal-form select {
