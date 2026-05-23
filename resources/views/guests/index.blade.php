@@ -138,31 +138,28 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 6px 10px;
+            text-align: center;
             border-radius: 999px;
-            font-size: 12px;
-            font-weight: 700;
+            font-size: 11px;
+            font-weight: 500;
+            padding: 2px 8px;
             text-transform: capitalize;
-            letter-spacing: 0.01em;
             white-space: nowrap;
         }
 
         .guest-status-badge.status-pending {
-            background: #fef7c3;
-            color: #92400e;
-            border: 1px solid #f7dd72;
+            background: #fef9c3;
+            color: #854d0e;
         }
 
         .guest-status-badge.status-approved {
-            background: #dcfce7;
-            color: #166534;
-            border: 1px solid #86efac;
+            background: #d1fae5;
+            color: #065f46;
         }
 
         .guest-status-badge.status-denied {
             background: #fee2e2;
             color: #991b1b;
-            border: 1px solid #fca5a5;
         }
 
         .guests-table tbody tr:last-child td {
