@@ -338,7 +338,7 @@
             padding: 6px 12px;
             border: 1px solid rgba(207, 224, 239, 1);
             border-radius: 14px;
-            font-size: 0.96rem;
+            font-size: 0.75rem;
             color: #0a2342;
             background: #ffffff;
             transition: border-color 180ms ease, box-shadow 180ms ease;
@@ -984,7 +984,7 @@
                                 <input id="landingName" name="name" type="text" class="text-sm" placeholder="Full name" required>
                             </div>
 
-                            <div class="landing-registration-field" id="participantTypeField">
+                            <div class="landing-registration-field hidden" id="participantTypeField">
                                 <label for="landingParticipantType" class="text-sm">Participant Type</label>
                                 <select id="landingParticipantType" name="participant_type" class="text-sm" required>
                                     <option value="">Select type</option>
@@ -998,21 +998,21 @@
                                 <input id="landingEmail" name="email" type="email" class="text-sm" placeholder="Email address" required>
                             </div>
 
-                            <div class="landing-registration-field" id="landingInstitutionField">
+                            <div class="landing-registration-field hidden" id="landingInstitutionField">
                                 <label for="landingInstitution" class="text-sm">School / University</label>
                                 <input id="landingInstitution" name="institution" type="text" class="text-sm" placeholder="School or university" required>
                             </div>
 
 
-                            <div class="landing-registration-field flex justify-end gap-2">
+                            <div class="landing-registration-actions flex flex-row justify-end items-center gap-2 mt-2">
                                 <button type="submit" class="landing-registration-submit px-3 py-1.5 text-sm" id="landingRegistrationSubmit">Register</button>
-                                <button type="button" class="btn-secondary inline-flex justify-center rounded-[10px] border border-slate-300 bg-white px-3 py-1.5 text-sm font-semibold text-slate-900 hover:bg-slate-100" id="landingRegistrationCancel">Cancel</button>
+                                <button type="button" class="inline-flex justify-center rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-900 hover:bg-slate-100" id="landingRegistrationCancel">Cancel</button>
                             </div>
                         </form>
                     </div>
                 </div>
 
-                <div class="landing-registration-info space-y-3 overflow-hidden">
+                <div class="landing-registration-info flex flex-col gap-2">
                     <div class="space-y-1">
                         <p class="landing-registration-section-title">Event Summary</p>
                         <h3 class="text-lg font-semibold text-slate-900" id="landingEventTitle">Event title</h3>
