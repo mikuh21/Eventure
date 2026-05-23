@@ -702,6 +702,62 @@
             border-color: #15803d;
         }
 
+        .modal-floating-label {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            max-width: min(420px, calc(100% - 40px));
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-family: 'Sora', sans-serif;
+            font-size: 13px;
+            line-height: 1.4;
+            box-shadow: 0 10px 24px rgba(10, 35, 66, 0.2);
+            z-index: 3;
+            animation: toast-in 180ms ease-out;
+            transition: opacity 220ms ease, transform 220ms ease;
+        }
+
+        .modal-floating-label.is-hiding {
+            opacity: 0;
+            transform: translateY(-6px);
+        }
+
+        @keyframes toast-in {
+            from {
+                opacity: 0;
+                transform: translateY(-6px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-floating-error {
+            background: #fef2f2;
+            border: 1px solid #fca5a5;
+            color: #991b1b;
+        }
+
+        .modal-floating-success {
+            background: #ecfdf5;
+            border: 1px solid #34d399;
+            color: #065f46;
+        }
+
+        .modal-floating-info {
+            background: #eff6ff;
+            border: 1px solid #93c5fd;
+            color: #1d4ed8;
+        }
+
+        .modal-floating-warning {
+            background: #fefce8;
+            border: 1px solid #fde68a;
+            color: #92400e;
+        }
+
         /* Mobile Responsive Styles */
         @media (max-width: 768px) {
             .guest-actions {
@@ -880,11 +936,13 @@
                 <table class="guests-table">
                     <thead>
                     <tr>
-                        <th style="width:22%">Name</th>
-                        <th style="width:24%">Email</th>
-                        <th style="width:18%">Role</th>
-                        <th style="width:16%">Registered At</th>
-                        <th style="width:20%">Actions</th>
+                        <th style="width:18%">Name</th>
+                        <th style="width:20%">Email</th>
+                        <th style="width:12%">Role</th>
+                        <th style="width:14%">Registered At</th>
+                        <th style="width:10%">Status</th>
+                        <th style="width:14%">Submission</th>
+                        <th style="width:12%">Actions</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -899,6 +957,17 @@
                                 <td>{{ $guest->email }}</td>
                                 <td>{{ ucfirst($guest->role) }}</td>
                                 <td>{{ \Carbon\Carbon::parse($guest->created_at)->format('M d, Y h:i A') }}</td>
+                                <td>{{ ucfirst($guest->status ?? 'approved') }}</td>
+                                <td>
+                                    @if ($guest->conference_paper_path)
+                                        @php $fileName = pathinfo($guest->conference_paper_path, PATHINFO_BASENAME); @endphp
+                                        <a href="{{ asset('storage/'.$guest->conference_paper_path) }}" target="_blank" download>
+                                            {{ $fileName }}
+                                        </a>
+                                    @else
+                                        —
+                                    @endif
+                                </td>
                                 <td>
                                     <div class="guest-actions">
                                     <div class="guest-actions-row">
@@ -1181,9 +1250,17 @@
                     return resp.json().then(function (data) { return { status: resp.status, data: data }; });
                 }).then(function (result) {
                     if (result.status >= 200 && result.status < 300) {
-                        showToast(result.data.message || 'Approved and email sent.', 'success');
+                        showToast(result.data.message || 'Guest approved and digital ID email sent.', 'success');
                         var row = pendingApproveForm.closest('tr');
-                        if (row) row.parentNode.removeChild(row);
+                        if (row) {
+                            var actions = row.querySelector('.guest-actions');
+                            if (actions) {
+                                var actionRows = actions.querySelectorAll('.guest-actions-row');
+                                if (actionRows.length > 1) {
+                                    actionRows[actionRows.length - 1].remove();
+                                }
+                            }
+                        }
                     } else {
                         showToast(result.data.message || 'Failed to approve.', 'error');
                     }
