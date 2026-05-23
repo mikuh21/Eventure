@@ -987,6 +987,11 @@
                 min-width: 0;
                 display: inline-flex;
                 justify-content: center;
+                align-items: center;
+                height: 36px;
+                padding: 0 10px;
+                line-height: 1;
+                box-sizing: border-box;
             }
 
             .guest-actions {
