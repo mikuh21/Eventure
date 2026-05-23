@@ -170,18 +170,23 @@ class GuestController extends Controller
 
     public function downloadPaper(Guest $guest)
     {
-        if (! $guest->conference_paper_path) {
+        if (!$guest->conference_paper_path) {
             abort(404);
         }
 
         $originalName = basename($guest->conference_paper_path);
+        $disk = Storage::disk('event-templates');
 
-        if (config('filesystems.default') === 's3') {
-            $url = Storage::temporaryUrl($guest->conference_paper_path, now()->addMinutes(5));
-            return redirect($url);
+        if (!$disk->exists($guest->conference_paper_path)) {
+            abort(404, 'File not found.');
         }
 
-        return Storage::download($guest->conference_paper_path, $originalName);
+        try {
+            $url = $disk->temporaryUrl($guest->conference_paper_path, now()->addMinutes(5));
+            return redirect($url);
+        } catch (\Exception $e) {
+            return $disk->download($guest->conference_paper_path, $originalName);
+        }
     }
 
     public function edit(Guest $guest)
