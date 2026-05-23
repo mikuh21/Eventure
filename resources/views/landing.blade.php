@@ -351,6 +351,34 @@
             transition: border-color 180ms ease, box-shadow 180ms ease;
         }
 
+        .landing-registration-field input[type="file"] {
+            min-height: 40px;
+            padding: 4px 8px;
+            cursor: pointer;
+        }
+
+        .landing-registration-field input[type="file"]::file-selector-button,
+        .landing-registration-field input[type="file"]::-webkit-file-upload-button {
+            font-family: 'Sora', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            color: #ffffff;
+            background: #1B6CA8;
+            border: 1px solid #1B6CA8;
+            border-radius: 6px;
+            padding: 0 10px;
+            height: 30px;
+            margin-right: 10px;
+            cursor: pointer;
+            transition: background-color 160ms ease, border-color 160ms ease;
+        }
+
+        .landing-registration-field input[type="file"]:hover::file-selector-button,
+        .landing-registration-field input[type="file"]:hover::-webkit-file-upload-button {
+            background: #0f5e95;
+            border-color: #0f5e95;
+        }
+
         .landing-registration-field textarea {
             min-height: 56px;
             resize: vertical;
