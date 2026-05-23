@@ -973,6 +973,22 @@
                 font-family: 'Sora', sans-serif;
             }
 
+            .guest-modal-form-actions {
+                flex-direction: column;
+                align-items: stretch;
+                width: 100%;
+            }
+
+            .guest-modal-form-actions .btn,
+            .guest-modal-form-actions .btn-primary,
+            .guest-modal-form-actions .btn-cancel,
+            .guest-modal-form-actions .btn-cancel-edit {
+                width: 100%;
+                min-width: 0;
+                display: inline-flex;
+                justify-content: center;
+            }
+
             .guest-actions {
                 gap: 3px;
             }
