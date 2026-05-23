@@ -341,21 +341,23 @@
         }
 
         .guest-modal-header {
-            padding: 10px 20px;
+            padding: 10px 24px;
         }
 
         .guest-modal-body {
-            padding: 4px 20px;
+            padding: 4px 24px;
             width: 100%;
             box-sizing: border-box;
         }
 
         .guest-modal-footer {
-            padding: 6px 20px;
+            padding: 16px 24px 24px 24px;
             width: 100%;
             box-sizing: border-box;
             display: flex;
+            justify-content: flex-end;
             align-items: center;
+            margin: 0;
         }
 
         .guest-modal-footer.guest-modal-form-actions {
@@ -552,6 +554,8 @@
             display: flex;
             justify-content: flex-end;
             gap: 6px;
+            margin: 0;
+            width: 100%;
         }
 
         .guest-modal-form-actions .btn-cancel,
