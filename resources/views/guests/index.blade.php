@@ -987,7 +987,7 @@
                     <tbody>
                     @if ($guests->count() === 0)
                         <tr>
-                            <td colspan="5" class="guests-empty-table">No guests registered for this event yet.</td>
+                            <td colspan="7" class="guests-empty-table">No guests registered for this event yet.</td>
                         </tr>
                     @else
                         @foreach ($guests as $guest)
