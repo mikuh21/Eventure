@@ -948,7 +948,7 @@
                 <button type="button" id="landingRegistrationClose" class="landing-registration-close" aria-label="Close registration">×</button>
             </div>
             <div class="landing-registration-body overflow-y-auto max-h-[calc(100vh-140px)] grid gap-6 lg:grid-cols-[1.35fr_0.85fr]">
-                <div class="landing-registration-panel space-y-6">
+                <div class="landing-registration-panel space-y-3">
                     <div id="landingRegistrationTypeSelection" class="space-y-4">
                         <p class="text-sm text-slate-500">Register as:</p>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -963,7 +963,7 @@
                         </div>
                     </div>
 
-                    <div id="landingRegistrationFormPanel" class="hidden space-y-4">
+                    <div id="landingRegistrationFormPanel" class="hidden space-y-3">
                         <div class="space-y-3">
                             <div class="flex items-center justify-between gap-3">
                                 <div>
@@ -981,12 +981,12 @@
 
                             <div class="landing-registration-field">
                                 <label for="landingName">Name</label>
-                                <input id="landingName" name="name" type="text" placeholder="Full name" required>
+                                <input id="landingName" name="name" type="text" class="text-sm" placeholder="Full name" required>
                             </div>
 
                             <div class="landing-registration-field" id="participantTypeField">
                                 <label for="landingParticipantType">Participant Type</label>
-                                <select id="landingParticipantType" name="participant_type" required>
+                                <select id="landingParticipantType" name="participant_type" class="text-sm" required>
                                     <option value="">Select type</option>
                                     <option value="faculty">Faculty</option>
                                     <option value="student">Student</option>
@@ -995,25 +995,25 @@
 
                             <div class="landing-registration-field">
                                 <label for="landingEmail">Email</label>
-                                <input id="landingEmail" name="email" type="email" placeholder="Email address" required>
+                                <input id="landingEmail" name="email" type="email" class="text-sm" placeholder="Email address" required>
                             </div>
 
                             <div class="landing-registration-field" id="landingInstitutionField">
                                 <label for="landingInstitution">School / University</label>
-                                <input id="landingInstitution" name="institution" type="text" placeholder="School or university" required>
+                                <input id="landingInstitution" name="institution" type="text" class="text-sm" placeholder="School or university" required>
                             </div>
 
 
-                            <div class="landing-registration-field flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                                <button type="submit" class="landing-registration-submit" id="landingRegistrationSubmit">Register</button>
-                                <button type="button" class="btn-secondary inline-flex justify-center rounded-[10px] border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-slate-100" id="landingRegistrationCancel">Cancel</button>
+                            <div class="landing-registration-field flex justify-end gap-2">
+                                <button type="submit" class="landing-registration-submit px-3 py-1.5 text-sm" id="landingRegistrationSubmit">Register</button>
+                                <button type="button" class="btn-secondary inline-flex justify-center rounded-[10px] border border-slate-300 bg-white px-3 py-1.5 text-sm font-semibold text-slate-900 hover:bg-slate-100" id="landingRegistrationCancel">Cancel</button>
                             </div>
                         </form>
                     </div>
                 </div>
 
-                <div class="landing-registration-info space-y-4">
-                    <div class="space-y-2">
+                <div class="landing-registration-info space-y-3">
+                    <div class="space-y-1">
                         <p class="landing-registration-section-title">Event Summary</p>
                         <h3 class="text-lg font-semibold text-slate-900" id="landingEventTitle">Event title</h3>
                         <p class="text-sm text-slate-600" id="landingEventDate">Date range</p>
@@ -1117,12 +1117,13 @@
                     landingGuestRole.name = 'role';
                     landingGuestRole.type = 'text';
                     landingGuestRole.readOnly = true;
-                    landingGuestRole.className = 'bg-slate-100 text-slate-500 border border-slate-200 rounded-lg px-3 py-1.5 cursor-not-allowed';
+                    landingGuestRole.className = 'bg-slate-100 text-slate-500 border border-slate-200 rounded-lg px-3 py-1.5 text-sm cursor-not-allowed';
                     landingGuestRole.required = true;
 
                     guestRoleField.appendChild(guestRoleLabel);
                     guestRoleField.appendChild(landingGuestRole);
-                    landingInstitutionField.insertAdjacentElement('afterend', guestRoleField);
+                    const nameField = document.getElementById('landingName').closest('.landing-registration-field');
+                    (nameField || landingInstitutionField).insertAdjacentElement('afterend', guestRoleField);
                 }
 
                 if (!guestBioField) {
@@ -1138,6 +1139,7 @@
                     guestBioTextarea.id = 'landingGuestBio';
                     guestBioTextarea.name = 'bio';
                     guestBioTextarea.rows = 2;
+                    guestBioTextarea.className = 'text-sm';
                     guestBioTextarea.placeholder = 'Short bio or notes';
 
                     guestBioField.appendChild(guestBioLabel);
@@ -1163,7 +1165,7 @@
                     document.getElementById('landingInstitution').required = false;
                     landingGuestRole.required = true;
                     landingGuestRole.value = eventType === 'conference' ? 'Presenter' : 'Exhibitor';
-                    landingGuestRole.className = 'bg-slate-100 text-slate-500 border border-slate-200 rounded-lg px-3 py-1.5 cursor-not-allowed';
+                    landingGuestRole.className = 'bg-slate-100 text-slate-500 border border-slate-200 rounded-lg px-3 py-1.5 text-sm cursor-not-allowed';
                     guestBioField.querySelector('textarea').rows = 2;
                 } else {
                     participantTypeField.classList.remove('hidden');
