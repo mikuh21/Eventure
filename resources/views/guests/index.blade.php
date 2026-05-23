@@ -144,60 +144,61 @@
 
         .guest-actions {
             display: flex;
-            gap: 6px;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .guest-actions-row {
+            display: flex;
+            gap: 8px;
             flex-wrap: wrap;
             align-items: center;
         }
 
-        /* Mobile: keep action buttons inline and compact */
+        .guest-actions-row .btn-action,
+        .guest-actions-row form {
+            margin: 0;
+        }
+
+        .guest-actions-row .btn-delete-icon {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+        }
+
+        .guest-actions-row .btn-delete-icon svg {
+            width: 14px;
+            height: 14px;
+        }
+
         @media (max-width: 640px) {
-            .guest-actions {
-                flex-wrap: nowrap !important;
+            .guest-actions-row {
                 gap: 6px;
             }
 
-            .guest-actions .btn-action {
-                padding: 4px 6px !important;
-                font-size: 11px !important;
+            .guest-actions-row .btn-action {
+                padding: 4px 8px !important;
+                font-size: 12px !important;
                 line-height: 1 !important;
                 border-radius: 6px !important;
                 min-width: 0 !important;
             }
 
-            .guest-actions .btn-view {
-                padding: 4px 8px !important;
+            .guest-actions-row .btn-delete-icon {
+                width: 30px !important;
+                height: 30px !important;
             }
 
-            .guest-actions form {
-                display: inline-flex !important;
-                margin: 0 !important;
-            }
-
-            .btn-delete-icon {
-                width: 28px !important;
-                height: 28px !important;
-                padding: 0 !important;
-            }
-
-            .btn-delete-icon svg {
+            .guest-actions-row .btn-delete-icon svg {
                 width: 14px !important;
                 height: 14px !important;
             }
 
-            /* Ensure view and delete buttons are visually the same height and aligned */
-            .guest-actions .btn-action,
-            .guest-actions .btn-delete-icon {
-                height: 34px !important;
+            .guest-actions-row .btn-action,
+            .guest-actions-row .btn-delete-icon {
                 display: inline-flex !important;
                 align-items: center !important;
                 justify-content: center !important;
-                padding-top: 0 !important;
-                padding-bottom: 0 !important;
-            }
-
-            .guest-actions .btn-view {
-                padding-left: 8px !important;
-                padding-right: 8px !important;
             }
         }
 
@@ -219,6 +220,16 @@
 
         .btn-view { border-color: var(--color-steel-blue); color: var(--color-steel-blue); }
         .btn-view:hover { background: var(--color-sky); color: var(--color-ocean); }
+        .btn-approve {
+            border-color: #16a34a;
+            color: #14532d;
+            background: #dcfce7;
+        }
+        .btn-approve:hover {
+            background: #bbf7d0;
+            border-color: #15803d;
+            color: #14532d;
+        }
         .btn-edit { border-color: var(--color-ocean); color: var(--color-ocean); }
         .btn-edit:hover { background: var(--color-ice-white); }
         .btn-evals { border-color: var(--color-midnight); color: #ffffff; background: var(--color-midnight); }
@@ -875,17 +886,8 @@
                                 <td>{{ \Carbon\Carbon::parse($guest->created_at)->format('M d, Y h:i A') }}</td>
                                 <td>
                                     <div class="guest-actions">
+                                    <div class="guest-actions-row">
                                         <button class="btn-action btn-view" type="button" data-guest-id="{{ $guest->id }}" data-guest-name="{{ $guest->name }}" data-guest-email="{{ $guest->email }}" data-guest-role="{{ $guest->role }}" data-guest-bio="{{ $guest->bio }}" data-guest-event="{{ $guest->event->title }}" data-guest-event-id="{{ $guest->event_id }}" onclick="openViewGuestModal(this)">View</button>
-                                                @if (($guest->status ?? 'approved') === 'pending' && (auth()->user()->hasRole('admin') || (auth()->user()->hasRole('event_staff') && $selectedEvent->created_by === auth()->id())))
-                                                    <form class="js-approve-form" action="{{ route('events.guests.approve', [$selectedEvent, $guest]) }}" method="POST" style="display:inline;" data-guest-name="{{ $guest->name }}">
-                                                        @csrf
-                                                        <button class="btn-action" type="submit">Approve</button>
-                                                    </form>
-                                                    <form class="js-deny-form" action="{{ route('events.guests.deny', [$selectedEvent, $guest]) }}" method="POST" style="display:inline;" data-guest-name="{{ $guest->name }}">
-                                                        @csrf
-                                                        <button class="btn-action btn-delete" type="submit">Deny</button>
-                                                    </form>
-                                                @endif
                                         <form id="delete-form-guest-{{ $guest->id }}" action="{{ route('guests.destroy', $guest) }}" method="POST" style="display:inline;">
                                             @csrf
                                             @method('DELETE')
@@ -897,6 +899,19 @@
                                                 </button>
                                             @endif
                                         </form>
+                                    </div>
+                                    @if (($guest->status ?? 'approved') === 'pending' && (auth()->user()->hasRole('admin') || (auth()->user()->hasRole('event_staff') && $selectedEvent->created_by === auth()->id())))
+                                        <div class="guest-actions-row">
+                                            <form class="js-approve-form" action="{{ route('events.guests.approve', [$selectedEvent, $guest]) }}" method="POST" style="display:inline;" data-guest-name="{{ $guest->name }}">
+                                                @csrf
+                                                <button class="btn-action btn-approve" type="submit">Approve</button>
+                                            </form>
+                                            <form class="js-deny-form" action="{{ route('events.guests.deny', [$selectedEvent, $guest]) }}" method="POST" style="display:inline;" data-guest-name="{{ $guest->name }}">
+                                                @csrf
+                                                <button class="btn-action btn-delete" type="submit">Deny</button>
+                                            </form>
+                                        </div>
+                                    @endif
                                     </div>
                                 </td>
                             </tr>
