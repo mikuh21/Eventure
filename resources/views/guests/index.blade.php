@@ -969,7 +969,7 @@
                                 <td>
                                     @if ($guest->conference_paper_path)
                                         @php $fileName = pathinfo($guest->conference_paper_path, PATHINFO_BASENAME); @endphp
-                                        <a href="{{ asset('storage/'.$guest->conference_paper_path) }}" target="_blank" download>
+                                        <a href="{{ route('guests.download-paper', $guest) }}" target="_blank">
                                             {{ $fileName }}
                                         </a>
                                     @else

@@ -168,6 +168,22 @@ class GuestController extends Controller
         ]);
     }
 
+    public function downloadPaper(Guest $guest)
+    {
+        if (! $guest->conference_paper_path) {
+            abort(404);
+        }
+
+        $originalName = basename($guest->conference_paper_path);
+
+        if (config('filesystems.default') === 's3') {
+            $url = Storage::temporaryUrl($guest->conference_paper_path, now()->addMinutes(5));
+            return redirect($url);
+        }
+
+        return Storage::download($guest->conference_paper_path, $originalName);
+    }
+
     public function edit(Guest $guest)
     {
         if (! $this->guestModuleReady()) {

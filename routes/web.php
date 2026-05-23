@@ -112,6 +112,10 @@ Route::middleware(['auth', 'admin'])->group(function (): void {
         ->middleware('auth')
         ->name('events.guests.deny');
 
+    Route::get('/guests/{guest}/download-paper', [GuestController::class, 'downloadPaper'])
+        ->name('guests.download-paper')
+        ->middleware(['auth']);
+
     Route::resource('guests', GuestController::class);
 
     Route::resource('guests.evaluations', GuestEvaluationController::class);
