@@ -148,6 +148,13 @@ class GuestController extends Controller
         // Directly added guests by admin/event staff are approved immediately
         $validated['status'] = 'approved';
 
+        if ($request->hasFile('conference_paper')) {
+            $originalFileName = $request->file('conference_paper')->getClientOriginalName();
+            $validated['conference_paper_path'] = $request->file('conference_paper')
+                ->store('conference_papers', 'event-templates');
+            $validated['conference_paper_original_name'] = $originalFileName;
+        }
+
         $guest = Guest::create($validated);
 
         if (! $guest->digital_token) {
