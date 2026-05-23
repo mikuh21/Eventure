@@ -947,8 +947,8 @@
                 </div>
                 <button type="button" id="landingRegistrationClose" class="landing-registration-close" aria-label="Close registration">×</button>
             </div>
-            <div class="landing-registration-body overflow-y-auto max-h-[calc(100vh-160px)] grid gap-6 lg:grid-cols-[1.35fr_0.85fr]">
-                <div class="landing-registration-panel space-y-3">
+            <div class="landing-registration-body grid gap-4 items-start lg:grid-cols-[1.35fr_0.85fr]">
+                <div class="landing-registration-panel overflow-y-auto max-h-[calc(100vh-200px)] space-y-3">
                     <div id="landingRegistrationTypeSelection" class="space-y-4">
                         <p class="text-sm text-slate-500">Register as:</p>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -1005,14 +1005,14 @@
 
 
                             <div class="landing-registration-actions flex flex-row justify-end items-center gap-2 mt-2">
-                                <button type="submit" class="landing-registration-submit px-3 py-1.5 text-sm" id="landingRegistrationSubmit">Register</button>
                                 <button type="button" class="inline-flex justify-center rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-900 hover:bg-slate-100" id="landingRegistrationCancel">Cancel</button>
+                                <button type="submit" class="landing-registration-submit px-3 py-1.5 text-xs" id="landingRegistrationSubmit">Register</button>
                             </div>
                         </form>
                     </div>
                 </div>
 
-                <div class="landing-registration-info flex flex-col gap-2">
+                <div class="landing-registration-info self-start flex flex-col gap-2">
                     <div class="space-y-1">
                         <p class="landing-registration-section-title">Event Summary</p>
                         <h3 class="text-lg font-semibold text-slate-900" id="landingEventTitle">Event title</h3>
@@ -1145,6 +1145,7 @@
                     guestBioField.appendChild(guestBioLabel);
                     guestBioField.appendChild(guestBioTextarea);
                     guestRoleField.insertAdjacentElement('afterend', guestBioField);
+                    landingInstitutionField.classList.add('hidden');
                 }
             }
 
@@ -1167,6 +1168,7 @@
                     landingGuestRole.value = eventType === 'conference' ? 'Presenter' : 'Exhibitor';
                     landingGuestRole.className = 'bg-slate-100 text-slate-500 border border-slate-200 rounded-lg px-3 py-1.5 text-sm cursor-not-allowed';
                     guestBioField.querySelector('textarea').rows = 2;
+                    landingInstitutionField.classList.add('hidden');
                 } else {
                     participantTypeField.classList.remove('hidden');
                     landingInstitutionField.classList.remove('hidden');
