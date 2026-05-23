@@ -1005,8 +1005,8 @@
 
 
                             <div class="landing-registration-actions flex flex-row justify-end items-center gap-2 mt-2">
-                                <button type="button" class="inline-flex justify-center rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-900 hover:bg-slate-100" id="landingRegistrationCancel">Cancel</button>
-                                <button type="submit" class="landing-registration-submit px-3 py-1.5 text-xs" id="landingRegistrationSubmit">Register</button>
+                                <button type="button" class="inline-flex justify-center rounded-lg border border-slate-300 bg-white" id="landingRegistrationCancel" style="min-width:90px;padding:8px 16px;font-size:0.75rem;font-weight:600;color:#0f172a;" >Cancel</button>
+                                <button type="submit" class="landing-registration-submit" id="landingRegistrationSubmit" style="min-width:90px;padding:8px 16px;font-size:0.75rem;font-weight:600;">Register</button>
                             </div>
                         </form>
                     </div>
@@ -1146,6 +1146,7 @@
                     guestBioField.appendChild(guestBioTextarea);
                     guestRoleField.insertAdjacentElement('afterend', guestBioField);
                     landingInstitutionField.classList.add('hidden');
+                    landingInstitutionField.style.display = 'none';
                 }
             }
 
@@ -1158,6 +1159,8 @@
 
                 if (type === 'guest') {
                     createGuestFields();
+                    participantTypeField.style.display = 'none';
+                    landingInstitutionField.style.display = 'none';
                     participantTypeField.classList.add('hidden');
                     landingInstitutionField.classList.add('hidden');
                     guestRoleField.classList.remove('hidden');
@@ -1170,6 +1173,8 @@
                     guestBioField.querySelector('textarea').rows = 2;
                     landingInstitutionField.classList.add('hidden');
                 } else {
+                    participantTypeField.style.display = '';
+                    landingInstitutionField.style.display = '';
                     participantTypeField.classList.remove('hidden');
                     landingInstitutionField.classList.remove('hidden');
                     if (guestRoleField && guestRoleField.parentNode) {
