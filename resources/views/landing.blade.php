@@ -947,7 +947,7 @@
                 </div>
                 <button type="button" id="landingRegistrationClose" class="landing-registration-close" aria-label="Close registration">×</button>
             </div>
-            <div class="landing-registration-body overflow-y-auto max-h-[calc(100vh-140px)] grid gap-6 lg:grid-cols-[1.35fr_0.85fr]">
+            <div class="landing-registration-body overflow-y-auto max-h-[calc(100vh-160px)] grid gap-6 lg:grid-cols-[1.35fr_0.85fr]">
                 <div class="landing-registration-panel space-y-3">
                     <div id="landingRegistrationTypeSelection" class="space-y-4">
                         <p class="text-sm text-slate-500">Register as:</p>
@@ -974,18 +974,18 @@
                             </div>
                         </div>
 
-                        <form id="landingRegistrationForm" class="landing-registration-form space-y-4" method="POST" action="{{ route('public.participant.store') }}">
+                        <form id="landingRegistrationForm" class="landing-registration-form space-y-3" method="POST" action="{{ route('public.participant.store') }}">
                             @csrf
                             <input type="hidden" name="event_id" id="landingEventId" value="">
                             <input type="hidden" name="registration_type" id="landingRegistrationType" value="participant">
 
                             <div class="landing-registration-field">
-                                <label for="landingName">Name</label>
+                                <label for="landingName" class="text-sm">Name</label>
                                 <input id="landingName" name="name" type="text" class="text-sm" placeholder="Full name" required>
                             </div>
 
                             <div class="landing-registration-field" id="participantTypeField">
-                                <label for="landingParticipantType">Participant Type</label>
+                                <label for="landingParticipantType" class="text-sm">Participant Type</label>
                                 <select id="landingParticipantType" name="participant_type" class="text-sm" required>
                                     <option value="">Select type</option>
                                     <option value="faculty">Faculty</option>
@@ -994,12 +994,12 @@
                             </div>
 
                             <div class="landing-registration-field">
-                                <label for="landingEmail">Email</label>
+                                <label for="landingEmail" class="text-sm">Email</label>
                                 <input id="landingEmail" name="email" type="email" class="text-sm" placeholder="Email address" required>
                             </div>
 
                             <div class="landing-registration-field" id="landingInstitutionField">
-                                <label for="landingInstitution">School / University</label>
+                                <label for="landingInstitution" class="text-sm">School / University</label>
                                 <input id="landingInstitution" name="institution" type="text" class="text-sm" placeholder="School or university" required>
                             </div>
 
@@ -1012,7 +1012,7 @@
                     </div>
                 </div>
 
-                <div class="landing-registration-info space-y-3">
+                <div class="landing-registration-info space-y-3 overflow-hidden">
                     <div class="space-y-1">
                         <p class="landing-registration-section-title">Event Summary</p>
                         <h3 class="text-lg font-semibold text-slate-900" id="landingEventTitle">Event title</h3>
@@ -1122,8 +1122,8 @@
 
                     guestRoleField.appendChild(guestRoleLabel);
                     guestRoleField.appendChild(landingGuestRole);
-                    const nameField = document.getElementById('landingName').closest('.landing-registration-field');
-                    (nameField || landingInstitutionField).insertAdjacentElement('afterend', guestRoleField);
+                    const emailField = document.getElementById('landingEmail').closest('.landing-registration-field');
+                    (emailField || landingInstitutionField).insertAdjacentElement('afterend', guestRoleField);
                 }
 
                 if (!guestBioField) {
@@ -1152,7 +1152,7 @@
                 currentEventType = eventType;
                 registrationTypeInput.value = type;
                 landingFormTypeLabel.textContent = type === 'guest' ? 'Guest' : 'Participant';
-                landingRegistrationSubmit.textContent = type === 'guest' ? 'Save Guest' : 'Register';
+                landingRegistrationSubmit.textContent = 'Register';
                 landingRegistrationForm.action = type === 'guest' ? guestPublicUrl : participantPublicUrl;
 
                 if (type === 'guest') {
@@ -1277,7 +1277,7 @@
                     showToast('Network error. Please try again.', 'error');
                 } finally {
                     landingRegistrationSubmit.disabled = false;
-                    landingRegistrationSubmit.textContent = registrationTypeInput.value === 'guest' ? 'Save Guest' : 'Register';
+                    landingRegistrationSubmit.textContent = 'Register';
                 }
             });
 
