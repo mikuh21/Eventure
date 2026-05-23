@@ -307,7 +307,7 @@
             inset: 0;
             background: rgba(10, 35, 66, 0.38);
             display: flex;
-            align-items: flex-start;
+            align-items: center;
             justify-content: center;
             padding: 40px 20px;
             overflow-y: auto;
