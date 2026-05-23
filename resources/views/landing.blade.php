@@ -243,12 +243,12 @@
         }
 
         .landing-registration-modal {
-            width: min(900px, 100%);
-            max-width: 900px;
+            width: min(840px, 100%);
+            max-width: 840px;
             max-height: calc(100vh - 40px);
             background: #ffffff;
-            border-radius: 24px;
-            box-shadow: 0 30px 70px rgba(10, 35, 66, 0.18);
+            border-radius: 22px;
+            box-shadow: 0 24px 55px rgba(10, 35, 66, 0.18);
             overflow: hidden;
             border: 1px solid rgba(27,108,168,0.18);
             transform: translateY(10px) scale(0.98);
@@ -263,8 +263,8 @@
 
         .landing-registration-body {
             display: grid;
-            grid-template-columns: 1.1fr 0.9fr;
-            gap: 0;
+            grid-template-columns: 1.1fr 0.95fr;
+            gap: 16px;
             min-height: auto;
             max-height: calc(100vh - 160px);
             overflow-y: auto;
@@ -274,58 +274,49 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 16px;
-            padding: 24px;
+            gap: 14px;
+            padding: 18px 18px 16px;
             border-bottom: 1px solid rgba(229, 236, 244, 1);
         }
 
         .landing-registration-title {
             margin: 0;
-            font-size: 1.5rem;
+            font-size: 1.32rem;
             font-weight: 800;
             color: #0a2342;
         }
 
         .landing-registration-close {
-            width: 42px;
-            height: 42px;
+            width: 38px;
+            height: 38px;
             border: 1px solid rgba(27,108,168,0.18);
             border-radius: 12px;
             background: #ffffff;
             color: #1b6ca8;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             cursor: pointer;
         }
 
-        .landing-registration-body {
-            display: grid;
-            grid-template-columns: 1.1fr 0.9fr;
-            gap: 0;
-            min-height: auto;
-            max-height: calc(100vh - 160px);
-            overflow-y: auto;
-        }
-
         .landing-registration-panel {
-            padding: 24px;
+            padding: 18px;
         }
 
         .landing-registration-info {
             background: #f8fbff;
             border-left: 1px solid rgba(27,108,168,0.12);
-            padding: 24px;
+            padding: 18px;
             display: grid;
-            gap: 18px;
+            gap: 14px;
         }
 
         .landing-registration-field {
             display: grid;
-            gap: 8px;
-            margin-bottom: 16px;
+            gap: 6px;
+            margin-bottom: 12px;
         }
 
         .landing-registration-field label {
-            font-size: 0.95rem;
+            font-size: 0.92rem;
             font-weight: 600;
             color: #0a2342;
         }
@@ -334,18 +325,18 @@
         .landing-registration-field select,
         .landing-registration-field textarea {
             width: 100%;
-            min-height: 44px;
-            padding: 12px 14px;
+            min-height: 38px;
+            padding: 10px 12px;
             border: 1px solid rgba(207, 224, 239, 1);
-            border-radius: 14px;
-            font-size: 0.96rem;
+            border-radius: 12px;
+            font-size: 0.92rem;
             color: #0a2342;
             background: #ffffff;
             transition: border-color 180ms ease, box-shadow 180ms ease;
         }
 
         .landing-registration-field textarea {
-            min-height: 104px;
+            min-height: 90px;
             resize: vertical;
         }
 
@@ -972,14 +963,6 @@
                                 </div>
                                 <button type="button" class="text-sm text-em4 hover:underline" id="landingRegistrationBack">Change</button>
                             </div>
-                            <div class="rounded-2xl bg-slate-50 p-4 text-sm text-slate-700 space-y-2">
-                                <p class="font-semibold text-slate-900" id="landingFormEventName">Event title</p>
-                                <p id="landingFormEventDate" class="text-slate-600">Date range</p>
-                                <p id="landingFormEventLocation" class="text-slate-600">Location</p>
-                                <div class="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-wide text-em4">
-                                    <span class="px-2 py-1 rounded-full bg-em4/10 text-em4" id="landingFormEventStatus">Open</span>
-                                </div>
-                            </div>
                         </div>
 
                         <form id="landingRegistrationForm" class="landing-registration-form space-y-4" method="POST" action="{{ route('public.participant.store') }}">
@@ -1029,7 +1012,7 @@
                     </div>
                 </div>
 
-                <div class="landing-registration-info space-y-4">
+                <div class="landing-registration-info space-y-3">
                     <div class="space-y-2">
                         <p class="landing-registration-section-title">Event Summary</p>
                         <h3 class="text-lg font-semibold text-slate-900" id="landingEventTitle">Event title</h3>
@@ -1298,140 +1281,6 @@
         });
     </script>
 
-    <!-- Landing Registration Modal -->
-    <div id="landingRegistrationModal" class="landing-registration-modal-overlay" aria-hidden="true">
-        <div class="landing-registration-modal">
-            <div class="landing-registration-header">
-                <div>
-                    <h2 class="landing-registration-title">Register for this event</h2>
-                    <p class="text-sm text-slate-500 mt-2">Choose whether you are registering as a participant or a guest.</p>
-                </div>
-                <button type="button" id="landingRegistrationClose" class="landing-registration-close" aria-label="Close registration">×</button>
-            </div>
-            <div class="landing-registration-body">
-                <div class="landing-registration-panel">
-                    <div class="landing-registration-field">
-                        <label for="registrationType">Register As</label>
-                        <select id="registrationType" class="landing-registration-field-control" aria-label="Register as">
-                            <option value="participant">Participant</option>
-                            <option value="guest">Guest</option>
-                        </select>
-                    </div>
-                    <form id="landingRegistrationForm" class="landing-registration-form" method="POST" action="{{ url('/events/0/participants') }}">
-                        @csrf
-                        <input type="hidden" name="event_id" id="landingEventId" value="">
-                        <input type="hidden" name="redirect_to" value="{{ url()->current() }}">
-
-                        <div class="landing-registration-field">
-                            <label for="landingName">Name</label>
-                            <input id="landingName" name="name" type="text" placeholder="Full name" required>
-                        </div>
-                        <div class="landing-registration-field" id="participantTypeField">
-                            <label for="landingParticipantType">Participant Type</label>
-                            <select id="landingParticipantType" name="participant_type" required>
-                                <option value="">Select type</option>
-                                <option value="faculty">Faculty</option>
-                                <option value="student">Student</option>
-                            </select>
-                        </div>
-                        <div class="landing-registration-field">
-                            <label for="landingEmail">Email</label>
-                            <input id="landingEmail" name="email" type="email" placeholder="Email address" required>
-                        </div>
-                        <div class="landing-registration-field" id="landingInstitutionField">
-                            <label for="landingInstitution">School / University</label>
-                            <input id="landingInstitution" name="institution" type="text" placeholder="School or university" required>
-                        </div>
-                        <div class="landing-registration-field hidden" id="guestRoleField">
-                            <label for="landingGuestRole">Guest Role</label>
-                            <input id="landingGuestRole" name="role" type="text" placeholder="Presenter, Exhibitor, etc.">
-                        </div>
-                        <div class="landing-registration-field hidden" id="guestBioField">
-                            <label for="landingGuestBio">Bio / Notes</label>
-                            <textarea id="landingGuestBio" name="bio" rows="4" placeholder="Short bio or notes"></textarea>
-                        </div>
-                        <div class="landing-registration-field">
-                            <button type="submit" class="landing-registration-submit" id="landingRegistrationSubmit">Register Participant</button>
-                        </div>
-                    </form>
-                </div>
-                <div class="landing-registration-info">
-                    <div>
-                        <p class="landing-registration-section-title">Event Summary</p>
-                        <h3 class="text-lg font-semibold text-slate-900" id="landingEventTitle">Event title</h3>
-                        <p class="text-sm text-slate-600 mt-2" id="landingEventDate">Date range</p>
-                        <p class="text-sm text-slate-600" id="landingEventLocation">Location</p>
-                    </div>
-                    <div>
-                        <p class="landing-registration-section-title">Registration</p>
-                        <span class="landing-registration-pill" id="landingRegistrationStatus">Open</span>
-                    </div>
-                    <div class="landing-registration-footer">
-                        <p>Once your registration is submitted, you will receive confirmation here. Participants receive their digital ID by email after registration; guest registrations are reviewed and approved by event staff.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div id="landingToastContainer" style="position:fixed; top:20px; right:20px; z-index:10000; display:grid; gap:12px;"></div>
-    <script>
-        (function () {
-            const modal = document.getElementById('landingRegistrationModal');
-            const closeBtn = document.getElementById('landingRegistrationClose');
-            const openButtons = document.querySelectorAll('.open-registration-modal');
-            const registrationType = document.getElementById('registrationType');
-            const participantTypeField = document.getElementById('participantTypeField');
-            const landingInstitutionField = document.getElementById('landingInstitutionField');
-            const guestRoleField = document.getElementById('guestRoleField');
-            const guestBioField = document.getElementById('guestBioField');
-            const eventTitle = document.getElementById('landingEventTitle');
-            const eventDate = document.getElementById('landingEventDate');
-            const eventLocation = document.getElementById('landingEventLocation');
-            const registrationStatus = document.getElementById('landingRegistrationStatus');
-            const landingEventId = document.getElementById('landingEventId');
-            const landingRegistrationForm = document.getElementById('landingRegistrationForm');
-            const landingRegistrationSubmit = document.getElementById('landingRegistrationSubmit');
-            const toastContainer = document.getElementById('landingToastContainer');
-            const participantActionBase = '{{ url('/events/0/participants') }}';
-            const guestActionUrl = '{{ route('guests.store') }}';
-
-            function showToast(message, type = 'success') {
-                const toast = document.createElement('div');
-                toast.className = 'landing-toast ' + type;
-                toast.textContent = message;
-                toastContainer.appendChild(toast);
-                setTimeout(() => toast.classList.add('is-visible'), 10);
-                setTimeout(() => { if (toast.parentNode) toast.remove(); }, 4200);
-            }
-
-            let currentParticipantActionUrl = participantActionBase;
-            const nameLabel = document.querySelector('label[for="landingName"]');
-
-            function setFormType(type, eventType = 'standard') {
-                if (type === 'guest') {
-                    nameLabel.textContent = 'Guest Name';
-                    participantTypeField.classList.add('hidden');
-                    landingInstitutionField.classList.add('hidden');
-                    guestRoleField.classList.remove('hidden');
-                    guestBioField.classList.remove('hidden');
-                    landingRegistrationSubmit.textContent = 'Register as Guest';
-                    landingRegistrationForm.action = guestActionUrl;
-                    landingRegistrationForm.querySelector('[name="participant_type"]')?.removeAttribute('required');
-                    landingRegistrationForm.querySelector('[name="institution"]')?.removeAttribute('required');
-                    landingRegistrationForm.querySelector('[name="role"]')?.setAttribute('required', 'required');
-                } else {
-                    nameLabel.textContent = 'Name';
-                    participantTypeField.classList.remove('hidden');
-                    landingInstitutionField.classList.remove('hidden');
-                    guestRoleField.classList.add('hidden');
-                    guestBioField.classList.add('hidden');
-                    landingRegistrationSubmit.textContent = 'Register Participant';
-                    landingRegistrationForm.action = currentParticipantActionUrl;
-                    landingRegistrationForm.querySelector('[name="participant_type"]')?.setAttribute('required', 'required');
-                    landingRegistrationForm.querySelector('[name="institution"]')?.setAttribute('required', 'required');
-                    landingRegistrationForm.querySelector('[name="role"]')?.removeAttribute('required');
-                }
-            }
 
             function openRegistrationModal(button) {
                 const eventId = button.dataset.eventId;
