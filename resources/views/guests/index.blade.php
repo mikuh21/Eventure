@@ -310,7 +310,7 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
-            overflow-y: auto;
+            overflow: visible;
             z-index: 90;
             opacity: 0;
             visibility: hidden;
@@ -326,8 +326,10 @@
         }
 
         .guest-modal {
-            width: min(580px, 100%);
-            max-width: 580px;
+            width: 90vw;
+            max-width: 680px;
+            max-height: none;
+            overflow: visible;
             background: #ffffff;
             border: 1px solid var(--color-sky);
             border-radius: 12px;
@@ -381,6 +383,20 @@
             align-items: start;
             margin-top: 10px;
             min-width: 0;
+            padding: 0 24px 16px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .guest-modal-form .field,
+        .guest-modal-form .field-full,
+        .guest-modal-form label,
+        .guest-modal-form input,
+        .guest-modal-form select,
+        .guest-modal-form textarea,
+        .guest-modal-form input[type="file"] {
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .guest-modal-form .field {
@@ -423,6 +439,8 @@
         }
 
         .guest-modal-form input[type="file"] {
+            width: 100%;
+            box-sizing: border-box;
             padding: 8px 10px;
             border-radius: 8px;
             background: #ffffff;
@@ -619,6 +637,24 @@
             display: block;
             width: 100%;
             word-break: break-word;
+        }
+
+        #view_guest_submission_link {
+            padding: 0;
+            border: none;
+            background: transparent;
+        }
+
+        #view_guest_submission_link a {
+            display: inline-block;
+            font-size: 13px;
+            color: var(--color-ocean);
+            text-decoration: none;
+            margin-bottom: 8px;
+        }
+
+        #view_guest_submission_link a:hover {
+            text-decoration: underline;
         }
 
         /* Delete Confirmation Modal */
@@ -1450,7 +1486,7 @@
 
             if (paperPath) {
                 const displayName = paperOriginalName || paperPath.split('/').pop();
-                submissionLabel.textContent = 'Update Submission';
+                submissionLabel.textContent = 'Submission';
                 submissionLink.style.display = 'block';
                 submissionLink.innerHTML = '<a href="/guests/' + currentGuestId + '/download-paper" target="_blank">' + displayName + '</a>';
             } else {
