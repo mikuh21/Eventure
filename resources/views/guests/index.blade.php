@@ -999,7 +999,10 @@
                                 <td><span class="guest-status-badge status-{{ $guest->status ?? 'approved' }}">{{ ucfirst($guest->status ?? 'approved') }}</span></td>
                                 <td>
                                     @if ($guest->conference_paper_path)
-                                        @php $fileName = pathinfo($guest->conference_paper_path, PATHINFO_BASENAME); @endphp
+                                        @php
+                                            $fileName = $guest->conference_paper_original_name
+                                                ?? pathinfo($guest->conference_paper_path, PATHINFO_BASENAME);
+                                        @endphp
                                         <a href="{{ route('guests.download-paper', $guest) }}" target="_blank">
                                             {{ $fileName }}
                                         </a>
