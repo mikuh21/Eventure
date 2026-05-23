@@ -464,26 +464,55 @@
             line-height: 1.6;
         }
 
-        .landing-toast {
+        .modal-floating-label {
+            position: relative;
             min-width: 280px;
             max-width: 420px;
-            color: #ffffff;
-            background: rgba(27,108,168,0.95);
-            border-radius: 16px;
-            padding: 14px 18px;
-            box-shadow: 0 18px 45px rgba(10, 35, 66, 0.18);
-            margin-bottom: 12px;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-family: 'Sora', sans-serif;
+            font-size: 13px;
+            line-height: 1.4;
+            box-shadow: 0 10px 24px rgba(10, 35, 66, 0.2);
+            color: inherit;
             opacity: 0;
-            transform: translateY(-12px);
-            animation: landing-toast-in 280ms ease forwards;
+            transform: translateY(-6px);
+            animation: toast-in 180ms ease-out forwards;
+            transition: opacity 220ms ease, transform 220ms ease;
         }
 
-        .landing-toast.success { background: #16a34a; }
-        .landing-toast.error { background: #b91c1c; }
-        .landing-toast.info { background: rgba(27,108,168,0.95); }
+        .modal-floating-label.is-hiding {
+            opacity: 0;
+            transform: translateY(-6px);
+        }
 
-        @keyframes landing-toast-in {
-            to { opacity: 1; transform: translateY(0); }
+        .modal-floating-success {
+            background: #ecfdf5;
+            border: 1px solid #34d399;
+            color: #065f46;
+        }
+
+        .modal-floating-error {
+            background: #fef2f2;
+            border: 1px solid #fca5a5;
+            color: #991b1b;
+        }
+
+        .modal-floating-info {
+            background: #eff6ff;
+            border: 1px solid #93c5fd;
+            color: #1d4ed8;
+        }
+
+        @keyframes toast-in {
+            from {
+                opacity: 0;
+                transform: translateY(-6px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         @media (max-width: 960px) {
@@ -1109,11 +1138,14 @@
 
             function showToast(message, type = 'success') {
                 const toast = document.createElement('div');
-                toast.className = 'landing-toast ' + type;
+                toast.className = 'modal-floating-label modal-floating-' + type + ' modal-toast';
                 toast.textContent = message;
                 toastContainer.appendChild(toast);
                 setTimeout(() => toast.classList.add('is-visible'), 10);
-                setTimeout(() => { if (toast.parentNode) toast.remove(); }, 4200);
+                setTimeout(() => {
+                    toast.classList.add('is-hiding');
+                    setTimeout(() => { if (toast.parentNode) toast.remove(); }, 220);
+                }, 4200);
             }
 
             function resetForm() {
