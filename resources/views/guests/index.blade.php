@@ -310,6 +310,7 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
+            overflow-y: auto;
             z-index: 90;
             opacity: 0;
             visibility: hidden;
@@ -327,8 +328,6 @@
         .guest-modal {
             width: min(580px, 100%);
             max-width: 580px;
-            max-height: 85vh;
-            overflow-y: auto;
             background: #ffffff;
             border: 1px solid var(--color-sky);
             border-radius: 12px;
