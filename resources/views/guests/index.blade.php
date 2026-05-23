@@ -341,15 +341,15 @@
         }
 
         .guest-modal-header {
-            padding: 20px 24px;
+            padding: 12px 20px;
         }
 
         .guest-modal-body {
-            padding: 0 24px;
+            padding: 0 20px;
         }
 
         .guest-modal-footer {
-            padding: 16px 24px;
+            padding: 12px 20px;
         }
 
         .guest-modal-footer.guest-modal-form-actions {
@@ -365,7 +365,7 @@
             margin: 0;
             color: var(--color-midnight);
             font-family: 'Sora', sans-serif;
-            font-size: 1.35rem;
+            font-size: 1.15rem;
             font-weight: 700;
         }
 
@@ -395,9 +395,9 @@
         .guest-modal-form {
             display: grid;
             grid-template-columns: minmax(0, 1fr);
-            gap: 12px;
+            gap: 8px;
             align-items: start;
-            margin-top: 10px;
+            margin-top: 8px;
             min-width: 0;
             padding: 0;
             width: 100%;
@@ -426,7 +426,7 @@
         }
 
         .guest-modal-form label {
-            margin: 0 0 6px;
+            margin: 0 0 4px;
             color: var(--color-midnight);
             font-family: 'Sora', sans-serif;
             font-size: 13px;
@@ -435,8 +435,8 @@
 
         .guest-modal-form input {
             width: 100%;
-            min-height: 40px;
-            padding: 7px 10px;
+            min-height: 36px;
+            padding: 6px 10px;
             border: 1px solid #cfe0ef;
             border-radius: 8px;
             background: #ffffff;
@@ -494,8 +494,8 @@
 
         .guest-modal-form select {
             width: 100%;
-            min-height: 40px;
-            padding: 7px 10px;
+            min-height: 36px;
+            padding: 6px 10px;
             border: 1px solid #cfe0ef;
             border-radius: 8px;
             background: #ffffff;
@@ -513,7 +513,7 @@
         }
 
         .guest-modal-form textarea {
-            min-height: 72px;
+            min-height: 56px;
             resize: vertical;
             font-family: 'Sora', sans-serif;
         }
@@ -528,8 +528,8 @@
 
         .guest-modal-form-readonly {
             width: 100%;
-            min-height: 40px;
-            padding: 8px 10px;
+            min-height: 36px;
+            padding: 6px 10px;
             border: 1px solid #cfe0ef;
             border-radius: 8px;
             background: #f5f5f5;
@@ -574,7 +574,7 @@
         .guest-modal-form-actions .btn-primary {
             font-family: 'Sora', sans-serif;
             font-size: 13px;
-            padding: 7px 16px;
+            padding: 6px 14px;
         }
 
         #openGuestModal:disabled {
@@ -1169,8 +1169,8 @@
                         <textarea id="modal_guest_bio" name="bio" rows="2">{{ old('bio') }}</textarea>
                     </div>
 
-                    <div style="margin-bottom: 16px;">
-                        <label style="display:block; font-weight:600; font-size:13px; margin-bottom:6px;">Submission <span style="color:#999; font-weight:400;">(optional)</span></label>
+                    <div style="margin-bottom: 12px;">
+                        <label style="display:block; font-weight:600; font-size:13px; margin-bottom:4px;">Submission <span style="color:#999; font-weight:400;">(optional)</span></label>
                         <input type="file" name="conference_paper" accept=".pdf,.doc,.docx" style="width:100%; box-sizing:border-box;">
                     </div>
 
