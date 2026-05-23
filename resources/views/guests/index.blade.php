@@ -346,10 +346,16 @@
 
         .guest-modal-body {
             padding: 4px 20px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .guest-modal-footer {
             padding: 6px 20px;
+            width: 100%;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
         }
 
         .guest-modal-footer.guest-modal-form-actions {
