@@ -168,6 +168,34 @@
             vertical-align: middle;
         }
 
+        .guest-status-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 500;
+            padding: 2px 8px;
+            text-transform: capitalize;
+            white-space: nowrap;
+        }
+
+        .guest-status-badge.status-pending {
+            background: #fef9c3;
+            color: #854d0e;
+        }
+
+        .guest-status-badge.status-approved {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .guest-status-badge.status-denied {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
         .participants-table tbody tr:last-child td {
             border-bottom: none;
         }
@@ -232,6 +260,18 @@
         .btn-view:hover {
             background: var(--color-sky);
             color: var(--color-ocean);
+        }
+
+        .btn-approve {
+            border-color: #16a34a;
+            color: #14532d;
+            background: #dcfce7;
+        }
+
+        .btn-approve:hover {
+            background: #bbf7d0;
+            border-color: #15803d;
+            color: #14532d;
         }
 
         .btn-digital-id {
@@ -374,6 +414,23 @@
         .btn-delete-confirm:hover {
             background: #991b1b;
             border-color: #991b1b;
+        }
+
+        .btn-approve-confirm {
+            border-color: #16a34a;
+            background: #16a34a;
+        }
+
+        .btn-approve-confirm:hover {
+            background: #15803d;
+            border-color: #15803d;
+        }
+
+        .modal-toast {
+            position: relative;
+            margin: 0;
+            pointer-events: none;
+            opacity: 1;
         }
 
         .participants-empty-table {
@@ -1120,17 +1177,18 @@
             <table class="participants-table">
                 <thead>
                 <tr>
-                    <th style="width:22%">Name</th>
-                    <th style="width:27%">Email</th>
-                    <th style="width:12%">Attended</th>
-                    <th style="width:19%">Registered At</th>
-                    <th style="width:20%">Actions</th>
+                    <th style="width:20%">Name</th>
+                    <th style="width:22%">Email</th>
+                    <th style="width:10%">Attended</th>
+                    <th style="width:18%">Registered At</th>
+                    <th style="width:15%">Status</th>
+                    <th style="width:15%">Actions</th>
                 </tr>
                 </thead>
                 <tbody>
                 @if ($participants->count() === 0)
                     <tr>
-                        <td colspan="5" class="participants-empty-table">No participants registered for this event yet.</td>
+                        <td colspan="6" class="participants-empty-table">No participants registered for this event yet.</td>
                     </tr>
                 @else
                     @foreach ($participants as $participant)
@@ -1143,6 +1201,7 @@
                                 </span>
                             </td>
                             <td class="cell-muted">{{ \Carbon\Carbon::parse($participant->created_at)->format('M d, Y h:i A') }}</td>
+                            <td><span class="guest-status-badge status-{{ $participant->status ?? 'approved' }}">{{ ucfirst($participant->status ?? 'approved') }}</span></td>
                             <td>
                                 <div class="participant-actions">
                                     <a class="btn-action btn-view" href="{{ route('events.participants.show', [$selectedEvent, $participant]) }}">View</a>
@@ -1161,7 +1220,7 @@
                                     @if (($participant->status ?? 'approved') === 'pending' && (auth()->user()->hasRole('admin') || (auth()->user()->hasRole('event_staff') && $selectedEvent->created_by === auth()->id())))
                                         <form class="js-approve-form" action="{{ route('events.participants.approve', [$selectedEvent, $participant]) }}" method="POST" style="display:inline;" data-participant-name="{{ $participant->name }}">
                                             @csrf
-                                            <button class="btn-action" type="submit">Approve</button>
+                                            <button class="btn-action btn-approve" type="submit">Approve</button>
                                         </form>
                                         <form class="js-deny-form" action="{{ route('events.participants.deny', [$selectedEvent, $participant]) }}" method="POST" style="display:inline;" data-participant-name="{{ $participant->name }}">
                                             @csrf
@@ -1211,7 +1270,7 @@
             <p class="delete-confirm-body">Are you sure you want to approve <span id="approveConfirmName" class="delete-confirm-name"></span>? An email with the Digital ID will be sent.</p>
             <div class="delete-confirm-actions">
                 <button type="button" class="btn-delete-cancel" id="approveConfirmCancel">Cancel</button>
-                <button type="button" class="btn-delete-confirm" id="approveConfirmSubmit">Yes, Approve</button>
+                <button type="button" class="btn-delete-confirm btn-approve-confirm" id="approveConfirmSubmit">Yes, Approve</button>
             </div>
         </div>
     </div>
@@ -1949,15 +2008,18 @@
                 toast.className = 'modal-floating-label modal-floating-' + type + ' modal-toast';
                 toast.textContent = message;
                 toastContainer.appendChild(toast);
+                setTimeout(function () {
+                    toast.classList.add('is-visible');
+                }, 10);
 
                 window.setTimeout(function () {
+                    if (!toast) return;
                     toast.classList.add('is-hiding');
-                }, duration - 400);
-
-                window.setTimeout(function () {
-                    if (toast && toast.parentNode) {
-                        toast.parentNode.removeChild(toast);
-                    }
+                    window.setTimeout(function () {
+                        if (toast && toast.parentNode) {
+                            toast.parentNode.removeChild(toast);
+                        }
+                    }, 220);
                 }, duration);
             }
 
@@ -1982,6 +2044,17 @@
                 pendingApproveForm = null;
             });
 
+            if (approveModal) {
+                approveModal.addEventListener('click', function (e) {
+                    if (e.target === approveModal) {
+                        approveModal.classList.remove('is-visible');
+                        approveModal.setAttribute('aria-hidden', 'true');
+                        document.body.style.overflow = '';
+                        pendingApproveForm = null;
+                    }
+                });
+            }
+
             if (approveSubmit) approveSubmit.addEventListener('click', function () {
                 if (!pendingApproveForm) return;
                 var url = pendingApproveForm.action;
@@ -1999,10 +2072,17 @@
                     return resp.json().then(function (data) { return { status: resp.status, data: data }; });
                 }).then(function (result) {
                     if (result.status >= 200 && result.status < 300) {
-                        showToast(result.data.message || 'Approved and email sent.', 'success');
-                        // remove row
+                        showToast(result.data.message || 'Participant approved and digital ID email sent.', 'success');
                         var row = pendingApproveForm.closest('tr');
-                        if (row) row.parentNode.removeChild(row);
+                        if (row) {
+                            var statusBadge = row.querySelector('.guest-status-badge');
+                            if (statusBadge) {
+                                statusBadge.textContent = 'Approved';
+                                statusBadge.className = 'guest-status-badge status-approved';
+                            }
+                            var actionForms = row.querySelectorAll('form.js-approve-form, form.js-deny-form');
+                            actionForms.forEach(function (form) { form.remove(); });
+                        }
                     } else {
                         showToast(result.data.message || 'Failed to approve.', 'error');
                     }
@@ -2038,6 +2118,17 @@
                 document.body.style.overflow = '';
                 pendingDenyForm = null;
             });
+
+            if (denyModal) {
+                denyModal.addEventListener('click', function (e) {
+                    if (e.target === denyModal) {
+                        denyModal.classList.remove('is-visible');
+                        denyModal.setAttribute('aria-hidden', 'true');
+                        document.body.style.overflow = '';
+                        pendingDenyForm = null;
+                    }
+                });
+            }
 
             if (denySubmit) denySubmit.addEventListener('click', function () {
                 if (!pendingDenyForm) return;
