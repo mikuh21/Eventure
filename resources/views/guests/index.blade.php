@@ -207,15 +207,16 @@
         @media (max-width: 640px) {
             #toastContainer {
                 position: fixed !important;
-                top: 50% !important;
+                top: 16px !important;
                 left: 50% !important;
                 right: auto !important;
-                transform: translate(-50%, -50%) !important;
+                transform: translateX(-50%) !important;
                 z-index: 1400;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
                 gap: 10px;
+                width: min(calc(100% - 32px), 420px);
             }
 
             .guest-actions-row {
