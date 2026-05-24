@@ -150,12 +150,25 @@ class ParticipantController extends Controller
         $participant = $event->participants()->create([
             ...$request->validated(),
             'attended' => false,
-            'status' => 'pending',
+            'status' => 'approved',
+            'approved_at' => now(),
         ]);
+
+        if (! $participant->digital_id_token) {
+            $participant->update([
+                'digital_id_token' => Str::uuid()->toString(),
+            ]);
+        }
+
+        $digitalIdUrl = $this->mobileDigitalIdUrl($participant->digital_id_token);
+        Mail::to($participant->email)->send(new ParticipantRegisteredMail(
+            participant: $participant->loadMissing('event'),
+            digitalIdUrl: $digitalIdUrl,
+        ));
 
         if ($wantsJson) {
             return response()->json([
-                'message' => 'Registration successful. Pending approval is required before a digital ID is sent.',
+                'message' => 'Registration successful and digital ID email sent.',
                 'data' => $participant,
             ], 201);
         }
@@ -163,7 +176,7 @@ class ParticipantController extends Controller
         if ($redirectTo) {
             $isAdminOrStaff = auth()->check() && (auth()->user()->hasRole('admin') || auth()->user()->hasRole('event_staff'));
             return redirect($redirectTo)
-                ->with('status', 'Registration successful. Pending approval is required before a digital ID is sent.')
+                ->with('status', 'Registration successful and digital ID email sent.')
                 ->with('participant_registered', [
                     'name' => $participant->name,
                     'email' => $participant->email,
@@ -176,7 +189,7 @@ class ParticipantController extends Controller
 
         return redirect()
             ->route('participants.confirmation.show', $participant)
-            ->with('status', 'Registration successful. Pending approval is required before a digital ID is sent.');
+            ->with('status', 'Registration successful and digital ID email sent.');
     }
 
     public function publicStore(Request $request)
@@ -204,6 +217,7 @@ class ParticipantController extends Controller
         ]);
 
         return response()->json([
+            'success' => true,
             'message' => 'Registration submitted! You will receive your Digital ID via email once your registration is approved.',
             'data' => $participant,
         ], 201);
