@@ -1204,28 +1204,31 @@
                             <td><span class="guest-status-badge status-{{ $participant->status ?? 'approved' }}">{{ ucfirst($participant->status ?? 'approved') }}</span></td>
                             <td>
                                 <div class="participant-actions">
-                                    <a class="btn-action btn-view" href="{{ route('events.participants.show', [$selectedEvent, $participant]) }}">View</a>
-                                    <button
-                                        type="button"
-                                        class="btn-action btn-digital-id"
-                                        data-participant-id="{{ $participant->id }}"
-                                        data-name="{{ $participant->name }}"
-                                        data-event="{{ $selectedEvent->title ?? '' }}"
-                                        data-token="{{ $participant->digital_id_token ?? '' }}"
-                                        data-qr="{{ route('participants.digital-id.show', $participant, false) }}"
-                                        data-resend-url="{{ route('events.participants.resend-digital-id', [$selectedEvent, $participant]) }}"
-                                    >
-                                        Digital ID
-                                    </button>
-                                    @if (($participant->status ?? 'approved') === 'pending' && (auth()->user()->hasRole('admin') || (auth()->user()->hasRole('event_staff') && $selectedEvent->created_by === auth()->id())))
-                                        <form class="js-approve-form" action="{{ route('events.participants.approve', [$selectedEvent, $participant]) }}" method="POST" style="display:inline;" data-participant-name="{{ $participant->name }}">
-                                            @csrf
-                                            <button class="btn-action btn-approve" type="submit">Approve</button>
-                                        </form>
-                                        <form class="js-deny-form" action="{{ route('events.participants.deny', [$selectedEvent, $participant]) }}" method="POST" style="display:inline;" data-participant-name="{{ $participant->name }}">
-                                            @csrf
-                                            <button class="btn-action btn-delete" type="submit">Deny</button>
-                                        </form>
+                                    @if (($participant->status ?? 'approved') === 'pending')
+                                        @if (auth()->user()->hasRole('admin') || (auth()->user()->hasRole('event_staff') && $selectedEvent->created_by === auth()->id()))
+                                            <form class="js-approve-form" action="{{ route('events.participants.approve', [$selectedEvent, $participant]) }}" method="POST" style="display:inline;" data-participant-name="{{ $participant->name }}">
+                                                @csrf
+                                                <button class="btn-action btn-approve" type="submit">Approve</button>
+                                            </form>
+                                            <form class="js-deny-form" action="{{ route('events.participants.deny', [$selectedEvent, $participant]) }}" method="POST" style="display:inline;" data-participant-name="{{ $participant->name }}">
+                                                @csrf
+                                                <button class="btn-action btn-delete" type="submit">Deny</button>
+                                            </form>
+                                        @endif
+                                    @else
+                                        <a class="btn-action btn-view" href="{{ route('events.participants.show', [$selectedEvent, $participant]) }}">View</a>
+                                        <button
+                                            type="button"
+                                            class="btn-action btn-digital-id"
+                                            data-participant-id="{{ $participant->id }}"
+                                            data-name="{{ $participant->name }}"
+                                            data-event="{{ $selectedEvent->title ?? '' }}"
+                                            data-token="{{ $participant->digital_id_token ?? '' }}"
+                                            data-qr="{{ route('participants.digital-id.show', $participant, false) }}"
+                                            data-resend-url="{{ route('events.participants.resend-digital-id', [$selectedEvent, $participant]) }}"
+                                        >
+                                            Digital ID
+                                        </button>
                                     @endif
                                     <form id="delete-form-{{ $participant->id }}" action="{{ route('events.participants.destroy', [$selectedEvent, $participant]) }}" method="POST" style="display:inline;">
                                         @csrf
