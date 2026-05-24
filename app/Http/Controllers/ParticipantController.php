@@ -212,7 +212,7 @@ class ParticipantController extends Controller
 
         $participant = $event->participants()->create([
             ...$validated,
-            'status' => 'pending',
+            'approval_status' => 'pending',
             'attended' => false,
         ]);
 
