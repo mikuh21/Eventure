@@ -484,9 +484,8 @@
         }
 
         .modal-floating-label {
-            position: absolute;
-            top: 20px;
-            right: 20px;
+            position: relative;
+            min-width: 280px;
             max-width: min(420px, calc(100% - 40px));
             border-radius: 10px;
             padding: 10px 14px;
@@ -494,14 +493,23 @@
             font-size: 13px;
             line-height: 1.4;
             box-shadow: 0 10px 24px rgba(10, 35, 66, 0.2);
-            z-index: 3;
-            animation: toast-in 180ms ease-out;
+            color: inherit;
+            opacity: 0;
+            transform: translateY(-6px);
+            animation: toast-in 180ms ease-out forwards;
             transition: opacity 220ms ease, transform 220ms ease;
         }
 
         .modal-floating-label.is-hiding {
             opacity: 0;
             transform: translateY(-6px);
+        }
+
+        .modal-toast {
+            position: relative;
+            margin: 0;
+            pointer-events: none;
+            opacity: 1;
         }
 
         @keyframes toast-in {
@@ -1797,8 +1805,7 @@
                 });
             }
 
-            var digitalButtons = document.querySelectorAll('.btn-digital-id[data-participant-id]');
-            digitalButtons.forEach(function (button) {
+            function attachDigitalIdButtonHandler(button) {
                 button.addEventListener('click', function () {
                     var participantId = button.dataset.participantId || '';
                     var participantName = button.dataset.name || '';
@@ -1864,6 +1871,11 @@
                         syncQrFabWithModalState();
                     }
                 });
+            }
+
+            var digitalButtons = document.querySelectorAll('.btn-digital-id[data-participant-id]');
+            digitalButtons.forEach(function (button) {
+                attachDigitalIdButtonHandler(button);
             });
 
             if (resendEmailBtn) {
@@ -2083,8 +2095,35 @@
                                 statusBadge.textContent = 'Approved';
                                 statusBadge.className = 'guest-status-badge status-approved';
                             }
-                            var actionForms = row.querySelectorAll('form.js-approve-form, form.js-deny-form');
-                            actionForms.forEach(function (form) { form.remove(); });
+                            var actionDiv = row.querySelector('.participant-actions');
+                            if (actionDiv) {
+                                var approveForms = actionDiv.querySelectorAll('form.js-approve-form, form.js-deny-form');
+                                approveForms.forEach(function (form) { form.remove(); });
+                                
+                                var deleteForm = actionDiv.querySelector('[id^="delete-form-"]');
+                                var participantData = result.data.participant || {};
+                                
+                                var viewLink = document.createElement('a');
+                                viewLink.className = 'btn-action btn-view';
+                                viewLink.href = pendingApproveForm.action.replace('/approve', '');
+                                viewLink.textContent = 'View';
+                                actionDiv.insertBefore(viewLink, deleteForm);
+                                
+                                var digitalIdBtn = document.createElement('button');
+                                digitalIdBtn.type = 'button';
+                                digitalIdBtn.className = 'btn-action btn-digital-id';
+                                digitalIdBtn.textContent = 'Digital ID';
+                                digitalIdBtn.setAttribute('data-participant-id', participantData.id || row.dataset.participantId);
+                                var nameCell = row.querySelector('td:first-child');
+                                digitalIdBtn.setAttribute('data-name', participantData.name || (nameCell ? nameCell.textContent : ''));
+                                digitalIdBtn.setAttribute('data-event', '{{ $selectedEvent->title ?? '' }}');
+                                digitalIdBtn.setAttribute('data-token', participantData.digital_id_token || '');
+                                digitalIdBtn.setAttribute('data-qr', participantData.qr_url || '');
+                                digitalIdBtn.setAttribute('data-resend-url', participantData.resend_url || '');
+                                actionDiv.insertBefore(digitalIdBtn, deleteForm);
+                                
+                                attachDigitalIdButtonHandler(digitalIdBtn);
+                            }
                         }
                     } else {
                         showToast(result.data.message || 'Failed to approve.', 'error');

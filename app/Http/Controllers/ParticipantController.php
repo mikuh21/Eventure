@@ -414,6 +414,13 @@ class ParticipantController extends Controller
         if ($request->expectsJson() || $request->is('api/*')) {
             return response()->json([
                 'message' => 'Participant approved and digital ID email sent.',
+                'participant' => [
+                    'id' => $participant->id,
+                    'name' => $participant->name,
+                    'digital_id_token' => $participant->digital_id_token,
+                    'qr_url' => route('participants.digital-id.show', $participant, false),
+                    'resend_url' => route('events.participants.resend-digital-id', [$event, $participant]),
+                ],
             ]);
         }
 
