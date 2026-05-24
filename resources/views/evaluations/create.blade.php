@@ -502,6 +502,7 @@
                         </div>
                     @endforeach
                 </div>
+                @endforeach
             @else
                 <div class="evaluation-form-section">
                     <p style="text-align: center; color: #6b7280;">No questions available for this evaluation.</p>
