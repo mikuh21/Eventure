@@ -555,8 +555,24 @@
         .guest-modal-form-actions {
             display: flex;
             justify-content: flex-end;
-            gap: 6px;
+            gap: 8px;
             width: 100%;
+            padding: 0 24px 20px;
+            box-sizing: border-box;
+        }
+
+        .guest-modal-form-actions .btn,
+        .guest-modal-form-actions .btn-primary,
+        .guest-modal-form-actions .btn-cancel,
+        .guest-modal-form-actions .btn-cancel-edit {
+            padding: 8px 16px;
+            min-height: 38px;
+            font-size: 13px;
+            font-family: 'Sora', sans-serif;
+            font-weight: 600;
+            box-sizing: border-box;
+            border-radius: 8px;
+            cursor: pointer;
         }
 
         .guest-modal-form-actions .btn-cancel,
@@ -564,15 +580,7 @@
             border: 1px solid var(--color-sky);
             background: #ffffff;
             color: var(--color-ocean);
-            border-radius: 8px;
-            padding: 6px 14px;
-            min-height: 36px;
-            font-family: 'Sora', sans-serif;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
             transition: background 160ms ease, border-color 160ms ease;
-            box-sizing: border-box;
         }
 
         .guest-modal-form-actions .btn-cancel:hover,
@@ -586,9 +594,9 @@
         .guest-modal-form-actions .btn,
         .guest-modal-form-actions .btn-primary {
             font-family: 'Sora', sans-serif;
-            font-size: 14px;
-            padding: 10px 14px;
-            min-height: 36px;
+            font-size: 13px;
+            padding: 8px 16px;
+            min-height: 38px;
             box-sizing: border-box;
         }
 
