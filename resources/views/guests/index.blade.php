@@ -918,12 +918,14 @@
             }
 
             .guest-modal-form-actions {
-                flex-direction: column;
+                flex-direction: row;
+                justify-content: flex-end;
+                flex-wrap: nowrap;
                 gap: 8px;
             }
 
             .guest-modal-form-actions .btn {
-                width: 100%;
+                width: auto;
             }
 
             .guest-modal-view-field {
@@ -969,7 +971,8 @@
             #viewGuestModal .modal-footer,
             #editGuestModal .modal-footer {
                 display: flex;
-                flex-direction: column;
+                flex-direction: row;
+                justify-content: flex-end;
                 gap: 10px;
                 padding: 16px 24px 24px 24px;
                 width: 100%;
@@ -980,7 +983,7 @@
             #viewGuestModal .modal-footer .btn,
             #editGuestModal .modal-footer .btn,
             .guest-modal-footer .btn {
-                width: 100%;
+                width: auto;
                 box-sizing: border-box;
                 text-align: center;
                 padding: 12px 16px;
