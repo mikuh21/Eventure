@@ -556,6 +556,7 @@
             display: flex;
             justify-content: flex-end;
             gap: 6px;
+            width: 100%;
         }
 
         .guest-modal-form-actions .btn-cancel,
@@ -565,11 +566,13 @@
             color: var(--color-ocean);
             border-radius: 8px;
             padding: 6px 14px;
+            min-height: 36px;
             font-family: 'Sora', sans-serif;
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
             transition: background 160ms ease, border-color 160ms ease;
+            box-sizing: border-box;
         }
 
         .guest-modal-form-actions .btn-cancel:hover,
@@ -585,6 +588,8 @@
             font-family: 'Sora', sans-serif;
             font-size: 14px;
             padding: 10px 14px;
+            min-height: 36px;
+            box-sizing: border-box;
         }
 
         #openGuestModal:disabled {
