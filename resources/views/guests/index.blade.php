@@ -974,16 +974,18 @@
             }
 
             .guest-modal-form-actions {
-                flex-direction: column;
-                align-items: stretch;
+                display: flex;
+                justify-content: flex-end;
+                flex-wrap: nowrap;
+                gap: 8px;
                 width: 100%;
+                box-sizing: border-box;
             }
 
             .guest-modal-form-actions .btn,
             .guest-modal-form-actions .btn-primary,
             .guest-modal-form-actions .btn-cancel,
             .guest-modal-form-actions .btn-cancel-edit {
-                width: 100%;
                 min-width: 0;
                 display: inline-flex;
                 justify-content: center;
