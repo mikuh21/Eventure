@@ -30,6 +30,7 @@ class UpdateParticipantRequest extends FormRequest
                     ->ignore($participantId),
             ],
             'institution' => ['required', 'string', 'max:255'],
+            'attended' => ['boolean'],
         ];
     }
 }

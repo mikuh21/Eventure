@@ -37,6 +37,13 @@
                 <input id="institution" name="institution" type="text" value="{{ old('institution', $participant->institution) }}" required>
             </div>
 
+            <div class="field">
+                <label for="attended">
+                    <input id="attended" name="attended" type="checkbox" value="1" {{ old('attended', $participant->attended) ? 'checked' : '' }}>
+                    Mark as Attended
+                </label>
+            </div>
+
             <button class="btn btn-primary" type="submit">Update Participant</button>
         </form>
     </div>

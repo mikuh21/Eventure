@@ -1217,7 +1217,7 @@
                             <td>{{ $participant->name }}</td>
                             <td class="cell-muted">{{ $participant->email }}</td>
                             <td>
-                                <span class="badge-pill {{ $participant->attended ? 'badge-attended-yes' : 'badge-attended-no' }}">
+                                <span class="badge-pill badge-attended-toggle {{ $participant->attended ? 'badge-attended-yes' : 'badge-attended-no' }}" data-participant-id="{{ $participant->id }}" data-attended="{{ $participant->attended ? 'true' : 'false' }}" title="Click to toggle attendance" style="cursor: pointer;">
                                     {{ $participant->attended ? 'Yes' : 'No' }}
                                 </span>
                             </td>
@@ -1530,6 +1530,28 @@
                 }
             };
 
+            var updateParticipantAttendance = function (participant) {
+                if (!participant || !participant.id) {
+                    return;
+                }
+
+                var row = document.querySelector('tr[data-participant-id="' + participant.id + '"]');
+                if (!row) {
+                    return;
+                }
+
+                var attendedBadge = row.querySelector('.badge-attended-toggle');
+                if (!attendedBadge) {
+                    return;
+                }
+
+                var isAttended = participant.attended === true || participant.attended === 'true';
+                attendedBadge.textContent = isAttended ? 'Yes' : 'No';
+                attendedBadge.dataset.attended = isAttended ? 'true' : 'false';
+                attendedBadge.classList.toggle('badge-attended-yes', isAttended);
+                attendedBadge.classList.toggle('badge-attended-no', !isAttended);
+            };
+
             var setEmailStatus = function (message, type) {
                 if (!emailStatus) {
                     return;
@@ -1605,10 +1627,12 @@
                                 qrStatus.innerText = (data && data.message) ? data.message : 'Attendance marked successfully.';
                                 qrStatus.style.color = '#065f46';
 
+                                if (data && data.participant) {
+                                    updateParticipantAttendance(data.participant);
+                                }
+
                                 window.setTimeout(function () {
                                     closeQrModal();
-
-                                    window.location.reload();
                                 }, 900);
                             })
                             .catch(function (error) {

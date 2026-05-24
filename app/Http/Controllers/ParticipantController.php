@@ -310,6 +310,7 @@ class ParticipantController extends Controller
             return response()->json([
                 'message' => 'Participant updated successfully.',
                 'data' => $participant->fresh(),
+                'attended' => $participant->attended,
             ]);
         }
 
