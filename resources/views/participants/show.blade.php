@@ -662,7 +662,7 @@
                                             <p class="evaluation-question">{{ $question->question }}</p>
                                             @php
                                                 $displayAnswer = $answer;
-                                                if ($answer !== null && $answer !== '' && $question->renderingType() === 'time') {
+                                                if ($answer !== null && $answer !== '' && (\in_array($question->renderingType(), ['time'], true) || $question->type === 'time')) {
                                                     try {
                                                         $displayAnswer = \Carbon\Carbon::parse($answer)->format('g:i A');
                                                     } catch (\Exception $e) {
