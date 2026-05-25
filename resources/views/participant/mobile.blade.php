@@ -1144,7 +1144,16 @@
                                             @endif
                                         </label>
 
-                                        @if ($question->help_text && $section !== 'Session Feedback')
+                                        @php
+                                            $isEventDetailsTitleField = $section === 'Event Details' && trim(strtolower($question->question)) === 'title of activity';
+                                            $isEventDetailsDateField = $section === 'Event Details' && trim(strtolower($question->question)) === 'date of activity';
+                                            $isEventDetailsTimeField = $section === 'Event Details' && trim(strtolower($question->question)) === 'time of activity';
+                                            $isEventDetailsVenueField = $section === 'Event Details' && trim(strtolower($question->question)) === 'venue';
+                                            $isEventDetailsProgramField = $section === 'Event Details' && trim(strtolower($question->question)) === 'program';
+                                            $shouldShowHelpText = $question->help_text && $section !== 'Session Feedback' && ! $isEventDetailsProgramField && ! $isEventDetailsDateField && ! $isEventDetailsTimeField;
+                                        @endphp
+
+                                        @if ($shouldShowHelpText)
                                             <p class="survey-question-help{{ in_array($question->renderingType(), ['likert', 'rating']) ? ' text-center' : '' }}">{{ $question->help_text }}</p>
                                         @endif
 
@@ -1179,18 +1188,14 @@
                                                 @endforeach
                                             </div>
                                         @else
-                                            @php
-                                                $isEventDetailsDateField = $section === 'Event Details' && $question->renderingType() === 'date';
-                                                $isEventDetailsVenueField = $section === 'Event Details' && trim(strtolower($question->question)) === 'venue';
-                                            @endphp
                                             <input
                                                 id="question_{{ $question->id }}"
                                                 name="answers[{{ $question->id }}]"
-                                                type="{{ $isEventDetailsDateField || $isEventDetailsVenueField ? 'text' : (in_array($question->renderingType(), ['date', 'time']) ? $question->renderingType() : 'text') }}"
+                                                type="{{ $isEventDetailsTitleField || $isEventDetailsDateField || $isEventDetailsVenueField ? 'text' : (in_array($question->renderingType(), ['date', 'time']) ? $question->renderingType() : 'text') }}"
                                                 class="survey-form-input"
                                                 placeholder="{{ $question->placeholder }}"
-                                                value="{{ $isEventDetailsDateField ? $eventDateDisplay : ($isEventDetailsVenueField ? $event->location : '') }}"
-                                                {{ $isEventDetailsDateField || $isEventDetailsVenueField ? 'readonly' : '' }}
+                                                value="{{ $isEventDetailsTitleField ? $event->title : ($isEventDetailsDateField ? $eventDateDisplay : ($isEventDetailsVenueField ? $event->location : '')) }}"
+                                                {{ $isEventDetailsTitleField || $isEventDetailsDateField || $isEventDetailsVenueField ? 'readonly' : '' }}
                                                 {{ $question->is_required ? 'required' : '' }}
                                                 @if ($question->isProgramQuestion()) aria-label="{{ $question->question }}" @endif
                                             >
