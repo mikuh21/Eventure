@@ -466,6 +466,7 @@
 
         .modal-floating-label {
             position: relative;
+            z-index: 10051;
             min-width: 280px;
             max-width: 420px;
             border-radius: 10px;
@@ -1119,7 +1120,7 @@
             </div>
         </div>
     </div>
-    <div id="landingToastContainer" style="position:fixed; top:20px; right:20px; z-index:10000; display:grid; gap:12px;"></div>
+    <div id="landingToastContainer" style="position:fixed; top:20px; right:20px; z-index:10050; display:grid; gap:12px;"></div>
     <script>
         (function () {
             const modal = document.getElementById('landingRegistrationModal');
