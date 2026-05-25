@@ -134,13 +134,19 @@
             position: fixed;
             left: 50%;
             bottom: 24px;
-            transform: translateX(-50%);
+            transform: translateX(-50%) translateY(-6px);
             max-width: min(92vw, 420px);
             width: auto;
             min-height: 44px;
             margin: 0 auto;
             pointer-events: none;
+            opacity: 0;
+            transition: opacity 220ms ease, transform 220ms ease;
+        }
+
+        .modal-toast.is-visible {
             opacity: 1;
+            transform: translateX(-50%) translateY(0);
         }
 
         .modal-floating-success {
@@ -656,13 +662,17 @@
             toastContainer.appendChild(toast);
 
             window.setTimeout(function () {
-                toast.classList.add('is-hiding');
-            }, duration - 400);
+                toast.classList.add('is-visible');
+            }, 10);
 
             window.setTimeout(function () {
-                if (toast && toast.parentNode) {
-                    toast.parentNode.removeChild(toast);
-                }
+                toast.classList.remove('is-visible');
+                toast.classList.add('is-hiding');
+                window.setTimeout(function () {
+                    if (toast && toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
+                    }
+                }, 220);
             }, duration);
         }
 

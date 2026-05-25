@@ -850,8 +850,14 @@
             line-height: 1.4;
             box-shadow: 0 10px 24px rgba(10, 35, 66, 0.2);
             z-index: 1505;
-            animation: toast-in 180ms ease-out;
+            opacity: 0;
+            transform: translateY(-6px);
             transition: opacity 220ms ease, transform 220ms ease;
+        }
+
+        .modal-floating-label.is-visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .modal-floating-error {
@@ -1216,13 +1222,17 @@
             toastContainer.appendChild(toast);
 
             window.setTimeout(function () {
-                toast.classList.add('is-hiding');
-            }, duration - 400);
+                toast.classList.add('is-visible');
+            }, 10);
 
             window.setTimeout(function () {
-                if (toast && toast.parentNode) {
-                    toast.parentNode.removeChild(toast);
-                }
+                toast.classList.remove('is-visible');
+                toast.classList.add('is-hiding');
+                window.setTimeout(function () {
+                    if (toast && toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
+                    }
+                }, 220);
             }, duration);
         }
 

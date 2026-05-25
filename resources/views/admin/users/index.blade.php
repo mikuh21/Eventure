@@ -124,6 +124,11 @@
             opacity: 1;
             transform: translateY(0);
         }
+
+        .admin-toast.is-hiding {
+            opacity: 0;
+            transform: translateY(-6px);
+        }
     </style>
 @endpush
 
@@ -350,10 +355,17 @@
                     document.body.appendChild(toast);
                 }
                 toast.textContent = message;
+                toast.classList.remove('is-hiding');
                 toast.classList.add('is-visible');
 
                 setTimeout(() => {
                     toast.classList.remove('is-visible');
+                    toast.classList.add('is-hiding');
+                    setTimeout(() => {
+                        if (toast && toast.parentNode) {
+                            toast.parentNode.removeChild(toast);
+                        }
+                    }, 220);
                 }, 3200);
             };
 

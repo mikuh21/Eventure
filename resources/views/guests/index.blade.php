@@ -843,8 +843,12 @@
             color: inherit;
             opacity: 0;
             transform: translateY(-6px);
-            animation: toast-in 180ms ease-out forwards;
             transition: opacity 220ms ease, transform 220ms ease;
+        }
+
+        .modal-floating-label.is-visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .modal-floating-label.is-hiding {
