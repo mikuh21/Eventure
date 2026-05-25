@@ -1094,6 +1094,8 @@
                             $eventDateDisplay = $startDate->format('F j, Y') . ' - ' . $endDate->format('F j, Y');
                         }
 
+                        $eventTimeDisplay = $startDate->format('g:i A');
+
                         $sessionFeedbackRatingLabels = [
                             1 => '1 (Poor)',
                             2 => '2 (Needs Improvement)',
@@ -1191,11 +1193,11 @@
                                             <input
                                                 id="question_{{ $question->id }}"
                                                 name="answers[{{ $question->id }}]"
-                                                type="{{ $isEventDetailsTitleField || $isEventDetailsDateField || $isEventDetailsVenueField ? 'text' : ($isEventDetailsTimeField ? 'time' : (in_array($question->renderingType(), ['date', 'time']) ? $question->renderingType() : 'text')) }}"
+                                                type="{{ $isEventDetailsTitleField || $isEventDetailsDateField || $isEventDetailsVenueField || $isEventDetailsTimeField ? 'text' : (in_array($question->renderingType(), ['date', 'time']) ? $question->renderingType() : 'text') }}"
                                                 class="survey-form-input"
                                                 placeholder="{{ $question->placeholder }}"
-                                                value="{{ $isEventDetailsTitleField ? $event->title : ($isEventDetailsDateField ? $eventDateDisplay : ($isEventDetailsVenueField ? $event->location : '')) }}"
-                                                {{ $isEventDetailsTitleField || $isEventDetailsDateField || $isEventDetailsVenueField ? 'readonly' : '' }}
+                                                value="{{ $isEventDetailsTitleField ? $event->title : ($isEventDetailsDateField ? $eventDateDisplay : ($isEventDetailsTimeField ? $eventTimeDisplay : ($isEventDetailsVenueField ? $event->location : ''))) }}"
+                                                {{ $isEventDetailsTitleField || $isEventDetailsDateField || $isEventDetailsVenueField || $isEventDetailsTimeField ? 'readonly' : '' }}
                                                 {{ $question->is_required ? 'required' : '' }}
                                                 @if ($question->isProgramQuestion()) aria-label="{{ $question->question }}" @endif
                                             >
