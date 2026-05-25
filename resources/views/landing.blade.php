@@ -476,14 +476,18 @@
             box-shadow: 0 10px 24px rgba(10, 35, 66, 0.2);
             color: inherit;
             opacity: 0;
-            transform: translateY(-6px);
-            animation: toast-in 180ms ease-out forwards;
-            transition: opacity 220ms ease, transform 220ms ease;
+            transform: translateY(-12px);
+            transition: transform 250ms ease, opacity 250ms ease;
+        }
+
+        .modal-floating-label.is-visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .modal-floating-label.is-hiding {
             opacity: 0;
-            transform: translateY(-6px);
+            transform: translateY(-12px);
         }
 
         .modal-floating-success {
@@ -512,6 +516,17 @@
             to {
                 opacity: 1;
                 transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            #landingToastContainer {
+                top: 16px !important;
+                right: 50% !important;
+                transform: translateX(50%) !important;
+                left: auto !important;
+                width: calc(100% - 32px) !important;
+                max-width: 420px !important;
             }
         }
 
@@ -1143,8 +1158,9 @@
                 toastContainer.appendChild(toast);
                 setTimeout(() => toast.classList.add('is-visible'), 10);
                 setTimeout(() => {
+                    toast.classList.remove('is-visible');
                     toast.classList.add('is-hiding');
-                    setTimeout(() => { if (toast.parentNode) toast.remove(); }, 220);
+                    setTimeout(() => { if (toast.parentNode) toast.remove(); }, 250);
                 }, 4200);
             }
 
