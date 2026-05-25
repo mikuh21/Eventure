@@ -54,31 +54,31 @@
             flex-wrap: wrap;
             gap: 10px;
             margin-bottom: 20px;
-            padding: 4px;
-            border: 1px solid transparent;
+            padding: 0;
             border-radius: 12px;
-            background: #f6fbff;
+            background: transparent;
         }
 
         .events-tab {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            min-height: 44px;
-            padding: 10px 18px;
-            border-radius: 999px;
+            min-height: 40px;
+            padding: 0 14px;
+            border-radius: 10px;
             background: #ffffff;
-            border: 1px solid transparent;
+            border: 1px solid var(--color-sky);
             color: var(--color-midnight);
             text-decoration: none;
             font-weight: 600;
+            font-size: 13px;
             transition: border-color 180ms ease, background-color 180ms ease, color 180ms ease, box-shadow 180ms ease;
         }
 
         .events-tab:hover,
         .events-tab:focus-visible {
-            background: #eff6ff;
-            border-color: rgba(27, 108, 168, 0.2);
+            background: #f6fbff;
+            border-color: var(--color-steel-blue);
             outline: none;
         }
 
@@ -86,7 +86,7 @@
             background: #ffffff;
             border-color: var(--color-steel-blue);
             color: var(--color-ocean);
-            box-shadow: 0 4px 14px rgba(27, 108, 168, 0.12);
+            box-shadow: 0 2px 10px rgba(27, 108, 168, 0.1);
         }
 
         .events-tab-count {
@@ -95,7 +95,7 @@
             justify-content: center;
             margin-left: 10px;
             min-width: 28px;
-            height: 24px;
+            height: 22px;
             border-radius: 999px;
             padding: 0 8px;
             background: var(--color-ice-white);
@@ -1077,7 +1077,7 @@
                 <h3>No events found</h3>
                 <p>Try adjusting your filters or create a new event.</p>
                 @auth
-                    @if (auth()->user()->canAccessBackoffice())
+                    @if (auth()->user()->canAccessBackoffice() && $currentView !== 'browse')
                         <a class="btn btn-create-event" href="{{ route('events.create') }}">Create Event</a>
                     @endif
                 @endauth
