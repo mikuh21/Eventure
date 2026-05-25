@@ -660,6 +660,16 @@
                                     @else
                                         <div class="evaluation-grouped-item">
                                             <p class="evaluation-question">{{ $question->question }}</p>
+                                            @php
+                                                $displayAnswer = $answer;
+                                                if ($answer !== null && $answer !== '' && $question->renderingType() === 'time') {
+                                                    try {
+                                                        $displayAnswer = \Carbon\Carbon::parse($answer)->format('g:i A');
+                                                    } catch (\Exception $e) {
+                                                        $displayAnswer = $answer;
+                                                    }
+                                                }
+                                            @endphp
                                             <p class="evaluation-answer">
                                                 @if ($answer === null || $answer === '')
                                                     No response submitted.
@@ -668,7 +678,7 @@
                                                 @elseif (in_array($question->type, [\App\Models\EvaluationQuestion::TYPE_RATING, \App\Models\EvaluationQuestion::TYPE_LIKERT]) && is_numeric($answer))
                                                     {{ $answer }}/5
                                                 @else
-                                                    {!! nl2br(e($answer)) !!}
+                                                    {!! nl2br(e($displayAnswer)) !!}
                                                 @endif
                                             </p>
                                         </div>
