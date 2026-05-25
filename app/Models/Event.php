@@ -187,23 +187,12 @@ class Event extends Model
 
     public function isRegistrationOpen(): bool
     {
-        $now = now('Asia/Manila');
+        $now = now();
 
-        // Preferred behavior: explicit registration window controls open/close.
-        if ($this->start_registration && $this->end_registration) {
-            return $now->between(
-                \Carbon\Carbon::parse($this->start_registration)->setTimezone('Asia/Manila'),
-                \Carbon\Carbon::parse($this->end_registration)->setTimezone('Asia/Manila')
-            );
-        }
-
-        // Backward compatibility for older events that do not yet have window values.
-        // Keep registration open until the event date ends.
-        if ($this->start_date) {
-            return $now->lte($this->start_date->copy()->endOfDay());
-        }
-
-        return true;
+        return $this->start_registration !== null
+            && $this->end_registration !== null
+            && $now->gte($this->start_registration)
+            && $now->lte($this->end_registration);
     }
 
     public function scopeRegistrationOpen(Builder $query): Builder

@@ -1351,7 +1351,7 @@
                     </div>
                     <div class="participant-modal-event-item">
                         <p class="participant-modal-event-label">Registration</p>
-                        <p class="participant-modal-event-value">{{ $selectedEvent->registration_open ? 'Open' : 'Closed' }}</p>
+                        <p class="participant-modal-event-value">{{ $selectedEvent->isRegistrationOpen() ? 'Open' : 'Closed' }}</p>
                     </div>
                 </div>
 
