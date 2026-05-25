@@ -1094,16 +1094,16 @@
         @media (max-width: 768px) {
             #toastContainer {
                 position: fixed !important;
-                top: 16px !important;
+                top: 70px !important;
+                left: 16px !important;
                 right: 16px !important;
-                left: auto !important;
                 bottom: auto !important;
-                z-index: 1400;
+                z-index: 99999;
                 display: flex;
                 flex-direction: column;
                 align-items: flex-end;
                 gap: 10px;
-                width: calc(100% - 80px);
+                width: auto;
                 max-width: 320px;
             }
 
@@ -1314,7 +1314,7 @@
     </div>
 
     <!-- Toast container -->
-    <div id="toastContainer" style="position:fixed; top:16px; right:16px; z-index:1400"></div>
+    <div id="toastContainer" style="position:fixed; top:16px; right:16px; z-index:99999; max-width:320px; width:calc(100% - 80px);"></div>
 
     @if ($selectedEvent)
         @php
@@ -1392,7 +1392,7 @@
                 $registered = session('participant_registered');
             @endphp
             <div class="participant-modal-overlay is-visible" id="registrationSuccessModal" aria-hidden="false">
-                <div class="modal-floating-label modal-floating-success modal-toast">Registration successful. Participants' Digital ID is sent on their email.</div>
+                
 
                 <div class="participant-modal" role="dialog" aria-modal="true" aria-labelledby="registrationSuccessModalTitle">
                     <div class="header-row">
@@ -1772,6 +1772,12 @@
                         closeSuccessModal();
                     }
                 });
+
+                if (successModal.classList.contains('is-visible')) {
+                    setTimeout(function () {
+                        showToast("Registration successful. Participant's Digital ID has been sent to their email.", 'success', 5000);
+                    }, 300);
+                }
             }
 
             var toasts = document.querySelectorAll('.modal-toast');
