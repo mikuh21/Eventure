@@ -1597,11 +1597,19 @@
             var initializeDatePickers = function() {
                 var today = new Date();
                 var todayDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().split('T')[0];
+                var todayDateTime = new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
 
                 ['editStartDate', 'editEndDate'].forEach(function(id) {
                     var input = document.getElementById(id);
                     if (input) {
                         input.setAttribute('min', todayDate);
+                    }
+                });
+
+                ['editStartRegistration', 'editEndRegistration'].forEach(function(id) {
+                    var input = document.getElementById(id);
+                    if (input) {
+                        input.setAttribute('min', todayDateTime);
                     }
                 });
             };
