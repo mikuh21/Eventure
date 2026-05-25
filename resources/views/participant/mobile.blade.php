@@ -1149,8 +1149,8 @@
                                             $isEventDetailsDateField = $section === 'Event Details' && trim(strtolower($question->question)) === 'date of activity';
                                             $isEventDetailsTimeField = $section === 'Event Details' && trim(strtolower($question->question)) === 'time of activity';
                                             $isEventDetailsVenueField = $section === 'Event Details' && trim(strtolower($question->question)) === 'venue';
-                                            $isEventDetailsProgramField = $section === 'Event Details' && trim(strtolower($question->question)) === 'program';
-                                            $shouldShowHelpText = $question->help_text && $section !== 'Session Feedback' && ! $isEventDetailsProgramField && ! $isEventDetailsDateField && ! $isEventDetailsTimeField;
+                                            $isEventDetailsProgramField = $section === 'Event Details' && in_array(trim(strtolower($question->question)), ['program', 'program/course', 'program or course of study']);
+                                            $shouldShowHelpText = $question->help_text && $section !== 'Session Feedback' && ! $isEventDetailsProgramField && ! $isEventDetailsTitleField && ! $isEventDetailsDateField && ! $isEventDetailsTimeField;
                                         @endphp
 
                                         @if ($shouldShowHelpText)
@@ -1191,7 +1191,7 @@
                                             <input
                                                 id="question_{{ $question->id }}"
                                                 name="answers[{{ $question->id }}]"
-                                                type="{{ $isEventDetailsTitleField || $isEventDetailsDateField || $isEventDetailsVenueField ? 'text' : (in_array($question->renderingType(), ['date', 'time']) ? $question->renderingType() : 'text') }}"
+                                                type="{{ $isEventDetailsTitleField || $isEventDetailsDateField || $isEventDetailsVenueField ? 'text' : ($isEventDetailsTimeField ? 'time' : (in_array($question->renderingType(), ['date', 'time']) ? $question->renderingType() : 'text')) }}"
                                                 class="survey-form-input"
                                                 placeholder="{{ $question->placeholder }}"
                                                 value="{{ $isEventDetailsTitleField ? $event->title : ($isEventDetailsDateField ? $eventDateDisplay : ($isEventDetailsVenueField ? $event->location : '')) }}"
