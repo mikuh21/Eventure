@@ -31,7 +31,16 @@ class ParticipantController extends Controller
             $eventsQuery->where('created_by', auth()->id());
         }
         
-        $events = $eventsQuery->orderBy('start_date', 'asc')->get();
+        $events = $eventsQuery
+            ->orderByRaw("CASE
+                WHEN start_date <= CURRENT_DATE AND end_date >= CURRENT_DATE THEN 1
+                WHEN start_date > CURRENT_DATE THEN 2
+                ELSE 3
+            END ASC")
+            ->orderByRaw("CASE WHEN start_date <= CURRENT_DATE AND end_date >= CURRENT_DATE THEN start_date ELSE NULL END DESC NULLS LAST")
+            ->orderByRaw("CASE WHEN start_date > CURRENT_DATE THEN start_date ELSE NULL END ASC NULLS LAST")
+            ->orderBy('start_date', 'desc')
+            ->get();
 
         $selectedEvent = null;
         $participants = collect();

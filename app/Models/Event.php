@@ -234,8 +234,16 @@ class Event extends Model
             return 'Completed';
         }
 
-        if ($this->start_date?->isToday()) {
+        $now = now();
+        $startDate = $this->start_date?->startOfDay();
+        $endDate = $this->end_date?->endOfDay();
+
+        if ($this->isRegistrationOpen() || ($startDate && $endDate && $now->between($startDate, $endDate))) {
             return 'Ongoing';
+        }
+
+        if ($this->start_date?->isFuture()) {
+            return 'Scheduled';
         }
 
         return 'Scheduled';
