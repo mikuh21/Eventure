@@ -1096,7 +1096,7 @@
 
                             <div class="landing-registration-actions flex flex-row justify-end items-center gap-2 mt-2">
                                 <button type="button" class="inline-flex justify-center rounded-lg border border-slate-300 bg-white" id="landingRegistrationCancel" style="min-width:90px;padding:8px 16px;font-size:0.75rem;font-weight:600;color:#0f172a;transition: background 180ms ease, border-color 180ms ease;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='#fff'">Cancel</button>
-                                <button type="submit" id="landingRegistrationSubmit" style="min-width:90px;max-width:90px;padding:8px 16px;font-size:0.75rem;font-weight:600;background:#1B6CA8;color:#fff;border:none;border-radius:8px;cursor:pointer;transition: filter 180ms ease;" onmouseover="this.style.filter='brightness(1.08)'" onmouseout="this.style.filter='brightness(1)'">Register</button>
+                                <button type="submit" id="landingRegistrationSubmit" style="min-width:120px;padding:8px 16px;font-size:0.75rem;font-weight:600;background:#1B6CA8;color:#fff;border:none;border-radius:8px;cursor:pointer;transition: filter 180ms ease;" onmouseover="this.style.filter='brightness(1.08)'" onmouseout="this.style.filter='brightness(1)'">Register</button>
                             </div>
                         </form>
                     </div>
