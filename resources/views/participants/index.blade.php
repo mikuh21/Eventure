@@ -1091,19 +1091,20 @@
             }
         }
 
-        @media (max-width: 640px) {
+        @media (max-width: 768px) {
             #toastContainer {
                 position: fixed !important;
                 top: 16px !important;
-                left: 50% !important;
-                right: auto !important;
-                transform: translateX(-50%) !important;
+                right: 16px !important;
+                left: auto !important;
+                bottom: auto !important;
                 z-index: 1400;
                 display: flex;
                 flex-direction: column;
-                align-items: center;
+                align-items: flex-end;
                 gap: 10px;
-                width: min(calc(100% - 32px), 420px);
+                width: calc(100% - 80px);
+                max-width: 320px;
             }
 
             .participants-page-header {

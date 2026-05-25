@@ -699,6 +699,31 @@
             border-radius: 10px;
         }
 
+        @keyframes toastSlideDown {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            #toastContainer,
+            .toast-container,
+            [id*="toast"] {
+                position: fixed !important;
+                top: 16px !important;
+                right: 16px !important;
+                left: auto !important;
+                bottom: auto !important;
+                width: calc(100% - 80px) !important;
+                max-width: 320px !important;
+                z-index: 9999 !important;
+            }
+
+            .toast,
+            [class*="toast"] {
+                animation: toastSlideDown 250ms ease forwards;
+            }
+        }
+
         @media (max-width: 960px) {
             .admin-nav-toggle {
                 display: inline-flex;
