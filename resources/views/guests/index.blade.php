@@ -360,7 +360,7 @@
         }
 
         .guest-modal-body {
-            padding: 4px 20px;
+            padding: 4px 24px;
             width: 100%;
             box-sizing: border-box;
         }
