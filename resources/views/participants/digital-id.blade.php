@@ -425,17 +425,33 @@
                         await document.fonts.ready;
                     }
 
-                    // capture front
-                    var dataFront = await (async function(element){
-                        var host = document.createElement('div'); host.className='export-host';
-                        var clone = element.cloneNode(true); clone.classList.add('export-face');
-                        clone.style.position='fixed'; clone.style.left='-9999px'; clone.style.top='-9999px'; clone.style.visibility='visible'; clone.style.opacity='1'; clone.style.transform='none'; clone.style.webkitTransform='none'; clone.style.backfaceVisibility='visible'; clone.style.webkitBackfaceVisibility='visible'; clone.style.pointerEvents='none';
-                        host.appendChild(clone); document.body.appendChild(host);
-                        try {
-                            const c = await html2canvas(clone, {useCORS:true,allowTaint:true,scale:2,logging:false,backgroundColor:null});
-                            return c.toDataURL('image/png');
-                        } finally { host.remove(); }
-                    })(frontEl);
+                    function captureElementAsPng(element) {
+                        return (async function(el){
+                            var host = document.createElement('div'); host.className='export-host';
+                            var clone = el.cloneNode(true); clone.classList.add('export-face');
+                            clone.style.position='fixed';
+                            clone.style.left='-9999px';
+                            clone.style.top='-9999px';
+                            clone.style.visibility='visible';
+                            clone.style.opacity='1';
+                            clone.style.transform='none';
+                            clone.style.webkitTransform='none';
+                            clone.style.backfaceVisibility='visible';
+                            clone.style.webkitBackfaceVisibility='visible';
+                            clone.style.pointerEvents='none';
+                            clone.style.width = el.offsetWidth + 'px';
+                            clone.style.maxWidth = el.offsetWidth + 'px';
+                            clone.style.boxSizing = 'border-box';
+                            host.appendChild(clone);
+                            document.body.appendChild(host);
+                            try {
+                                const c = await html2canvas(clone, {useCORS:true,allowTaint:true,scale:2,logging:false,backgroundColor:'#ffffff'});
+                                return c.toDataURL('image/png');
+                            } finally { host.remove(); }
+                        })(element);
+                    }
+
+                    var dataFront = await captureElementAsPng(frontEl);
 
                     // small pause then capture back
                     await new Promise(r => setTimeout(r, 800));
@@ -444,55 +460,24 @@
                     var qr = backSource.querySelector('.digital-id-qr'); if (qr) qr.style.display='none';
                     var ppre = backSource.querySelector('.digital-id-payload-pre'); if (ppre){ ppre.style.background='#fff'; ppre.style.color='#000'; ppre.style.padding='16px'; ppre.style.fontSize='12px'; }
 
-                    var dataBack = await (async function(element){
-                        var host = document.createElement('div'); host.className='export-host';
-                        var clone = element.cloneNode(true); clone.classList.add('export-face');
-                        clone.style.position='fixed'; clone.style.left='-9999px'; clone.style.top='-9999px'; clone.style.visibility='visible'; clone.style.opacity='1'; clone.style.transform='none'; clone.style.webkitTransform='none'; clone.style.backfaceVisibility='visible'; clone.style.webkitBackfaceVisibility='visible'; clone.style.pointerEvents='none';
-                        host.appendChild(clone); document.body.appendChild(host);
-                        try { const c = await html2canvas(clone, {useCORS:true,allowTaint:true,scale:2,logging:false,backgroundColor:null}); return c.toDataURL('image/png'); } finally { host.remove(); }
-                    })(backSource);
+                    var dataBack = await captureElementAsPng(backSource);
 
-                    // build modal with the exact same digital ID card appearance
-                    var modal = (function buildSaveModal(frontDataUrl, backDataUrl, frontClone, backClone){
+                    // build modal with the exact same captured image appearance
+                    var modal = (function buildSaveModal(frontDataUrl, backDataUrl){
                         var existing = document.getElementById('saveIdModal'); if (existing) existing.remove();
                         var overlay = document.createElement('div'); overlay.id='saveIdModal'; overlay.className='save-id-modal-overlay';
-                        overlay.innerHTML = '\n                            <div class="save-id-modal-panel" role="dialog" aria-modal="true">\n                                <button class="save-id-modal-close" aria-label="Close">×</button>\n                                <h3 class="save-id-modal-title">Save Your Digital ID</h3>\n                                <div class="save-id-modal-banner"></div>\n                                <div class="save-id-cards">\n                                    <div class="save-id-card-face">\n                                        <div class="save-id-image-label">Front</div>\n                                        <div class="save-id-card-preview save-id-front-card"></div>\n                                        <div class="save-id-actions-front"></div>\n                                    </div>\n                                    <div class="save-id-card-face">\n                                        <div class="save-id-image-label">Back</div>\n                                        <div class="save-id-card-preview save-id-back-card"></div>\n                                        <div class="save-id-actions-back"></div>\n                                    </div>\n                                </div>\n                            </div>\n                        ';
+                        overlay.innerHTML = '\n                            <div class="save-id-modal-panel" role="dialog" aria-modal="true">\n                                <button class="save-id-modal-close" aria-label="Close">×</button>\n                                <h3 class="save-id-modal-title">Save Your Digital ID</h3>\n                                <div class="save-id-modal-banner"></div>\n                                <div class="save-id-cards">\n                                    <div class="save-id-card-face">\n                                        <div class="save-id-image-label">Front</div>\n                                        <img class="save-id-image" src="'+frontDataUrl+'" alt="Front" />\n                                        <div class="save-id-actions-front"></div>\n                                    </div>\n                                    <div class="save-id-card-face">\n                                        <div class="save-id-image-label">Back</div>\n                                        <img class="save-id-image" src="'+backDataUrl+'" alt="Back" />\n                                        <div class="save-id-actions-back"></div>\n                                    </div>\n                                </div>\n                            </div>\n                        ';
                         document.body.appendChild(overlay);
 
-                        function sanitizeClone(node) {
-                            if (!node || node.nodeType !== Node.ELEMENT_NODE) return;
-                            if (node.id) node.removeAttribute('id');
-                            node.querySelectorAll('[id]').forEach(function(el){ el.removeAttribute('id'); });
-                            node.querySelectorAll('button, a, .digital-id-actions, .digital-id-copy-status, #ios-save-tip').forEach(function(el){ el.remove(); });
-                            node.style.width = '100%';
-                            node.style.maxWidth = '100%';
-                            node.style.boxSizing = 'border-box';
-                        }
-
-                        if (frontClone) {
-                            sanitizeClone(frontClone);
-                            var frontTarget = overlay.querySelector('.save-id-front-card');
-                            if (frontTarget) frontTarget.appendChild(frontClone);
-                        }
-
-                        if (backClone) {
-                            sanitizeClone(backClone);
-                            var qr = backClone.querySelector('.digital-id-qr'); if (qr) qr.style.display = 'none';
-                            var ppre = backClone.querySelector('.digital-id-payload-pre');
-                            if (ppre) { ppre.style.background = '#fff'; ppre.style.color = '#000'; ppre.style.padding = '16px'; ppre.style.fontSize = '12px'; }
-                            var backTarget = overlay.querySelector('.save-id-back-card');
-                            if (backTarget) backTarget.appendChild(backClone);
-                        }
-
                         if (!document.getElementById('save-id-modal-styles')){
-                            var style=document.createElement('style'); style.id='save-id-modal-styles'; style.innerText='\n                                .save-id-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:flex-end;justify-content:center;z-index:1200;padding:18px;box-sizing:border-box}\n                                .save-id-modal-panel{width:min(100%,96vw);max-width:760px;background:#fff;border-radius:18px;padding:20px;box-shadow:0 24px 80px rgba(0,0,0,0.25);transform:translateY(100%);transition:transform .28s ease;max-height:94vh;overflow-y:auto;box-sizing:border-box}\n                                .save-id-modal-overlay.show .save-id-modal-panel{transform:translateY(0)}\n                                .save-id-modal-close{position:absolute;right:14px;top:14px;background:none;border:none;font-size:24px;cursor:pointer;color:#111}\n                                .save-id-modal-title{margin:0 0 10px;font-size:20px;color:#111;font-weight:700}\n                                .save-id-modal-banner{margin:8px 0 16px;font-size:13px;color:#065f46;line-height:1.4}\n                                .save-id-cards{display:flex;flex-direction:column;gap:22px;width:100%}\n                                .save-id-card-face{display:flex;flex-direction:column;gap:12px;width:100%}\n                                .save-id-card-preview{width:100%;box-sizing:border-box;display:flex;justify-content:center}\n                                .save-id-card-preview .digital-id-card{width:100%;max-width:100%;margin:0;box-shadow:none;border:none;border-radius:12px}\n                                .save-id-image-label{font-weight:700;color:#111;margin-bottom:8px}\n                                .save-id-actions-front,.save-id-actions-back{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:12px;width:100%}\n                                .save-id-download-btn{background:#0a2342;color:#fff;border:none;padding:10px 14px;border-radius:8px;cursor:pointer;min-width:140px}\n                                .save-id-modal-panel .digital-id-header{border-bottom:none;margin-bottom:22px;padding-bottom:0}\n                                .save-id-modal-panel .digital-id-qr{margin:24px 0;max-width:100%;padding:16px}\n                                .save-id-modal-panel .digital-id-payload{margin:24px 0}\n                            ';
+                            var style=document.createElement('style'); style.id='save-id-modal-styles'; style.innerText='\n                                .save-id-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:flex-end;justify-content:center;z-index:1200;padding:18px;box-sizing:border-box}\n                                .save-id-modal-panel{width:min(100%,96vw);max-width:760px;background:#fff;border-radius:18px;padding:20px;box-shadow:0 24px 80px rgba(0,0,0,0.25);transform:translateY(100%);transition:transform .28s ease;max-height:94vh;overflow-y:auto;box-sizing:border-box}\n                                .save-id-modal-overlay.show .save-id-modal-panel{transform:translateY(0)}\n                                .save-id-modal-close{position:absolute;right:14px;top:14px;background:none;border:none;font-size:24px;cursor:pointer;color:#111}\n                                .save-id-modal-title{margin:0 0 10px;font-size:20px;color:#111;font-weight:700}\n                                .save-id-modal-banner{margin:8px 0 16px;font-size:13px;color:#065f46;line-height:1.4}\n                                .save-id-cards{display:flex;flex-direction:column;gap:22px;width:100%}\n                                .save-id-card-face{display:flex;flex-direction:column;gap:12px;width:100%}\n                                .save-id-image-label{font-weight:700;color:#111;margin-bottom:8px}\n                                .save-id-image{width:100%;max-width:100%;height:auto;border-radius:14px;border:1px solid #e5e7eb;object-fit:contain}\n                                .save-id-actions-front,.save-id-actions-back{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:12px;width:100%}\n                                .save-id-download-btn{background:#0a2342;color:#fff;border:none;padding:10px 14px;border-radius:8px;cursor:pointer;min-width:140px}\n                            ';
                             document.head.appendChild(style);
                         }
 
                         requestAnimationFrame(()=>{ overlay.classList.add('show'); });
                         overlay.querySelector('.save-id-modal-close').addEventListener('click', ()=>overlay.remove());
                         return overlay;
-                    })(dataFront,dataBack, frontEl.cloneNode(true), backSource);
+                    })(dataFront,dataBack);
 
                     var banner = modal.querySelector('.save-id-modal-banner');
                     var isIOSPlatform = /iP(hone|od|ad)/.test(navigator.userAgent) || (navigator.platform && /MacIntel/.test(navigator.platform) && navigator.maxTouchPoints > 1);
