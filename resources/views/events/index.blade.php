@@ -49,6 +49,61 @@
             flex-wrap: wrap;
         }
 
+        .events-view-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 4px;
+            border: 1px solid transparent;
+            border-radius: 12px;
+            background: #f6fbff;
+        }
+
+        .events-tab {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            padding: 10px 18px;
+            border-radius: 999px;
+            background: #ffffff;
+            border: 1px solid transparent;
+            color: var(--color-midnight);
+            text-decoration: none;
+            font-weight: 600;
+            transition: border-color 180ms ease, background-color 180ms ease, color 180ms ease, box-shadow 180ms ease;
+        }
+
+        .events-tab:hover,
+        .events-tab:focus-visible {
+            background: #eff6ff;
+            border-color: rgba(27, 108, 168, 0.2);
+            outline: none;
+        }
+
+        .events-tab.active {
+            background: #ffffff;
+            border-color: var(--color-steel-blue);
+            color: var(--color-ocean);
+            box-shadow: 0 4px 14px rgba(27, 108, 168, 0.12);
+        }
+
+        .events-tab-count {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
+            min-width: 28px;
+            height: 24px;
+            border-radius: 999px;
+            padding: 0 8px;
+            background: var(--color-ice-white);
+            color: var(--color-midnight);
+            font-size: 12px;
+            font-weight: 600;
+        }
+
         .overview-grid {
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -166,6 +221,28 @@
             width: 100%;
             max-width: 100%;
             box-sizing: border-box;
+        }
+
+        @media (max-width: 980px) {
+            .search-field,
+            .filter-select,
+            .filters-row .btn,
+            .showing-text {
+                width: 100%;
+            }
+
+            .filters-row {
+                align-items: stretch;
+            }
+
+            .events-view-tabs {
+                margin-bottom: 16px;
+            }
+
+            .events-tab {
+                flex: 1 1 100%;
+                min-width: 0;
+            }
         }
 
         /* Mobile-only: prevent date inputs in modal from overflowing container */
@@ -957,10 +1034,37 @@
                 <option value="conference" {{ request('type') === 'conference' ? 'selected' : '' }}>Conference</option>
             </select>
 
+            @if ($isBackofficeUser)
+                <input type="hidden" name="view" value="{{ $currentView }}">
+            @endif
+
             <button class="btn btn-primary" type="button" id="filtersApplyBtn">Apply</button>
 
             <span class="showing-text" id="showingCount" data-total="{{ $events->count() }}">Showing {{ $events->count() }} event(s)</span>
         </form>
+
+        @if ($isBackofficeUser)
+            <div class="events-view-tabs" role="tablist" aria-label="Event list view tabs">
+                <a
+                    href="{{ route('events.index', array_merge(request()->except(['page']), ['view' => 'my'])) }}"
+                    class="events-tab {{ $currentView === 'my' ? 'active' : '' }}"
+                    role="tab"
+                    aria-selected="{{ $currentView === 'my' ? 'true' : 'false' }}"
+                >
+                    My Events
+                    <span class="events-tab-count">{{ number_format($myEventsCount) }}</span>
+                </a>
+                <a
+                    href="{{ route('events.index', array_merge(request()->except(['page']), ['view' => 'browse'])) }}"
+                    class="events-tab {{ $currentView === 'browse' ? 'active' : '' }}"
+                    role="tab"
+                    aria-selected="{{ $currentView === 'browse' ? 'true' : 'false' }}"
+                >
+                    Browse
+                    <span class="events-tab-count">{{ number_format($browseEventsCount) }}</span>
+                </a>
+            </div>
+        @endif
 
         @if ($events->count() === 0)
             <div class="empty-state">

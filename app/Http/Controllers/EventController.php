@@ -21,9 +21,30 @@ class EventController extends Controller
         $search = trim((string) $request->string('search'));
         $typeFilter = trim((string) $request->string('type'));
         $registrationFilter = trim((string) $request->string('registration'));
+        $viewMode = trim((string) $request->string('view', 'my'));
         $now = now('Asia/Manila');
 
         $eventsQuery = Event::query();
+        $canAccessBackoffice = auth()->check() && auth()->user()->canAccessBackoffice();
+        $myEventsCount = 0;
+        $browseEventsCount = 0;
+
+        if ($canAccessBackoffice) {
+            if (! in_array($viewMode, ['my', 'browse'], true)) {
+                $viewMode = 'my';
+            }
+
+            if ($viewMode === 'my') {
+                $eventsQuery->where('created_by', auth()->id());
+            } else {
+                $eventsQuery->where('created_by', '<>', auth()->id());
+            }
+
+            $myEventsCount = Event::query()->where('created_by', auth()->id())->count();
+            $browseEventsCount = Event::query()->where('created_by', '<>', auth()->id())->count();
+        } else {
+            $viewMode = '';
+        }
 
         if ($search !== '') {
             $eventsQuery->where(function ($query) use ($search): void {
@@ -100,6 +121,10 @@ class EventController extends Controller
             return view('events.index', [
                 'events' => $events,
                 'overview' => $overview,
+                'currentView' => $viewMode,
+                'isBackofficeUser' => $canAccessBackoffice,
+                'myEventsCount' => $myEventsCount,
+                'browseEventsCount' => $browseEventsCount,
             ]);
         }
 
