@@ -1437,13 +1437,36 @@
             host.appendChild(clone);
             document.body.appendChild(host);
 
+            const sourceRect = source.getBoundingClientRect();
+            clone.style.width = sourceRect.width + 'px';
+            clone.style.height = sourceRect.height + 'px';
+            clone.style.minWidth = sourceRect.width + 'px';
+            clone.style.minHeight = sourceRect.height + 'px';
+
+            const images = clone.querySelectorAll('img');
+            await Promise.all(Array.from(images).map(img => {
+                if (img.complete) return Promise.resolve();
+                return new Promise(resolve => {
+                    img.onload = resolve;
+                    img.onerror = resolve;
+                });
+            }));
+            await new Promise(r => setTimeout(r, 500));
+
             try {
                 const canvas = await html2canvas(clone, {
                     useCORS: true,
                     allowTaint: true,
-                    scale: 2,
+                    scale: 1.5,
                     logging: false,
                     backgroundColor: null,
+                    width: clone.offsetWidth,
+                    height: clone.offsetHeight,
+                    windowWidth: clone.offsetWidth,
+                    windowHeight: clone.offsetHeight,
+                    scrollX: 0,
+                    scrollY: 0,
+                    imageTimeout: 0,
                 });
 
                 return canvas.toDataURL('image/png');
