@@ -1698,16 +1698,6 @@
         }
 
         if (surveyFormOverlay) {
-            surveyFormOverlay.addEventListener('click', (event) => {
-                if (event.target === surveyFormOverlay) {
-                    if (surveyCloseConfirmation && !surveyCloseConfirmation.hidden) {
-                        closeConfirmation();
-                        return;
-                    }
-                    closeSurvey();
-                }
-            });
-
             surveyFormOverlay.addEventListener('keydown', (event) => {
                 if (event.key === 'Escape') {
                     if (surveyCloseConfirmation && !surveyCloseConfirmation.hidden) {
