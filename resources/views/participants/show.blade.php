@@ -147,6 +147,69 @@
             padding-bottom: 0;
         }
 
+        .evaluation-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .evaluation-section {
+            padding: 16px 0;
+            border-bottom: 1px solid var(--color-ice-white);
+        }
+
+        .evaluation-section:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .evaluation-section-title {
+            margin: 0 0 12px;
+            color: var(--color-ocean);
+            font-size: 13px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            font-weight: 700;
+            font-family: 'Sora', sans-serif;
+        }
+
+        .evaluation-grouped-item {
+            margin-top: 14px;
+        }
+
+        .evaluation-matrix {
+            display: grid;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .evaluation-matrix-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 12px 14px;
+            border: 1px solid rgba(27, 108, 168, 0.1);
+            border-radius: 12px;
+            background: #f7fbff;
+        }
+
+        .evaluation-matrix-label {
+            margin: 0;
+            color: var(--color-midnight);
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Sora', sans-serif;
+        }
+
+        .evaluation-matrix-value {
+            margin: 0;
+            color: var(--color-midnight);
+            font-size: 14px;
+            font-weight: 700;
+            font-family: 'Sora', sans-serif;
+        }
+
         .evaluation-question {
             margin: 0 0 6px;
             color: var(--color-steel-blue);
@@ -538,17 +601,87 @@
                     <p>Attendance has not been recorded yet for this participant.</p>
                 </div>
             @elseif ($participant->evaluations->count() > 0)
+                @php
+                    $evaluationQuestions = $participant->event?->getActiveEvaluationQuestions() ?? collect();
+                    $groupedEvaluationQuestions = $evaluationQuestions->groupBy(function ($question) {
+                        return $question->section ?: 'Evaluation Details';
+                    });
+                @endphp
+
                 @foreach ($participant->evaluations as $evaluation)
                     <div class="evaluation-item">
-                        <p class="evaluation-question">Rating</p>
-                        <p class="evaluation-answer">{{ $evaluation->rating }}/5</p>
-
-                        <p class="evaluation-question" style="margin-top: 10px;">Feedback</p>
-                        <p class="evaluation-answer">{{ $evaluation->feedback ?: 'No feedback submitted.' }}</p>
-
-                        <p class="evaluation-question" style="margin-top: 10px;">Submitted At</p>
-                        <p class="evaluation-answer">{{ \Carbon\Carbon::parse($evaluation->created_at)->format('M d, Y h:i A') }}</p>
+                        <div class="evaluation-summary-grid">
+                            <div>
+                                <p class="evaluation-question">Overall Rating</p>
+                                <p class="evaluation-answer">{{ $evaluation->rating ? $evaluation->rating . '/5' : 'No rating submitted' }}</p>
+                            </div>
+                            <div>
+                                <p class="evaluation-question">Submitted At</p>
+                                <p class="evaluation-answer">{{ \Carbon\Carbon::parse($evaluation->created_at)->format('M d, Y h:i A') }}</p>
+                            </div>
+                        </div>
                     </div>
+
+                    @if ($groupedEvaluationQuestions->isNotEmpty())
+                        @foreach ($groupedEvaluationQuestions as $section => $questions)
+                            <div class="evaluation-section">
+                                <h3 class="evaluation-section-title">{{ $section }}</h3>
+
+                                @foreach ($questions as $question)
+                                    @php
+                                        $answer = data_get($evaluation->answers, $question->id);
+
+                                        if ($answer === null && $question->field_key === 'rating') {
+                                            $answer = $evaluation->rating;
+                                        }
+
+                                        if ($answer === null && $question->field_key === 'feedback') {
+                                            $answer = $evaluation->feedback;
+                                        }
+
+                                        $isMatrix = $question->is_matrix && $question->type === \App\Models\EvaluationQuestion::TYPE_LIKERT;
+                                    @endphp
+
+                                    @if ($isMatrix)
+                                        <div class="evaluation-grouped-item">
+                                            <p class="evaluation-question">{{ $question->question }}</p>
+                                            <div class="evaluation-matrix">
+                                                @foreach ($question->matrix_items ?? [] as $index => $matrixLabel)
+                                                    @php
+                                                        $matrixValue = is_array($answer) ? ($answer[$index] ?? null) : null;
+                                                    @endphp
+                                                    <div class="evaluation-matrix-row">
+                                                        <p class="evaluation-matrix-label">{{ $matrixLabel }}</p>
+                                                        <p class="evaluation-matrix-value">{{ is_numeric($matrixValue) ? $matrixValue . '/5' : 'No response' }}</p>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @else
+                                        <div class="evaluation-grouped-item">
+                                            <p class="evaluation-question">{{ $question->question }}</p>
+                                            <p class="evaluation-answer">
+                                                @if ($answer === null || $answer === '')
+                                                    No response submitted.
+                                                @elseif (is_array($answer))
+                                                    {{ implode(', ', $answer) }}
+                                                @elseif (in_array($question->type, [\App\Models\EvaluationQuestion::TYPE_RATING, \App\Models\EvaluationQuestion::TYPE_LIKERT]) && is_numeric($answer))
+                                                    {{ $answer }}/5
+                                                @else
+                                                    {!! nl2br(e($answer)) !!}
+                                                @endif
+                                            </p>
+                                        </div>
+                                    @endif
+                                @endforeach
+                            </div>
+                        @endforeach
+                    @else
+                        <div class="evaluation-item">
+                            <p class="evaluation-question">Feedback</p>
+                            <p class="evaluation-answer">{{ $evaluation->feedback ?: 'No feedback submitted.' }}</p>
+                        </div>
+                    @endif
                 @endforeach
             @else
                 <div class="evaluation-empty">
