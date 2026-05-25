@@ -853,6 +853,8 @@
             opacity: 0;
             transform: translateY(-6px);
             transition: opacity 220ms ease, transform 220ms ease;
+            color: inherit;
+            border: 1px solid transparent;
         }
 
         .modal-floating-label.is-visible {
@@ -861,23 +863,27 @@
         }
 
         .modal-floating-error {
-            background: #f8d7da;
-            color: #842029;
+            background: #fef2f2;
+            border: 1px solid #fecdd3;
+            color: #991b1b;
         }
 
         .modal-floating-warning {
-            background: #fff3cd;
-            color: #664d03;
+            background: #fffbeb;
+            border: 1px solid #fef08a;
+            color: #92400e;
         }
 
         .modal-floating-success {
-            background: #d1e7dd;
-            color: #0f5132;
+            background: #ecfdf5;
+            border: 1px solid #bbf7d0;
+            color: #065f46;
         }
 
         .modal-floating-info {
-            background: #cff4fc;
-            color: #055160;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1e40af;
         }
 
         .modal-toast.is-hiding {
