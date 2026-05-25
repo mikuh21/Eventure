@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Participant Details')
+@section('title', 'Participant Details - Eventure')
 
 @push('styles')
     <style>
