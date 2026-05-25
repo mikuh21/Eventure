@@ -134,25 +134,20 @@
             position: fixed;
             left: -10000px;
             top: 0;
-            width: auto;
-            min-width: 0;
-            height: auto;
-            min-height: 0;
+            width: 500px;
+            height: 500px;
             pointer-events: none;
             z-index: -1;
         }
 
         .export-face {
             position: relative !important;
-            display: block !important;
             transform: none !important;
-            -webkit-transform: none !important;
             -webkit-backface-visibility: visible !important;
             backface-visibility: visible !important;
-            width: auto !important;
+            width: 500px !important;
             height: auto !important;
             margin: 0 !important;
-            box-sizing: border-box !important;
             background: white !important;
             color: #000 !important;
         }
@@ -434,7 +429,7 @@
                     var dataFront = await (async function(element){
                         var host = document.createElement('div'); host.className='export-host';
                         var clone = element.cloneNode(true); clone.classList.add('export-face');
-                        clone.style.position='fixed'; clone.style.left='-9999px'; clone.style.top='-9999px'; clone.style.visibility='visible'; clone.style.opacity='1'; clone.style.transform='none'; clone.style.webkitTransform='none'; clone.style.backfaceVisibility='visible'; clone.style.webkitBackfaceVisibility='visible'; clone.style.pointerEvents='none'; clone.style.width='auto'; clone.style.height='auto'; clone.style.boxSizing='border-box';
+                        clone.style.position='fixed'; clone.style.left='-9999px'; clone.style.top='-9999px'; clone.style.visibility='visible'; clone.style.opacity='1'; clone.style.transform='none'; clone.style.webkitTransform='none'; clone.style.backfaceVisibility='visible'; clone.style.webkitBackfaceVisibility='visible'; clone.style.pointerEvents='none';
                         host.appendChild(clone); document.body.appendChild(host);
                         try {
                             const c = await html2canvas(clone, {useCORS:true,allowTaint:true,scale:2,logging:false,backgroundColor:null});
@@ -452,7 +447,7 @@
                     var dataBack = await (async function(element){
                         var host = document.createElement('div'); host.className='export-host';
                         var clone = element.cloneNode(true); clone.classList.add('export-face');
-                        clone.style.position='fixed'; clone.style.left='-9999px'; clone.style.top='-9999px'; clone.style.visibility='visible'; clone.style.opacity='1'; clone.style.transform='none'; clone.style.webkitTransform='none'; clone.style.backfaceVisibility='visible'; clone.style.webkitBackfaceVisibility='visible'; clone.style.pointerEvents='none'; clone.style.width='auto'; clone.style.height='auto'; clone.style.boxSizing='border-box';
+                        clone.style.position='fixed'; clone.style.left='-9999px'; clone.style.top='-9999px'; clone.style.visibility='visible'; clone.style.opacity='1'; clone.style.transform='none'; clone.style.webkitTransform='none'; clone.style.backfaceVisibility='visible'; clone.style.webkitBackfaceVisibility='visible'; clone.style.pointerEvents='none';
                         host.appendChild(clone); document.body.appendChild(host);
                         try { const c = await html2canvas(clone, {useCORS:true,allowTaint:true,scale:2,logging:false,backgroundColor:null}); return c.toDataURL('image/png'); } finally { host.remove(); }
                     })(backSource);
