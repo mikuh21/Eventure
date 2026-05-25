@@ -1094,17 +1094,24 @@
         @media (max-width: 768px) {
             #toastContainer {
                 position: fixed !important;
-                top: 70px !important;
-                left: 16px !important;
+                top: 16px !important;
                 right: 16px !important;
-                bottom: auto !important;
-                z-index: 99999;
-                display: flex;
-                flex-direction: column;
-                align-items: flex-end;
-                gap: 10px;
-                width: auto;
-                max-width: 320px;
+                left: auto !important;
+                width: calc(100% - 32px) !important;
+                max-width: 320px !important;
+                z-index: 99999 !important;
+                transform: none !important;
+            }
+
+            .modal-floating-label {
+                position: relative !important;
+                top: auto !important;
+                right: auto !important;
+                left: auto !important;
+                transform: none !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
             }
 
             .participants-page-header {
@@ -1313,9 +1320,6 @@
         </div>
     </div>
 
-    <!-- Toast container -->
-    <div id="toastContainer" style="position:fixed; top:16px; right:16px; z-index:99999; max-width:320px; width:calc(100% - 80px);"></div>
-
     @if ($selectedEvent)
         @php
             $modalErrorMessage = $errors->first('name') ?: $errors->first('email') ?: $errors->first('participant_type') ?: $errors->first('institution') ?: $errors->first('registration');
@@ -1485,6 +1489,8 @@
             </div>
         </div>
     @endif
+
+    <div id="toastContainer" style="position:fixed; top:16px; right:16px; z-index:99999; max-width:320px; width:calc(100% - 32px); pointer-events:none;"></div>
 @endsection
 
 @push('scripts')
