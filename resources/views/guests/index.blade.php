@@ -366,10 +366,12 @@
         }
 
         .guest-modal-footer {
-            padding: 6px 20px;
-            width: 100%;
-            box-sizing: border-box;
             display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding: 16px 24px 24px 24px;
+            box-sizing: border-box;
+            width: 100%;
             align-items: center;
         }
 
@@ -986,28 +988,22 @@
 
             /* Guest modal footer buttons — match field width on mobile */
             .guest-modal-footer,
-            #addGuestModal .modal-footer,
-            #viewGuestModal .modal-footer,
-            #editGuestModal .modal-footer {
+            #addGuestModal .guest-modal-footer,
+            #viewGuestModal .guest-modal-footer {
                 display: flex;
-                flex-direction: row;
-                justify-content: flex-end;
+                flex-direction: column;
                 gap: 10px;
                 padding: 16px 24px 24px 24px;
                 width: 100%;
                 box-sizing: border-box;
             }
 
-            #addGuestModal .modal-footer .btn,
-            #viewGuestModal .modal-footer .btn,
-            #editGuestModal .modal-footer .btn,
-            .guest-modal-footer .btn {
-                width: auto;
+            .guest-modal-footer .btn,
+            #addGuestModal .guest-modal-footer .btn,
+            #viewGuestModal .guest-modal-footer .btn {
+                width: 100%;
                 box-sizing: border-box;
                 text-align: center;
-                padding: 12px 16px;
-                font-size: 15px;
-                border-radius: 8px;
                 margin: 0;
             }
         }
