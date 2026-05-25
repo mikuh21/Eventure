@@ -1771,43 +1771,53 @@
 
                 try {
                     const pages = document.querySelectorAll('#certificateCanvas .cert-page');
+                const iosImages = [];
 
-                    for (let i = 0; i < pages.length; i++) {
-                        const canvas = await html2canvas(pages[i], {
-                            scale: 2,
-                            useCORS: true,
-                            allowTaint: true,
-                            backgroundColor: '#ffffff',
-                            logging: false,
+                for (let i = 0; i < pages.length; i++) {
+                    const canvas = await html2canvas(pages[i], {
+                        scale: 2,
+                        useCORS: true,
+                        allowTaint: true,
+                        backgroundColor: '#ffffff',
+                        logging: false,
+                    });
+
+                    const dataUrl = canvas.toDataURL('image/png');
+                    const filename = pages.length > 1
+                        ? 'certificate-' + (i === 0 ? 'attendance' : 'participation') + '.png'
+                        : 'certificate.png';
+
+                    if (isIOS) {
+                        iosImages.push({
+                            dataUrl,
+                            label: pages.length > 1
+                                ? (i === 0 ? 'Certificate of Attendance' : 'Certificate of Participation')
+                                : 'Certificate',
                         });
+                    } else {
+                        const a = document.createElement('a');
+                        a.href = dataUrl;
+                        a.download = filename;
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                        if (i < pages.length - 1) await new Promise(r => setTimeout(r, 800));
+                    }
+                }
 
-                        const dataUrl = canvas.toDataURL('image/png');
-                        const filename = pages.length > 1
-                            ? 'certificate-' + (i === 0 ? 'attendance' : 'participation') + '.png'
-                            : 'certificate.png';
+                if (isIOS && iosImages.length > 0) {
+                    showCertModal(iosImages);
+                }
 
-                        if (isIOS) {
-                            showCertModal(dataUrl, filename, i === pages.length - 1);
-                        } else {
-                            const a = document.createElement('a');
-                            a.href = dataUrl;
-                            a.download = filename;
-                            document.body.appendChild(a);
-                            a.click();
-                            a.remove();
-                            if (i < pages.length - 1) await new Promise(r => setTimeout(r, 800));
+                if (!isIOS && btn) {
+                    btn.textContent = 'Saved!';
+                    setTimeout(() => {
+                        if (btn) {
+                            btn.textContent = 'Save Certificate';
+                            btn.disabled = false;
                         }
-                    }
-
-                    if (!isIOS && btn) {
-                        btn.textContent = 'Saved!';
-                        setTimeout(() => {
-                            if (btn) {
-                                btn.textContent = 'Save Certificate';
-                                btn.disabled = false;
-                            }
-                        }, 2000);
-                    }
+                    }, 2000);
+                }
                 } catch (err) {
                     console.error(err);
                     if (btn) {
@@ -1817,22 +1827,45 @@
                 }
             }
 
-            function showCertModal(dataUrl, filename, isLast) {
+            function showCertModal(images) {
                 const existing = document.getElementById('certSaveModal');
                 if (existing) existing.remove();
 
                 const modal = document.createElement('div');
                 modal.id = 'certSaveModal';
-                modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:2000;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;';
+                modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:2000;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;overflow:auto;';
+
+                const imageBlocks = images.map(image => `
+                    <div style="width:100%;max-width:680px;margin-bottom:20px;text-align:center;">
+                        <p style="color:#ffffff;font-size:14px;font-weight:700;margin:0 0 10px;">${image.label}</p>
+                        <img src="${image.dataUrl}" style="width:100%;max-height:60vh;border-radius:12px;object-fit:contain;" alt="${image.label}" />
+                    </div>
+                `).join('');
+
                 modal.innerHTML = `
-                    <p style="color:#10b981;font-size:14px;font-weight:700;margin:0 0 12px;text-align:center;">Long press the image below and tap "Save to Photos"</p>
-                    <img src="${dataUrl}" style="max-width:100%;max-height:70vh;border-radius:8px;object-fit:contain;" alt="Certificate"/>
-                    <button onclick="this.closest('#certSaveModal').remove(); document.querySelector('.cert-download-btn').textContent='Save Certificate'; document.querySelector('.cert-download-btn').disabled=false;" 
-                        style="margin-top:16px;background:#1B6CA8;color:#fff;border:none;padding:12px 24px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;">
-                        Close
-                    </button>
+                    <div style="width:100%;max-width:680px;">
+                        <p style="color:#10b981;font-size:14px;font-weight:700;margin:0 0 16px;text-align:center;">Long press each image and tap Save to Photos</p>
+                        ${imageBlocks}
+                        <button id="closeCertModalBtn" 
+                            style="width:100%;background:#1B6CA8;color:#fff;border:none;padding:14px 24px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;">
+                            Close
+                        </button>
+                    </div>
                 `;
+
                 document.body.appendChild(modal);
+
+                const closeBtn = modal.querySelector('#closeCertModalBtn');
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', () => {
+                        modal.remove();
+                        const btn = document.querySelector('.cert-download-btn');
+                        if (btn) {
+                            btn.textContent = 'Save Certificate';
+                            btn.disabled = false;
+                        }
+                    });
+                }
             }
 
             document.addEventListener('click', function(e) {
