@@ -99,6 +99,19 @@
             color: var(--color-midnight);
         }
 
+        .admin-management-icon-btn:disabled,
+        .admin-management-icon-btn[aria-disabled="true"] {
+            opacity: 0.4;
+            cursor: not-allowed;
+            color: #9ca3af;
+            background: transparent;
+        }
+
+        .admin-management-icon-btn:disabled:hover,
+        .admin-management-icon-btn[aria-disabled="true"]:hover {
+            background: transparent;
+        }
+
         .admin-management-icon-btn svg {
             width: 18px;
             height: 18px;
