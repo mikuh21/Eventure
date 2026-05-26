@@ -424,6 +424,34 @@
                         await document.fonts.ready;
                     }
 
+                    // Convert SVG to PNG for html2canvas compatibility
+                    var originalSvgEl = null;
+                    var svgElInPage = document.querySelector('.digital-id-qr svg');
+                    if (svgElInPage) {
+                        originalSvgEl = svgElInPage.cloneNode(true);
+                        const svgData = new XMLSerializer().serializeToString(svgElInPage);
+                        const svgBlob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
+                        const svgUrl = URL.createObjectURL(svgBlob);
+                        const img = new Image();
+                        await new Promise((resolve) => {
+                            img.onload = resolve;
+                            img.onerror = resolve;
+                            img.src = svgUrl;
+                        });
+                        const canvas = document.createElement('canvas');
+                        canvas.width = svgElInPage.getBoundingClientRect().width * 2;
+                        canvas.height = svgElInPage.getBoundingClientRect().height * 2;
+                        const ctx = canvas.getContext('2d');
+                        ctx.scale(2, 2);
+                        ctx.drawImage(img, 0, 0);
+                        URL.revokeObjectURL(svgUrl);
+                        const pngImg = document.createElement('img');
+                        pngImg.src = canvas.toDataURL('image/png');
+                        pngImg.style.width = '100%';
+                        pngImg.style.height = 'auto';
+                        svgElInPage.replaceWith(pngImg);
+                    }
+
                     // capture front
                     var dataFront = await (async function(element){
                         var host = document.createElement('div'); host.className='export-host';
@@ -450,6 +478,12 @@
                         host.appendChild(clone); document.body.appendChild(host);
                         try { const c = await html2canvas(clone, {useCORS:true,allowTaint:true,scale:2,logging:false,backgroundColor:null,width:clone.scrollWidth,height:clone.scrollHeight,imageTimeout:15000,windowWidth:clone.scrollWidth,windowHeight:clone.scrollHeight}); return c.toDataURL('image/png'); } finally { host.remove(); }
                     })(backSource);
+
+                    // Restore original SVG
+                    if (originalSvgEl) {
+                        const pngImg = document.querySelector('.digital-id-qr img');
+                        if (pngImg) pngImg.replaceWith(originalSvgEl);
+                    }
 
                     // build modal with captured images
                     var modal = (function buildSaveModal(frontDataUrl, backDataUrl){
