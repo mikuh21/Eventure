@@ -441,7 +441,7 @@
                     await new Promise(r => setTimeout(r, 800));
 
                     var backSource = frontEl.cloneNode(true);
-                    var qr = backSource.querySelector('.digital-id-qr'); if (qr) qr.style.display='none';
+                    
                     var ppre = backSource.querySelector('.digital-id-payload-pre'); if (ppre){ ppre.style.background='#fff'; ppre.style.color='#000'; ppre.style.padding='16px'; ppre.style.fontSize='12px'; }
 
                     var dataBack = await (async function(element){
@@ -477,7 +477,7 @@
 
                         if (backClone) {
                             sanitizeClone(backClone);
-                            var qr = backClone.querySelector('.digital-id-qr'); if (qr) qr.style.display = 'none';
+                            
                             var ppre = backClone.querySelector('.digital-id-payload-pre');
                             if (ppre) { ppre.style.background = '#fff'; ppre.style.color = '#000'; ppre.style.padding = '16px'; ppre.style.fontSize = '12px'; }
                             var backTarget = overlay.querySelector('.save-id-back-card');
