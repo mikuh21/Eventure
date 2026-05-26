@@ -23,7 +23,7 @@ class EventStaffCredentialsMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Your Eventure Event Staff New Password',
+            subject: 'Your Eventure Event Staff Credentials',
         );
     }
 
