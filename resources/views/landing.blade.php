@@ -659,7 +659,7 @@
 
     {{-- ========== NAVBAR ========== --}}
     <nav class="fixed top-0 inset-x-0 z-50" style="background:rgba(10,35,66,0.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(27,108,168,0.35)">
-        <div class="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between px-6 py-3.5">
             <a href="{{ url('/') }}" class="brand text-2xl font-bold">
                 <img src="{{ asset('eventurelogo.png') }}" alt="Eventure logo">
                 <span class="brand-text"><span class="text-em4">Even</span><span class="text-white">ture</span></span>
@@ -680,7 +680,7 @@
     {{-- ========== ANNOUNCEMENT BANNER ========== --}}
     @isset($announcements)
         @if($announcements->isNotEmpty())
-            <div class="fixed top-[72px] inset-x-0 z-40 overflow-hidden" style="background:rgba(27,108,168,0.14)">
+            <div class="fixed top-[80px] inset-x-0 z-40 overflow-hidden" style="background:rgba(27,108,168,0.14)">
                 <div class="flex whitespace-nowrap animate-ticker">
                     @foreach($announcements as $a)
                         <span class="inline-flex items-center gap-2 px-8 py-2 text-sm font-semibold uppercase tracking-wider" style="color:rgba(255,255,255,0.6)">
