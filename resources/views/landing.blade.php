@@ -1,14 +1,3 @@
-    <!-- Login button for Admin/Event Staff -->
-    <nav class="fixed top-0 inset-x-0 z-50" style="background:rgba(10,35,66,0.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(27,108,168,0.35)">
-        <div class="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
-            <a href="{{ url('/') }}" class="text-2xl font-bold tracking-tight">
-                <span class="text-em4">Even</span><span class="text-white">ture</span>
-            </a>
-            <div class="flex items-center gap-3">
-                <a href="{{ route('login') }}" class="text-sm sign-in-link">Sign In</a>
-            </div>
-        </div>
-    </nav>
 <!DOCTYPE html>
 <html lang="en">
 <head>
