@@ -96,11 +96,22 @@
         }
 
         .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.55rem;
             text-decoration: none;
             font-size: 1.48rem;
             font-weight: 800;
             letter-spacing: -0.03em;
             padding: 2px 8px;
+        }
+
+        .brand-logo {
+            display: inline-block;
+            height: 1.1em;
+            width: auto;
+            vertical-align: middle;
+            flex-shrink: 0;
         }
 
         .brand-event {
@@ -728,6 +739,7 @@
         <div class="nav-overlay" aria-hidden="true"></div>
         <aside class="sidebar" id="dashboardSidebar">
             <a href="{{ \App\Support\PreviewAuth::appendToUrl(route('admin.dashboard', [], false), $previewAuthQuery) }}" class="brand">
+                <img src="{{ asset('eventurelogo.png') }}" alt="Eventure" class="brand-logo">
                 <span class="brand-event">Even</span><span class="brand-flow">ture</span>
             </a>
 

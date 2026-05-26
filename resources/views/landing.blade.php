@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Eventure — Empowering Events. Connecting People.</title>
-    <link rel="icon" type="image/png" sizes="any" href="{{ asset('eventuretabicon.png') }}">
-    <link rel="shortcut icon" type="image/png" href="{{ asset('eventuretabicon.png') }}">
+    <link rel="icon" type="image/png" sizes="any" href="{{ asset('eventurelogo.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ asset('eventurelogo.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&display=swap" rel="stylesheet">
@@ -91,6 +91,20 @@
         body {
             background: #e8f4fd;
             color: #0a2342;
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            text-decoration: none;
+        }
+
+        .brand-logo {
+            display: inline-block;
+            height: 1.1em;
+            width: auto;
+            vertical-align: middle;
         }
 
         section .text-white,
@@ -642,7 +656,8 @@
     {{-- ========== NAVBAR ========== --}}
     <nav class="fixed top-0 inset-x-0 z-50" style="background:rgba(10,35,66,0.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(27,108,168,0.35)">
         <div class="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
-            <a href="{{ url('/') }}" class="text-2xl font-bold tracking-tight">
+            <a href="{{ url('/') }}" class="brand text-2xl font-bold tracking-tight">
+                <img src="{{ asset('eventurelogo.png') }}" alt="Eventure" class="brand-logo">
                 <span class="text-em4">Even</span><span class="text-white">ture</span>
             </a>
 
