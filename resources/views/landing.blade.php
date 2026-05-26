@@ -1018,13 +1018,6 @@
                     <li><!-- <a href="" class="hover:text-em4 transition">User Manual (PDF)</a> --></li>
                 </ul>
             </div>
-            <div>
-                <h4 class="font-semibold mb-3 text-sm text-em3">Legal</h4>
-                <ul class="space-y-2 text-sm" style="color:rgba(255,255,255,0.5)">
-                    <li><a href="#" class="hover:text-em4 transition">Privacy Policy</a></li>
-                    <li><a href="#" class="hover:text-em4 transition">Terms of Service</a></li>
-                </ul>
-            </div>
         </div>
         <div class="max-w-7xl mx-auto mt-10 pt-6 text-center text-sm" style="border-top:1px solid rgba(27,108,168,0.16);color:rgba(255,255,255,0.35)">
             &copy; {{ date('Y') }} Eventure. All rights reserved.
