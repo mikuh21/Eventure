@@ -98,7 +98,7 @@
 
         .wordmark img {
             display: block;
-            height: 1.35em;
+            height: 2em;
             width: auto;
         }
 
