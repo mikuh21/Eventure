@@ -104,18 +104,21 @@
             font-weight: 800;
             letter-spacing: -0.03em;
             line-height: 1;
-            padding: 2px 8px;
+            padding: 4px 8px;
+            flex-shrink: 0;
         }
 
         .brand img {
             display: block;
-            height: 2rem;
+            height: 2.8rem;
             width: auto;
+            flex-shrink: 0;
         }
 
         .brand-text {
             display: inline-flex;
             letter-spacing: -0.03em;
+            flex-shrink: 0;
         }
 
         .brand-event {

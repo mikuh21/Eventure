@@ -445,17 +445,21 @@
             font-weight: 800;
             letter-spacing: -0.035em;
             line-height: 1;
-            padding: 2px 8px;
+            padding: 4px 8px;
+            flex-shrink: 0;
         }
 
         .admin-brand img {
-            height: 2rem;
+            display: block;
+            height: 2.8rem;
             width: auto;
+            flex-shrink: 0;
         }
 
         .admin-brand-text {
             display: inline-flex;
             letter-spacing: -0.035em;
+            flex-shrink: 0;
         }
 
         .admin-brand-event {
