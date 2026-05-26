@@ -16,14 +16,33 @@
         .digital-id-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
             margin-bottom: 32px;
             padding-bottom: 20px;
             border-bottom: 2px solid #f0f0f0;
+            gap: 18px;
+        }
+
+        .digital-id-brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.65rem;
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+
+        .digital-id-brand img {
+            display: block;
+            height: 1em;
+            width: auto;
+            flex-shrink: 0;
         }
 
         .digital-id-title {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: 700;
             color: #1f2937;
             margin: 0;
@@ -294,7 +313,13 @@
 @section('content')
     <div class="digital-id-card">
         <div class="digital-id-header">
-            <h1 class="digital-id-title">Digital ID</h1>
+            <div>
+                <div class="digital-id-brand">
+                    <img src="{{ asset('eventurelogo.png') }}" alt="Eventure logo">
+                    <span>Eventure</span>
+                </div>
+                <h1 class="digital-id-title">Digital ID</h1>
+            </div>
             <div class="digital-id-actions">
                 <a class="digital-id-btn digital-id-btn-secondary" href="{{ route('events.participants.show', [$participant->event, $participant]) }}">Back</a>
                 @php($hasSubmittedSurvey = $participant->hasSubmittedSurvey())
