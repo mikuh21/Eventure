@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Mail\EventStaffCredentialsMail;
+use App\Mail\EventStaffPasswordResetMail;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -47,7 +47,7 @@ class AuthenticatedSessionController extends Controller
         $user->password = $password;
         $user->save();
 
-        Mail::to($user->email)->send(new EventStaffCredentialsMail($user, $password));
+        Mail::to($user->email)->send(new EventStaffPasswordResetMail($user, $password));
 
         return back()
             ->with('status', 'A new password has been sent to your Event Staff email.')
