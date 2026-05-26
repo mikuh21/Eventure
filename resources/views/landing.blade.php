@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Eventure — Empowering Events. Connecting People.</title>
-    <link rel="icon" type="image/png" sizes="any" href="{{ asset('eventuretabicon.png') }}">
-    <link rel="shortcut icon" type="image/png" href="{{ asset('eventuretabicon.png') }}">
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&display=swap" rel="stylesheet">
@@ -34,6 +34,31 @@
             --scrollbar-thumb: rgba(107, 114, 128, 0.45);
             --scrollbar-thumb-hover: rgba(107, 114, 128, 0.68);
             --scrollbar-track: transparent;
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            font-weight: 800;
+        }
+
+        .brand-logo {
+            width: 34px;
+            height: auto;
+            display: block;
+        }
+
+        .brand-text {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.1em;
+            color: #ffffff;
+        }
+
+        .brand-text span {
+            display: inline-block;
         }
 
         html { scroll-behavior: smooth; }
@@ -642,8 +667,9 @@
     {{-- ========== NAVBAR ========== --}}
     <nav class="fixed top-0 inset-x-0 z-50" style="background:rgba(10,35,66,0.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(27,108,168,0.35)">
         <div class="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
-            <a href="{{ url('/') }}" class="text-2xl font-bold tracking-tight">
-                <span class="text-em4">Even</span><span class="text-white">ture</span>
+            <a href="{{ url('/') }}" class="brand">
+                <img class="brand-logo" src="{{ asset('eventurelogo.png') }}" alt="Eventure logo">
+                <span class="brand-text"><span class="text-em4">Even</span><span class="text-white">ture</span></span>
             </a>
 
             <div class="hidden md:flex items-center gap-8 text-sm font-normal" style="color:rgba(255,255,255,0.6)">
