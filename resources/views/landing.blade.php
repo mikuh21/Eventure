@@ -1012,9 +1012,10 @@
                 </ul>
             </div>
             <div>
-                <h4 class="font-semibold mb-3 text-sm text-em3">Account</h4>
+                <h4 class="font-semibold mb-3 text-sm text-em3">Need Help?</h4>
                 <ul class="space-y-2 text-sm" style="color:rgba(255,255,255,0.5)">
-                    <!-- Sign In removed for participants -->
+                    <!-- User manual PDF link placeholder (href to be provided later) -->
+                    <li><!-- <a href="" class="hover:text-em4 transition">User Manual (PDF)</a> --></li>
                 </ul>
             </div>
             <div>
