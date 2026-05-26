@@ -91,14 +91,14 @@
             display: inline-flex;
             align-items: center;
             gap: 0.55rem;
-            font-size: 20px;
+            font-size: 24px;
             font-weight: 700;
             letter-spacing: -0.02em;
         }
 
         .wordmark img {
             display: block;
-            height: 1.1em;
+            height: 1.35em;
             width: auto;
         }
 
