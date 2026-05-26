@@ -100,31 +100,6 @@
             color: var(--color-midnight);
         }
 
-        .btn-delete-icon {
-            border: 1px solid #fca5a5;
-            background: #fff1f2;
-            color: #b91c1c;
-            padding: 0;
-            width: 28px;
-            height: 28px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
-        }
-
-        .btn-delete-icon:hover {
-            border-color: #ef4444;
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .btn-delete-icon svg {
-            width: 14px;
-            height: 14px;
-        }
 
         .modal-floating-label {
             position: fixed;
@@ -271,14 +246,13 @@
                                 </button>
 
                                 <button type="button"
-                                        class="btn-delete-icon js-user-delete-trigger"
+                                        class="admin-management-icon-btn is-danger js-user-delete-trigger"
                                         data-form-id="delete-user-form-{{ $user->id }}"
                                         data-user-name="{{ $user->name }}"
                                         aria-label="Delete staff member"
                                         title="Delete staff member">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                                        <path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m-8 0 1 12a1 1 0 0 0 1 .9h6a1 1 0 0 0 1-.9l1-12" />
                                     </svg>
                                 </button>
                             </div>
