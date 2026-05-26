@@ -108,25 +108,10 @@
         }
 
         .brand {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.8rem;
             text-decoration: none;
             font-weight: 800;
             letter-spacing: -0.03em;
-            font-size: 1.8rem;
-        }
-
-        .brand-logo {
-            width: 40px;
-            height: auto;
-            display: block;
-        }
-
-        .brand-text {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.1em;
+            font-size: 1.7rem;
         }
 
         .brand-event { color: #0a2342; }
@@ -498,8 +483,7 @@
 
     <nav class="top-nav">
         <a href="{{ route('landing', [], false) }}" class="brand" aria-label="Eventure home">
-            <img class="brand-logo" src="{{ asset('eventurelogo.png') }}" alt="Eventure logo">
-            <span class="brand-text"><span class="brand-event">Even</span><span class="brand-flow">ture</span></span>
+            <span class="brand-event">Even</span><span class="brand-flow">ture</span>
         </a>
     </nav>
 
