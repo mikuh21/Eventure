@@ -42,10 +42,11 @@
             gap: 0.75rem;
             text-decoration: none;
             font-weight: 800;
+            font-size: 1.8rem;
         }
 
         .brand-logo {
-            width: 34px;
+            width: 40px;
             height: auto;
             display: block;
         }

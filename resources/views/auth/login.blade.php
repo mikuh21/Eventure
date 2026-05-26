@@ -114,11 +114,11 @@
             text-decoration: none;
             font-weight: 800;
             letter-spacing: -0.03em;
-            font-size: 1.7rem;
+            font-size: 1.8rem;
         }
 
         .brand-logo {
-            width: 36px;
+            width: 40px;
             height: auto;
             display: block;
         }
