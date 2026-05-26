@@ -84,12 +84,22 @@
             justify-content: flex-start;
             position: relative;
             z-index: 1;
+            gap: 10px;
         }
 
         .wordmark {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.55rem;
             font-size: 20px;
             font-weight: 700;
             letter-spacing: -0.02em;
+        }
+
+        .wordmark img {
+            display: block;
+            height: 1.1em;
+            width: auto;
         }
 
         .wordmark-event {
@@ -955,7 +965,8 @@
     <main class="page" data-participant-name="{{ addslashes($participant->name) }}" data-participant-id="{{ $participant->id }}" data-token="{{ $digitalId->token }}" data-certificate-url="{{ route('participants.certificate.show', ['token' => $participant->digital_id_token, 'type' => $certificateType]) }}" data-certificate-type="{{ $certificateType }}">
         <nav class="topbar" aria-label="Participant navigation">
             <div class="wordmark">
-                <span class="wordmark-event">Even</span><span class="wordmark-flow">ture</span>
+                <img src="{{ asset('eventurelogo.png') }}" alt="Eventure logo">
+                <span><span class="wordmark-event">Even</span><span class="wordmark-flow">ture</span></span>
             </div>
         </nav>
 
