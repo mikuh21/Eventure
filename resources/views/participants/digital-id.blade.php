@@ -135,7 +135,8 @@
             left: -10000px;
             top: 0;
             width: 500px;
-            height: 500px;
+            height: auto;
+            overflow: visible;
             pointer-events: none;
             z-index: -1;
         }
@@ -148,8 +149,6 @@
             width: 500px !important;
             height: auto !important;
             margin: 0 !important;
-            background: white !important;
-            color: #000 !important;
         }
 
         #ios-save-tip {
@@ -432,7 +431,7 @@
                         clone.style.position='fixed'; clone.style.left='-9999px'; clone.style.top='-9999px'; clone.style.visibility='visible'; clone.style.opacity='1'; clone.style.transform='none'; clone.style.webkitTransform='none'; clone.style.backfaceVisibility='visible'; clone.style.webkitBackfaceVisibility='visible'; clone.style.pointerEvents='none';
                         host.appendChild(clone); document.body.appendChild(host);
                         try {
-                            const c = await html2canvas(clone, {useCORS:true,allowTaint:true,scale:1,logging:false,backgroundColor:null,width:clone.scrollWidth,height:clone.scrollHeight,windowWidth:clone.scrollWidth,windowHeight:clone.scrollHeight});
+                            const c = await html2canvas(clone, {useCORS:true,allowTaint:true,scale:1,logging:false,backgroundColor:null,width:clone.scrollWidth,height:clone.scrollHeight,imageTimeout:15000,windowWidth:clone.scrollWidth,windowHeight:clone.scrollHeight});
                             return c.toDataURL('image/png');
                         } finally { host.remove(); }
                     })(frontEl);
@@ -449,7 +448,7 @@
                         var clone = element.cloneNode(true); clone.classList.add('export-face');
                         clone.style.position='fixed'; clone.style.left='-9999px'; clone.style.top='-9999px'; clone.style.visibility='visible'; clone.style.opacity='1'; clone.style.transform='none'; clone.style.webkitTransform='none'; clone.style.backfaceVisibility='visible'; clone.style.webkitBackfaceVisibility='visible'; clone.style.pointerEvents='none';
                         host.appendChild(clone); document.body.appendChild(host);
-                        try { const c = await html2canvas(clone, {useCORS:true,allowTaint:true,scale:1,logging:false,backgroundColor:null,width:clone.scrollWidth,height:clone.scrollHeight,windowWidth:clone.scrollWidth,windowHeight:clone.scrollHeight}); return c.toDataURL('image/png'); } finally { host.remove(); }
+                        try { const c = await html2canvas(clone, {useCORS:true,allowTaint:true,scale:1,logging:false,backgroundColor:null,width:clone.scrollWidth,height:clone.scrollHeight,imageTimeout:15000,windowWidth:clone.scrollWidth,windowHeight:clone.scrollHeight}); return c.toDataURL('image/png'); } finally { host.remove(); }
                     })(backSource);
 
                     // build modal with the exact same digital ID card appearance
