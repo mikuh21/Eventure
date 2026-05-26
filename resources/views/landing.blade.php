@@ -76,6 +76,24 @@
         }
         .pulse-live { animation: pulse-green 1.5s ease-in-out infinite; }
 
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            letter-spacing: -0.03em;
+            line-height: 1;
+        }
+
+        .brand img {
+            height: 2.25rem;
+            width: auto;
+        }
+
+        .brand-text {
+            display: inline-flex;
+            letter-spacing: -0.03em;
+        }
+
         .card {
             background: #ffffff;
             border: 1px solid rgba(27,108,168,0.18);
@@ -642,9 +660,9 @@
     {{-- ========== NAVBAR ========== --}}
     <nav class="fixed top-0 inset-x-0 z-50" style="background:rgba(10,35,66,0.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(27,108,168,0.35)">
         <div class="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
-            <a href="{{ url('/') }}" class="inline-flex items-center gap-3 text-2xl font-bold tracking-tight">
-                <img src="{{ asset('eventurelogo.png') }}" alt="Eventure logo" class="h-8 w-auto">
-                <span class="text-em4">Even</span><span class="text-white">ture</span>
+            <a href="{{ url('/') }}" class="brand text-2xl font-bold">
+                <img src="{{ asset('eventurelogo.png') }}" alt="Eventure logo">
+                <span class="brand-text"><span class="text-em4">Even</span><span class="text-white">ture</span></span>
             </a>
 
             <div class="hidden md:flex items-center gap-8 text-sm font-normal" style="color:rgba(255,255,255,0.6)">
