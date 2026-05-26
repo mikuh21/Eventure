@@ -138,6 +138,7 @@ Route::middleware(['auth', 'admin'])->group(function (): void {
         Route::get('users', [UserManagementController::class, 'index'])->name('users.index');
         Route::post('users', [UserManagementController::class, 'store'])->name('users.store');
         Route::patch('users/{user}/status', [UserManagementController::class, 'toggleStatus'])->name('users.toggle-status');
+        Route::delete('users/{user}', [UserManagementController::class, 'destroy'])->name('users.destroy');
         Route::resource('evaluation-questions', EvaluationQuestionController::class)->except(['show']);
         Route::patch('evaluation-questions/{evaluationQuestion}/toggle-status', [EvaluationQuestionController::class, 'toggleStatus'])->name('evaluation-questions.toggle-status');
         Route::post('evaluation-questions/default-template', [EvaluationQuestionController::class, 'loadDefaultQuestions'])->name('evaluation-questions.load-defaults');

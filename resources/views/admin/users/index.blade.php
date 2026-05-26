@@ -100,10 +100,37 @@
             color: var(--color-midnight);
         }
 
-        .admin-toast {
+        .btn-delete-icon {
+            border: 1px solid #fca5a5;
+            background: #fff1f2;
+            color: #b91c1c;
+            padding: 0;
+            width: 28px;
+            height: 28px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+        }
+
+        .btn-delete-icon:hover {
+            border-color: #ef4444;
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .btn-delete-icon svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .modal-floating-label {
             position: fixed;
             top: 20px;
             right: 20px;
+            min-width: 280px;
             max-width: min(420px, calc(100% - 40px));
             border-radius: 10px;
             padding: 10px 14px;
@@ -111,23 +138,56 @@
             font-size: 13px;
             line-height: 1.4;
             box-shadow: 0 10px 24px rgba(10, 35, 66, 0.2);
-            background: #ecfdf5;
-            border: 1px solid #34d399;
-            color: #065f46;
-            z-index: 1200;
+            color: inherit;
             opacity: 0;
             transform: translateY(-6px);
             transition: opacity 220ms ease, transform 220ms ease;
+            z-index: 1200;
+            pointer-events: none;
+            animation: toast-in 180ms ease-out;
         }
 
-        .admin-toast.is-visible {
+        .modal-floating-label.is-visible {
             opacity: 1;
             transform: translateY(0);
         }
 
-        .admin-toast.is-hiding {
+        .modal-floating-label.is-hiding {
             opacity: 0;
             transform: translateY(-6px);
+        }
+
+        .modal-toast {
+            margin: 0;
+        }
+
+        .modal-floating-success {
+            color: #065f46;
+            background: #ecfdf5;
+            border: 1px solid #34d399;
+        }
+
+        .modal-floating-error {
+            color: #991b1b;
+            background: #fef2f2;
+            border: 1px solid #fca5a5;
+        }
+
+        .modal-floating-info {
+            color: #0c4a6e;
+            background: #e0f2fe;
+            border: 1px solid #7dd3fc;
+        }
+
+        @keyframes toast-in {
+            from {
+                opacity: 0;
+                transform: translateY(-6px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 @endpush
@@ -195,19 +255,38 @@
                             </span>
                         </td>
                         <td>
-                            <button type="button"
-                                    class="admin-management-icon-btn {{ $user->approval_status === 'disapproved' ? 'reactivate' : 'deactivate' }} staff-status-toggle-btn"
-                                    data-action="{{ route('admin.users.toggle-status', $user) }}"
-                                    data-name="{{ $user->name }}"
-                                    data-status="{{ $user->approval_status === 'disapproved' ? 'reactivate' : 'deactivate' }}"
-                                    aria-label="{{ $user->approval_status === 'disapproved' ? 'Reactivate staff member' : 'Deactivate staff member' }}"
-                                    title="{{ $user->approval_status === 'disapproved' ? 'Reactivate staff member' : 'Deactivate staff member' }}">
-                                @if ($user->approval_status === 'disapproved')
-                                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
-                                @else
-                                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" /><path d="M8 8l8 8" /></svg>
-                                @endif
-                            </button>
+                            <div style="display: inline-flex; gap: 8px; align-items: center;">
+                                <button type="button"
+                                        class="admin-management-icon-btn {{ $user->approval_status === 'disapproved' ? 'reactivate' : 'deactivate' }} staff-status-toggle-btn"
+                                        data-action="{{ route('admin.users.toggle-status', $user) }}"
+                                        data-name="{{ $user->name }}"
+                                        data-status="{{ $user->approval_status === 'disapproved' ? 'reactivate' : 'deactivate' }}"
+                                        aria-label="{{ $user->approval_status === 'disapproved' ? 'Reactivate staff member' : 'Deactivate staff member' }}"
+                                        title="{{ $user->approval_status === 'disapproved' ? 'Reactivate staff member' : 'Deactivate staff member' }}">
+                                    @if ($user->approval_status === 'disapproved')
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+                                    @else
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" /><path d="M8 8l8 8" /></svg>
+                                    @endif
+                                </button>
+
+                                <button type="button"
+                                        class="btn-delete-icon js-user-delete-trigger"
+                                        data-form-id="delete-user-form-{{ $user->id }}"
+                                        data-user-name="{{ $user->name }}"
+                                        aria-label="Delete staff member"
+                                        title="Delete staff member">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <form id="delete-user-form-{{ $user->id }}" action="{{ route('admin.users.destroy', $user) }}" method="POST" style="display:none;">
+                                @csrf
+                                @method('DELETE')
+                            </form>
                         </td>
                     </tr>
                 @empty
@@ -231,6 +310,19 @@
             <div class="delete-confirm-actions">
                 <button type="button" class="btn-delete-cancel" id="staffStatusModalCancel">Cancel</button>
                 <button type="button" class="btn-delete-confirm" id="staffStatusModalConfirm">Yes, Continue</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="deleteStaffModal" class="delete-confirm-modal" aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="delete-confirm-panel">
+            <h2 id="deleteStaffModalTitle" class="delete-confirm-title">Delete staff member</h2>
+            <p class="delete-confirm-body">
+                <span id="deleteStaffModalMessage"></span>
+            </p>
+            <div class="delete-confirm-actions">
+                <button type="button" class="btn-delete-cancel" id="deleteStaffModalCancel">Cancel</button>
+                <button type="button" class="btn-delete-confirm" id="deleteStaffModalConfirm">Yes, Delete</button>
             </div>
         </div>
     </div>
@@ -347,21 +439,18 @@
             });
 
             const showSuccessToast = (message) => {
-                let toast = document.getElementById('adminRegistrationSuccessToast');
-                if (!toast) {
-                    toast = document.createElement('div');
-                    toast.id = 'adminRegistrationSuccessToast';
-                    toast.className = 'admin-toast';
-                    document.body.appendChild(toast);
-                }
+                let toast = document.createElement('div');
+                toast.className = 'modal-floating-label modal-floating-success modal-toast';
                 toast.textContent = message;
-                toast.classList.remove('is-hiding');
-                toast.classList.add('is-visible');
+                document.body.appendChild(toast);
+                window.setTimeout(() => {
+                    toast.classList.add('is-visible');
+                }, 10);
 
-                setTimeout(() => {
+                window.setTimeout(() => {
                     toast.classList.remove('is-visible');
                     toast.classList.add('is-hiding');
-                    setTimeout(() => {
+                    window.setTimeout(() => {
                         if (toast && toast.parentNode) {
                             toast.parentNode.removeChild(toast);
                         }
@@ -414,6 +503,53 @@
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Register';
                 });
+            });
+
+            const deleteModal = document.getElementById('deleteStaffModal');
+            const deleteMessage = document.getElementById('deleteStaffModalMessage');
+            const deleteCancel = document.getElementById('deleteStaffModalCancel');
+            const deleteConfirm = document.getElementById('deleteStaffModalConfirm');
+            let currentDeleteFormId = null;
+
+            document.body.addEventListener('click', function (e) {
+                const deleteBtn = e.target.closest('.js-user-delete-trigger');
+                if (!deleteBtn) return;
+
+                e.preventDefault();
+                currentDeleteFormId = deleteBtn.dataset.formId;
+                const name = deleteBtn.dataset.userName;
+                deleteMessage.textContent = `Are you sure you want to delete ${name}? This action cannot be undone.`;
+
+                deleteModal.classList.add('is-visible');
+                deleteModal.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
+            });
+
+            const closeDeleteModal = () => {
+                deleteModal.classList.remove('is-visible');
+                deleteModal.setAttribute('aria-hidden', 'true');
+                document.body.style.overflow = '';
+                currentDeleteFormId = null;
+            };
+
+            deleteCancel.addEventListener('click', closeDeleteModal);
+            deleteModal.addEventListener('click', function (e) {
+                if (e.target === deleteModal) closeDeleteModal();
+            });
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && deleteModal.classList.contains('is-visible')) {
+                    closeDeleteModal();
+                }
+            });
+            deleteConfirm.addEventListener('click', function () {
+                if (!currentDeleteFormId) {
+                    return;
+                }
+
+                const deleteForm = document.getElementById(currentDeleteFormId);
+                if (deleteForm) {
+                    deleteForm.submit();
+                }
             });
         })();
     </script>

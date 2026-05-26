@@ -46,6 +46,17 @@ class UserManagementController extends Controller
             ->with('status', 'Event Staff status updated successfully.');
     }
 
+    public function destroy(User $user): RedirectResponse
+    {
+        abort_unless($user->isEventStaff(), 422, 'Only Event Staff accounts can be managed here.');
+
+        $user->delete();
+
+        return redirect()
+            ->route('admin.users.index')
+            ->with('status', 'Event Staff deleted successfully.');
+    }
+
     public function store(Request $request)
     {
         try {
