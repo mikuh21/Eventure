@@ -449,7 +449,7 @@
         }
 
         .admin-brand img {
-            height: 1.4rem;
+            height: 2rem;
             width: auto;
         }
 
