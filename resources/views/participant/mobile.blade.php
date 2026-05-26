@@ -102,19 +102,6 @@
             width: auto;
         }
 
-        .wordmark span {
-            display: inline-flex;
-        }
-
-        .wordmark-event,
-        .wordmark-flow {
-            display: inline-flex;
-        }
-
-        .wordmark-flow {
-            margin-left: -0.04em;
-        }
-
         .wordmark-event {
             color: var(--text);
         }
@@ -935,6 +922,7 @@
 
         .footer .wordmark {
             font-size: 16px;
+            gap: 0;
         }
 
         .tagline {
