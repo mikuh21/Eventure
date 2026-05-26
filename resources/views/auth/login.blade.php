@@ -490,11 +490,14 @@
             @if ($errors->any() && ! old('forgot_password'))
                 @php
                     $loginErrors = $errors->all();
-                    $showSimpleInvalid = count($loginErrors) === 1 && $loginErrors[0] === 'The provided credentials do not match our records.';
+                    $showSingleMessage = count($loginErrors) === 1 && in_array($loginErrors[0], [
+                        'The provided credentials do not match our records.',
+                        'Your Event Staff account is waiting for Admin approval.'
+                    ], true);
                 @endphp
                 <div class="alert-error">
-                    @if ($showSimpleInvalid)
-                        Invalid credentials.
+                    @if ($showSingleMessage)
+                        {{ $loginErrors[0] === 'The provided credentials do not match our records.' ? 'Invalid credentials.' : $loginErrors[0] }}
                     @else
                         <strong>Please fix the following:</strong>
                         <ul>
