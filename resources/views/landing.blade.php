@@ -94,6 +94,12 @@
             letter-spacing: -0.03em;
         }
 
+        #ongoing,
+        #upcoming,
+        #features {
+            scroll-margin-top: 128px;
+        }
+
         .card {
             background: #ffffff;
             border: 1px solid rgba(27,108,168,0.18);
