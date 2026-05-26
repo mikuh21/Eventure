@@ -85,7 +85,7 @@
         }
 
         .brand img {
-            height: 2.25rem;
+            height: 3rem;
             width: auto;
         }
 
