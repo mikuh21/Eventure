@@ -437,11 +437,19 @@
         }
 
         .admin-brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
             text-decoration: none;
             font-size: 1.48rem;
             font-weight: 800;
             letter-spacing: -0.03em;
             padding: 2px 8px;
+        }
+
+        .admin-brand img {
+            height: 1.2em;
+            width: auto;
         }
 
         .admin-brand-event {
@@ -814,6 +822,7 @@
         <div class="admin-nav-overlay" aria-hidden="true"></div>
         <aside class="admin-sidebar" id="adminSidebar">
             <a href="{{ \App\Support\PreviewAuth::appendToUrl(route('admin.dashboard', [], false), $previewAuthQuery) }}" class="admin-brand">
+                <img src="{{ asset('eventurelogo.png') }}" alt="Eventure logo">
                 <span class="admin-brand-event">Even</span><span class="admin-brand-flow">ture</span>
             </a>
 
