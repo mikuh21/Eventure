@@ -21,6 +21,7 @@ class Guest extends Model
         'conference_paper_path',
         'conference_paper_original_name',
         'digital_token',
+        'digital_id_verified_at',
         'status',
     ];
 
@@ -40,4 +41,8 @@ class Guest extends Model
 
         return $average !== null ? round((float) $average, 2) : null;
     }
+
+    protected $casts = [
+        'digital_id_verified_at' => 'datetime',
+    ];
 }

@@ -19,12 +19,14 @@ class Participant extends Model
         'email',
         'event_id',
         'digital_id_token',
+        'digital_id_verified_at',
         'status',
         'attended',
     ];
 
     protected $casts = [
         'attended' => 'boolean',
+        'digital_id_verified_at' => 'datetime',
     ];
 
     public function getRouteKeyName()

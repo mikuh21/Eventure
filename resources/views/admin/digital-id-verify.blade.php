@@ -473,7 +473,17 @@
                     <div class="verify-id-result success">
                         <p class="verify-id-result-title">✓ Verified</p>
                         <p class="verify-id-name">{{ $participant->name }}</p>
-                        <p class="verify-id-event">{{ $participant->event->title }}</p>
+                        <p class="verify-id-event">{{ $participant->event->title ?? '' }}</p>
+                        <div style="margin-top:8px;font-size:13px;color:var(--ef-midnight);">
+                            <div><strong>Type:</strong> {{ $participant instanceof \App\Models\Guest ? 'Guest' : 'Participant' }}</div>
+                            <div><strong>Role:</strong> {{ ucfirst(str_replace('_',' ', $participant->participant_type ?? $participant->role ?? 'N/A')) }}</div>
+                            @if(!empty($participant->institution))
+                                <div><strong>Institution:</strong> {{ $participant->institution }}</div>
+                            @endif
+                            @if(!empty($participant->digital_id_verified_at))
+                                <div><strong>Verified At:</strong> {{ $participant->digital_id_verified_at->format('m:d:Y g:i A') }}</div>
+                            @endif
+                        </div>
                         <div class="verify-id-attendance">
                             <span class="badge-pill {{ $participant->attended ? 'badge-attended-yes' : 'badge-attended-no' }}">
                                 {{ $participant->attended ? 'Attended' : 'Not Attended' }}
@@ -680,11 +690,21 @@
 
         const updateVerificationResult = function (participant) {
             // Build result HTML
+            const verifiedAt = participant.digital_id_verified_at ? participant.digital_id_verified_at : '';
+            const typeLabel = participant.type ? (participant.type === 'guest' ? 'Guest' : 'Participant') : 'Participant';
+            const roleLabel = participant.role ? participant.role.replace(/_/g, ' ') : 'N/A';
+
             const resultHtml = `
                 <div class="verify-id-result success">
                     <p class="verify-id-result-title">✓ Verified</p>
                     <p class="verify-id-name">${participant.name}</p>
-                    <p class="verify-id-event">${participant.event_name}</p>
+                    <p class="verify-id-event">${participant.event_name || ''}</p>
+                    <div style="margin-top:8px;font-size:13px;color:var(--ef-midnight);">
+                        <div><strong>Type:</strong> ${typeLabel}</div>
+                        <div><strong>Role:</strong> ${roleLabel}</div>
+                        ${participant.institution ? `<div><strong>Institution:</strong> ${participant.institution}</div>` : ''}
+                        ${verifiedAt ? `<div><strong>Verified At:</strong> ${verifiedAt}</div>` : ''}
+                    </div>
                     <div class="verify-id-attendance">
                         <span class="badge-pill ${participant.attended ? 'badge-attended-yes' : 'badge-attended-no'}">
                             ${participant.attended ? 'Attended' : 'Not Attended'}

@@ -28,6 +28,13 @@ class ParticipantDigitalIdController extends Controller
             return back()->with('error', 'You are not authorized to verify this participant.');
         }
 
+        // If verification was attempted (form POST or payload), record first-verified timestamp
+        if ($participant && ($request->filled('token') || $request->filled('payload'))) {
+            if (empty($participant->digital_id_verified_at)) {
+                $participant->update(['digital_id_verified_at' => now()]);
+            }
+        }
+
         if ($wantsJson) {
             return response()->json([
                 'valid' => (bool) $participant,
@@ -35,8 +42,12 @@ class ParticipantDigitalIdController extends Controller
                     'id' => $participant->id,
                     'name' => $participant->name,
                     'email' => $participant->email,
-                    'event_id' => $participant->event_id,
-                    'event_name' => $participant->event->title,
+                    'event_id' => $participant->event_id ?? $participant->event->id ?? null,
+                    'event_name' => $participant->event->title ?? null,
+                    'type' => $participant instanceof \App\Models\Guest ? 'guest' : 'participant',
+                    'role' => $participant->participant_type ?? $participant->role ?? null,
+                    'institution' => $participant->institution ?? null,
+                    'digital_id_verified_at' => $participant->digital_id_verified_at ? $participant->digital_id_verified_at->toDateTimeString() : null,
                 ] : null,
             ]);
         }
@@ -189,10 +200,40 @@ class ParticipantDigitalIdController extends Controller
             ], 404);
         }
 
-        if ($participant->attended) {
+        // If the resolved model is a Participant, we mark attendance. For Guests, we only record verification.
+        if ($participant instanceof \App\Models\Participant) {
+            if ($participant->attended) {
+                // Ensure first-verified timestamp is recorded
+                if (empty($participant->digital_id_verified_at)) {
+                    $participant->update(['digital_id_verified_at' => now()]);
+                }
+
+                return response()->json([
+                    'valid' => true,
+                    'message' => 'Attendance already recorded.',
+                    'participant' => [
+                        'id' => $participant->id,
+                        'name' => $participant->name,
+                        'email' => $participant->email,
+                        'event_id' => $participant->event_id,
+                        'event_name' => $participant->event->title,
+                        'attended' => true,
+                        'type' => 'participant',
+                        'role' => $participant->participant_type ?? null,
+                        'institution' => $participant->institution ?? null,
+                        'digital_id_verified_at' => $participant->digital_id_verified_at ? $participant->digital_id_verified_at->toDateTimeString() : null,
+                    ],
+                ]);
+            }
+
+            $participant->update([
+                'attended' => true,
+                'digital_id_verified_at' => $participant->digital_id_verified_at ?? now(),
+            ]);
+
             return response()->json([
                 'valid' => true,
-                'message' => 'Attendance already recorded.',
+                'message' => 'Attendance marked successfully.',
                 'participant' => [
                     'id' => $participant->id,
                     'name' => $participant->name,
@@ -200,26 +241,42 @@ class ParticipantDigitalIdController extends Controller
                     'event_id' => $participant->event_id,
                     'event_name' => $participant->event->title,
                     'attended' => true,
+                    'type' => 'participant',
+                    'role' => $participant->participant_type ?? null,
+                    'institution' => $participant->institution ?? null,
+                    'digital_id_verified_at' => $participant->digital_id_verified_at ? $participant->digital_id_verified_at->toDateTimeString() : null,
                 ],
             ]);
         }
 
-        $participant->update([
-            'attended' => true,
-        ]);
+        // If it's a Guest
+        if ($participant instanceof \App\Models\Guest) {
+            // Record first verification timestamp if not already set
+            if (empty($participant->digital_id_verified_at)) {
+                $participant->update(['digital_id_verified_at' => now()]);
+            }
+
+            return response()->json([
+                'valid' => true,
+                'message' => 'Guest token verified.',
+                'participant' => [
+                    'id' => $participant->id,
+                    'name' => $participant->name,
+                    'email' => $participant->email,
+                    'event_id' => $participant->event_id,
+                    'event_name' => $participant->event->title,
+                    'type' => 'guest',
+                    'role' => $participant->role ?? null,
+                    'institution' => null,
+                    'digital_id_verified_at' => $participant->digital_id_verified_at ? $participant->digital_id_verified_at->toDateTimeString() : null,
+                ],
+            ]);
+        }
 
         return response()->json([
-            'valid' => true,
-            'message' => 'Attendance marked successfully.',
-            'participant' => [
-                'id' => $participant->id,
-                'name' => $participant->name,
-                'email' => $participant->email,
-                'event_id' => $participant->event_id,
-                'event_name' => $participant->event->title,
-                'attended' => true,
-            ],
-        ]);
+            'valid' => false,
+            'message' => 'Invalid digital ID payload.',
+        ], 404);
     }
 
     private function qrPayload(Participant $participant): string
@@ -310,10 +367,24 @@ class ParticipantDigitalIdController extends Controller
         }
 
         if ($token) {
-            return Participant::query()
+            $participant = Participant::query()
                 ->with('event:id,title')
                 ->where('digital_id_token', $token)
                 ->first();
+
+            if ($participant) {
+                return $participant;
+            }
+
+            // Try guests as fallback
+            $guest = \App\Models\Guest::query()
+                ->with('event:id,title')
+                ->where('digital_token', $token)
+                ->first();
+
+            if ($guest) {
+                return $guest;
+            }
         }
 
         return null;
