@@ -473,7 +473,6 @@
                     <div class="verify-id-result success">
                         <p class="verify-id-result-title">✓ Verified</p>
                         <p class="verify-id-name">{{ $participant->name }}</p>
-                        <p class="verify-id-event">{{ $participant->event->title ?? '' }}</p>
                         <div style="margin-top:8px;font-size:13px;color:var(--ef-midnight);">
                             <div><strong>Type:</strong> {{ $participant instanceof \App\Models\Guest ? 'Guest' : 'Participant' }}</div>
                             <div><strong>Role:</strong> {{ ucfirst(str_replace('_',' ', $participant->participant_type ?? $participant->role ?? 'N/A')) }}</div>
@@ -481,9 +480,11 @@
                                 <div><strong>Institution:</strong> {{ $participant->institution }}</div>
                             @endif
                             @if(!empty($participant->digital_id_verified_at))
-                                <div><strong>Verified At:</strong> {{ $participant->digital_id_verified_at->format('m:d:Y g:i A') }}</div>
+                                <div><strong>Verified Date:</strong> {{ $participant->digital_id_verified_at->format('F j, Y') }}</div>
+                                <div><strong>Verified Time:</strong> {{ $participant->digital_id_verified_at->format('g:i A') }}</div>
                             @endif
                         </div>
+                        <p class="verify-id-event" style="margin-top:10px;">{{ $participant->event->title ?? '' }}</p>
                         <div class="verify-id-attendance">
                             <span class="badge-pill {{ $participant->attended ? 'badge-attended-yes' : 'badge-attended-no' }}">
                                 {{ $participant->attended ? 'Attended' : 'Not Attended' }}
@@ -690,21 +691,43 @@
 
         const updateVerificationResult = function (participant) {
             // Build result HTML
-            const verifiedAt = participant.digital_id_verified_at ? participant.digital_id_verified_at : '';
             const typeLabel = participant.type ? (participant.type === 'guest' ? 'Guest' : 'Participant') : 'Participant';
-            const roleLabel = participant.role ? participant.role.replace(/_/g, ' ') : 'N/A';
+            const roleText = participant.role ? participant.role.replace(/_/g, ' ') : 'N/A';
+            const roleLabel = roleText
+                .split(' ')
+                .map(segment => segment.charAt(0).toUpperCase() + segment.slice(1).toLowerCase())
+                .join(' ');
+            let verifiedDate = '';
+            let verifiedTime = '';
+
+            if (participant.digital_id_verified_at) {
+                const parsed = new Date(participant.digital_id_verified_at);
+                if (!Number.isNaN(parsed.getTime())) {
+                    verifiedDate = parsed.toLocaleDateString('en-US', {
+                        month: 'long',
+                        day: 'numeric',
+                        year: 'numeric',
+                    });
+                    verifiedTime = parsed.toLocaleTimeString('en-US', {
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        hour12: true,
+                    });
+                }
+            }
 
             const resultHtml = `
                 <div class="verify-id-result success">
                     <p class="verify-id-result-title">✓ Verified</p>
                     <p class="verify-id-name">${participant.name}</p>
-                    <p class="verify-id-event">${participant.event_name || ''}</p>
                     <div style="margin-top:8px;font-size:13px;color:var(--ef-midnight);">
                         <div><strong>Type:</strong> ${typeLabel}</div>
                         <div><strong>Role:</strong> ${roleLabel}</div>
                         ${participant.institution ? `<div><strong>Institution:</strong> ${participant.institution}</div>` : ''}
-                        ${verifiedAt ? `<div><strong>Verified At:</strong> ${verifiedAt}</div>` : ''}
+                        ${verifiedDate ? `<div><strong>Verified Date:</strong> ${verifiedDate}</div>` : ''}
+                        ${verifiedTime ? `<div><strong>Verified Time:</strong> ${verifiedTime}</div>` : ''}
                     </div>
+                    <p class="verify-id-event" style="margin-top:10px;">${participant.event_name || ''}</p>
                     <div class="verify-id-attendance">
                         <span class="badge-pill ${participant.attended ? 'badge-attended-yes' : 'badge-attended-no'}">
                             ${participant.attended ? 'Attended' : 'Not Attended'}
