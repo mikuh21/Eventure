@@ -832,7 +832,7 @@
         <section id="upcoming" class="py-20 px-6" data-reveal>
             <div class="max-w-7xl mx-auto">
                 <h2 class="font-bold text-white mb-2" style="font-size:22px;font-weight:700">Upcoming Events</h2>
-                <p class="mb-10" style="color:rgba(255,255,255,0.6)">Secure your spot before they fill up</p>
+                <p class="mb-10" style="color:rgba(255,255,255,0.6)">Check out our upcoming events</p>
 
                 <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     @foreach($upcomingEvents as $event)
