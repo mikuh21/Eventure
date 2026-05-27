@@ -376,7 +376,7 @@ class ParticipantDigitalIdController extends Controller
 
         if ($token) {
             $participant = Participant::query()
-                ->with('event:id,title')
+                ->with('event:id,title,start_date,location')
                 ->where('digital_id_token', $token)
                 ->first();
 
@@ -386,7 +386,7 @@ class ParticipantDigitalIdController extends Controller
 
             // Try guests as fallback
             $guest = \App\Models\Guest::query()
-                ->with('event:id,title')
+                ->with('event:id,title,start_date,location')
                 ->where('digital_token', $token)
                 ->first();
 
