@@ -73,6 +73,17 @@
             border-color: var(--color-midnight);
         }
 
+        #staffStatusModalConfirm.reactivate-action {
+            background: #16a34a;
+            border-color: #16a34a;
+            color: #ffffff;
+        }
+
+        #staffStatusModalConfirm.reactivate-action:hover {
+            background: #15803d;
+            border-color: #15803d;
+        }
+
         .admin-modal-close {
             position: absolute;
             top: 18px;
@@ -350,6 +361,10 @@
                 message.textContent = action === 'deactivate'
                     ? `Are you sure you want to deactivate ${name}?`
                     : `Are you sure you want to reactivate ${name}?`;
+
+                if (confirmBtn) {
+                    confirmBtn.classList.toggle('reactivate-action', action === 'reactivate');
+                }
 
                 modal.classList.add('is-visible');
                 modal.setAttribute('aria-hidden', 'false');
