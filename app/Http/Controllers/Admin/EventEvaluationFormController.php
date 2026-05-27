@@ -63,8 +63,8 @@ class EventEvaluationFormController extends Controller
 
         $overview = [
             'total_events' => Event::count(),
-            'forms_open' => Event::whereNotNull('evaluation_form_enabled_at')->count(),
-            'forms_closed' => Event::whereNull('evaluation_form_enabled_at')->count(),
+            'forms_open' => Event::where('evaluation_form_enabled', true)->count(),
+            'forms_closed' => Event::where('evaluation_form_enabled', false)->count(),
         ];
 
         return view('admin.evaluation-forms.index', [
