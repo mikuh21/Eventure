@@ -270,6 +270,9 @@
         margin: 0;
         color: var(--ef-ocean);
         font-size: 13px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .verify-id-fail-copy {
@@ -484,7 +487,22 @@
                                 <div><strong>Verified Time:</strong> {{ $participant->digital_id_verified_at->format('g:i A') }}</div>
                             @endif
                         </div>
-                        <p class="verify-id-event" style="margin-top:10px;">{{ $participant->event->title ?? '' }}</p>
+                        <p class="verify-id-event" style="margin-top:10px;">
+                            @php
+                                $event = $participant->event ?? null;
+                                $segments = [];
+                                if ($event) {
+                                    $segments[] = $event->title;
+                                    if ($event->start_date) {
+                                        $segments[] = $event->start_date->format('F j, Y');
+                                    }
+                                    if (!empty($event->location)) {
+                                        $segments[] = $event->location;
+                                    }
+                                }
+                            @endphp
+                            {{ implode(' • ', array_filter($segments)) }}
+                        </p>
                         <div class="verify-id-attendance">
                             <span class="badge-pill {{ $participant->attended ? 'badge-attended-yes' : 'badge-attended-no' }}">
                                 {{ $participant->attended ? 'Attended' : 'Not Attended' }}
@@ -716,6 +734,18 @@
                 }
             }
 
+            const eventSegments = [];
+            if (participant.event_name) {
+                eventSegments.push(participant.event_name);
+            }
+            if (participant.event_date) {
+                eventSegments.push(participant.event_date);
+            }
+            if (participant.event_location) {
+                eventSegments.push(participant.event_location);
+            }
+            const eventLine = eventSegments.join(' • ');
+
             const resultHtml = `
                 <div class="verify-id-result success">
                     <p class="verify-id-result-title">✓ Verified</p>
@@ -727,7 +757,7 @@
                         ${verifiedDate ? `<div><strong>Verified Date:</strong> ${verifiedDate}</div>` : ''}
                         ${verifiedTime ? `<div><strong>Verified Time:</strong> ${verifiedTime}</div>` : ''}
                     </div>
-                    <p class="verify-id-event" style="margin-top:10px;">${participant.event_name || ''}</p>
+                    <p class="verify-id-event" style="margin-top:10px;">${eventLine}</p>
                     <div class="verify-id-attendance">
                         <span class="badge-pill ${participant.attended ? 'badge-attended-yes' : 'badge-attended-no'}">
                             ${participant.attended ? 'Attended' : 'Not Attended'}
