@@ -318,7 +318,7 @@
             position: fixed;
             inset: 0;
             background: rgba(10, 35, 66, 0.55);
-            z-index: 1100;
+            z-index: 1400;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1525,10 +1525,14 @@
             var qrStatus = document.getElementById('qr-scan-status');
             var qrScanner = null;
             var deleteModal = document.getElementById('deleteConfirmModal');
-            var trackedModals = [modal, successModal, digitalIdModal, qrModal, deleteModal];
+            var getTrackedModals = function () {
+                return [modal, successModal, digitalIdModal, qrModal, deleteModal]
+                    .concat(Array.prototype.slice.call(document.querySelectorAll('.delete-confirm-modal')))
+                    .filter(Boolean);
+            };
 
             var syncQrFabWithModalState = function () {
-                var hasActiveModal = trackedModals.some(function (trackedModal) {
+                var hasActiveModal = getTrackedModals().some(function (trackedModal) {
                     return trackedModal && trackedModal.classList.contains('is-visible');
                 });
 
@@ -2102,6 +2106,7 @@
                         approveModal.classList.add('is-visible');
                         approveModal.setAttribute('aria-hidden', 'false');
                         document.body.style.overflow = 'hidden';
+                        syncQrFabWithModalState();
                     }
                 });
             });
@@ -2112,6 +2117,7 @@
                 approveModal.setAttribute('aria-hidden', 'true');
                 document.body.style.overflow = '';
                 pendingApproveForm = null;
+                syncQrFabWithModalState();
             });
 
             if (approveModal) {
@@ -2121,6 +2127,7 @@
                         approveModal.setAttribute('aria-hidden', 'true');
                         document.body.style.overflow = '';
                         pendingApproveForm = null;
+                        syncQrFabWithModalState();
                     }
                 });
             }
@@ -2192,6 +2199,7 @@
                         document.body.style.overflow = '';
                     }
                     pendingApproveForm = null;
+                    syncQrFabWithModalState();
                 });
             });
 
@@ -2204,6 +2212,7 @@
                         denyModal.classList.add('is-visible');
                         denyModal.setAttribute('aria-hidden', 'false');
                         document.body.style.overflow = 'hidden';
+                        syncQrFabWithModalState();
                     }
                 });
             });
@@ -2214,6 +2223,7 @@
                 denyModal.setAttribute('aria-hidden', 'true');
                 document.body.style.overflow = '';
                 pendingDenyForm = null;
+                syncQrFabWithModalState();
             });
 
             if (denyModal) {
@@ -2223,6 +2233,7 @@
                         denyModal.setAttribute('aria-hidden', 'true');
                         document.body.style.overflow = '';
                         pendingDenyForm = null;
+                        syncQrFabWithModalState();
                     }
                 });
             }
@@ -2259,6 +2270,7 @@
                         document.body.style.overflow = '';
                     }
                     pendingDenyForm = null;
+                    syncQrFabWithModalState();
                 });
             });
 
