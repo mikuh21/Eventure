@@ -111,10 +111,16 @@ class EventController extends Controller
             ->orderBy('start_date', 'asc')
             ->paginate(10);
 
+        $overviewQuery = Event::query();
+
+        if ($canAccessBackoffice && auth()->user() instanceof \App\Models\User && auth()->user()->isEventStaff()) {
+            $overviewQuery->where('created_by', auth()->id());
+        }
+
         $overview = [
-            'total_events' => Event::count(),
-            'student_events' => Event::query()->where('type', 'school_event')->count(),
-            'conference_events' => Event::query()->where('type', 'conference')->count(),
+            'total_events' => (clone $overviewQuery)->count(),
+            'student_events' => (clone $overviewQuery)->where('type', 'school_event')->count(),
+            'conference_events' => (clone $overviewQuery)->where('type', 'conference')->count(),
         ];
 
         if (! $wantsJson) {
