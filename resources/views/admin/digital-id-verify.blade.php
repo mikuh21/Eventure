@@ -483,8 +483,10 @@
                                 <div><strong>Institution:</strong> {{ $participant->institution }}</div>
                             @endif
                             @if(!empty($participant->digital_id_verified_at))
-                                <div><strong>Verified Date:</strong> {{ $participant->digital_id_verified_at->format('F j, Y') }}</div>
-                                <div><strong>Verified Time:</strong> {{ $participant->digital_id_verified_at->format('g:i A') }}</div>
+                                <div><strong>Attended At:</strong> {{ $participant->digital_id_verified_at->format('F j, Y g:i A') }}</div>
+                            @endif
+                            @if(!empty($verificationCheckedAt))
+                                <div><strong>Verified At:</strong> {{ $verificationCheckedAt->format('F j, Y g:i A') }}</div>
                             @endif
                         </div>
                         <p class="verify-id-event" style="margin-top:10px;">
@@ -715,18 +717,30 @@
                 .split(' ')
                 .map(segment => segment.charAt(0).toUpperCase() + segment.slice(1).toLowerCase())
                 .join(' ');
-            let verifiedDate = '';
-            let verifiedTime = '';
+            let attendedAt = '';
+            let verifiedAt = '';
 
             if (participant.digital_id_verified_at) {
                 const parsed = new Date(participant.digital_id_verified_at);
                 if (!Number.isNaN(parsed.getTime())) {
-                    verifiedDate = parsed.toLocaleDateString('en-US', {
+                    attendedAt = parsed.toLocaleString('en-US', {
                         month: 'long',
                         day: 'numeric',
                         year: 'numeric',
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        hour12: true,
                     });
-                    verifiedTime = parsed.toLocaleTimeString('en-US', {
+                }
+            }
+
+            if (participant.verified_at) {
+                const parsedChecked = new Date(participant.verified_at);
+                if (!Number.isNaN(parsedChecked.getTime())) {
+                    verifiedAt = parsedChecked.toLocaleString('en-US', {
+                        month: 'long',
+                        day: 'numeric',
+                        year: 'numeric',
                         hour: 'numeric',
                         minute: '2-digit',
                         hour12: true,
@@ -754,8 +768,8 @@
                         <div><strong>Type:</strong> ${typeLabel}</div>
                         <div><strong>Role:</strong> ${roleLabel}</div>
                         ${participant.institution ? `<div><strong>Institution:</strong> ${participant.institution}</div>` : ''}
-                        ${verifiedDate ? `<div><strong>Verified Date:</strong> ${verifiedDate}</div>` : ''}
-                        ${verifiedTime ? `<div><strong>Verified Time:</strong> ${verifiedTime}</div>` : ''}
+                        ${attendedAt ? `<div><strong>Attended At:</strong> ${attendedAt}</div>` : ''}
+                        ${verifiedAt ? `<div><strong>Verified At:</strong> ${verifiedAt}</div>` : ''}
                     </div>
                     <p class="verify-id-event" style="margin-top:10px;">${eventLine}</p>
                     <div class="verify-id-attendance">

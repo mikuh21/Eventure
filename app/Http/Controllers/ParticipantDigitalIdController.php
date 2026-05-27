@@ -28,10 +28,20 @@ class ParticipantDigitalIdController extends Controller
             return back()->with('error', 'You are not authorized to verify this participant.');
         }
 
+        $verificationCheckedAt = null;
+
         // If verification was attempted (form POST or payload), record first-verified timestamp
+        // and ensure a participant is marked attended on first staff verification.
         if ($participant && ($request->filled('token') || $request->filled('payload'))) {
-            if (empty($participant->digital_id_verified_at)) {
-                $participant->update(['digital_id_verified_at' => now()]);
+            $verificationCheckedAt = now();
+
+            if ($participant instanceof \App\Models\Participant) {
+                $participant->update([
+                    'attended' => true,
+                    'digital_id_verified_at' => $participant->digital_id_verified_at ?? $verificationCheckedAt,
+                ]);
+            } elseif (empty($participant->digital_id_verified_at)) {
+                $participant->update(['digital_id_verified_at' => $verificationCheckedAt]);
             }
         }
 
@@ -50,6 +60,7 @@ class ParticipantDigitalIdController extends Controller
                     'role' => $participant->participant_type ?? $participant->role ?? null,
                     'institution' => $participant->institution ?? null,
                     'digital_id_verified_at' => $participant->digital_id_verified_at ? $participant->digital_id_verified_at->toDateTimeString() : null,
+                    'verified_at' => $verificationCheckedAt ? $verificationCheckedAt->toDateTimeString() : null,
                 ] : null,
             ]);
         }
@@ -59,6 +70,7 @@ class ParticipantDigitalIdController extends Controller
             'submittedToken' => $request->input('token'),
             'submittedPayload' => $request->input('payload'),
             'verificationAttempted' => $request->filled('token') || $request->filled('payload'),
+            'verificationCheckedAt' => $verificationCheckedAt,
         ]);
     }
 
@@ -202,12 +214,14 @@ class ParticipantDigitalIdController extends Controller
             ], 404);
         }
 
+        $verificationCheckedAt = now();
+
         // If the resolved model is a Participant, we mark attendance. For Guests, we only record verification.
         if ($participant instanceof \App\Models\Participant) {
             if ($participant->attended) {
                 // Ensure first-verified timestamp is recorded
                 if (empty($participant->digital_id_verified_at)) {
-                    $participant->update(['digital_id_verified_at' => now()]);
+                    $participant->update(['digital_id_verified_at' => $verificationCheckedAt]);
                 }
 
                 return response()->json([
@@ -226,13 +240,14 @@ class ParticipantDigitalIdController extends Controller
                         'role' => $participant->participant_type ?? null,
                         'institution' => $participant->institution ?? null,
                         'digital_id_verified_at' => $participant->digital_id_verified_at ? $participant->digital_id_verified_at->toDateTimeString() : null,
+                        'verified_at' => $verificationCheckedAt->toDateTimeString(),
                     ],
                 ]);
             }
 
             $participant->update([
                 'attended' => true,
-                'digital_id_verified_at' => $participant->digital_id_verified_at ?? now(),
+                'digital_id_verified_at' => $participant->digital_id_verified_at ?? $verificationCheckedAt,
             ]);
 
             return response()->json([
@@ -251,6 +266,7 @@ class ParticipantDigitalIdController extends Controller
                     'role' => $participant->participant_type ?? null,
                     'institution' => $participant->institution ?? null,
                     'digital_id_verified_at' => $participant->digital_id_verified_at ? $participant->digital_id_verified_at->toDateTimeString() : null,
+                    'verified_at' => $verificationCheckedAt->toDateTimeString(),
                 ],
             ]);
         }
@@ -259,7 +275,7 @@ class ParticipantDigitalIdController extends Controller
         if ($participant instanceof \App\Models\Guest) {
             // Record first verification timestamp if not already set
             if (empty($participant->digital_id_verified_at)) {
-                $participant->update(['digital_id_verified_at' => now()]);
+                $participant->update(['digital_id_verified_at' => $verificationCheckedAt]);
             }
 
             return response()->json([
@@ -277,6 +293,7 @@ class ParticipantDigitalIdController extends Controller
                     'role' => $participant->role ?? null,
                     'institution' => null,
                     'digital_id_verified_at' => $participant->digital_id_verified_at ? $participant->digital_id_verified_at->toDateTimeString() : null,
+                    'verified_at' => $verificationCheckedAt->toDateTimeString(),
                 ],
             ]);
         }
