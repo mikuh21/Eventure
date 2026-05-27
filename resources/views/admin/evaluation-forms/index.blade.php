@@ -915,28 +915,7 @@
             }
         }
 
-        /* ── Create Form Button Style ──────────────────────────────── */
-        .btn-create-form {
-            background: #ffffff;
-            color: var(--color-midnight);
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            padding: 10px 20px;
-            font-weight: 600;
-            font-family: 'Sora', sans-serif;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
 
-        .btn-create-form:hover {
-            background: #f8fafc;
-            border-color: #94a3b8;
-        }
-
-        .btn-create-form:focus-visible {
-            outline: 2px solid rgba(59, 130, 246, 0.5);
-            outline-offset: 2px;
-        }
 
         /* ── Edit Modal Section Navigation ────────────────────────── */
         .event-questions-section-tabs {
@@ -1266,8 +1245,7 @@
             font-family: 'Sora', sans-serif;
         }
 
-        #eventQuestionsModal .btn,
-        #createFormModal .btn {
+        #eventQuestionsModal .btn {
             font-family: 'Sora', sans-serif;
         }
 
@@ -1499,9 +1477,6 @@
             <div>
                 <h1 class="admin-management-title">Evaluation Form Management</h1>
             </div>
-            <div>
-                <button type="button" class="btn btn-create-form" id="createFormBtn">Create Form</button>
-            </div>
         </div>
 
         {{-- Overview Cards --}}
@@ -1705,34 +1680,7 @@
         </div>
     </div>
 
-    <!-- Create Form Modal -->
-    <div id="createFormModal" class="modal-overlay" aria-hidden="true" role="dialog" aria-modal="true">
-        <div class="modal-content" style="max-width: 520px;">
-            <div class="modal-header">
-                <h2 class="modal-title">Create Form from Default Template</h2>
-                <button type="button" class="modal-close create-form-modal-close" aria-label="Close modal">×</button>
-            </div>
-            <form id="createFormForm" class="modal-body" method="POST">
-                @csrf
-                @php
-                    $noFormEvents = collect($events)->filter(function($e){ return $e->evaluationQuestions->isEmpty(); });
-                @endphp
-                <div class="form-group">
-                    <label for="createEventSelect">Select Event</label>
-                    <select id="createEventSelect" name="event_id">
-                        <option value="">-- Select an event --</option>
-                        @foreach($noFormEvents as $ev)
-                            <option value="{{ $ev->id }}">{{ $ev->title }} ({{ $ev->dateRangeLabel() }})</option>
-                        @endforeach
-                    </select>
-                </div>
-            </form>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary create-form-modal-close btn-cancel">Cancel</button>
-                <button type="button" class="btn btn-primary" id="createFormSubmitBtn">Create Form</button>
-            </div>
-        </div>
-    </div>
+
 
     <!-- Form Builder Modal (View/Edit Form Questions) -->
     <div id="formBuilderModal" class="modal-overlay" aria-hidden="true" role="dialog" aria-modal="true">
@@ -2738,34 +2686,6 @@
             });
         })();
 
-        // ── Create Form Modal handlers ───────────────────────────────────
-        (function () {
-            const createBtn = document.getElementById('createFormBtn');
-            const modal = document.getElementById('createFormModal');
-            const closeBtns = document.querySelectorAll('.create-form-modal-close');
-            const submitBtn = document.getElementById('createFormSubmitBtn');
-            const form = document.getElementById('createFormForm');
 
-            if (!createBtn || !modal) return;
-
-            createBtn.addEventListener('click', () => {
-                showModal(modal);
-            });
-
-            closeBtns.forEach(b => b.addEventListener('click', () => { hideModal(modal); }));
-            modal.addEventListener('click', (e) => { if (e.target === modal) { hideModal(modal); } });
-
-            if (submitBtn) {
-                submitBtn.addEventListener('click', () => {
-                    const sel = document.getElementById('createEventSelect');
-                    const id = sel?.value;
-                    if (!id) { showToast('Please select an event', 'warning'); return; }
-
-                    // Set form action to existing load-default route and submit
-                    form.action = '/admin/events/' + id + '/evaluation-forms/default-template';
-                    form.submit();
-                });
-            }
-        })();
     </script>
 @endsection
