@@ -12,7 +12,12 @@ class AdminController extends Controller
 {
     public function dashboard(Request $request, SurveyActivationService $surveyActivationService)
     {
-        $surveyActivationService->activateDueEvents();
+        try {
+            $surveyActivationService->activateDueEvents();
+        } catch (\Exception $e) {
+            \Log::error('Survey activation failed: ' . $e->getMessage());
+            // Dashboard still loads even if email sending fails
+        }
 
         $wantsJson = $request->expectsJson() || $request->is('api/*');
         $today = now()->startOfDay();
@@ -109,7 +114,12 @@ class AdminController extends Controller
 
     public function eventAnalytics(Request $request, SurveyActivationService $surveyActivationService)
     {
-        $surveyActivationService->activateDueEvents();
+        try {
+            $surveyActivationService->activateDueEvents();
+        } catch (\Exception $e) {
+            \Log::error('Survey activation failed: ' . $e->getMessage());
+            // Page still loads even if email sending fails
+        }
 
         $wantsJson = $request->expectsJson() || $request->is('api/*');
         $period = $request->string('period', 'overall')->toString();

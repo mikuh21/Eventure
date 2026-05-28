@@ -20,11 +20,19 @@ class SurveyActivationService
             $participants = $event->participants()->get();
 
             foreach ($participants as $participant) {
-                Mail::to($participant->email)->send(new SurveyInvitationMail(
-                    event: $event,
-                    participant: $participant,
-                    surveyUrl: route('participants.evaluations.create', $participant),
-                ));
+                try {
+                    Mail::to($participant->email)->send(new SurveyInvitationMail(
+                        event: $event,
+                        participant: $participant,
+                        surveyUrl: route('participants.digital-id.show', $participant),
+                    ));
+                    // 600ms delay = max ~1.6 emails/sec, safely under Resend's 2/sec limit
+                    usleep(600000);
+                } catch (\Exception $e) {
+                    \Log::error('Survey activation email failed for participant ' . $participant->id . ': ' . $e->getMessage());
+                    // Continue to next participant even if one fails
+                    continue;
+                }
             }
 
             $event->update([
