@@ -669,7 +669,7 @@
                 <a href="#ongoing" class="hover:text-em4 transition">Ongoing</a>
                 <a href="#upcoming" class="hover:text-em4 transition">Upcoming</a>
                 <a href="#features" class="hover:text-em4 transition">Features</a>
-                <a href="#" class="hover:text-em4 transition">Need Help?</a>
+                <a href="#need-help" class="hover:text-em4 transition">Need Help?</a>
             </div>
 
             <div class="flex items-center gap-3">
@@ -1012,7 +1012,7 @@
                     <li><a href="#features" class="hover:text-em4 transition">Features</a></li>
                 </ul>
             </div>
-            <div>
+            <div id="need-help">
                 <h4 class="font-semibold mb-3 text-sm text-em3">Need Help?</h4>
                 <ul class="space-y-2 text-sm" style="color:rgba(255,255,255,0.5)">
                     <li><a href="#" class="hover:text-em4 transition">All Users Manual</a></li>
