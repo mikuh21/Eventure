@@ -669,6 +669,7 @@
                 <a href="#ongoing" class="hover:text-em4 transition">Ongoing</a>
                 <a href="#upcoming" class="hover:text-em4 transition">Upcoming</a>
                 <a href="#features" class="hover:text-em4 transition">Features</a>
+                <a href="#" class="hover:text-em4 transition">Need Help?</a>
             </div>
 
             <div class="flex items-center gap-3">
