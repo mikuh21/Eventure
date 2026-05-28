@@ -12,7 +12,7 @@
         <p><strong>Event:</strong> {{ $participant->event->title }}</p>
 
         <div class="actions">
-            <a class="btn btn-primary" href="{{ route('participant.mobile', $participant->digital_id_token) }}">Open Digital ID</a>
+            <a class="btn btn-primary" href="{{ route('participants.digital-id.show', $participant) }}">Open Digital ID</a>
         </div>
     </div>
 @endsection

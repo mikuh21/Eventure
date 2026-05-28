@@ -48,7 +48,7 @@ class EvaluationFormEnabledMail extends Mailable implements ShouldQueue
             with: [
                 'event' => $this->event,
                 'participant' => $this->participant,
-                'evaluationUrl' => route('participant.mobile', ['token' => $this->participant->digital_id_token]),
+                'evaluationUrl' => route('participants.digital-id.show', $this->participant),
             ],
         );
     }

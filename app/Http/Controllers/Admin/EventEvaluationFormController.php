@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\EvaluationFormEnabledMail;
 use App\Models\Event;
 use App\Models\EvaluationQuestion;
+use App\Models\Participant;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -78,19 +79,22 @@ class EventEvaluationFormController extends Controller
 
     public function enable(Event $event): RedirectResponse
     {
-        // Get attended participants
-        $attendedParticipants = $event->getAttendedParticipants();
+        // Get attended participants who haven't completed the survey yet
+        $attendedParticipants = $event->getAttendedParticipants()
+            ->filter(function (Participant $participant) {
+                return !$participant->hasSubmittedSurvey();
+            });
 
         if ($attendedParticipants->isEmpty()) {
             return redirect()
                 ->route('admin.event-evaluation-forms.index')
-                ->with('warning', 'No attended participants to notify.');
+                ->with('warning', 'No eligible participants to notify (all have already completed the survey).');
         }
 
         // Enable the form
         $event->enableEvaluationForm();
 
-        // Send emails to all attended participants
+        // Send emails to eligible participants
         $this->sendNotificationEmails($event, $attendedParticipants);
 
         return redirect()

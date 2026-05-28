@@ -9,7 +9,6 @@ use App\Http\Controllers\EvaluationController;
 use App\Http\Controllers\GuestController;
 use App\Http\Controllers\GuestEvaluationController;
 use App\Http\Controllers\LandingController;
-use App\Http\Controllers\MobileParticipantController;
 use App\Http\Controllers\ParticipantDigitalIdController;
 use App\Http\Controllers\ParticipantController;
 use App\Http\Controllers\SubmissionController;
@@ -68,9 +67,6 @@ Route::get('participants/{participant}/evaluations/create', [EvaluationControlle
 
 Route::post('participants/{participant}/evaluations', [EvaluationController::class, 'store'])
     ->name('participants.evaluations.store');
-
-Route::get('/p/{token}', [MobileParticipantController::class, 'show'])
-    ->name('participant.mobile');
 
 Route::middleware(['auth', 'admin'])->group(function (): void {
     Route::get('dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
