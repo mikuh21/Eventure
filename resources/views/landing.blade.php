@@ -1014,8 +1014,9 @@
             <div>
                 <h4 class="font-semibold mb-3 text-sm text-em3">Need Help?</h4>
                 <ul class="space-y-2 text-sm" style="color:rgba(255,255,255,0.5)">
-                    <!-- User manual PDF link placeholder (href to be provided later) -->
-                    <li><!-- <a href="" class="hover:text-em4 transition">User Manual (PDF)</a> --></li>
+                    <li><a href="#" class="hover:text-em4 transition">All Users Manual</a></li>
+                    <li><a href="#" class="hover:text-em4 transition">Admin Manual</a></li>
+                    <li><a href="#" class="hover:text-em4 transition">Event Staff Manual</a></li>
                 </ul>
             </div>
         </div>
