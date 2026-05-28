@@ -78,19 +78,22 @@ class EventEvaluationFormController extends Controller
 
     public function enable(Event $event): RedirectResponse
     {
-        // Get attended participants
-        $attendedParticipants = $event->getAttendedParticipants();
+        // Get attended participants who haven't completed their evaluation
+        $attendedParticipants = $event->participants()
+            ->where('attended', true)
+            ->whereDoesntHave('evaluations')
+            ->get();
 
         if ($attendedParticipants->isEmpty()) {
             return redirect()
                 ->route('admin.event-evaluation-forms.index')
-                ->with('warning', 'No attended participants to notify.');
+                ->with('warning', 'No participants to notify (all have either not attended or already completed their evaluation).');
         }
 
         // Enable the form
         $event->enableEvaluationForm();
 
-        // Send emails to all attended participants
+        // Send emails to eligible participants
         $this->sendNotificationEmails($event, $attendedParticipants);
 
         return redirect()
@@ -151,7 +154,15 @@ class EventEvaluationFormController extends Controller
     private function sendNotificationEmails(Event $event, $participants): void
     {
         foreach ($participants as $participant) {
-            Mail::to($participant->email)->queue(new EvaluationFormEnabledMail($event, $participant));
+            try {
+                Mail::to($participant->email)->queue(new EvaluationFormEnabledMail($event, $participant));
+                // 600ms delay = max ~1.6 emails/sec, safely under Resend's 2/sec limit
+                usleep(600000);
+            } catch (\Exception $e) {
+                \Log::error('Evaluation form email failed for participant ' . $participant->id . ': ' . $e->getMessage());
+                // Continue to next participant even if one fails
+                continue;
+            }
         }
     }
 }

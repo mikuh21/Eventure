@@ -9,3 +9,4 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('survey:activate-ended-events')->hourly();
+Schedule::command('evaluation-forms:activate-ended-events')->dailyAt('21:00');
