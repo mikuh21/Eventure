@@ -25,7 +25,8 @@ class ParticipantDigitalIdController extends Controller
             if ($wantsJson) {
                 return response()->json(['message' => 'You are not authorized to verify this participant.'], 403);
             }
-            return back()->with('error', 'You are not authorized to verify this participant.');
+            // Set participant to null so the view shows "No record available." error
+            $participant = null;
         }
 
         $verificationCheckedAt = null;

@@ -513,8 +513,8 @@
                     </div>
                 @else
                     <div class="verify-id-result fail">
-                        <p class="verify-id-result-title">✗ Invalid Token</p>
-                        <p class="verify-id-fail-copy">No participant found matching this token.</p>
+                        <p class="verify-id-result-title">✗ Not Available</p>
+                        <p class="verify-id-fail-copy">No record available.</p>
                     </div>
                 @endif
             @endif
