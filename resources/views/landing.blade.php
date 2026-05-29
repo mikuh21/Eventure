@@ -518,6 +518,186 @@
             color: #1d4ed8;
         }
 
+        /* Privacy Notice Modal Styles */
+        .privacy-notice-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 35, 66, 0.55);
+            z-index: 9997;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-y: auto;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 180ms ease, visibility 0s linear 180ms;
+        }
+
+        .privacy-notice-modal-overlay.is-visible {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transition: opacity 180ms ease;
+        }
+
+        .privacy-notice-modal {
+            width: min(560px, 100%);
+            max-width: 560px;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 30px 70px rgba(10, 35, 66, 0.18);
+            overflow: hidden;
+            border: 1px solid rgba(27,108,168,0.18);
+            transform: translateY(10px) scale(0.98);
+            opacity: 0;
+            transition: transform 220ms ease, opacity 220ms ease;
+            display: flex;
+            flex-direction: column;
+            max-height: calc(100vh - 40px);
+        }
+
+        .privacy-notice-modal-overlay.is-visible .privacy-notice-modal {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+
+        .privacy-notice-modal-header {
+            padding: 28px;
+            border-bottom: 1px solid rgba(27,108,168,0.18);
+            flex-shrink: 0;
+        }
+
+        .privacy-notice-modal-title {
+            margin: 0;
+            font-family: 'Sora', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #0a2342;
+        }
+
+        .privacy-notice-modal-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 28px;
+            font-family: 'Sora', sans-serif;
+            font-size: 13px;
+            color: #4b5563;
+            line-height: 1.7;
+            max-height: 400px;
+        }
+
+        .privacy-notice-section {
+            margin-top: 16px;
+        }
+
+        .privacy-notice-section:first-child {
+            margin-top: 0;
+        }
+
+        .privacy-notice-section-heading {
+            font-family: 'Sora', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: #0a2342;
+            margin: 0 0 8px 0;
+        }
+
+        .privacy-notice-section-text {
+            margin: 0 0 8px 0;
+        }
+
+        .privacy-notice-bullet-list {
+            margin: 8px 0 0 20px;
+            padding: 0;
+            list-style: disc;
+        }
+
+        .privacy-notice-bullet-list li {
+            margin-bottom: 8px;
+        }
+
+        .privacy-notice-modal-footer {
+            padding: 28px;
+            border-top: 1px solid rgba(27,108,168,0.18);
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .privacy-notice-checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .privacy-notice-checkbox {
+            width: 18px;
+            height: 18px;
+            min-width: 18px;
+            cursor: pointer;
+            accent-color: #1b6ca8;
+        }
+
+        .privacy-notice-checkbox-label {
+            font-family: 'Sora', sans-serif;
+            font-size: 13px;
+            color: #0a2342;
+            cursor: pointer;
+            margin: 0;
+        }
+
+        .privacy-notice-buttons {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .privacy-notice-btn {
+            font-family: 'Sora', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 180ms ease;
+        }
+
+        .privacy-notice-btn-cancel {
+            background: #f1f5f9;
+            color: #0a2342;
+            border: 1px solid rgba(27,108,168,0.18);
+        }
+
+        .privacy-notice-btn-cancel:hover {
+            background: #e2e8f0;
+            border-color: rgba(27,108,168,0.3);
+        }
+
+        .privacy-notice-btn-accept {
+            background: #1b6ca8;
+            color: #ffffff;
+            border: 1px solid #1b6ca8;
+        }
+
+        .privacy-notice-btn-accept:hover:not(:disabled) {
+            background: #0f5e95;
+            border-color: #0f5e95;
+            filter: brightness(1.05);
+        }
+
+        .privacy-notice-btn-accept:disabled {
+            background: #cbd5e1;
+            border-color: #cbd5e1;
+            color: #ffffff;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
         @keyframes toast-in {
             from {
                 opacity: 0;
@@ -1033,6 +1213,77 @@
         </svg>
     </button>
 
+    <!-- Privacy Notice Modal -->
+    <div id="privacyNoticeModal" class="privacy-notice-modal-overlay" aria-hidden="true">
+        <div class="privacy-notice-modal">
+            <div class="privacy-notice-modal-header">
+                <h2 class="privacy-notice-modal-title">Privacy Notice</h2>
+            </div>
+            <div class="privacy-notice-modal-content">
+                <div class="privacy-notice-section">
+                    <p class="privacy-notice-section-text">Eventure values your privacy and is committed to protecting your personal information. This Privacy Notice explains how we collect, use, store, and safeguard your data when you use the Eventure platform and related services. By registering and continuing to use Eventure, you acknowledge that your information will be processed responsibly and in accordance with applicable data protection laws and policies.</p>
+                </div>
+
+                <div class="privacy-notice-section">
+                    <h3 class="privacy-notice-section-heading">Personal Data We Collect</h3>
+                    <p class="privacy-notice-section-text">Eventure may collect the following information:</p>
+                    <ul class="privacy-notice-bullet-list">
+                        <li>Personal details such as name, email address, contact number, and account credentials</li>
+                        <li>Event-related information including registrations, attendance records, and participation details</li>
+                        <li>System and platform data such as login records, browser/device information, and activity logs used for security and service improvement</li>
+                    </ul>
+                </div>
+
+                <div class="privacy-notice-section">
+                    <h3 class="privacy-notice-section-heading">Why We Process Your Data</h3>
+                    <p class="privacy-notice-section-text">Your information is collected and processed for legitimate purposes, including:</p>
+                    <ul class="privacy-notice-bullet-list">
+                        <li>Account registration and verification</li>
+                        <li>Event registration, management, and attendance tracking</li>
+                        <li>Platform communication, announcements, and support services</li>
+                        <li>System security, monitoring, and platform improvement</li>
+                        <li>Compliance with applicable legal and regulatory requirements</li>
+                    </ul>
+                </div>
+
+                <div class="privacy-notice-section">
+                    <h3 class="privacy-notice-section-heading">Sharing and Disclosure</h3>
+                    <p class="privacy-notice-section-text">Eventure does not sell personal information. Data may only be shared with authorized personnel, trusted service providers, or government authorities when required by law and with appropriate safeguards.</p>
+                </div>
+
+                <div class="privacy-notice-section">
+                    <h3 class="privacy-notice-section-heading">Data Protection and Security</h3>
+                    <p class="privacy-notice-section-text">Eventure implements reasonable technical and organizational measures to protect personal information from unauthorized access, misuse, loss, or disclosure. Access to data is limited only to authorized individuals.</p>
+                </div>
+
+                <div class="privacy-notice-section">
+                    <h3 class="privacy-notice-section-heading">Retention of Data</h3>
+                    <p class="privacy-notice-section-text">Personal information is retained only for as long as necessary to fulfill the purposes stated in this notice, comply with legal obligations, and maintain platform operations.</p>
+                </div>
+
+                <div class="privacy-notice-section">
+                    <h3 class="privacy-notice-section-heading">Your Rights</h3>
+                    <p class="privacy-notice-section-text">Users may request access, correction, or removal of their personal information subject to applicable laws and platform policies.</p>
+                </div>
+
+                <div class="privacy-notice-section">
+                    <h3 class="privacy-notice-section-heading">Contact Us</h3>
+                    <p class="privacy-notice-section-text">For questions, concerns, or privacy-related requests, you may contact Eventure at: <strong>events.inf233@gmail.com</strong></p>
+                </div>
+            </div>
+            <div class="privacy-notice-modal-footer">
+                <div class="privacy-notice-checkbox-container">
+                    <input type="checkbox" id="privacyCheckbox" class="privacy-notice-checkbox" />
+                    <label for="privacyCheckbox" class="privacy-notice-checkbox-label">I have read and agree to the Data Privacy Policy</label>
+                </div>
+                <div class="privacy-notice-buttons">
+                    <button type="button" id="privacyCancelBtn" class="privacy-notice-btn privacy-notice-btn-cancel">Cancel</button>
+                    <button type="button" id="acceptPrivacyBtn" class="privacy-notice-btn privacy-notice-btn-accept" disabled>I Accept</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Landing Registration Modal -->
     <div id="landingRegistrationModal" class="landing-registration-modal-overlay" aria-hidden="true">
         <div class="landing-registration-modal">
@@ -1366,10 +1617,60 @@
                 resetForm();
             }
 
+            // Privacy Notice Modal Logic
+            const privacyNoticeModal = document.getElementById('privacyNoticeModal');
+            const privacyCheckbox = document.getElementById('privacyCheckbox');
+            const acceptPrivacyBtn = document.getElementById('acceptPrivacyBtn');
+            const privacyCancelBtn = document.getElementById('privacyCancelBtn');
+            let pendingRegistrationButton = null;
+
+            function openPrivacyNoticeModal(button) {
+                pendingRegistrationButton = button;
+                privacyCheckbox.checked = false;
+                acceptPrivacyBtn.disabled = true;
+                acceptPrivacyBtn.style.opacity = '0.5';
+                acceptPrivacyBtn.style.cursor = 'not-allowed';
+                privacyNoticeModal.classList.add('is-visible');
+                privacyNoticeModal.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closePrivacyNoticeModal() {
+                privacyNoticeModal.classList.remove('is-visible');
+                privacyNoticeModal.setAttribute('aria-hidden', 'true');
+                privacyCheckbox.checked = false;
+                acceptPrivacyBtn.disabled = true;
+                acceptPrivacyBtn.style.opacity = '0.5';
+                acceptPrivacyBtn.style.cursor = 'not-allowed';
+                pendingRegistrationButton = null;
+                document.body.style.overflow = '';
+            }
+
+            privacyCheckbox.addEventListener('change', function() {
+                acceptPrivacyBtn.disabled = !this.checked;
+                acceptPrivacyBtn.style.opacity = this.checked ? '1' : '0.5';
+                acceptPrivacyBtn.style.cursor = this.checked ? 'pointer' : 'not-allowed';
+            });
+
+            acceptPrivacyBtn.addEventListener('click', function() {
+                if (!acceptPrivacyBtn.disabled && pendingRegistrationButton) {
+                    closePrivacyNoticeModal();
+                    openRegistrationModal(pendingRegistrationButton);
+                }
+            });
+
+            privacyCancelBtn.addEventListener('click', closePrivacyNoticeModal);
+
+            privacyNoticeModal.addEventListener('click', (event) => {
+                if (event.target === privacyNoticeModal) {
+                    closePrivacyNoticeModal();
+                }
+            });
+
             openButtons.forEach((button) => {
                 button.addEventListener('click', (event) => {
                     event.preventDefault();
-                    openRegistrationModal(button);
+                    openPrivacyNoticeModal(button);
                 });
             });
 
