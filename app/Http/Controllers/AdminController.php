@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use App\Models\Evaluation;
 use App\Models\Participant;
+use App\Models\User;
 use App\Services\SurveyActivationService;
 use Illuminate\Http\Request;
 
@@ -23,22 +24,25 @@ class AdminController extends Controller
         $today = now()->startOfDay();
         $startDate = now()->subDays(29)->startOfDay();
 
-        // Build base query for events - Event Staff can only see their own events
+        // Build base query for events
+        // ADMIN: see all events (created by any user)
+        // EVENT STAFF: see only events they created
         $eventsQuery = Event::query();
-        if (auth()->user()->hasRole('event_staff')) {
+        if (auth()->user()->role !== User::ROLE_ADMIN) {
+            // Filter to own events for non-admins (event staff)
             $eventsQuery->where('created_by', auth()->id());
         }
 
         $stats = [
             'total_events' => (clone $eventsQuery)->count(),
             'total_participants' => Participant::query()
-                ->whereHas('event', fn ($q) => auth()->user()->hasRole('event_staff') 
+                ->whereHas('event', fn ($q) => auth()->user()->role !== User::ROLE_ADMIN
                     ? $q->where('created_by', auth()->id()) 
                     : $q
                 )
                 ->count(),
             'total_evaluations' => Evaluation::query()
-                ->whereHas('participant.event', fn ($q) => auth()->user()->hasRole('event_staff') 
+                ->whereHas('participant.event', fn ($q) => auth()->user()->role !== User::ROLE_ADMIN
                     ? $q->where('created_by', auth()->id()) 
                     : $q
                 )
@@ -127,11 +131,13 @@ class AdminController extends Controller
         $year   = $request->integer('year')  ?: now()->year;
 
         // Base queries – scoped to the selected period
-        // Event Staff can only see analytics for events they created
+        // ADMIN: see analytics for all events
+        // EVENT STAFF: see analytics only for events they created
         $baseParticipants = Participant::query();
         $baseEvaluations  = Evaluation::query();
 
-        if (auth()->user()->hasRole('event_staff')) {
+        if (auth()->user()->role !== User::ROLE_ADMIN) {
+            // Filter to own events for non-admins (event staff)
             $staffId = auth()->id();
             $baseParticipants->whereHas('event', fn ($q) => $q->where('created_by', $staffId));
             $baseEvaluations->whereHas('participant.event', fn ($q) => $q->where('created_by', $staffId));
