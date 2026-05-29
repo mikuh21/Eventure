@@ -1064,15 +1064,15 @@
                     </div>
                 @elseif ($surveyAvailable && $questions->isNotEmpty())
                     <button class="survey-button" id="openSurveyButton" type="button">Take Feedback Survey</button>
-                @elseif ($surveyAvailable)
+                @elseif ($surveyAvailable && $questions->isEmpty())
                     <div class="survey-pending">
                         <p class="survey-state-title">Survey is available soon</p>
                         <p class="survey-state-copy">Feedback questions are still being prepared for this event.</p>
                     </div>
                 @else
                     <div class="survey-pending">
-                        <p class="survey-state-title">Survey Not Yet Available</p>
-                        <p class="survey-state-copy">The feedback survey will open after the event ends.</p>
+                        <p class="survey-state-title">Survey is now closed</p>
+                        <p class="survey-state-copy">Thank you for your participation in this event.</p>
                     </div>
                 @endif
             </div>

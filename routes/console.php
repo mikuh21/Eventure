@@ -10,3 +10,4 @@ Artisan::command('inspire', function () {
 
 Schedule::command('survey:activate-ended-events')->hourly();
 Schedule::command('evaluation-forms:activate-ended-events')->dailyAt('21:00');
+Schedule::command('evaluation-forms:disable-ended-events')->dailyAt('00:00');

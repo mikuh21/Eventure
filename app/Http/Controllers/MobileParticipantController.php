@@ -21,7 +21,7 @@ class MobileParticipantController extends Controller
         ];
 
         $evaluation = $participant->evaluations->first();
-        $surveyAvailable = $participant->event?->isSurveyActive() ?? false;
+        $surveyAvailable = ($participant->event?->isSurveyActive() ?? false) && ($participant->event?->isEvaluationFormEnabled() ?? false);
         $questions = $participant->event?->getActiveEvaluationQuestions() ?? collect();
         $sections = $questions->groupBy('section');
         $surveyAction = route('participants.evaluations.store', $participant);
