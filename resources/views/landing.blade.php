@@ -1622,14 +1622,24 @@
             const privacyCheckbox = document.getElementById('privacyCheckbox');
             const acceptPrivacyBtn = document.getElementById('acceptPrivacyBtn');
             const privacyCancelBtn = document.getElementById('privacyCancelBtn');
-            let pendingRegistrationButton = null;
 
             function openPrivacyNoticeModal(button) {
-                pendingRegistrationButton = button;
+                // Store event data on the privacy modal for later retrieval
+                privacyNoticeModal.dataset.eventId = button.dataset.eventId;
+                privacyNoticeModal.dataset.eventTitle = button.dataset.eventTitle;
+                privacyNoticeModal.dataset.eventDateRange = button.dataset.eventDateRange;
+                privacyNoticeModal.dataset.eventLocation = button.dataset.eventLocation;
+                privacyNoticeModal.dataset.eventStatus = button.dataset.eventStatus;
+                privacyNoticeModal.dataset.eventType = button.dataset.eventType;
+                privacyNoticeModal.dataset.eventRegisterUrl = button.dataset.eventRegisterUrl;
+
+                // Reset checkbox
                 privacyCheckbox.checked = false;
                 acceptPrivacyBtn.disabled = true;
                 acceptPrivacyBtn.style.opacity = '0.5';
                 acceptPrivacyBtn.style.cursor = 'not-allowed';
+
+                // Open modal
                 privacyNoticeModal.classList.add('is-visible');
                 privacyNoticeModal.setAttribute('aria-hidden', 'false');
                 document.body.style.overflow = 'hidden';
@@ -1642,7 +1652,6 @@
                 acceptPrivacyBtn.disabled = true;
                 acceptPrivacyBtn.style.opacity = '0.5';
                 acceptPrivacyBtn.style.cursor = 'not-allowed';
-                pendingRegistrationButton = null;
                 if (!skipBodyOverflow) {
                     document.body.style.overflow = '';
                 }
@@ -1655,10 +1664,30 @@
             });
 
             acceptPrivacyBtn.addEventListener('click', function() {
-                if (!acceptPrivacyBtn.disabled && pendingRegistrationButton) {
+                if (!acceptPrivacyBtn.disabled) {
+                    // Get event data from privacy modal
+                    const eventId = privacyNoticeModal.dataset.eventId;
+                    const eventTitle = privacyNoticeModal.dataset.eventTitle;
+                    const eventDateRange = privacyNoticeModal.dataset.eventDateRange;
+                    const eventLocation = privacyNoticeModal.dataset.eventLocation;
+                    const eventStatus = privacyNoticeModal.dataset.eventStatus;
+                    const eventType = privacyNoticeModal.dataset.eventType;
+                    const eventRegisterUrl = privacyNoticeModal.dataset.eventRegisterUrl;
+
+                    // Close privacy modal (keep body scroll locked)
                     closePrivacyNoticeModal(true);
+
+                    // Open registration modal with event data
                     setTimeout(() => {
-                        openRegistrationModal(pendingRegistrationButton);
+                        landingEventId.value = eventId;
+                        updateEventDetails(eventTitle, eventDateRange, eventLocation, eventStatus);
+                        resetForm();
+                        setFormType('participant', eventType);
+                        landingGuestOptionDescription.textContent = eventType === 'conference'
+                            ? 'Register as a Presenter for the event.'
+                            : 'Register as an Exhibitor for the event.';
+                        modal.classList.add('is-visible');
+                        modal.setAttribute('aria-hidden', 'false');
                     }, 100);
                 }
             });
