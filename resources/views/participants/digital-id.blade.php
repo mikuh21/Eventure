@@ -465,10 +465,29 @@
                 closeBtn.onclick = () => overlay.remove();
                 
                 panel.style.position = 'relative';
+                // Wrap clone in a constrained, non-overflowing container
+                var cloneWrapper = document.createElement('div');
+                cloneWrapper.style.cssText = 'width:100%;max-width:460px;margin:0 auto;overflow:hidden;border-radius:12px;';
+                // Force the clone and its QR to fit inside the panel
+                cardClone.style.cssText = 'width:100%!important;max-width:100%!important;box-sizing:border-box!important;margin:0!important;box-shadow:none!important;padding:24px!important;';
+                // Make SVG inside clone fully responsive
+                var svgs = cardClone.querySelectorAll('svg');
+                svgs.forEach(function(svg) {
+                    svg.style.cssText = 'width:100%!important;max-width:100%!important;height:auto!important;display:block!important;';
+                    svg.removeAttribute('width');
+                    svg.removeAttribute('height');
+                });
+                // Make QR container fit
+                var qrDivs = cardClone.querySelectorAll('.digital-id-qr');
+                qrDivs.forEach(function(qr) {
+                    qr.style.cssText = 'margin:20px 0!important;text-align:center!important;padding:16px!important;background:#fafafa!important;border-radius:8px!important;overflow:hidden!important;';
+                });
+                cloneWrapper.appendChild(cardClone);
+
                 panel.appendChild(closeBtn);
                 panel.appendChild(title);
                 panel.appendChild(tip);
-                panel.appendChild(cardClone);
+                panel.appendChild(cloneWrapper);
                 
                 if (isAndroid) {
                     var dlBtn = document.createElement('button');
