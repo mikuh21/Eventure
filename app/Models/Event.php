@@ -215,8 +215,9 @@ class Event extends Model
     public function hasEnded(): bool
     {
         $endDate = $this->end_date ?? $this->start_date;
-        // Treat all events as ending at 11PM on their end_date (when auto-open forms happens)
-        $endDateTime = $endDate?->copy()->setTime(23, 0, 0);
+        // Treat all events as ending at 12:05AM on the day after their end_date (after forms disable)
+        // This gives a 5-minute grace period after midnight for participants to complete surveys
+        $endDateTime = $endDate?->copy()->addDay()->setTime(0, 5, 0);
         return $endDateTime?->lte(now('Asia/Manila')) ?? false;
     }
 
