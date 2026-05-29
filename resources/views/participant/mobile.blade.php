@@ -323,7 +323,6 @@
         .qr-large {
             background: #ffffff;
             border-radius: 10px;
-            padding: 6px;
             object-fit: contain;
             display: block;
         }
@@ -331,7 +330,6 @@
         .qr-thumb {
             width: 60px;
             height: 60px;
-            padding: 3px;
             border-radius: 6px;
         }
 
