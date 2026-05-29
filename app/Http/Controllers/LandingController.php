@@ -9,9 +9,11 @@ class LandingController extends Controller
     public function __invoke()
     {
         $today = now('Asia/Manila')->startOfDay();
+        $todayEnd = $today->copy()->endOfDay();
 
         $ongoingEvents = Event::query()
-            ->whereDate('start_date', $today)
+            ->whereDate('start_date', '<=', $today)
+            ->whereDate('end_date', '>=', $today)
             ->withCount('participants')
             ->orderBy('start_date', 'asc')
             ->get();
