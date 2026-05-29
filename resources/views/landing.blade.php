@@ -1635,7 +1635,7 @@
                 document.body.style.overflow = 'hidden';
             }
 
-            function closePrivacyNoticeModal() {
+            function closePrivacyNoticeModal(skipBodyOverflow = false) {
                 privacyNoticeModal.classList.remove('is-visible');
                 privacyNoticeModal.setAttribute('aria-hidden', 'true');
                 privacyCheckbox.checked = false;
@@ -1643,7 +1643,9 @@
                 acceptPrivacyBtn.style.opacity = '0.5';
                 acceptPrivacyBtn.style.cursor = 'not-allowed';
                 pendingRegistrationButton = null;
-                document.body.style.overflow = '';
+                if (!skipBodyOverflow) {
+                    document.body.style.overflow = '';
+                }
             }
 
             privacyCheckbox.addEventListener('change', function() {
@@ -1654,8 +1656,10 @@
 
             acceptPrivacyBtn.addEventListener('click', function() {
                 if (!acceptPrivacyBtn.disabled && pendingRegistrationButton) {
-                    closePrivacyNoticeModal();
-                    openRegistrationModal(pendingRegistrationButton);
+                    closePrivacyNoticeModal(true);
+                    setTimeout(() => {
+                        openRegistrationModal(pendingRegistrationButton);
+                    }, 100);
                 }
             });
 
