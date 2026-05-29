@@ -1069,6 +1069,11 @@
                         <p class="survey-state-title">Survey is available soon</p>
                         <p class="survey-state-copy">Feedback questions are still being prepared for this event.</p>
                     </div>
+                @elseif (!$eventHasEnded)
+                    <div class="survey-pending">
+                        <p class="survey-state-title">Survey Not Yet Available</p>
+                        <p class="survey-state-copy">The feedback survey will open after the event ends.</p>
+                    </div>
                 @else
                     <div class="survey-pending">
                         <p class="survey-state-title">Survey is now closed</p>

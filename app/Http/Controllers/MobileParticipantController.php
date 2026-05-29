@@ -22,6 +22,7 @@ class MobileParticipantController extends Controller
 
         $evaluation = $participant->evaluations->first();
         $surveyAvailable = ($participant->event?->isSurveyActive() ?? false) && ($participant->event?->isEvaluationFormEnabled() ?? false);
+        $eventHasEnded = ($participant->event?->end_date ? now()->gt($participant->event->end_date) : false);
         $questions = $participant->event?->getActiveEvaluationQuestions() ?? collect();
         $sections = $questions->groupBy('section');
         $surveyAction = route('participants.evaluations.store', $participant);
@@ -55,6 +56,6 @@ class MobileParticipantController extends Controller
             ];
         }
 
-        return view('participant.mobile', compact('participant', 'digitalId', 'evaluation', 'surveyAvailable', 'questions', 'sections', 'surveyAction', 'certificateAvailable', 'certificateType', 'attendanceType', 'qrUrl', 'validThru', 'pages', 'eventDate', 'eventLocation'));
+        return view('participant.mobile', compact('participant', 'digitalId', 'evaluation', 'surveyAvailable', 'eventHasEnded', 'questions', 'sections', 'surveyAction', 'certificateAvailable', 'certificateType', 'attendanceType', 'qrUrl', 'validThru', 'pages', 'eventDate', 'eventLocation'));
     }
 }
