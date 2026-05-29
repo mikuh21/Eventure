@@ -1086,7 +1086,7 @@
                 <option value="">-- Select an Event --</option>
                 @foreach ($events as $item)
                     <option value="{{ $item->id }}" {{ (string) request('event_id') === (string) $item->id ? 'selected' : '' }}>
-                        {{ $item->title }} - {{ $item->getStatus() }} ({{ $item->start_date?->format('M d, Y') ?? $item->dateRangeLabel() }})
+                        {{ $item->title }} - {{ $item->getStatus() }} ({{ $item->dateRangeLabel() }})
                     </option>
                 @endforeach
             </select>
