@@ -215,7 +215,9 @@ class Event extends Model
     public function hasEnded(): bool
     {
         $endDate = $this->end_date ?? $this->start_date;
-        return $endDate?->lt(now('Asia/Manila')->startOfDay()) ?? false;
+        // Treat all events as ending at 11PM on their end_date (when auto-open forms happens)
+        $endDateTime = $endDate?->copy()->setTime(23, 0, 0);
+        return $endDateTime?->lte(now('Asia/Manila')) ?? false;
     }
 
     public function isSurveyActive(): bool
