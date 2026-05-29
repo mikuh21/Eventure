@@ -50,16 +50,18 @@ class AdminController extends Controller
             'upcoming_events' => (clone $eventsQuery)->whereDate('start_date', '>', $today)->count(),
         ];
 
-        // Get upcoming/ongoing events first (ordered by start_date ascending)
+        // Get upcoming/ongoing events (NOT completed) ordered by start_date ascending
+        // Upcoming/Ongoing = events that haven't ended yet (end_date >= today)
         // Limit to 6 to ensure completed events also display
         $upcomingRecentEvents = (clone $eventsQuery)
             ->withCount('participants')
-            ->whereDate('start_date', '>=', $today)
+            ->whereDate('end_date', '>=', $today)
             ->orderBy('start_date')
             ->limit(6)
             ->get();
 
         // Get completed events (ordered by end_date descending - most recent first)
+        // Completed = events that have already ended (end_date < today)
         // Always show 4 completed events to ensure all status types are visible in dashboard
         $completedRecentEvents = (clone $eventsQuery)
             ->withCount('participants')
@@ -70,6 +72,9 @@ class AdminController extends Controller
 
         // Combine upcoming and completed events (up to 10 total)
         // This ensures admins see a mix of all statuses: upcoming, ongoing, and completed
+        // Upcoming = start_date > today
+        // Ongoing = start_date <= today AND end_date >= today
+        // Completed = end_date < today
         $recentEvents = $upcomingRecentEvents->concat($completedRecentEvents);
 
         $upcomingEvents = (clone $eventsQuery)
