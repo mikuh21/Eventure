@@ -9,7 +9,7 @@ class EvaluationFormDisableService
 {
     /**
      * Automatically disable evaluation forms for ended events.
-     * Runs daily at 12AM.
+     * Runs daily at 12:05AM (00:05) to keep forms available until after midnight.
      */
     public function disableForEndedEvents(): Collection
     {

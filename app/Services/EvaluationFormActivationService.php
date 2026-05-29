@@ -12,7 +12,7 @@ class EvaluationFormActivationService
     /**
      * Automatically activate evaluation forms for ended events
      * and send emails to participants who haven't completed surveys.
-     * Runs daily at 11PM (23:00) after event ends.
+     * Runs daily at 11:30PM (23:30) after event ends (for testing).
      */
     public function activateForEndedEvents(): Collection
     {

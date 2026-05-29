@@ -9,5 +9,5 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('survey:activate-ended-events')->hourly();
-Schedule::command('evaluation-forms:activate-ended-events')->dailyAt('23:00');
-Schedule::command('evaluation-forms:disable-ended-events')->dailyAt('00:00');
+Schedule::command('evaluation-forms:activate-ended-events')->dailyAt('23:30');
+Schedule::command('evaluation-forms:disable-ended-events')->dailyAt('00:05');
