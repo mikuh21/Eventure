@@ -9,9 +9,9 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('survey:activate-ended-events')->hourly();
-// Activate evaluation forms at 22:00 Manila time (10:00 PM) for production/testing
+// Auto-open evaluation forms at 23:00 Manila time (11:00 PM) if admin forgot to open manually
 Schedule::command('evaluation-forms:activate-ended-events')
-    ->dailyAt('22:00')
+    ->dailyAt('23:00')
     ->timezone('Asia/Manila');
 // Disable evaluation forms shortly after midnight Manila time to keep forms open until 00:05
 Schedule::command('evaluation-forms:disable-ended-events')

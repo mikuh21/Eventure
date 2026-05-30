@@ -20,9 +20,20 @@ class EvaluationFormActivationService
 
         \Log::info('EvaluationFormActivationService started', ['time' => $manilaNow->toDateTimeString()]);
 
+        // Match events where end_date (or start_date as fallback) is today or earlier,
+        // and the evaluation form has not been opened yet (manually or automatically).
+        $today = $manilaNow->toDateString();
+
         $events = Event::query()
-            ->whereDate('end_date', '<=', $manilaNow->toDateString())
             ->where('evaluation_form_enabled', false)
+            ->where(function ($query) use ($today) {
+                $query->whereDate('end_date', '<=', $today)
+                      ->orWhere(function ($q) use ($today) {
+                          $q->whereNull('end_date')
+                            ->whereDate('start_date', '<=', $today);
+                      });
+            })
+            ->whereNotNull('start_date')
             ->get();
 
         \Log::info('EvaluationFormActivationService found events', ['count' => $events->count()]);
