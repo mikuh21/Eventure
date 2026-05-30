@@ -281,13 +281,12 @@
                 @endif
             </div>
 
-            <div class="form-group" style="margin-bottom:16px;grid-column:span 2;">
-                <label style="display:flex;align-items:flex-start;gap:8px;font-weight:600;cursor:pointer;line-height:1.4;">
+            <div style="margin-bottom:16px;">
+                <label style="display:flex;align-items:center;gap:8px;font-weight:500;font-size:14px;cursor:pointer;color:#374151;">
                     <input type="hidden" name="auto_activate_evaluation" value="0">
-                    <input type="checkbox" name="auto_activate_evaluation" value="1" {{ old('auto_activate_evaluation', $event->auto_activate_evaluation ?? true) ? 'checked' : '' }} style="width:14px;height:14px;margin-top:3px;cursor:pointer;flex-shrink:0;">
-                    <span>Auto-open evaluation form at 11PM on event end date</span>
+                    <input type="checkbox" name="auto_activate_evaluation" value="1" {{ old('auto_activate_evaluation', $event->auto_activate_evaluation ?? true) ? 'checked' : '' }} style="width:14px;height:14px;cursor:pointer;flex-shrink:0;">
+                    Auto-open evaluation form at 11PM on event end date if not opened manually
                 </label>
-                <p style="margin:4px 0 0 22px;font-size:12px;color:#6b7280;line-height:1.5;">If enabled, the system will automatically open the evaluation form<br>and email attended participants at 11PM, if not opened manually.</p>
             </div>
 
             <div class="form-actions span-2">
