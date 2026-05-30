@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eventure Evaluation Form</title>
+    <title>Eventure Feedback Survey</title>
 </head>
 <body style="margin:0; padding:0; background:#e8f4fd; font-family:Arial, Helvetica, sans-serif; color:#0A2342;">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#e8f4fd; padding:24px 0;">
@@ -23,17 +23,17 @@
                         <td style="padding:24px;">
                             <p style="margin:0 0 14px; font-size:16px; color:#0A2342;">Hello {{ $participant->name }},</p>
                             <p style="margin:0 0 18px; font-size:14px; line-height:1.6; color:#1B6CA8;">
-                                The evaluation form for <strong style="color:#0A2342;">{{ $event->title }}</strong> is now available! Your feedback is important to us.
+                                The feedback survey for <strong style="color:#0A2342;">{{ $event->title }}</strong> is now open. Your feedback means a lot to us — please take a few minutes to share your experience.
                             </p>
 
                             <p style="margin:0 0 14px;">
-                                <a href="{{ $evaluationUrl }}" style="display:inline-block; background:#0A2342; color:#ffffff; text-decoration:none; padding:12px 18px; border-radius:10px; font-size:14px; font-weight:700;">Open Digital ID &amp; Complete Survey</a>
+                                <a href="{{ $evaluationUrl }}" style="display:inline-block; background:#0A2342; color:#ffffff; text-decoration:none; padding:12px 18px; border-radius:10px; font-size:14px; font-weight:700;">Complete Feedback Survey</a>
                             </p>
 
                             <p style="margin:0 0 12px; font-size:14px; color:#1B6CA8;">If the button does not work, copy and paste this URL:</p>
                             <p style="margin:0 0 14px; font-size:12px; color:#0A2342; word-break:break-all;">{{ $evaluationUrl }}</p>
 
-                            <p style="margin:0; font-size:13px; line-height:1.5; color:#1B6CA8;">Thank you for taking a moment to share your experience with Eventure.</p>
+                            <p style="margin:0; font-size:13px; line-height:1.5; color:#1B6CA8;">Thank you for attending {{ $event->title }}. We appreciate your time and feedback.</p>
                         </td>
                     </tr>
 

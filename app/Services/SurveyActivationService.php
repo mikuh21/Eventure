@@ -24,7 +24,7 @@ class SurveyActivationService
                     Mail::to($participant->email)->send(new SurveyInvitationMail(
                         event: $event,
                         participant: $participant,
-                        surveyUrl: route('participants.digital-id.show', $participant),
+                        surveyUrl: route('participant.mobile', ['token' => $participant->digital_id_token]),
                     ));
                     // 600ms delay = max ~1.6 emails/sec, safely under Resend's 2/sec limit
                     usleep(600000);

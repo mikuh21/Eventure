@@ -15,7 +15,7 @@
                             <p style="margin:0; font-size:24px; font-weight:700; letter-spacing:-0.02em; color:#ffffff;">
                                 <span style="color:#ffffff;">Event</span><span style="color:#5BA4CF;">ure</span>
                             </p>
-                            <p style="margin:8px 0 0; font-size:13px; color:#bfdfff;">Feedback Survey Now Available</p>
+                            <p style="margin:8px 0 0; font-size:13px; color:#bfdfff;">Feedback Survey Reminder</p>
                         </td>
                     </tr>
 
@@ -23,17 +23,17 @@
                         <td style="padding:24px;">
                             <p style="margin:0 0 14px; font-size:16px; color:#0A2342;">Hello {{ $participant->name }},</p>
                             <p style="margin:0 0 18px; font-size:14px; line-height:1.6; color:#1B6CA8;">
-                                The survey for <strong style="color:#0A2342;">{{ $event->title }}</strong> is now active. Your feedback is important to us.
+                                This is a friendly reminder that the feedback survey for <strong style="color:#0A2342;">{{ $event->title }}</strong> is still open. We would love to hear from you!
                             </p>
 
                             <p style="margin:0 0 14px;">
-                                <a href="{{ $surveyUrl }}" style="display:inline-block; background:#0A2342; color:#ffffff; text-decoration:none; padding:12px 18px; border-radius:10px; font-size:14px; font-weight:700;">Open Survey</a>
+                                <a href="{{ $surveyUrl }}" style="display:inline-block; background:#0A2342; color:#ffffff; text-decoration:none; padding:12px 18px; border-radius:10px; font-size:14px; font-weight:700;">Complete Feedback Survey</a>
                             </p>
 
                             <p style="margin:0 0 12px; font-size:14px; color:#1B6CA8;">If the button does not work, copy and paste this URL:</p>
                             <p style="margin:0 0 14px; font-size:12px; color:#0A2342; word-break:break-all;">{{ $surveyUrl }}</p>
 
-                            <p style="margin:0; font-size:13px; line-height:1.5; color:#1B6CA8;">Thank you for attending.</p>
+                            <p style="margin:0; font-size:13px; line-height:1.5; color:#1B6CA8;">Thank you for attending {{ $event->title }}. Your feedback helps us improve future events.</p>
                         </td>
                     </tr>
 
