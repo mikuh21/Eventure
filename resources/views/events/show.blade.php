@@ -435,7 +435,7 @@
             <h1>{{ $event->title }}</h1>
             <div class="actions event-view-actions">
                 <a class="btn" href="{{ route('events.index') }}">Back</a>
-                @if ($event->isRegistrationOpen())
+                @if ($event->isRegistrationOpen() && (!auth()->user()->hasRole('event_staff') || $event->created_by === auth()->id()))
                     <a class="btn btn-primary" href="{{ route('events.participants.index', $event) }}?event_id={{ $event->id }}&open_register_participant=1">Register Participant</a>
                 @endif
             </div>
