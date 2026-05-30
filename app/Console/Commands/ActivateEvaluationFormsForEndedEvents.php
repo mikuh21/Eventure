@@ -13,9 +13,13 @@ class ActivateEvaluationFormsForEndedEvents extends Command
 
     public function handle(EvaluationFormActivationService $evaluationFormActivationService): int
     {
+        \Log::info('ActivateEvaluationFormsForEndedEvents command invoked', ['time' => now('Asia/Manila')->toDateTimeString()]);
+
         $events = $evaluationFormActivationService->activateForEndedEvents();
 
         $this->info('Activated evaluation forms for ' . $events->count() . ' event(s).');
+
+        \Log::info('ActivateEvaluationFormsForEndedEvents finished', ['activated' => $events->count(), 'time' => now('Asia/Manila')->toDateTimeString()]);
 
         return self::SUCCESS;
     }

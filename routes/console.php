@@ -9,5 +9,11 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('survey:activate-ended-events')->hourly();
-Schedule::command('evaluation-forms:activate-ended-events')->dailyAt('21:00');
-Schedule::command('evaluation-forms:disable-ended-events')->dailyAt('00:05');
+// Activate evaluation forms at 22:00 Manila time (10:00 PM) for production/testing
+Schedule::command('evaluation-forms:activate-ended-events')
+    ->dailyAt('22:00')
+    ->timezone('Asia/Manila');
+// Disable evaluation forms shortly after midnight Manila time to keep forms open until 00:05
+Schedule::command('evaluation-forms:disable-ended-events')
+    ->dailyAt('00:05')
+    ->timezone('Asia/Manila');

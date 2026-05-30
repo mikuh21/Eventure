@@ -16,31 +16,45 @@ class EvaluationFormActivationService
      */
     public function activateForEndedEvents(): Collection
     {
+        $manilaNow = now('Asia/Manila');
+
+        \Log::info('EvaluationFormActivationService started', ['time' => $manilaNow->toDateTimeString()]);
+
         $events = Event::query()
-            ->whereDate('end_date', '<=', now()->toDateString())
+            ->whereDate('end_date', '<=', $manilaNow->toDateString())
             ->where('evaluation_form_enabled', false)
             ->get();
 
-        $events->each(function (Event $event): void {
-            // Enable the evaluation form
-            $event->enableEvaluationForm();
+        \Log::info('EvaluationFormActivationService found events', ['count' => $events->count()]);
 
-            // Get attended participants who haven't completed their evaluation
-            $participantsToNotify = $event->participants()
-                ->where('attended', true)
-                ->whereDoesntHave('evaluations')
-                ->get();
+        $events->each(function (Event $event) use ($manilaNow): void {
+            try {
+                // Enable the evaluation form
+                $event->enableEvaluationForm();
+                \Log::info('Enabled evaluation form for event', ['event_id' => $event->id, 'title' => $event->title, 'time' => $manilaNow->toDateTimeString()]);
 
-            foreach ($participantsToNotify as $participant) {
-                try {
-                    Mail::to($participant->email)->send(new EvaluationFormEnabledMail($event, $participant));
-                    // 600ms delay = max ~1.6 emails/sec, safely under Resend's 2/sec limit
-                    usleep(600000);
-                } catch (\Exception $e) {
-                    \Log::error('Evaluation form email failed for participant ' . $participant->id . ': ' . $e->getMessage());
-                    // Continue to next participant even if one fails
-                    continue;
+                // Get attended participants who haven't completed their evaluation
+                $participantsToNotify = $event->participants()
+                    ->where('attended', true)
+                    ->whereDoesntHave('evaluations')
+                    ->get();
+
+                \Log::info('Participants to notify', ['event_id' => $event->id, 'count' => $participantsToNotify->count()]);
+
+                foreach ($participantsToNotify as $participant) {
+                    try {
+                        // Use send() to attempt immediate delivery (for testing live delivery via Resend)
+                        Mail::to($participant->email)->send(new EvaluationFormEnabledMail($event, $participant));
+                        // Rate-limit to avoid hitting 2/sec limits
+                        usleep(600000);
+                    } catch (\Exception $e) {
+                        \Log::error('Evaluation form email failed for participant', ['participant_id' => $participant->id, 'error' => $e->getMessage()]);
+                        // Continue to next participant even if one fails
+                        continue;
+                    }
                 }
+            } catch (\Exception $e) {
+                \Log::error('EvaluationFormActivationService error', ['event_id' => $event->id ?? null, 'error' => $e->getMessage()]);
             }
         });
 
