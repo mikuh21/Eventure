@@ -12,12 +12,12 @@ class EvaluationFormActivationService
     /**
      * Automatically activate evaluation forms for ended events
      * and send emails to participants who haven't completed surveys.
-     * Runs daily at 11:30PM (23:30) after event ends (for testing).
+     * Runs daily at 9:00PM (21:00) after event ends (for testing).
      */
     public function activateForEndedEvents(): Collection
     {
         $events = Event::query()
-            ->whereDate('end_date', '<', now()->toDateString())
+            ->whereDate('end_date', '<=', now()->toDateString())
             ->where('evaluation_form_enabled', false)
             ->get();
 
@@ -33,7 +33,7 @@ class EvaluationFormActivationService
 
             foreach ($participantsToNotify as $participant) {
                 try {
-                    Mail::to($participant->email)->queue(new EvaluationFormEnabledMail($event, $participant));
+                    Mail::to($participant->email)->send(new EvaluationFormEnabledMail($event, $participant));
                     // 600ms delay = max ~1.6 emails/sec, safely under Resend's 2/sec limit
                     usleep(600000);
                 } catch (\Exception $e) {

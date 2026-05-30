@@ -9,7 +9,7 @@ class ActivateEvaluationFormsForEndedEvents extends Command
 {
     protected $signature = 'evaluation-forms:activate-ended-events';
 
-    protected $description = 'Automatically activate evaluation forms for ended events and notify participants who haven\'t completed surveys. Runs at 11:30PM daily for testing.';
+    protected $description = 'Automatically activate evaluation forms for ended events and notify participants who haven\'t completed surveys. Runs at 9:00PM daily for testing.';
 
     public function handle(EvaluationFormActivationService $evaluationFormActivationService): int
     {
