@@ -281,13 +281,14 @@
                 @endif
             </div>
 
-            <div style="margin-bottom:16px;">
-                <label style="display:flex;align-items:center;gap:8px;font-weight:500;font-size:14px;cursor:pointer;color:#374151;">
-                    <input type="hidden" name="auto_activate_evaluation" value="0">
-                    <input type="checkbox" name="auto_activate_evaluation" value="1" {{ old('auto_activate_evaluation', $event->auto_activate_evaluation ?? true) ? 'checked' : '' }} style="width:14px;height:14px;cursor:pointer;flex-shrink:0;">
-                    Auto-open evaluation form at 11PM on event end date if not opened manually
-                </label>
-            </div>
+            <div class="form-group">
+    <label for="auto_activate_evaluation">Auto-open Evaluation Form</label>
+    <div style="display:flex;align-items:center;gap:8px;">
+        <input type="hidden" name="auto_activate_evaluation" value="0">
+        <input type="checkbox" id="auto_activate_evaluation" name="auto_activate_evaluation" value="1" {{ old('auto_activate_evaluation', $event->auto_activate_evaluation ?? true) ? 'checked' : '' }} style="width:14px;height:14px;cursor:pointer;flex-shrink:0;">
+        <span style="font-size:13px;color:#6b7280;">Automatically open at 11PM on event end date if not opened manually</span>
+    </div>
+</div>
 
             <div class="form-actions span-2">
                 <button class="btn btn-primary" type="submit">Update Event</button>
