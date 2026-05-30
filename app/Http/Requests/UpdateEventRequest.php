@@ -23,6 +23,7 @@ class UpdateEventRequest extends FormRequest
             'description' => ['nullable', 'string'],
             'start_date' => ['sometimes', 'required', 'date'],
             'end_date' => ['sometimes', 'required', 'date', 'after_or_equal:start_date'],
+            'auto_activate_evaluation' => ['nullable', 'boolean'],
             'start_registration' => ['sometimes', 'required', 'date'],
             'end_registration' => ['sometimes', 'required', 'date', 'after:start_registration'],
             'location' => ['sometimes', 'required', 'string', 'max:255'],

@@ -26,6 +26,7 @@ class EvaluationFormActivationService
 
         $events = Event::query()
             ->where('evaluation_form_enabled', false)
+            ->where('auto_activate_evaluation', true)
             ->where(function ($query) use ($today) {
                 $query->whereDate('end_date', '<=', $today)
                       ->orWhere(function ($q) use ($today) {

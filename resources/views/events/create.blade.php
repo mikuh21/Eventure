@@ -248,6 +248,14 @@
             </div>
 
             <div class="form-actions span-2">
+                <div class="form-group" style="margin-bottom:16px;">
+                    <label style="display:flex;align-items:center;gap:10px;font-weight:600;cursor:pointer;">
+                        <input type="hidden" name="auto_activate_evaluation" value="0">
+                        <input type="checkbox" name="auto_activate_evaluation" value="1" {{ old('auto_activate_evaluation', '1') == '1' ? 'checked' : '' }} style="width:18px;height:18px;cursor:pointer;">
+                        Auto-open evaluation form at 11PM on event end date
+                    </label>
+                    <p style="margin:4px 0 0 28px;font-size:12px;color:#6b7280;">If enabled, the system will automatically open the evaluation form and email attended participants at 11PM on the event end date, if the admin has not opened it manually.</p>
+                </div>
                 <button class="btn btn-primary" type="submit">Save Event</button>
             </div>
         </form>
