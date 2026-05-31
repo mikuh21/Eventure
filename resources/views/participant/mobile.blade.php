@@ -965,7 +965,7 @@
     </style>
 </head>
 <body>
-    <main class="page" data-participant-name="{{ addslashes($participant->name) }}" data-participant-id="{{ $participant->id }}" data-token="{{ $digitalId->token }}" data-certificate-url="{{ route('participants.certificate.show', ['token' => $participant->digital_id_token, 'type' => $certificateType]) }}" data-certificate-type="{{ $certificateType }}" data-qr-payload="{{ route('participants.digital-id.show', $participant) }}">
+    <main class="page" data-participant-name="{{ addslashes($participant->name) }}" data-participant-id="{{ $participant->id }}" data-token="{{ $digitalId->token }}" data-certificate-url="{{ route('participants.certificate.show', ['token' => $participant->digital_id_token, 'type' => $certificateType]) }}" data-certificate-type="{{ $certificateType }}" data-qr-payload="{{ route('participant.mobile', ['token' => $participant->digital_id_token]) }}">
         <nav class="topbar" aria-label="Participant navigation">
             <div class="wordmark">
                 <img src="{{ asset('eventurelogo.png') }}" alt="Eventure logo">
@@ -1338,7 +1338,6 @@
         </footer>
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script>
         // Generate QR codes using qrcode.js into canvas elements
