@@ -1451,8 +1451,8 @@
             clone.style.backfaceVisibility = 'visible';
             clone.style.webkitBackfaceVisibility = 'visible';
             clone.style.pointerEvents = 'none';
-            clone.style.width = '600px';
-            clone.style.height = '340px';
+            clone.style.width = '380px';
+            clone.style.height = '220px';
             clone.style.overflow = 'hidden';
 
             host.appendChild(clone);
@@ -1462,7 +1462,7 @@
                 const canvas = await html2canvas(clone, {
                     useCORS: true,
                     allowTaint: true,
-                    scale: 3,
+                    scale: 2,
                     logging: false,
                     backgroundColor: null,
                 });
