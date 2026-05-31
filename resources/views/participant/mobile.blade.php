@@ -1453,8 +1453,8 @@
             clone.style.backfaceVisibility = 'visible';
             clone.style.webkitBackfaceVisibility = 'visible';
             clone.style.pointerEvents = 'none';
-            clone.style.width = '600px';
-            clone.style.height = '340px';
+            clone.style.width = '380px';
+            clone.style.height = '220px';
             clone.style.overflow = 'hidden';
 
             host.appendChild(clone);
