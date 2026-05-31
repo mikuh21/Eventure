@@ -1330,10 +1330,6 @@
         @endphp
 
         <div class="participant-modal-overlay" id="registerParticipantModal" aria-hidden="true">
-            @if ($modalErrorMessage)
-                <div class="modal-floating-label modal-floating-error modal-toast">{{ $modalErrorMessage }}</div>
-            @endif
-
             <div class="participant-modal" role="dialog" aria-modal="true" aria-labelledby="registerParticipantModalTitle">
                 <div class="header-row">
                     <h2 id="registerParticipantModalTitle" class="participant-modal-title">Register Participant</h2>
@@ -1793,6 +1789,12 @@
                     }, 300);
                 }
             }
+
+            @if ($errors->has('name') || $errors->has('email') || $errors->has('participant_type') || $errors->has('institution') || $errors->has('registration'))
+                setTimeout(function () {
+                    showToast({!! json_encode($errors->first('name') ?: $errors->first('email') ?: $errors->first('participant_type') ?: $errors->first('institution') ?: $errors->first('registration')) !!}, 'error', 5000);
+                }, 300);
+            @endif
 
             var toasts = document.querySelectorAll('.modal-toast');
             toasts.forEach(function (toast) {
