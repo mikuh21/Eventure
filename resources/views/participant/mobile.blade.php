@@ -1341,7 +1341,7 @@
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script>
         // Generate QR codes using qrcode.js into canvas elements
-        (function() {
+        function initQRCodes() {
             var page = document.querySelector(".page");
             var qrPayload = page ? page.dataset.qrPayload : "";
             if (!qrPayload || typeof QRCode === "undefined") return;
@@ -1350,7 +1350,12 @@
             if (thumb) QRCode.toCanvas(thumb, qrPayload, Object.assign({}, opts, { width: 60 }), function(err) { if (err) console.error(err); });
             var large = document.getElementById("qrLarge");
             if (large) QRCode.toCanvas(large, qrPayload, Object.assign({}, opts, { width: 110 }), function(err) { if (err) console.error(err); });
-        })();
+        }
+        if (document.readyState === "complete") {
+            initQRCodes();
+        } else {
+            window.addEventListener("load", initQRCodes);
+        }
 
         const card = document.querySelector('#flipCard .flip-card-inner');
 
