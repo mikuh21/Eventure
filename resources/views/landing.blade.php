@@ -1195,7 +1195,7 @@
             <div id="need-help">
                 <h4 class="font-semibold mb-3 text-sm text-em3">Need Help?</h4>
                 <ul class="space-y-2 text-sm" style="color:rgba(255,255,255,0.5)">
-                    <li><a href="#" class="hover:text-em4 transition">All Users Manual</a></li>
+                    <li><a href="https://heyzine.com/flip-book/5e4e7eda76.html" class="hover:text-em4 transition" target="_blank" rel="noopener noreferrer">All Users Manual</a></li>
                     <li><a href="#" class="hover:text-em4 transition">Admin Manual</a></li>
                     <li><a href="#" class="hover:text-em4 transition">Event Staff Manual</a></li>
                 </ul>
