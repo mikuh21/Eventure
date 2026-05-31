@@ -29,7 +29,15 @@ class MobileParticipantController extends Controller
         $certificateAvailable = $participant->hasSubmittedSurvey();
         $certificateType = $participant->event->certificateRouteType();
         $attendanceType = $participant->event->attendance_type ?? 'face_to_face';
-        $qrUrl = route('participants.digital-id.show', $participant) . '?format=qr';
+        // Generate QR as base64 PNG for reliable html2canvas capture (SVG causes zoom issues)
+        $qrPayload = route('participants.digital-id.show', $participant);
+        $qrFacade = '\\SimpleSoftwareIO\\QrCode\\Facades\\QrCode';
+        if (class_exists($qrFacade)) {
+            $qrPng = $qrFacade::format('png')->size(320)->margin(1)->generate($qrPayload);
+            $qrUrl = 'data:image/png;base64,' . base64_encode($qrPng);
+        } else {
+            $qrUrl = route('participants.digital-id.show', $participant) . '?format=qr';
+        }
         $validThru = optional($participant->event->end_registration)->format('m/d') ?? 'N/A';
         $eventDate = $participant->event?->dateRangeLabel() ?? 'TBA';
         $eventLocation = $participant->event?->location ?: 'TBA';
