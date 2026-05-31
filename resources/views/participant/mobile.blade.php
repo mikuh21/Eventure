@@ -1006,7 +1006,7 @@
                     <article class="flip-card-back">
                         <div class="back-strip">Eventure Digital ID</div>
 
-                        <img class="qr-large" src="{{ $qrUrl }}" alt="Participant QR code enlarged">
+                        <img class="qr-large" src="{{ $qrUrl }}" alt="Participant QR code enlarged" style="width:110px!important;height:110px!important;max-width:110px!important;object-fit:contain;display:block;margin:0 auto 14px;">
 
                         <div class="token-label">Token</div>
                         <p class="token-value">{{ $digitalId->token }}</p>
@@ -1354,7 +1354,7 @@
                         <div class="meta-value">{{ $validThru }}</div>
                     </div>
 
-                    <img class="qr-thumb" src="{{ $qrUrl }}" alt="Participant QR code">
+                    <img class="qr-thumb" src="{{ $qrUrl }}" alt="Participant QR code" style="width:60px!important;height:60px!important;max-width:60px!important;object-fit:contain;">
                 </div>
             </article>
         </div>
@@ -1363,7 +1363,7 @@
             <article class="flip-card-back export-face" style="position:relative;width:380px;height:220px;transform:none;backface-visibility:visible;-webkit-backface-visibility:visible;">
                 <div class="back-strip">Eventure Digital ID</div>
 
-                <img class="qr-large" src="{{ $qrUrl }}" alt="Participant QR code enlarged">
+                <img class="qr-large" src="{{ $qrUrl }}" alt="Participant QR code enlarged" style="width:110px!important;height:110px!important;max-width:110px!important;object-fit:contain;display:block;margin:0 auto 14px;">
 
                 <div class="token-label">Token</div>
                 <p class="token-value">{{ $digitalId->token }}</p>
