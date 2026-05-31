@@ -29,12 +29,12 @@ class MobileParticipantController extends Controller
         $certificateAvailable = $participant->hasSubmittedSurvey();
         $certificateType = $participant->event->certificateRouteType();
         $attendanceType = $participant->event->attendance_type ?? 'face_to_face';
-        // Generate QR as base64 PNG for reliable html2canvas capture (SVG causes zoom issues)
+        // Generate QR as inline SVG data URL so html2canvas renders it at correct size
         $qrPayload = route('participants.digital-id.show', $participant);
         $qrFacade = '\\SimpleSoftwareIO\\QrCode\\Facades\\QrCode';
         if (class_exists($qrFacade)) {
-            $qrPng = $qrFacade::format('png')->size(320)->margin(1)->generate($qrPayload);
-            $qrUrl = 'data:image/png;base64,' . base64_encode($qrPng);
+            $qrSvgRaw = $qrFacade::size(200)->margin(1)->generate($qrPayload);
+            $qrUrl = 'data:image/svg+xml;base64,' . base64_encode($qrSvgRaw);
         } else {
             $qrUrl = route('participants.digital-id.show', $participant) . '?format=qr';
         }

@@ -1123,6 +1123,14 @@
                 box-sizing: border-box !important;
             }
 
+            .modal-toast {
+                width: auto !important;
+                display: inline-flex !important;
+                max-width: 100% !important;
+                justify-self: end !important;
+                min-width: 0 !important;
+            }
+
             .participants-page-header {
                 display: grid;
                 grid-template-columns: minmax(0, 1fr) auto;
