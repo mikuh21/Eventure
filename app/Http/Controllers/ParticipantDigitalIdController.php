@@ -347,10 +347,14 @@ class ParticipantDigitalIdController extends Controller
             'Expires' => '0',
         ];
 
-        if ($this->canGeneratePng()) {
-            return response($this->generatePng($payload), 200, array_merge($headers, [
-                'Content-Type' => 'image/png',
-            ]));
+        try {
+            if ($this->canGeneratePng()) {
+                return response($this->generatePng($payload), 200, array_merge($headers, [
+                    'Content-Type' => 'image/png',
+                ]));
+            }
+        } catch (\Throwable $exception) {
+            // Fall back to SVG when the PNG backend is unavailable or fails.
         }
 
         return response($this->generateSvg($payload), 200, array_merge($headers, [
@@ -363,12 +367,16 @@ class ParticipantDigitalIdController extends Controller
         $payload = $this->qrPayload($participant);
 
         if ($this->canGeneratePng()) {
-            $filename = 'digital-id-participant-'.$participant->id.'.png';
+            try {
+                $filename = 'digital-id-participant-'.$participant->id.'.png';
 
-            return response($this->generatePng($payload), 200, [
-                'Content-Type' => 'image/png',
-                'Content-Disposition' => 'attachment; filename="'.$filename.'"',
-            ]);
+                return response($this->generatePng($payload), 200, [
+                    'Content-Type' => 'image/png',
+                    'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+                ]);
+            } catch (\Throwable $exception) {
+                // Fall back to SVG download if PNG generation fails.
+            }
         }
 
         $filename = 'digital-id-participant-'.$participant->id.'.svg';
@@ -381,7 +389,7 @@ class ParticipantDigitalIdController extends Controller
 
     private function canGeneratePng(): bool
     {
-        return extension_loaded('gd') || extension_loaded('imagick');
+        return extension_loaded('imagick');
     }
 
     private function resolveParticipantFromInput(Request $request): ?Participant
