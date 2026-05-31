@@ -511,6 +511,8 @@
 
         .modal-toast {
             position: relative;
+            display: inline-flex;
+            align-items: center;
             margin: 0;
             pointer-events: none;
             opacity: 1;
@@ -1493,7 +1495,7 @@
         </div>
     @endif
 
-    <div id="toastContainer" style="position:fixed; top:16px; right:16px; z-index:99999; max-width:320px; width:calc(100% - 32px); pointer-events:none;"></div>
+    <div id="toastContainer" style="position:fixed; top:16px; right:16px; z-index:99999; max-width:320px; width:calc(100% - 32px); pointer-events:none; display:grid; gap:10px; justify-items:end;"></div>
 @endsection
 
 @push('scripts')
