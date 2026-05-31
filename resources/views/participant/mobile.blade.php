@@ -50,9 +50,55 @@
             max-width: 420px;
             min-height: 100vh;
             margin: 0 auto;
-            @endif
+            position: relative;
+            overflow: hidden;
+        }
 
-            <footer class="footer">
+        .page::before,
+        .page::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .page::before {
+            width: 240px;
+            height: 240px;
+            right: -120px;
+            top: 84px;
+            background: radial-gradient(circle, rgba(91, 164, 207, 0.2), transparent 70%);
+        }
+
+        .page::after {
+            width: 180px;
+            height: 180px;
+            left: -90px;
+            bottom: 220px;
+            background: radial-gradient(circle, rgba(27, 108, 168, 0.22), transparent 70%);
+        }
+
+        .topbar {
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            position: relative;
+            z-index: 1;
+            gap: 10px;
+        }
+
+        .wordmark {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.55rem;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .wordmark img {
+            display: block;
             height: 1.85em;
             width: auto;
         }
@@ -1285,6 +1331,52 @@
             </div>
         @endif
 
+        <div id="idFrontCanvas" style="position:fixed;left:-9999px;top:0;width:380px;height:220px;pointer-events:none;z-index:-1;overflow:hidden;">
+            <article class="flip-card-front export-face" style="position:relative;width:380px;height:220px;transform:none;backface-visibility:visible;-webkit-backface-visibility:visible;">
+                <span class="card-circle-lg"></span>
+                <span class="card-circle-sm"></span>
+
+                <div class="card-top">
+                    <div>
+                        <p class="mini-brand">Eventure</p>
+                        <p class="event-name">{{ $participant->event->title }}</p>
+                    </div>
+
+                    <div class="status-pill">● CONFIRMED</div>
+                </div>
+
+                <h1 class="participant-name">{{ $participant->name }}</h1>
+                <p class="participant-role">{{ ucfirst($participant->participant_type ?? '') }} • {{ $participant->event->title }}</p>
+
+                <div class="card-bottom">
+                    <div>
+                        <div class="meta-label">Valid Until</div>
+                        <div class="meta-value">{{ $validThru }}</div>
+                    </div>
+
+                    <img class="qr-thumb" src="{{ $qrUrl }}" alt="Participant QR code" style="width:60px!important;height:60px!important;max-width:60px!important;object-fit:contain;">
+                </div>
+            </article>
+        </div>
+
+        <div id="idBackCanvas" style="position:fixed;left:-9999px;top:0;width:380px;height:220px;pointer-events:none;z-index:-1;overflow:hidden;">
+            <article class="flip-card-back export-face" style="position:relative;width:380px;height:220px;transform:none;backface-visibility:visible;-webkit-backface-visibility:visible;">
+                <div class="back-strip">Eventure Digital ID</div>
+
+                <img class="qr-large" src="{{ $qrUrl }}" alt="Participant QR code enlarged" style="width:110px!important;height:110px!important;max-width:110px!important;object-fit:contain;display:block;margin:0 auto 14px;">
+
+                <div class="token-label">Token</div>
+                <p class="token-value">{{ $digitalId->token }}</p>
+
+                <p class="participant-email">{{ $participant->email }}</p>
+
+                <div class="back-validity">
+                    <div class="back-validity-label">Valid Until</div>
+                    <div class="back-validity-value">{{ $validThru }}</div>
+                </div>
+            </article>
+        </div>
+
         <footer class="footer">
             <div class="wordmark">
                 <span class="wordmark-event">Even</span><span class="wordmark-flow">ture</span>
@@ -1385,59 +1477,23 @@
         };
 
         const renderFaceDataUrl = async (selector) => {
-            const source = document.querySelector(selector);
-            if (!source) throw new Error('Face not found: ' + selector);
-
-            // Temporarily make the element fully visible for capture
-            const prevVisibility = source.style.visibility;
-            const prevOpacity = source.style.opacity;
-            const prevTransform = source.style.transform;
-            const prevWebkitTransform = source.style.webkitTransform;
-            const prevZIndex = source.style.zIndex;
-            const prevPosition = source.style.position;
-
-            source.style.visibility = 'visible';
-            source.style.opacity = '1';
-            source.style.transform = 'none';
-            source.style.webkitTransform = 'none';
-            source.style.zIndex = '9999';
-            source.style.position = 'fixed';
-            source.style.left = '-9999px';
-            source.style.top = '0';
-            source.style.width = '380px';
-            source.style.height = '220px';
-            source.style.overflow = 'hidden';
-
-            // Wait for images to load
-            const imgs = Array.from(source.querySelectorAll('img'));
-            await Promise.all(imgs.map(img => img.complete ? Promise.resolve() : new Promise(r => { img.onload = r; img.onerror = r; })));
-            await new Promise(r => requestAnimationFrame(r));
-
-            try {
-                const canvas = await html2canvas(source, {
-                    useCORS: true,
-                    allowTaint: true,
-                    scale: 2,
-                    logging: false,
-                    backgroundColor: null,
-                    width: 380,
-                    height: 220,
-                });
-                return canvas.toDataURL('image/png');
-            } finally {
-                // Restore original styles
-                source.style.visibility = prevVisibility;
-                source.style.opacity = prevOpacity;
-                source.style.transform = prevTransform;
-                source.style.webkitTransform = prevWebkitTransform;
-                source.style.zIndex = prevZIndex;
-                source.style.position = prevPosition;
-                source.style.left = '';
-                source.style.top = '';
-                source.style.width = '';
-                source.style.height = '';
-                source.style.overflow = '';
-            }
+            // Map flip card selectors to their static off-screen canvas equivalents
+            const canvasMap = {
+                '.flip-card-front': '#idFrontCanvas article',
+                '.flip-card-back': '#idBackCanvas article',
+            };
+            const source = document.querySelector(canvasMap[selector] || selector);
+            if (!source) throw new Error('Digital ID face not found: ' + selector);
+            const canvas = await html2canvas(source, {
+                useCORS: true,
+                allowTaint: true,
+                scale: 2,
+                logging: false,
+                backgroundColor: null,
+                width: 380,
+                height: 220,
+            });
+            return canvas.toDataURL('image/png');
         };
 
         const downloadDigitalIdFaces = async () => {
