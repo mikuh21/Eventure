@@ -21,15 +21,41 @@ class MobileParticipantController extends Controller
         ];
 
         $evaluation = $participant->evaluations->first();
-        $surveyAvailable = $participant->event?->isSurveyActive() ?? false;
+        $surveyAvailable = ($participant->event?->isSurveyActive() ?? false) && ($participant->event?->isEvaluationFormEnabled() ?? false);
+        $eventHasEnded = $participant->event?->hasEnded() ?? false;
         $questions = $participant->event?->getActiveEvaluationQuestions() ?? collect();
         $sections = $questions->groupBy('section');
         $surveyAction = route('participants.evaluations.store', $participant);
-        $certificateAvailable = $participant->event->hasEnded() || $evaluation;
+        $certificateAvailable = $participant->hasSubmittedSurvey();
         $certificateType = $participant->event->certificateRouteType();
+        $attendanceType = $participant->event->attendance_type ?? 'face_to_face';
         $qrUrl = route('participants.digital-id.show', $participant) . '?format=qr';
-        $validThru = optional($participant->event->end_registration)->format('m/y') ?? 'N/A';
+        $validThru = optional($participant->event->end_registration)->format('m/d') ?? 'N/A';
+        $eventDate = $participant->event?->dateRangeLabel() ?? 'TBA';
+        $eventLocation = $participant->event?->location ?: 'TBA';
 
-        return view('participant.mobile', compact('participant', 'digitalId', 'evaluation', 'surveyAvailable', 'questions', 'sections', 'surveyAction', 'certificateAvailable', 'certificateType', 'qrUrl', 'validThru'));
+        $pages = [];
+        if ($attendanceType === 'virtual') {
+            $pages[] = [
+                'certificateType' => 'Participation',
+                'description' => 'This certificate is awarded to '.$participant->name.' in recognition of their valuable participation in the '.$participant->event->title.' held on '.$eventDate.' at '.$eventLocation.'. Their involvement, cooperation, and contribution throughout the activity demonstrated enthusiasm, dedication, and support toward the success of the event.',
+            ];
+        } elseif ($attendanceType === 'both') {
+            $pages[] = [
+                'certificateType' => 'Attendance',
+                'description' => 'This certificate is awarded to '.$participant->name.' in recognition of their active participation and attendance during the '.$participant->event->title.' held on '.$eventDate.' at '.$eventLocation.'. Their presence and engagement contributed to the success of the event and demonstrated their commitment to learning, professional growth, and continuous development.',
+            ];
+            $pages[] = [
+                'certificateType' => 'Participation',
+                'description' => 'This certificate is awarded to '.$participant->name.' in recognition of their valuable participation in the '.$participant->event->title.' held on '.$eventDate.' at '.$eventLocation.'. Their involvement, cooperation, and contribution throughout the activity demonstrated enthusiasm, dedication, and support toward the success of the event.',
+            ];
+        } else {
+            $pages[] = [
+                'certificateType' => 'Attendance',
+                'description' => 'This certificate is awarded to '.$participant->name.' in recognition of their active participation and attendance during the '.$participant->event->title.' held on '.$eventDate.' at '.$eventLocation.'. Their presence and engagement contributed to the success of the event and demonstrated their commitment to learning, professional growth, and continuous development.',
+            ];
+        }
+
+        return view('participant.mobile', compact('participant', 'digitalId', 'evaluation', 'surveyAvailable', 'eventHasEnded', 'questions', 'sections', 'surveyAction', 'certificateAvailable', 'certificateType', 'attendanceType', 'qrUrl', 'validThru', 'pages', 'eventDate', 'eventLocation'));
     }
 }
