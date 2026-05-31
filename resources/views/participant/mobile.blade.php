@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <title>Eventure Digital ID</title>
     <link rel="icon" href="{{ asset('eventuretabicon.png') }}" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -999,14 +1000,14 @@
                                 <div class="meta-value">{{ $validThru }}</div>
                             </div>
 
-                            <canvas id="qrThumb" class="qr-thumb" style="width:60px;height:60px;border-radius:6px;background:#fff;display:block;"></canvas>
+                            <canvas id="qrThumb" class="qr-thumb"></canvas>
                         </div>
                     </article>
 
                     <article class="flip-card-back">
                         <div class="back-strip">Eventure Digital ID</div>
 
-                        <canvas id="qrLarge" class="qr-large" style="width:110px;height:110px;display:block;margin:0 auto 14px;background:#fff;border-radius:10px;"></canvas>
+                        <canvas id="qrLarge" class="qr-large"></canvas>
 
                         <div class="token-label">Token</div>
                         <p class="token-value">{{ $digitalId->token }}</p>
