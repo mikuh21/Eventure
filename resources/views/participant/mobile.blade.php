@@ -578,55 +578,67 @@
             color: var(--text);
         }
 
-        .survey-close-button {
-            position: relative;
-            z-index: 2;
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            background: #ffffff;
-            color: #3b82f6;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-family: inherit;
-            font-size: 18px;
-            line-height: 1;
-            transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease;
-            padding: 0;
-        }
+        if (downloadPngButton) {
+            const iosSaveTip = document.getElementById('ios-save-tip');
 
-        .survey-close-button:hover,
-        .survey-close-button:focus-visible {
-            background: rgba(255, 255, 255, 0.95);
-            border-color: rgba(59, 130, 246, 0.3);
-            color: #1f2937;
-        }
+            function isIOS() {
+                return /iP(hone|od|ad)/.test(navigator.userAgent) || (navigator.platform && /MacIntel/.test(navigator.platform) && navigator.maxTouchPoints > 1);
+            }
 
-        .survey-form-progress {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-bottom: 18px;
-        }
+            downloadPngButton.addEventListener('click', async () => {
+                try {
+                    setDownloadState(true, 'Saving to photos...');
 
-        .survey-form-progress-bar {
-            width: 0;
-            height: 6px;
-            border-radius: 999px;
-            background: linear-gradient(90deg, #5BA4CF, #10B981);
-            transition: width 0.2s ease;
-        }
+                    await waitForCardAssets();
 
-        .survey-form-step-label {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--muted-soft);
-        }
+                    const inner = document.querySelector('#flipCard .flip-card-inner');
+                    const wasFlipped = inner ? inner.classList.contains('flipped') : false;
 
-        .survey-step {
+                    // Ensure front is visible for capture
+                    if (inner) {
+                        inner.classList.remove('flipped');
+                        await new Promise((r) => requestAnimationFrame(r));
+                    }
+
+                    const frontDataUrl = await renderFaceDataUrl('.flip-card-front');
+
+                    // Ensure back is visible for capture
+                    if (inner) {
+                        inner.classList.add('flipped');
+                        await new Promise((r) => requestAnimationFrame(r));
+                    }
+
+                    const backDataUrl = await renderFaceDataUrl('.flip-card-back');
+
+                    // Restore original flip state
+                    if (inner) {
+                        if (!wasFlipped) inner.classList.remove('flipped');
+                        else inner.classList.add('flipped');
+                        await new Promise((r) => requestAnimationFrame(r));
+                    }
+
+                    // Trigger downloads sequentially
+                    downloadDataUrl(frontDataUrl, 'digital-id-front.png');
+                    setTimeout(() => {
+                        downloadDataUrl(backDataUrl, 'digital-id-back.png');
+                    }, 800);
+
+                    // Show inline iOS tip if needed
+                    if (isIOS() && iosSaveTip) {
+                        iosSaveTip.textContent = 'If the image did not save, long press the image and select Save to Photos';
+                        iosSaveTip.style.display = 'block';
+                    }
+                } catch (error) {
+                    console.error(error);
+                    setButtonLabel(downloadPngButton, 'Save failed');
+                    window.setTimeout(() => {
+                        setButtonLabel(downloadPngButton, downloadPngButton.dataset.defaultLabel || 'Save ID');
+                    }, 1800);
+                } finally {
+                    setDownloadState(false);
+                }
+            });
+        }
             display: none;
         }
 
@@ -941,17 +953,19 @@
         </section>
 
         <section class="actions" aria-label="Digital ID actions">
-            <button class="action-link" id="downloadPngButton" type="button" data-default-label="Download PNG">
+            <button class="action-link" id="downloadPngButton" type="button" data-default-label="Save ID">
                 <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <path d="M12 3v11m0 0 4-4m-4 4-4-4M5 17v1a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-                <span>Download PNG</span>
+                <span>Save ID</span>
             </button>
 
             <button class="action-button" id="copyTokenButton" type="button" data-default-label="Copy Token">
                 Copy Token
             </button>
         </section>
+
+        <div id="ios-save-tip" style="display:none;width:100%;margin-top:8px;text-align:center;color:#10b981;font-size:12px;">If the image did not save, long press the image and select Save to Photos</div>
 
         <div class="divider"></div>
 
@@ -1180,7 +1194,7 @@
             });
 
             if (!isDownloading) {
-                setButtonLabel(downloadPngButton, downloadPngButton?.dataset.defaultLabel || 'Download PNG');
+                setButtonLabel(downloadPngButton, downloadPngButton?.dataset.defaultLabel || 'Save ID');
 
                 return;
             }
@@ -1237,15 +1251,28 @@
             const clone = source.cloneNode(true);
             clone.classList.add('export-face');
 
+            // Ensure clone is rendered off-screen and not affected by flip transforms
+            clone.style.position = 'fixed';
+            clone.style.left = '-10000px';
+            clone.style.top = '-10000px';
+            clone.style.visibility = 'visible';
+            clone.style.opacity = '1';
+            clone.style.transform = 'none';
+            clone.style.webkitTransform = 'none';
+            clone.style.backfaceVisibility = 'visible';
+            clone.style.webkitBackfaceVisibility = 'visible';
+            clone.style.pointerEvents = 'none';
+
             host.appendChild(clone);
             document.body.appendChild(host);
 
             try {
                 const canvas = await html2canvas(clone, {
-                    backgroundColor: null,
                     useCORS: true,
-                    scale: 3,
+                    allowTaint: true,
+                    scale: 2,
                     logging: false,
+                    backgroundColor: null,
                 });
 
                 return canvas.toDataURL('image/png');
@@ -1276,12 +1303,41 @@
         if (downloadPngButton) {
             downloadPngButton.addEventListener('click', async () => {
                 try {
-                    setDownloadState(true, 'Preparing files...');
-                    await downloadDigitalIdFaces();
+                    setDownloadState(true, 'Preparing your ID...');
+                    await waitForCardAssets();
+                    const frontDataUrl = await renderFaceDataUrl('.flip-card-front');
+                    await new Promise(r => setTimeout(r, 800));
+                    const backDataUrl = await renderFaceDataUrl('.flip-card-back');
+                    
+                    // build and show modal
+                    var existing = document.getElementById('saveIdModal'); if (existing) existing.remove();
+                    var overlay = document.createElement('div'); overlay.id='saveIdModal'; overlay.className='save-id-modal-overlay';
+                    overlay.innerHTML = '\n                        <div class="save-id-modal-panel" role="dialog" aria-modal="true">\n                            <button class="save-id-modal-close" aria-label="Close">×</button>\n                            <h3 class="save-id-modal-title">Save Your Digital ID</h3>\n                            <div class="save-id-modal-banner"></div>\n                            <div class="save-id-images">\n                                <div class="save-id-image-block">\n                                    <div class="save-id-image-label">Front</div>\n                                    <img class="save-id-image" src="'+frontDataUrl+'" alt="Front" />\n                                    <div class="save-id-actions-front"></div>\n                                </div>\n                                <div class="save-id-image-block">\n                                    <div class="save-id-image-label">Back</div>\n                                    <img class="save-id-image" src="'+backDataUrl+'" alt="Back" />\n                                    <div class="save-id-actions-back"></div>\n                                </div>\n                            </div>\n                        </div>\n                    ';
+                    document.body.appendChild(overlay);
+
+                    if (!document.getElementById('save-id-modal-styles')){
+                        var style=document.createElement('style'); style.id='save-id-modal-styles'; style.innerText='\n                            .save-id-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:flex-end;justify-content:center;z-index:1200}\n                            .save-id-modal-panel{width:100%;max-width:520px;background:#fff;border-radius:12px 12px 0 0;padding:16px 16px 28px;box-shadow:0 -8px 30px rgba(0,0,0,0.4);transform:translateY(100%);transition:transform .28s ease}\n                            .save-id-modal-overlay.show .save-id-modal-panel{transform:translateY(0)}\n                            .save-id-modal-close{position:absolute;right:12px;top:8px;background:none;border:none;font-size:22px;cursor:pointer;color:#000}\n                            .save-id-modal-title{margin:8px 0 6px;font-size:18px;color:#000}\n                            .save-id-modal-banner{margin:6px 0 12px;font-size:13px;color:#065f46}\n                            .save-id-images{display:flex;flex-direction:column;gap:14px}\n                            .save-id-image-block{display:flex;flex-direction:column;align-items:center}\n                            .save-id-image-label{font-weight:700;margin-bottom:6px;color:#000}\n                            .save-id-image{max-width:92%;height:auto;border-radius:8px;border:1px solid #e5e7eb}\n                            .save-id-actions-front,.save-id-actions-back{margin-top:8px}\n                            .save-id-download-btn{background:#0a2342;color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer}\n                        ';
+                        document.head.appendChild(style);
+                    }
+
+                    requestAnimationFrame(()=>{ overlay.classList.add('show'); });
+                    overlay.querySelector('.save-id-modal-close').addEventListener('click', ()=>overlay.remove());
+
+                    var banner = overlay.querySelector('.save-id-modal-banner');
+                    var isIOSPlatform = /iP(hone|od|ad)/.test(navigator.userAgent) || (navigator.platform && /MacIntel/.test(navigator.platform) && navigator.maxTouchPoints > 1);
+                    var isAndroidPlatform = /Android/i.test(navigator.userAgent);
+                    if (isIOSPlatform) banner.textContent = 'Long press each image and tap Save to Photos to save your Digital ID';
+                    if (isAndroidPlatform){
+                        var frontActions = overlay.querySelector('.save-id-actions-front'); var backActions = overlay.querySelector('.save-id-actions-back');
+                        var dfBtn=document.createElement('button'); dfBtn.className='save-id-download-btn'; dfBtn.textContent='Download Front'; dfBtn.addEventListener('click', ()=>downloadDataUrl(frontDataUrl, 'digital-id-front.png')); frontActions.appendChild(dfBtn);
+                        var dbBtn=document.createElement('button'); dbBtn.className='save-id-download-btn'; dbBtn.textContent='Download Back'; dbBtn.addEventListener('click', ()=>downloadDataUrl(backDataUrl, 'digital-id-back.png')); backActions.appendChild(dbBtn);
+                    }
+
                 } catch (error) {
-                    setButtonLabel(downloadPngButton, 'Download failed');
+                    console.error(error);
+                    setButtonLabel(downloadPngButton, 'Save failed');
                     window.setTimeout(() => {
-                        setButtonLabel(downloadPngButton, downloadPngButton.dataset.defaultLabel || 'Download PNG');
+                        setButtonLabel(downloadPngButton, downloadPngButton.dataset.defaultLabel || 'Save ID');
                     }, 1800);
                 } finally {
                     setDownloadState(false);
