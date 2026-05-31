@@ -273,8 +273,8 @@
             default => 'All Time',
         };
 
-        $conferenceCount = $eventsBreakdown->where('type', 'conference')->count();
-        $studentCount    = $eventsBreakdown->where('type', 'student_event')->count();
+        $conferenceCount = $eventsBreakdown->where('type', \App\Models\Event::TYPE_CONFERENCE)->count();
+        $studentCount    = $eventsBreakdown->where('type', \App\Models\Event::TYPE_SCHOOL)->count();
         $nonRespondentRate = $analytics['total_participants'] > 0
             ? max(0, round(($analytics['participants_minus_evaluations'] / $analytics['total_participants']) * 100, 1))
             : 0;

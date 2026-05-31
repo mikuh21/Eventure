@@ -18,6 +18,9 @@ class Event extends Model
     public const ATTENDANCE_VIRTUAL = 'virtual';
     public const ATTENDANCE_BOTH = 'both';
 
+    public const TYPE_SCHOOL = 'school_event';
+    public const TYPE_CONFERENCE = 'conference';
+
     protected $fillable = [
         'type',
         'attendance_type',

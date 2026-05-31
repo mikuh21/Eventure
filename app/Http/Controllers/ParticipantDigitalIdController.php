@@ -375,7 +375,7 @@ class ParticipantDigitalIdController extends Controller
 
     private function canGeneratePng(): bool
     {
-        return extension_loaded('imagick');
+        return extension_loaded('gd') || extension_loaded('imagick');
     }
 
     private function resolveParticipantFromInput(Request $request): ?Participant
