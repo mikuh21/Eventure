@@ -1330,6 +1330,53 @@
                 @endforeach
             </div>
         @endif
+
+        <div id="idFrontCanvas" style="position:fixed;left:-9999px;top:0;width:380px;height:220px;pointer-events:none;z-index:-1;overflow:hidden;">
+            <article class="flip-card-front export-face" style="position:relative;width:380px;height:220px;transform:none;backface-visibility:visible;-webkit-backface-visibility:visible;">
+                <span class="card-circle-lg"></span>
+                <span class="card-circle-sm"></span>
+
+                <div class="card-top">
+                    <div>
+                        <p class="mini-brand">Eventure</p>
+                        <p class="event-name">{{ $participant->event->title }}</p>
+                    </div>
+
+                    <div class="status-pill">● CONFIRMED</div>
+                </div>
+
+                <h1 class="participant-name">{{ $participant->name }}</h1>
+                <p class="participant-role">{{ ucfirst($participant->participant_type ?? '') }} • {{ $participant->event->title }}</p>
+
+                <div class="card-bottom">
+                    <div>
+                        <div class="meta-label">Valid Until</div>
+                        <div class="meta-value">{{ $validThru }}</div>
+                    </div>
+
+                    <img class="qr-thumb" src="{{ $qrUrl }}" alt="Participant QR code">
+                </div>
+            </article>
+        </div>
+
+        <div id="idBackCanvas" style="position:fixed;left:-9999px;top:0;width:380px;height:220px;pointer-events:none;z-index:-1;overflow:hidden;">
+            <article class="flip-card-back export-face" style="position:relative;width:380px;height:220px;transform:none;backface-visibility:visible;-webkit-backface-visibility:visible;">
+                <div class="back-strip">Eventure Digital ID</div>
+
+                <img class="qr-large" src="{{ $qrUrl }}" alt="Participant QR code enlarged">
+
+                <div class="token-label">Token</div>
+                <p class="token-value">{{ $digitalId->token }}</p>
+
+                <p class="participant-email">{{ $participant->email }}</p>
+
+                <div class="back-validity">
+                    <div class="back-validity-label">Valid Until</div>
+                    <div class="back-validity-value">{{ $validThru }}</div>
+                </div>
+            </article>
+        </div>
+
         <footer class="footer">
             <div class="wordmark">
                 <span class="wordmark-event">Even</span><span class="wordmark-flow">ture</span>
@@ -1430,53 +1477,23 @@
         };
 
         const renderFaceDataUrl = async (selector) => {
-            const source = document.querySelector(selector);
-
-            if (!source) {
-                throw new Error('Digital ID face not found.');
-            }
-
-            const host = document.createElement('div');
-            host.className = 'export-host';
-
-            const clone = source.cloneNode(true);
-            clone.classList.add('export-face');
-
-            // Ensure clone is rendered off-screen and not affected by flip transforms
-            clone.style.position = 'fixed';
-            clone.style.left = '-10000px';
-            clone.style.top = '-10000px';
-            clone.style.visibility = 'visible';
-            clone.style.opacity = '1';
-            clone.style.transform = 'none';
-            clone.style.webkitTransform = 'none';
-            clone.style.backfaceVisibility = 'visible';
-            clone.style.webkitBackfaceVisibility = 'visible';
-            clone.style.pointerEvents = 'none';
-            clone.style.width = '380px';
-            clone.style.height = '220px';
-            clone.style.overflow = 'hidden';
-
-            host.appendChild(clone);
-            document.body.appendChild(host);
-
-            try {
-                const canvas = await html2canvas(clone, {
-                    useCORS: true,
-                    allowTaint: true,
-                    scale: 2,
-                    logging: false,
-                    backgroundColor: null,
-                    width: 380,
-                    height: 220,
-                    windowWidth: 380,
-                    windowHeight: 220,
-                });
-
-                return canvas.toDataURL('image/png');
-            } finally {
-                host.remove();
-            }
+            // Map flip card selectors to their static off-screen canvas equivalents
+            const canvasMap = {
+                '.flip-card-front': '#idFrontCanvas article',
+                '.flip-card-back': '#idBackCanvas article',
+            };
+            const source = document.querySelector(canvasMap[selector] || selector);
+            if (!source) throw new Error('Digital ID face not found: ' + selector);
+            const canvas = await html2canvas(source, {
+                useCORS: true,
+                allowTaint: true,
+                scale: 2,
+                logging: false,
+                backgroundColor: null,
+                width: 380,
+                height: 220,
+            });
+            return canvas.toDataURL('image/png');
         };
 
         const downloadDigitalIdFaces = async () => {
