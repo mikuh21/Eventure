@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <title>Eventure Digital ID</title>
     <link rel="icon" href="{{ asset('eventuretabicon.png') }}" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -965,7 +964,7 @@
     </style>
 </head>
 <body>
-    <main class="page" data-participant-name="{{ addslashes($participant->name) }}" data-participant-id="{{ $participant->id }}" data-token="{{ $digitalId->token }}" data-certificate-url="{{ route('participants.certificate.show', ['token' => $participant->digital_id_token, 'type' => $certificateType]) }}" data-certificate-type="{{ $certificateType }}" data-qr-payload="{{ route('participant.mobile', ['token' => $participant->digital_id_token]) }}">
+    <main class="page" data-participant-name="{{ addslashes($participant->name) }}" data-participant-id="{{ $participant->id }}" data-token="{{ $digitalId->token }}" data-certificate-url="{{ route('participants.certificate.show', ['token' => $participant->digital_id_token, 'type' => $certificateType]) }}" data-certificate-type="{{ $certificateType }}">
         <nav class="topbar" aria-label="Participant navigation">
             <div class="wordmark">
                 <img src="{{ asset('eventurelogo.png') }}" alt="Eventure logo">
@@ -1000,14 +999,14 @@
                                 <div class="meta-value">{{ $validThru }}</div>
                             </div>
 
-                            <canvas id="qrThumb" class="qr-thumb"></canvas>
+                            <img class="qr-thumb" src="{{ $qrUrl }}" alt="Participant QR code">
                         </div>
                     </article>
 
                     <article class="flip-card-back">
                         <div class="back-strip">Eventure Digital ID</div>
 
-                        <canvas id="qrLarge" class="qr-large"></canvas>
+                        <img class="qr-large" src="{{ $qrUrl }}" alt="Participant QR code enlarged">
 
                         <div class="token-label">Token</div>
                         <p class="token-value">{{ $digitalId->token }}</p>
@@ -1340,23 +1339,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script>
-        // Generate QR codes using qrcode.js into canvas elements
-        function initQRCodes() {
-            var page = document.querySelector(".page");
-            var qrPayload = page ? page.dataset.qrPayload : "";
-            if (!qrPayload || typeof QRCode === "undefined") return;
-            var opts = { errorCorrectionLevel: "M", margin: 1, color: { dark: "#000000", light: "#ffffff" } };
-            var thumb = document.getElementById("qrThumb");
-            if (thumb) QRCode.toCanvas(thumb, qrPayload, Object.assign({}, opts, { width: 60 }), function(err) { if (err) console.error(err); });
-            var large = document.getElementById("qrLarge");
-            if (large) QRCode.toCanvas(large, qrPayload, Object.assign({}, opts, { width: 110 }), function(err) { if (err) console.error(err); });
-        }
-        if (document.readyState === "complete") {
-            initQRCodes();
-        } else {
-            window.addEventListener("load", initQRCodes);
-        }
-
         const card = document.querySelector('#flipCard .flip-card-inner');
 
         if (card) {
