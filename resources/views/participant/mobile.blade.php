@@ -964,7 +964,7 @@
     </style>
 </head>
 <body>
-    <main class="page" data-participant-name="{{ addslashes($participant->name) }}" data-participant-id="{{ $participant->id }}" data-token="{{ $digitalId->token }}" data-certificate-url="{{ route('participants.certificate.show', ['token' => $participant->digital_id_token, 'type' => $certificateType]) }}" data-certificate-type="{{ $certificateType }}">
+    <main class="page" data-participant-name="{{ addslashes($participant->name) }}" data-participant-id="{{ $participant->id }}" data-token="{{ $digitalId->token }}" data-certificate-url="{{ route('participants.certificate.show', ['token' => $participant->digital_id_token, 'type' => $certificateType]) }}" data-certificate-type="{{ $certificateType }}" data-qr-payload="{{ route('participants.digital-id.show', $participant) }}">
         <nav class="topbar" aria-label="Participant navigation">
             <div class="wordmark">
                 <img src="{{ asset('eventurelogo.png') }}" alt="Eventure logo">
@@ -999,14 +999,14 @@
                                 <div class="meta-value">{{ $validThru }}</div>
                             </div>
 
-                            <img class="qr-thumb" src="{{ $qrUrl }}" alt="Participant QR code">
+                            <canvas id="qrThumb" class="qr-thumb" style="width:60px;height:60px;border-radius:6px;background:#fff;display:block;"></canvas>
                         </div>
                     </article>
 
                     <article class="flip-card-back">
                         <div class="back-strip">Eventure Digital ID</div>
 
-                        <img class="qr-large" src="{{ $qrUrl }}" alt="Participant QR code enlarged">
+                        <canvas id="qrLarge" class="qr-large" style="width:110px;height:110px;display:block;margin:0 auto 14px;background:#fff;border-radius:10px;"></canvas>
 
                         <div class="token-label">Token</div>
                         <p class="token-value">{{ $digitalId->token }}</p>
@@ -1337,8 +1337,21 @@
         </footer>
     </main>
 
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script>
+        // Generate QR codes using qrcode.js into canvas elements
+        (function() {
+            var page = document.querySelector(".page");
+            var qrPayload = page ? page.dataset.qrPayload : "";
+            if (!qrPayload || typeof QRCode === "undefined") return;
+            var opts = { errorCorrectionLevel: "M", margin: 1, color: { dark: "#000000", light: "#ffffff" } };
+            var thumb = document.getElementById("qrThumb");
+            if (thumb) QRCode.toCanvas(thumb, qrPayload, Object.assign({}, opts, { width: 60 }), function(err) { if (err) console.error(err); });
+            var large = document.getElementById("qrLarge");
+            if (large) QRCode.toCanvas(large, qrPayload, Object.assign({}, opts, { width: 110 }), function(err) { if (err) console.error(err); });
+        })();
+
         const card = document.querySelector('#flipCard .flip-card-inner');
 
         if (card) {
