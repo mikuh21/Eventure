@@ -257,6 +257,32 @@ class Event extends Model
         return 'Scheduled';
     }
 
+    public function isOngoing(): bool
+    {
+        if ($this->hasEnded()) {
+            return false;
+        }
+
+        if ($this->isRegistrationOpen()) {
+            return true;
+        }
+
+        $now = now('Asia/Manila');
+        $startDate = $this->start_date?->startOfDay();
+        $endDate = $this->end_date?->endOfDay();
+
+        return $startDate && $endDate && $now->between($startDate, $endDate);
+    }
+
+    public function filterSortPriority(): int
+    {
+        if ($this->hasEnded()) {
+            return 3;
+        }
+
+        return $this->isOngoing() ? 1 : 2;
+    }
+
     public function enableEvaluationForm(): void
     {
         $this->update([

@@ -24,16 +24,17 @@ class GuestController extends Controller
             $eventsQuery->where('created_by', auth()->id());
         }
         
-        $events = $eventsQuery
-            ->orderByRaw("CASE
-                WHEN start_date <= CURRENT_DATE AND end_date >= CURRENT_DATE THEN 1
-                WHEN start_date > CURRENT_DATE THEN 2
-                ELSE 3
-            END ASC")
-            ->orderByRaw("CASE WHEN start_date <= CURRENT_DATE AND end_date >= CURRENT_DATE THEN start_date ELSE NULL END DESC NULLS LAST")
-            ->orderByRaw("CASE WHEN start_date > CURRENT_DATE THEN start_date ELSE NULL END ASC NULLS LAST")
-            ->orderBy('start_date', 'desc')
-            ->get();
+        $events = $eventsQuery->get()->sort(function (Event $a, Event $b) {
+            if ($a->filterSortPriority() !== $b->filterSortPriority()) {
+                return $a->filterSortPriority() <=> $b->filterSortPriority();
+            }
+
+            return match ($a->filterSortPriority()) {
+                1 => $b->start_date <=> $a->start_date,
+                2 => $a->start_date <=> $b->start_date,
+                default => $b->start_date <=> $a->start_date,
+            };
+        })->values();
         $upcomingEvents = $events->filter(fn (Event $item) => ! $item->hasEnded())->values();
 
         $selectedEvent = $request->filled('event_id')
@@ -229,16 +230,17 @@ class GuestController extends Controller
                 ->withErrors(['guests' => 'Guest module tables are not ready yet. Please run migrations first.']);
         }
 
-        $events = Event::query()
-            ->orderByRaw("CASE
-                WHEN start_date <= CURRENT_DATE AND end_date >= CURRENT_DATE THEN 1
-                WHEN start_date > CURRENT_DATE THEN 2
-                ELSE 3
-            END ASC")
-            ->orderByRaw("CASE WHEN start_date <= CURRENT_DATE AND end_date >= CURRENT_DATE THEN start_date ELSE NULL END DESC NULLS LAST")
-            ->orderByRaw("CASE WHEN start_date > CURRENT_DATE THEN start_date ELSE NULL END ASC NULLS LAST")
-            ->orderBy('start_date', 'desc')
-            ->get();
+        $events = Event::query()->get()->sort(function (Event $a, Event $b) {
+            if ($a->filterSortPriority() !== $b->filterSortPriority()) {
+                return $a->filterSortPriority() <=> $b->filterSortPriority();
+            }
+
+            return match ($a->filterSortPriority()) {
+                1 => $b->start_date <=> $a->start_date,
+                2 => $a->start_date <=> $b->start_date,
+                default => $b->start_date <=> $a->start_date,
+            };
+        })->values();
 
         return view('guests.edit', [
             'guest' => $guest,
