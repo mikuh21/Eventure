@@ -1106,10 +1106,8 @@
                         $endDate = \Carbon\Carbon::parse($event->end_date)->setTimezone('Asia/Manila');
                         if ($startDate->isSameDay($endDate)) {
                             $eventDateDisplay = $startDate->format('F j, Y');
-                        } elseif ($startDate->isSameMonth($endDate)) {
-                            $eventDateDisplay = $startDate->format('F j') . '-' . $endDate->format('j, Y');
                         } else {
-                            $eventDateDisplay = $startDate->format('F j, Y') . ' - ' . $endDate->format('F j, Y');
+                            $eventDateDisplay = '';
                         }
 
                         $eventTimeDisplay = $startDate->format('g:i A');
