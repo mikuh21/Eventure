@@ -1464,9 +1464,13 @@
                 const canvas = await html2canvas(clone, {
                     useCORS: true,
                     allowTaint: true,
-                    scale: 3,
+                    scale: 2,
                     logging: false,
                     backgroundColor: null,
+                    width: 380,
+                    height: 220,
+                    windowWidth: 380,
+                    windowHeight: 220,
                 });
 
                 return canvas.toDataURL('image/png');
