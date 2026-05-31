@@ -29,7 +29,7 @@ class MobileParticipantController extends Controller
         $certificateAvailable = $participant->hasSubmittedSurvey();
         $certificateType = $participant->event->certificateRouteType();
         $attendanceType = $participant->event->attendance_type ?? 'face_to_face';
-        $qrUrl = route('participants.digital-id.show', $participant) . '?format=qr';
+        $qrUrl = route('participants.digital-id.show', $participant, false) . '?format=qr';
         $validThru = optional($participant->event->end_registration)->format('m/d') ?? 'N/A';
         $eventDate = $participant->event?->dateRangeLabel() ?? 'TBA';
         $eventLocation = $participant->event?->location ?: 'TBA';

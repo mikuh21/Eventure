@@ -848,11 +848,13 @@
                         }
                     };
 
-                    didQr.src = baseUrl + '?format=qr';
+                    var queryChar = baseUrl.includes('?') ? '&' : '?';
+                    didQr.src = baseUrl + queryChar + 'format=qr';
                 }
 
                 if (didDownload && baseUrl) {
-                    didDownload.href = baseUrl + '?download=1';
+                    var queryChar = baseUrl.includes('?') ? '&' : '?';
+                    didDownload.href = baseUrl + queryChar + 'download=1';
                 }
 
                 setEmailStatus('');

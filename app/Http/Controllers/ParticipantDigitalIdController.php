@@ -341,15 +341,21 @@ class ParticipantDigitalIdController extends Controller
 
     private function generateQrResponse(string $payload)
     {
+        $headers = [
+            'Cache-Control' => 'no-cache, no-store, must-revalidate',
+            'Pragma' => 'no-cache',
+            'Expires' => '0',
+        ];
+
         if ($this->canGeneratePng()) {
-            return response($this->generatePng($payload), 200, [
+            return response($this->generatePng($payload), 200, array_merge($headers, [
                 'Content-Type' => 'image/png',
-            ]);
+            ]));
         }
 
-        return response($this->generateSvg($payload), 200, [
+        return response($this->generateSvg($payload), 200, array_merge($headers, [
             'Content-Type' => 'image/svg+xml',
-        ]);
+        ]));
     }
 
     private function downloadQrResponse(Participant $participant)
