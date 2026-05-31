@@ -514,6 +514,9 @@
             margin: 0;
             pointer-events: none;
             opacity: 1;
+            min-width: 0;
+            width: auto;
+            max-width: 100%;
         }
 
         @keyframes toast-in {
