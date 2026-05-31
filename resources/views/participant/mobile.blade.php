@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eventure Digital ID</title>
-    <link rel="icon" href="{{ asset('eventuretabicon.png') }}" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -85,22 +84,12 @@
             justify-content: flex-start;
             position: relative;
             z-index: 1;
-            gap: 10px;
         }
 
         .wordmark {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.55rem;
-            font-size: 24px;
+            font-size: 20px;
             font-weight: 700;
             letter-spacing: -0.02em;
-        }
-
-        .wordmark img {
-            display: block;
-            height: 1.85em;
-            width: auto;
         }
 
         .wordmark-event {
@@ -268,38 +257,6 @@
             gap: 16px;
             position: relative;
             z-index: 1;
-        }
-
-        .survey-form-progress {
-            padding: 16px 20px 24px;
-            background: transparent;
-            border-bottom: none;
-        }
-
-        .survey-form-step-label {
-            font-size: 13px;
-            font-weight: 600;
-            color: #94a3b8;
-            margin-bottom: 8px;
-            font-family: 'Sora', sans-serif;
-        }
-
-        .survey-form-progress-bar {
-            height: 6px;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 999px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .survey-form-progress-bar::after {
-            content: '';
-            display: block;
-            height: 100%;
-            width: var(--progress, 0%);
-            background: #38bdf8;
-            border-radius: 999px;
-            transition: width 0.3s ease;
         }
 
         .meta-label,
@@ -621,67 +578,55 @@
             color: var(--text);
         }
 
-        if (downloadPngButton) {
-            const iosSaveTip = document.getElementById('ios-save-tip');
-
-            function isIOS() {
-                return /iP(hone|od|ad)/.test(navigator.userAgent) || (navigator.platform && /MacIntel/.test(navigator.platform) && navigator.maxTouchPoints > 1);
-            }
-
-            downloadPngButton.addEventListener('click', async () => {
-                try {
-                    setDownloadState(true, 'Saving to photos...');
-
-                    await waitForCardAssets();
-
-                    const inner = document.querySelector('#flipCard .flip-card-inner');
-                    const wasFlipped = inner ? inner.classList.contains('flipped') : false;
-
-                    // Ensure front is visible for capture
-                    if (inner) {
-                        inner.classList.remove('flipped');
-                        await new Promise((r) => requestAnimationFrame(r));
-                    }
-
-                    const frontDataUrl = await renderFaceDataUrl('.flip-card-front');
-
-                    // Ensure back is visible for capture
-                    if (inner) {
-                        inner.classList.add('flipped');
-                        await new Promise((r) => requestAnimationFrame(r));
-                    }
-
-                    const backDataUrl = await renderFaceDataUrl('.flip-card-back');
-
-                    // Restore original flip state
-                    if (inner) {
-                        if (!wasFlipped) inner.classList.remove('flipped');
-                        else inner.classList.add('flipped');
-                        await new Promise((r) => requestAnimationFrame(r));
-                    }
-
-                    // Trigger downloads sequentially
-                    downloadDataUrl(frontDataUrl, 'digital-id-front.png');
-                    setTimeout(() => {
-                        downloadDataUrl(backDataUrl, 'digital-id-back.png');
-                    }, 800);
-
-                    // Show inline iOS tip if needed
-                    if (isIOS() && iosSaveTip) {
-                        iosSaveTip.textContent = 'If the image did not save, long press the image and select Save to Photos';
-                        iosSaveTip.style.display = 'block';
-                    }
-                } catch (error) {
-                    console.error(error);
-                    setButtonLabel(downloadPngButton, 'Save failed');
-                    window.setTimeout(() => {
-                        setButtonLabel(downloadPngButton, downloadPngButton.dataset.defaultLabel || 'Save ID');
-                    }, 1800);
-                } finally {
-                    setDownloadState(false);
-                }
-            });
+        .survey-close-button {
+            position: relative;
+            z-index: 2;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: #ffffff;
+            color: #3b82f6;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 18px;
+            line-height: 1;
+            transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease;
+            padding: 0;
         }
+
+        .survey-close-button:hover,
+        .survey-close-button:focus-visible {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: rgba(59, 130, 246, 0.3);
+            color: #1f2937;
+        }
+
+        .survey-form-progress {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+
+        .survey-form-progress-bar {
+            width: 0;
+            height: 6px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #5BA4CF, #10B981);
+            transition: width 0.2s ease;
+        }
+
+        .survey-form-step-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--muted-soft);
+        }
+
+        .survey-step {
             display: none;
         }
 
@@ -727,29 +672,6 @@
             color: var(--text);
             padding: 12px 14px;
             font: inherit;
-            box-sizing: border-box;
-        }
-
-        .survey-form-input[readonly] {
-            opacity: 0.84;
-            color: rgba(191, 223, 255, 0.85);
-            background: rgba(255, 255, 255, 0.03);
-            cursor: default;
-        }
-
-        .survey-form-input[type=date],
-        .survey-form-input[type=time] {
-            width: 100%;
-            min-height: 46px;
-            box-sizing: border-box;
-            border-radius: 14px;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            background: rgba(255, 255, 255, 0.04);
-            padding: 12px 14px;
-            color: var(--text);
-            font: inherit;
-            appearance: none;
-            -webkit-appearance: none;
         }
 
         .survey-form-textarea {
@@ -762,10 +684,6 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
             gap: 12px;
-        }
-
-        .survey-form-vertical {
-            grid-template-columns: 1fr !important;
         }
 
         .survey-form-likert-option,
@@ -923,7 +841,6 @@
 
         .footer .wordmark {
             font-size: 16px;
-            gap: 0;
         }
 
         .tagline {
@@ -964,11 +881,10 @@
     </style>
 </head>
 <body>
-    <main class="page" data-participant-name="{{ addslashes($participant->name) }}" data-participant-id="{{ $participant->id }}" data-token="{{ $digitalId->token }}" data-certificate-url="{{ route('participants.certificate.show', ['token' => $participant->digital_id_token, 'type' => $certificateType]) }}" data-certificate-type="{{ $certificateType }}">
+    <main class="page" data-participant-name="{{ addslashes($participant->name) }}" data-participant-id="{{ $participant->id }}" data-token="{{ $digitalId->token }}">
         <nav class="topbar" aria-label="Participant navigation">
             <div class="wordmark">
-                <img src="{{ asset('eventurelogo.png') }}" alt="Eventure logo">
-                <span><span class="wordmark-event">Even</span><span class="wordmark-flow">ture</span></span>
+                <span class="wordmark-event">Even</span><span class="wordmark-flow">ture</span>
             </div>
         </nav>
 
@@ -991,11 +907,11 @@
                         </div>
 
                         <h1 class="participant-name">{{ $participant->name }}</h1>
-                        <p class="participant-role">{{ ucfirst($participant->participant_type ?? '') }} • {{ $participant->event->title }}</p>
+                        <p class="participant-role">Participant • {{ $participant->event->title }}</p>
 
                         <div class="card-bottom">
                             <div>
-                                <div class="meta-label">Valid Until</div>
+                                <div class="meta-label">Valid Thru</div>
                                 <div class="meta-value">{{ $validThru }}</div>
                             </div>
 
@@ -1006,7 +922,7 @@
                     <article class="flip-card-back">
                         <div class="back-strip">Eventure Digital ID</div>
 
-                        <img class="qr-large" src="{{ $qrUrl }}" alt="Participant QR code enlarged" style="width:110px!important;height:110px!important;max-width:110px!important;object-fit:contain;display:block;margin:0 auto 14px;">
+                        <img class="qr-large" src="{{ $qrUrl }}" alt="Participant QR code enlarged">
 
                         <div class="token-label">Token</div>
                         <p class="token-value">{{ $digitalId->token }}</p>
@@ -1014,7 +930,7 @@
                         <p class="participant-email">{{ $participant->email }}</p>
 
                         <div class="back-validity">
-                            <div class="back-validity-label">Valid Until</div>
+                            <div class="back-validity-label">Valid Thru</div>
                             <div class="back-validity-value">{{ $validThru }}</div>
                         </div>
                     </article>
@@ -1025,19 +941,17 @@
         </section>
 
         <section class="actions" aria-label="Digital ID actions">
-            <button class="action-link" id="downloadPngButton" type="button" data-default-label="Save ID">
+            <button class="action-link" id="downloadPngButton" type="button" data-default-label="Download PNG">
                 <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <path d="M12 3v11m0 0 4-4m-4 4-4-4M5 17v1a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-                <span>Save ID</span>
+                <span>Download PNG</span>
             </button>
 
             <button class="action-button" id="copyTokenButton" type="button" data-default-label="Copy Token">
                 Copy Token
             </button>
         </section>
-
-        <div id="ios-save-tip" style="display:none;width:100%;margin-top:8px;text-align:center;color:#10b981;font-size:12px;">If the image did not save, long press the image and select Save to Photos</div>
 
         <div class="divider"></div>
 
@@ -1059,25 +973,20 @@
                         <svg class="icon-lg" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                             <path d="m5 12 4.5 4.5L19 7" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
-                        <p class="survey-state-title success">Thank you! Your feedback has been submitted successfully.</p>
-                        <p class="survey-state-copy">Your responses have been recorded. You can now download your certificate below.</p>
+                        <p class="survey-state-title success">Survey Submitted</p>
+                        <p class="survey-state-copy">Thank you for your feedback!</p>
                     </div>
                 @elseif ($surveyAvailable && $questions->isNotEmpty())
                     <button class="survey-button" id="openSurveyButton" type="button">Take Feedback Survey</button>
-                @elseif ($surveyAvailable && $questions->isEmpty())
+                @elseif ($surveyAvailable)
                     <div class="survey-pending">
                         <p class="survey-state-title">Survey is available soon</p>
                         <p class="survey-state-copy">Feedback questions are still being prepared for this event.</p>
                     </div>
-                @elseif (!$eventHasEnded)
+                @else
                     <div class="survey-pending">
                         <p class="survey-state-title">Survey Not Yet Available</p>
                         <p class="survey-state-copy">The feedback survey will open after the event ends.</p>
-                    </div>
-                @else
-                    <div class="survey-pending">
-                        <p class="survey-state-title">Survey is now closed</p>
-                        <p class="survey-state-copy">Thank you for your participation in this event.</p>
                     </div>
                 @endif
             </div>
@@ -1100,28 +1009,6 @@
 
                 <form action="{{ $surveyAction }}" method="POST" id="mobileSurveyForm" novalidate>
                     @csrf
-                    @php
-                        $event = $participant->event;
-                        $startDate = \Carbon\Carbon::parse($event->start_date)->setTimezone('Asia/Manila');
-                        $endDate = \Carbon\Carbon::parse($event->end_date)->setTimezone('Asia/Manila');
-                        if ($startDate->isSameDay($endDate)) {
-                            $eventDateDisplay = $startDate->format('F j, Y');
-                        } elseif ($startDate->isSameMonth($endDate)) {
-                            $eventDateDisplay = $startDate->format('F j') . '-' . $endDate->format('j, Y');
-                        } else {
-                            $eventDateDisplay = $startDate->format('F j, Y') . ' - ' . $endDate->format('F j, Y');
-                        }
-
-                        $eventTimeDisplay = $startDate->format('g:i A');
-
-                        $sessionFeedbackRatingLabels = [
-                            1 => '1 (Poor)',
-                            2 => '2 (Needs Improvement)',
-                            3 => '3 (Satisfactory)',
-                            4 => '4 (Good)',
-                            5 => '5 (Excellent)',
-                        ];
-                    @endphp
                     <div class="survey-form-progress">
                         <div class="survey-form-step-label" id="surveyStepLabel">Step 1 of {{ $sections->count() }}</div>
                         <div class="survey-form-progress-bar" id="surveyFormProgressBar"></div>
@@ -1132,96 +1019,57 @@
                             <h3 class="survey-step-title">{{ $section }}</h3>
 
                             @foreach ($sectionQuestions as $question)
-                                @if ($section === 'Session Feedback' && ! $question->is_matrix && in_array($question->renderingType(), ['likert', 'rating']))
-                                    @continue
-                                @endif
-                                @if ($question->is_matrix && $section === 'Session Feedback' && is_array($question->matrix_items))
-                                    @foreach ($question->matrix_items as $itemIndex => $item)
-                                        <div class="survey-question" data-question-id="{{ $question->id }}_{{ $itemIndex }}" data-required="{{ $question->is_required ? 'true' : 'false' }}">
-                                            <label class="survey-question-label" for="question_{{ $question->id }}_{{ $itemIndex }}">
-                                                {{ $item }}
-                                                @if ($question->is_required)
-                                                    <span class="required-star">*</span>
-                                                @endif
-                                            </label>
+                                <div class="survey-question" data-question-id="{{ $question->id }}" data-required="{{ $question->is_required ? 'true' : 'false' }}">
+                                    <label class="survey-question-label" for="question_{{ $question->id }}">
+                                        {{ $question->question }}
+                                        @if ($question->is_required)
+                                            <span class="required-star">*</span>
+                                        @endif
+                                    </label>
 
-                                            <div class="survey-form-likert survey-form-vertical">
-                                                @foreach ([1, 2, 3, 4, 5] as $i)
-                                                    <label class="survey-form-likert-option">
-                                                        <input type="radio" id="question_{{ $question->id }}_{{ $itemIndex }}_{{ $i }}" name="answers[{{ $question->id }}][{{ $itemIndex }}]" value="{{ $i }}" {{ $question->is_required ? 'required' : '' }}>
-                                                        <span>{{ $sessionFeedbackRatingLabels[$i] }}</span>
-                                                    </label>
-                                                @endforeach
-                                            </div>
+                                    @if ($question->help_text)
+                                        <p class="survey-question-help{{ in_array($question->renderingType(), ['likert', 'rating']) ? ' text-center' : '' }}">{{ $question->help_text }}</p>
+                                    @endif
+
+                                    @if (in_array($question->renderingType(), ['likert', 'rating']))
+                                        <div class="survey-form-likert">
+                                            @foreach ([1, 2, 3, 4, 5] as $i)
+                                                <label class="survey-form-likert-option">
+                                                    <input type="radio" id="question_{{ $question->id }}_{{ $i }}" name="answers[{{ $question->id }}]" value="{{ $i }}" {{ $question->is_required ? 'required' : '' }}>
+                                                    <span>{{ $i }}</span>
+                                                </label>
+                                            @endforeach
                                         </div>
-                                    @endforeach
-                                @else
-                                    <div class="survey-question" data-question-id="{{ $question->id }}" data-required="{{ $question->is_required ? 'true' : 'false' }}">
-                                        <label class="survey-question-label" for="question_{{ $question->id }}">
-                                            {{ $question->question }}
-                                            @if ($question->is_required)
-                                                <span class="required-star">*</span>
-                                            @endif
-                                        </label>
-
-                                        @php
-                                            $isEventDetailsTitleField = $section === 'Event Details' && trim(strtolower($question->question)) === 'title of activity';
-                                            $isEventDetailsDateField = $section === 'Event Details' && trim(strtolower($question->question)) === 'date of activity';
-                                            $isEventDetailsTimeField = $section === 'Event Details' && trim(strtolower($question->question)) === 'time of activity';
-                                            $isEventDetailsVenueField = $section === 'Event Details' && trim(strtolower($question->question)) === 'venue';
-                                            $isEventDetailsProgramField = $section === 'Event Details' && in_array(trim(strtolower($question->question)), ['program', 'program/course', 'program or course of study']);
-                                            $shouldShowHelpText = $question->help_text && $section !== 'Session Feedback' && ! $isEventDetailsProgramField && ! $isEventDetailsTitleField && ! $isEventDetailsDateField && ! $isEventDetailsTimeField;
-                                        @endphp
-
-                                        @if ($shouldShowHelpText)
-                                            <p class="survey-question-help{{ in_array($question->renderingType(), ['likert', 'rating']) ? ' text-center' : '' }}">{{ $question->help_text }}</p>
-                                        @endif
-
-                                        @if (in_array($question->renderingType(), ['likert', 'rating']))
-                                            @php
-                                                $optionClass = $section === 'Session Feedback' ? ' survey-form-vertical' : '';
-                                            @endphp
-                                            <div class="survey-form-likert{{ $optionClass }}">
-                                                @foreach ([1, 2, 3, 4, 5] as $i)
-                                                    <label class="survey-form-likert-option">
-                                                        <input type="radio" id="question_{{ $question->id }}_{{ $i }}" name="answers[{{ $question->id }}]" value="{{ $i }}" {{ $question->is_required ? 'required' : '' }}>
-                                                        <span>{{ $section === 'Session Feedback' ? $sessionFeedbackRatingLabels[$i] : $i }}</span>
-                                                    </label>
-                                                @endforeach
-                                            </div>
-                                        @elseif ($question->renderingType() === 'textarea')
-                                            <textarea
-                                                id="question_{{ $question->id }}"
-                                                name="answers[{{ $question->id }}]"
-                                                class="survey-form-textarea"
-                                                placeholder="{{ $question->placeholder }}"
-                                                {{ $question->is_required ? 'required' : '' }}
-                                                @if ($question->isProgramQuestion()) aria-label="{{ $question->question }}" @endif
-                                            ></textarea>
-                                        @elseif ($question->renderingType() === 'radio' && is_array($question->matrix_items))
-                                            <div class="survey-form-radio-group">
-                                                @foreach ($question->matrix_items as $item)
-                                                    <label class="survey-form-radio-option">
-                                                        <input type="radio" name="answers[{{ $question->id }}]" value="{{ $item }}" {{ $question->is_required ? 'required' : '' }}>
-                                                        <span>{{ $item }}</span>
-                                                    </label>
-                                                @endforeach
-                                            </div>
-                                        @else
-                                            <input
-                                                id="question_{{ $question->id }}"
-                                                name="answers[{{ $question->id }}]"
-                                                type="{{ $isEventDetailsTitleField || $isEventDetailsDateField || $isEventDetailsVenueField || $isEventDetailsTimeField ? 'text' : (in_array($question->renderingType(), ['date', 'time']) ? $question->renderingType() : 'text') }}"
-                                                class="survey-form-input"
-                                                placeholder="{{ $question->placeholder }}"
-                                                value="{{ $isEventDetailsTitleField ? $event->title : ($isEventDetailsDateField ? $eventDateDisplay : ($isEventDetailsTimeField ? $eventTimeDisplay : ($isEventDetailsVenueField ? $event->location : ''))) }}"
-                                                {{ $isEventDetailsTitleField || $isEventDetailsDateField || $isEventDetailsVenueField || $isEventDetailsTimeField ? 'readonly' : '' }}
-                                                {{ $question->is_required ? 'required' : '' }}
-                                                @if ($question->isProgramQuestion()) aria-label="{{ $question->question }}" @endif
-                                            >
-                                        @endif
-                                    </div>
-                                @endif
+                                    @elseif ($question->renderingType() === 'textarea')
+                                        <textarea
+                                            id="question_{{ $question->id }}"
+                                            name="answers[{{ $question->id }}]"
+                                            class="survey-form-textarea"
+                                            placeholder="{{ $question->placeholder }}"
+                                            {{ $question->is_required ? 'required' : '' }}
+                                            @if ($question->isProgramQuestion()) aria-label="{{ $question->question }}" @endif
+                                        ></textarea>
+                                    @elseif ($question->renderingType() === 'radio' && is_array($question->matrix_items))
+                                        <div class="survey-form-radio-group">
+                                            @foreach ($question->matrix_items as $item)
+                                                <label class="survey-form-radio-option">
+                                                    <input type="radio" name="answers[{{ $question->id }}]" value="{{ $item }}" {{ $question->is_required ? 'required' : '' }}>
+                                                    <span>{{ $item }}</span>
+                                                </label>
+                                            @endforeach
+                                        </div>
+                                    @else
+                                        <input
+                                            id="question_{{ $question->id }}"
+                                            name="answers[{{ $question->id }}]"
+                                            type="{{ in_array($question->renderingType(), ['date', 'time']) ? $question->renderingType() : 'text' }}"
+                                            class="survey-form-input"
+                                            placeholder="{{ $question->placeholder }}"
+                                            {{ $question->is_required ? 'required' : '' }}
+                                            @if ($question->isProgramQuestion()) aria-label="{{ $question->question }}" @endif
+                                        >
+                                    @endif
+                                </div>
                             @endforeach
                         </div>
                     @endforeach
@@ -1252,13 +1100,6 @@
         </div>
 
         <section class="survey-section">
-            @php
-                $certificateTitle = match ($attendanceType) {
-                    'virtual' => 'Certificate of Participation',
-                    'both' => 'Certificate of Attendance & Participation',
-                    default => 'Certificate of Attendance',
-                };
-            @endphp
             <p class="survey-label">Certificate</p>
 
             <div class="survey-card">
@@ -1266,116 +1107,23 @@
                     <svg class="icon-lg" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                         <path d="M4 5h16v14H4V5Zm4 4H6v6h2v-6Zm4 0H10v6h2v-6Zm4 0h-2v6h2v-6Z" stroke="#5BA4CF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
-                    <span>{{ $certificateTitle }}</span>
+                    <span>Download Your Certificate</span>
                 </div>
 
+                <p class="survey-subtext">{{ $participant->event->getCertificateType() }}</p>
+
                 @if ($certificateAvailable)
-                    <button type="button" class="survey-button cert-download-btn" data-cert-url="{{ route('participants.certificate.show', ['token' => $participant->digital_id_token, 'type' => $certificateType]) }}">
-                        Save Certificate
-                    </button>
-                    <p id="cert-ios-tip" style="display:none;font-size:12px;color:#10b981;text-align:center;margin-top:8px;">Image generated. Long press the preview and select "Save to Photos" or "Save Image".</p>
+                    <a class="survey-button" href="{{ route('participants.certificate.show', ['token' => $participant->digital_id_token, 'type' => $certificateType]) }}">
+                        Download {{ $participant->event->getCertificateType() }}
+                    </a>
                 @else
                     <div class="survey-pending">
                         <p class="survey-state-title">Certificate Not Yet Available</p>
-                        <p class="survey-state-copy">Certificates will be downloadable once feedback survey is submitted.</p>
+                        <p class="survey-state-copy">Certificates will be downloadable after the event ends or once feedback is submitted.</p>
                     </div>
                 @endif
             </div>
         </section>
-
-        @if (!empty($pages))
-            <div id="certificateCanvas" style="position:fixed;left:-9999px;top:0;width:841px;background:#0d2d55;z-index:-1;overflow:hidden;font-family:'Sora',sans-serif;">
-                @foreach ($pages as $page)
-                    <div class="cert-page" style="position:relative;width:841px;min-height:595px;padding:60px;background:#0d2d55;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;border:1.5px solid #00C896;margin-bottom:20px;box-sizing:border-box;">
-                        <div style="position:absolute;top:18px;left:18px;right:18px;bottom:18px;border:1px solid #C9A84C;pointer-events:none;"></div>
-                        <div style="position:absolute;top:-60px;right:-60px;width:220px;height:220px;border-radius:50%;background:#1B6CA8;opacity:0.4;"></div>
-                        <div style="position:absolute;bottom:-60px;left:-60px;width:200px;height:200px;border-radius:50%;background:#1B6CA8;opacity:0.3;"></div>
-                        <div style="position:relative;z-index:2;width:100%;">
-                            <p style="font-family:'Sora',sans-serif;font-weight:700;font-size:10px;letter-spacing:5px;color:#ffffff;margin:0;">EVENTURE</p>
-                            <div style="width:80px;height:1px;background:#00C896;margin:8px auto 0;"></div>
-                        </div>
-                        <div style="position:relative;z-index:2;width:100%;padding-top:16px;">
-                            <p style="font-family:'Sora',sans-serif;font-weight:700;font-size:36px;letter-spacing:4px;color:#ffffff;margin:0;">CERTIFICATE OF {{ strtoupper($page['certificateType']) }}</p>
-                        </div>
-                        <div style="position:relative;z-index:2;width:100%;padding-top:14px;">
-                            <p style="font-family:'Sora',sans-serif;font-weight:400;font-size:8px;letter-spacing:3px;color:#00C896;margin:0;">THIS CERTIFICATE IS AWARDED TO</p>
-                        </div>
-                        <div style="position:relative;z-index:2;width:100%;padding-top:14px;">
-                            <p style="font-family:'Brush Script MT',cursive;font-weight:700;font-size:32px;color:#ffffff;margin:0;">{{ $participant->name }}</p>
-                        </div>
-                        <div style="position:relative;z-index:2;width:100%;padding-top:14px;">
-                            <div style="width:160px;height:1px;background:#00C896;margin:0 auto;"></div>
-                        </div>
-                        <div style="position:relative;z-index:2;width:100%;padding-top:16px;padding-left:100px;padding-right:100px;">
-                            <p style="font-family:'Sora',sans-serif;font-weight:400;font-size:9px;line-height:1.7;color:#d0e8f8;margin:0;">{{ $page['description'] }}</p>
-                        </div>
-                        <div style="position:relative;z-index:2;width:100%;padding-top:20px;padding-left:60px;padding-right:60px;">
-                            <table width="100%" cellpadding="0" cellspacing="0" style="color:#ffffff;">
-                                <tr>
-                                    <td style="text-align:left;width:50%;vertical-align:top;">
-                                        <p style="font-family:'Sora',sans-serif;font-size:7px;letter-spacing:2px;color:#00C896;margin:0;">EVENT DATE</p>
-                                        <p style="font-family:'Sora',sans-serif;font-weight:700;font-size:11px;color:#ffffff;margin:4px 0 0;">{{ $eventDate }}</p>
-                                    </td>
-                                    <td style="text-align:right;width:50%;vertical-align:top;">
-                                        <p style="font-family:'Sora',sans-serif;font-size:7px;letter-spacing:2px;color:#00C896;margin:0;">LOCATION</p>
-                                        <p style="font-family:'Sora',sans-serif;font-weight:700;font-size:11px;color:#ffffff;margin:4px 0 0;">{{ $eventLocation }}</p>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                        <div style="position:relative;z-index:2;width:100%;padding-top:16px;">
-                            <p style="font-family:'Sora',sans-serif;font-size:6px;color:rgba(255,255,255,0.4);letter-spacing:1px;margin:0;">Powered by Eventure</p>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        @endif
-
-        <div id="idFrontCanvas" style="position:fixed;left:-9999px;top:0;width:380px;height:220px;pointer-events:none;z-index:-1;overflow:hidden;">
-            <article class="flip-card-front export-face" style="position:relative;width:380px;height:220px;transform:none;backface-visibility:visible;-webkit-backface-visibility:visible;">
-                <span class="card-circle-lg"></span>
-                <span class="card-circle-sm"></span>
-
-                <div class="card-top">
-                    <div>
-                        <p class="mini-brand">Eventure</p>
-                        <p class="event-name">{{ $participant->event->title }}</p>
-                    </div>
-
-                    <div class="status-pill">● CONFIRMED</div>
-                </div>
-
-                <h1 class="participant-name">{{ $participant->name }}</h1>
-                <p class="participant-role">{{ ucfirst($participant->participant_type ?? '') }} • {{ $participant->event->title }}</p>
-
-                <div class="card-bottom">
-                    <div>
-                        <div class="meta-label">Valid Until</div>
-                        <div class="meta-value">{{ $validThru }}</div>
-                    </div>
-
-                    <img class="qr-thumb" src="{{ $qrUrl }}" alt="Participant QR code" style="width:60px!important;height:60px!important;max-width:60px!important;object-fit:contain;">
-                </div>
-            </article>
-        </div>
-
-        <div id="idBackCanvas" style="position:fixed;left:-9999px;top:0;width:380px;height:220px;pointer-events:none;z-index:-1;overflow:hidden;">
-            <article class="flip-card-back export-face" style="position:relative;width:380px;height:220px;transform:none;backface-visibility:visible;-webkit-backface-visibility:visible;">
-                <div class="back-strip">Eventure Digital ID</div>
-
-                <img class="qr-large" src="{{ $qrUrl }}" alt="Participant QR code enlarged" style="width:110px!important;height:110px!important;max-width:110px!important;object-fit:contain;display:block;margin:0 auto 14px;">
-
-                <div class="token-label">Token</div>
-                <p class="token-value">{{ $digitalId->token }}</p>
-
-                <p class="participant-email">{{ $participant->email }}</p>
-
-                <div class="back-validity">
-                    <div class="back-validity-label">Valid Until</div>
-                    <div class="back-validity-value">{{ $validThru }}</div>
-                </div>
-            </article>
-        </div>
 
         <footer class="footer">
             <div class="wordmark">
@@ -1432,7 +1180,7 @@
             });
 
             if (!isDownloading) {
-                setButtonLabel(downloadPngButton, downloadPngButton?.dataset.defaultLabel || 'Save ID');
+                setButtonLabel(downloadPngButton, downloadPngButton?.dataset.defaultLabel || 'Download PNG');
 
                 return;
             }
@@ -1477,23 +1225,33 @@
         };
 
         const renderFaceDataUrl = async (selector) => {
-            // Map flip card selectors to their static off-screen canvas equivalents
-            const canvasMap = {
-                '.flip-card-front': '#idFrontCanvas article',
-                '.flip-card-back': '#idBackCanvas article',
-            };
-            const source = document.querySelector(canvasMap[selector] || selector);
-            if (!source) throw new Error('Digital ID face not found: ' + selector);
-            const canvas = await html2canvas(source, {
-                useCORS: true,
-                allowTaint: true,
-                scale: 2,
-                logging: false,
-                backgroundColor: null,
-                width: 380,
-                height: 220,
-            });
-            return canvas.toDataURL('image/png');
+            const source = document.querySelector(selector);
+
+            if (!source) {
+                throw new Error('Digital ID face not found.');
+            }
+
+            const host = document.createElement('div');
+            host.className = 'export-host';
+
+            const clone = source.cloneNode(true);
+            clone.classList.add('export-face');
+
+            host.appendChild(clone);
+            document.body.appendChild(host);
+
+            try {
+                const canvas = await html2canvas(clone, {
+                    backgroundColor: null,
+                    useCORS: true,
+                    scale: 3,
+                    logging: false,
+                });
+
+                return canvas.toDataURL('image/png');
+            } finally {
+                host.remove();
+            }
         };
 
         const downloadDigitalIdFaces = async () => {
@@ -1518,41 +1276,12 @@
         if (downloadPngButton) {
             downloadPngButton.addEventListener('click', async () => {
                 try {
-                    setDownloadState(true, 'Preparing your ID...');
-                    await waitForCardAssets();
-                    const frontDataUrl = await renderFaceDataUrl('.flip-card-front');
-                    await new Promise(r => setTimeout(r, 800));
-                    const backDataUrl = await renderFaceDataUrl('.flip-card-back');
-                    
-                    // build and show modal
-                    var existing = document.getElementById('saveIdModal'); if (existing) existing.remove();
-                    var overlay = document.createElement('div'); overlay.id='saveIdModal'; overlay.className='save-id-modal-overlay';
-                    overlay.innerHTML = '\n                        <div class="save-id-modal-panel" role="dialog" aria-modal="true">\n                            <button class="save-id-modal-close" aria-label="Close">×</button>\n                            <h3 class="save-id-modal-title">Save Your Digital ID</h3>\n                            <div class="save-id-modal-banner"></div>\n                            <div class="save-id-images">\n                                <div class="save-id-image-block">\n                                    <div class="save-id-image-label">Front</div>\n                                    <img class="save-id-image" src="'+frontDataUrl+'" alt="Front" />\n                                    <div class="save-id-actions-front"></div>\n                                </div>\n                                <div class="save-id-image-block">\n                                    <div class="save-id-image-label">Back</div>\n                                    <img class="save-id-image" src="'+backDataUrl+'" alt="Back" />\n                                    <div class="save-id-actions-back"></div>\n                                </div>\n                            </div>\n                        </div>\n                    ';
-                    document.body.appendChild(overlay);
-
-                    if (!document.getElementById('save-id-modal-styles')){
-                        var style=document.createElement('style'); style.id='save-id-modal-styles'; style.innerText='\n                            .save-id-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:flex-end;justify-content:center;z-index:1200}\n                            .save-id-modal-panel{width:100%;max-width:100%;background:#fff;border-radius:12px 12px 0 0;padding:16px 16px 28px;box-shadow:0 -8px 30px rgba(0,0,0,0.4);transform:translateY(100%);transition:transform .28s ease;box-sizing:border-box;max-height:94vh;overflow-y:auto;}\n                            .save-id-modal-overlay.show .save-id-modal-panel{transform:translateY(0)}\n                            .save-id-modal-close{position:absolute;right:12px;top:8px;background:none;border:none;font-size:22px;cursor:pointer;color:#000}\n                            .save-id-modal-title{margin:8px 0 6px;font-size:18px;color:#000}\n                            .save-id-modal-banner{margin:6px 0 12px;font-size:13px;color:#065f46}\n                            .save-id-images{display:flex;flex-direction:column;gap:14px;align-items:center;width:100%;box-sizing:border-box;padding:0 12px;}\n                            .save-id-image-block{display:flex;flex-direction:column;align-items:center;width:100%;box-sizing:border-box;}\n                            .save-id-image-label{font-weight:700;margin-bottom:6px;color:#000;width:100%;text-align:left;}\n                            .save-id-image{width:100%;max-width:100%;height:auto;border-radius:8px;border:1px solid #e5e7eb;object-fit:contain;}\n                            .save-id-actions-front,.save-id-actions-back{margin-top:8px;width:100%;display:flex;justify-content:center;gap:8px;flex-wrap:wrap;}\n                            .save-id-download-btn{background:#0a2342;color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;min-width:120px;}\n                        ';
-                        document.head.appendChild(style);
-                    }
-
-                    requestAnimationFrame(()=>{ overlay.classList.add('show'); });
-                    overlay.querySelector('.save-id-modal-close').addEventListener('click', ()=>overlay.remove());
-
-                    var banner = overlay.querySelector('.save-id-modal-banner');
-                    var isIOSPlatform = /iP(hone|od|ad)/.test(navigator.userAgent) || (navigator.platform && /MacIntel/.test(navigator.platform) && navigator.maxTouchPoints > 1);
-                    var isAndroidPlatform = /Android/i.test(navigator.userAgent);
-                    if (isIOSPlatform) banner.textContent = 'Long press each image and tap Save to Photos to save your Digital ID';
-                    if (isAndroidPlatform){
-                        var frontActions = overlay.querySelector('.save-id-actions-front'); var backActions = overlay.querySelector('.save-id-actions-back');
-                        var dfBtn=document.createElement('button'); dfBtn.className='save-id-download-btn'; dfBtn.textContent='Download Front'; dfBtn.addEventListener('click', ()=>downloadDataUrl(frontDataUrl, 'digital-id-front.png')); frontActions.appendChild(dfBtn);
-                        var dbBtn=document.createElement('button'); dbBtn.className='save-id-download-btn'; dbBtn.textContent='Download Back'; dbBtn.addEventListener('click', ()=>downloadDataUrl(backDataUrl, 'digital-id-back.png')); backActions.appendChild(dbBtn);
-                    }
-
+                    setDownloadState(true, 'Preparing files...');
+                    await downloadDigitalIdFaces();
                 } catch (error) {
-                    console.error(error);
-                    setButtonLabel(downloadPngButton, 'Save failed');
+                    setButtonLabel(downloadPngButton, 'Download failed');
                     window.setTimeout(() => {
-                        setButtonLabel(downloadPngButton, downloadPngButton.dataset.defaultLabel || 'Save ID');
+                        setButtonLabel(downloadPngButton, downloadPngButton.dataset.defaultLabel || 'Download PNG');
                     }, 1800);
                 } finally {
                     setDownloadState(false);
@@ -1624,7 +1353,7 @@
             }
 
             if (surveyFormProgressBar) {
-                surveyFormProgressBar.style.setProperty('--progress', `${((activeSurveyStep + 1) / totalSteps) * 100}%`);
+                surveyFormProgressBar.style.width = `${((activeSurveyStep + 1) / totalSteps) * 100}%`;
             }
 
             if (surveyFormError) {
@@ -1742,6 +1471,16 @@
         }
 
         if (surveyFormOverlay) {
+            surveyFormOverlay.addEventListener('click', (event) => {
+                if (event.target === surveyFormOverlay) {
+                    if (surveyCloseConfirmation && !surveyCloseConfirmation.hidden) {
+                        closeConfirmation();
+                        return;
+                    }
+                    closeSurvey();
+                }
+            });
+
             surveyFormOverlay.addEventListener('keydown', (event) => {
                 if (event.key === 'Escape') {
                     if (surveyCloseConfirmation && !surveyCloseConfirmation.hidden) {
@@ -1779,239 +1518,9 @@
         }
 
         if (mobileSurveyForm) {
-            const showToast = (message, type = 'success') => {
-                const toast = document.createElement('div');
-                toast.className = 'survey-toast ' + type;
-                toast.textContent = message;
-                Object.assign(toast.style, {
-                    position: 'fixed',
-                    right: '20px',
-                    bottom: '20px',
-                    padding: '12px 16px',
-                    borderRadius: '10px',
-                    background: type === 'success' ? 'rgba(16,185,129,0.95)' : 'rgba(220,38,38,0.95)',
-                    color: '#fff',
-                    zIndex: 1600,
-                    boxShadow: '0 8px 30px rgba(0,0,0,0.4)',
-                    fontWeight: 700,
-                });
-                document.body.appendChild(toast);
-                setTimeout(() => {
-                    toast.style.transition = 'opacity 300ms ease';
-                    toast.style.opacity = '0';
-                    setTimeout(() => toast.remove(), 300);
-                }, 2600);
-            };
-
-            async function downloadCertificate(url) {
-                const btn = document.querySelector('.cert-download-btn');
-                if (btn) {
-                    btn.textContent = 'Saving...';
-                    btn.disabled = true;
-                }
-
-                const isIOS = /iP(hone|od|ad)/.test(navigator.userAgent) ||
-                    (navigator.platform && /MacIntel/.test(navigator.platform) && navigator.maxTouchPoints > 1);
-
-                try {
-                    const pages = document.querySelectorAll('#certificateCanvas .cert-page');
-                const iosImages = [];
-
-                for (let i = 0; i < pages.length; i++) {
-                    const canvas = await html2canvas(pages[i], {
-                        scale: 2,
-                        useCORS: true,
-                        allowTaint: true,
-                        backgroundColor: '#ffffff',
-                        logging: false,
-                    });
-
-                    const dataUrl = canvas.toDataURL('image/png');
-                    const filename = pages.length > 1
-                        ? 'certificate-' + (i === 0 ? 'attendance' : 'participation') + '.png'
-                        : 'certificate.png';
-
-                    if (isIOS) {
-                        iosImages.push({
-                            dataUrl,
-                            label: pages.length > 1
-                                ? (i === 0 ? 'Certificate of Attendance' : 'Certificate of Participation')
-                                : 'Certificate',
-                        });
-                    } else {
-                        const a = document.createElement('a');
-                        a.href = dataUrl;
-                        a.download = filename;
-                        document.body.appendChild(a);
-                        a.click();
-                        a.remove();
-                        if (i < pages.length - 1) await new Promise(r => setTimeout(r, 800));
-                    }
-                }
-
-                if (isIOS && iosImages.length > 0) {
-                    showCertModal(iosImages);
-                }
-
-                if (!isIOS && btn) {
-                    btn.textContent = 'Saved!';
-                    setTimeout(() => {
-                        if (btn) {
-                            btn.textContent = 'Save Certificate';
-                            btn.disabled = false;
-                        }
-                    }, 2000);
-                }
-                } catch (err) {
-                    console.error(err);
-                    if (btn) {
-                        btn.textContent = 'Save Certificate';
-                        btn.disabled = false;
-                    }
-                }
-            }
-
-            function showCertModal(images) {
-                const existing = document.getElementById('certSaveModal');
-                if (existing) existing.remove();
-
-                const modal = document.createElement('div');
-                modal.id = 'certSaveModal';
-                modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:2000;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;overflow:auto;';
-
-                const imageBlocks = images.map(image => `
-                    <div style="width:100%;max-width:680px;margin-bottom:20px;text-align:center;">
-                        <p style="color:#ffffff;font-size:14px;font-weight:700;margin:0 0 10px;">${image.label}</p>
-                        <img src="${image.dataUrl}" style="width:100%;max-height:60vh;border-radius:12px;object-fit:contain;" alt="${image.label}" />
-                    </div>
-                `).join('');
-
-                modal.innerHTML = `
-                    <div style="width:100%;max-width:680px;">
-                        <p style="color:#10b981;font-size:14px;font-weight:700;margin:0 0 16px;text-align:center;">Long press each image and tap Save to Photos</p>
-                        ${imageBlocks}
-                        <button id="closeCertModalBtn" 
-                            style="width:100%;background:#1B6CA8;color:#fff;border:none;padding:14px 24px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;">
-                            Close
-                        </button>
-                    </div>
-                `;
-
-                document.body.appendChild(modal);
-
-                const closeBtn = modal.querySelector('#closeCertModalBtn');
-                if (closeBtn) {
-                    closeBtn.addEventListener('click', () => {
-                        modal.remove();
-                        const btn = document.querySelector('.cert-download-btn');
-                        if (btn) {
-                            btn.textContent = 'Save Certificate';
-                            btn.disabled = false;
-                        }
-                    });
-                }
-            }
-
-            document.addEventListener('click', function(e) {
-                const btn = e.target.closest('.cert-download-btn');
-                if (!btn) return;
-                e.preventDefault();
-
-                const url = btn.dataset.certUrl || btn.getAttribute('href');
-                downloadCertificate(url);
-            });
-
-            mobileSurveyForm.addEventListener('submit', async (event) => {
+            mobileSurveyForm.addEventListener('submit', (event) => {
                 if (!validateCurrentStep()) {
                     event.preventDefault();
-                    return;
-                }
-
-                event.preventDefault();
-
-                const submitBtn = surveySubmitButton;
-                if (submitBtn) {
-                    submitBtn.disabled = true;
-                    submitBtn.dataset.origLabel = submitBtn.textContent;
-                    submitBtn.textContent = 'Submitting...';
-                }
-
-                try {
-                    const formData = new FormData(mobileSurveyForm);
-                    const resp = await fetch(mobileSurveyForm.action, {
-                        method: 'POST',
-                        credentials: 'same-origin',
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest',
-                        },
-                        body: formData,
-                    });
-
-                    let payload = null;
-                    try { payload = await resp.json(); } catch (e) { payload = null; }
-
-                    if (resp.ok) {
-                        // Close modal
-                        closeSurvey();
-
-                        // Replace Feedback Survey section with success card
-                        const surveySections = Array.from(document.querySelectorAll('section.survey-section'));
-                        const feedbackSection = surveySections.find(s => s.querySelector('.survey-label') && s.querySelector('.survey-label').textContent.trim() === 'Feedback Survey');
-                        if (feedbackSection) {
-                            const card = feedbackSection.querySelector('.survey-card');
-                            if (card) {
-                                card.innerHTML = `
-                                    <div class="survey-submitted" style="padding:20px;">
-                                        <svg class="icon-lg" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="display:block;margin:0 auto 12px;">
-                                            <path d="m5 12 4.5 4.5L19 7" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                        </svg>
-                                        <p class="survey-state-title success" style="margin:0 0 8px;font-size:18px;font-weight:700;color:#fff;">Feedback Submitted!</p>
-                                        <p class="survey-state-copy" style="margin:0;font-size:14px;color:var(--muted);">Thank you for taking the time to share your experience.</p>
-                                    </div>
-                                `;
-                            }
-                        }
-
-                        // Show/enable certificate download button
-                        const pageEl = document.querySelector('.page');
-                        const certUrl = pageEl?.dataset?.certificateUrl || '';
-                        const certType = pageEl?.dataset?.certificateType || '';
-                        const certSection = Array.from(document.querySelectorAll('section.survey-section')).find(s => {
-                            const svg = s.querySelector('svg');
-                            return svg && svg.querySelector('path[d*="M4 5h16v14H4V5"]');
-                        });
-                        if (certSection) {
-                            const certCard = certSection.querySelector('.survey-card');
-                            if (certCard) {
-                                const certTitle = certType === 'participation' ? 'Certificate of Participation' : (certType === 'attendance-participation' ? 'Certificate of Attendance & Participation' : 'Certificate of Attendance');
-                                certCard.innerHTML = `
-                                    <div class="survey-title">
-                                        <svg class="icon-lg" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                            <path d="M4 5h16v14H4V5Zm4 4H6v6h2v-6Zm4 0H10v6h2v-6Zm4 0h-2v6h2v-6Z" stroke="#5BA4CF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                                        </svg>
-                                        <span>${certTitle}</span>
-                                    </div>
-                                    <button type="button" class="survey-button cert-download-btn" data-cert-url="${certUrl}">Save Certificate</button>
-                                    <p id="cert-ios-tip" style="display:none;font-size:12px;color:#10b981;text-align:center;margin-top:8px;">Image generated. Long press the preview and select "Save to Photos" or "Save Image".</p>
-                                `;
-                            }
-                        }
-
-                        showToast('Feedback submitted successfully!', 'success');
-                    } else {
-                        const msg = (payload && (payload.message || (payload.errors ? Object.values(payload.errors).flat().join(' ') : null))) || 'Submission failed';
-                        showToast(msg, 'error');
-                        if (submitBtn) {
-                            submitBtn.disabled = false;
-                            submitBtn.textContent = submitBtn.dataset.origLabel || 'Submit Feedback';
-                        }
-                    }
-                } catch (err) {
-                    showToast('Submission failed. Please try again.', 'error');
-                    if (submitBtn) {
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = submitBtn.dataset.origLabel || 'Submit Feedback';
-                    }
                 }
             });
         }
