@@ -217,10 +217,17 @@
         @media (max-width: 1180px) { .content-grid { grid-template-columns: 1fr; } }
         @media (max-width: 900px)  { .stats-grid { grid-template-columns: repeat(2,1fr); } }
         @media (max-width: 768px) {
-            .btn-download-report { margin-left: 0; margin-top: 8px; }
-            .scope-badge { margin-left: 0; margin-top: 8px; }
-            .filter-bar { flex-direction: column; }
-            .filter-bar > * { width: 100%; }
+            .btn-download-report { margin-left: 0; margin-top: 0; }
+            .scope-badge { margin-left: 0; margin-top: 8px; width: 100%; justify-content: space-between; padding: 8px 12px; }
+            .filter-bar { flex-direction: column; gap: 10px; padding: 12px; }
+            .filter-bar > label { font-size: 11px; font-weight: 600; margin-bottom: -4px; }
+            .filter-bar > .filter-select, .filter-bar > .filter-input-sm { width: 100%; }
+            .filter-bar > * { width: 100%; box-sizing: border-box; }
+            .filter-bar > .filter-sep { display: none; }
+            .filter-bar > .btn-filter { width: 100%; margin-top: 4px; }
+            #yearField, #monthField { width: 100% !important; display: flex !important; flex-direction: column; gap: 6px; }
+            #yearField > label, #monthField > label { font-size: 11px; margin-bottom: 2px; }
+            #yearField > input, #monthField > input { width: 100%; }
             .event-tabs { flex-wrap: wrap; }
             .event-tab { flex: 1; }
             .events-table { font-size: 0.75rem; }
