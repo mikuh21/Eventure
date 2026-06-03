@@ -332,9 +332,7 @@ class AdminController extends Controller
             abort(403);
         }
 
-        $eventParticipants = $event->participants()
-            ->whereDate('event_id', $event->id)
-            ->get();
+        $eventParticipants = $event->participants()->get();
 
         $totalParticipants = $eventParticipants->count();
         $attendedParticipants = $eventParticipants->where('attended', true)->count();
