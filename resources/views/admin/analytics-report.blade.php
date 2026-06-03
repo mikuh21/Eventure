@@ -27,6 +27,13 @@
         .page:last-child {
             page-break-after: avoid;
         }
+        .page-1 {
+            page-break-after: always;
+        }
+        .page-2 {
+            margin-top: 0;
+            page-break-before: always;
+        }
         .branding {
             display: flex;
             align-items: center;
@@ -37,16 +44,16 @@
         .branding-logo {
             width: 50px;
             height: 50px;
-            background: linear-gradient(135deg, #1b6ca8 0%, #0a2342 100%);
-            border-radius: 8px;
+            margin-right: 15px;
+            flex-shrink: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #fff;
-            font-weight: 700;
-            font-size: 20px;
-            margin-right: 15px;
-            flex-shrink: 0;
+        }
+        .branding-logo img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
         }
         .branding-text {
             flex: 1;
@@ -60,9 +67,10 @@
             margin-bottom: 3px;
         }
         .branding-name {
-            font-size: 18px;
+            font-size: 24px;
             font-weight: 700;
             color: #1b6ca8;
+            letter-spacing: 0.02em;
         }
         .header {
             border-bottom: 3px solid #1b6ca8;
@@ -226,12 +234,13 @@
     </style>
 </head>
 <body>
-    <div class="page">
+    <div class="page page-1">
         <div class="branding">
-            <div class="branding-logo">✦</div>
+            <div class="branding-logo">
+                <img src="{{ public_path('eventurelogo.png') }}" alt="Eventure logo">
+            </div>
             <div class="branding-text">
-                <div class="branding-label">Eventure</div>
-                <div class="branding-name">Event Analytics Report</div>
+                <div class="branding-name">Eventure</div>
             </div>
         </div>
 
@@ -272,62 +281,6 @@
                     <div class="summary-card-sub">{{ $responseRate }}% response rate</div>
                 </div>
             </div>
-
-            <div class="section-title">Event Breakdown</div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Event Name</th>
-                        <th>Date</th>
-                        <th>Type</th>
-                        <th>Participants</th>
-                        <th>Attended</th>
-                        <th>Evaluations</th>
-                        <th>Response Rate</th>
-                        <th>Avg Rating</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($eventsBreakdown as $event)
-                        @php
-                            $evRate = $event->participants_count > 0
-                                ? round(($event->evaluations_count / $event->participants_count) * 100)
-                                : null;
-                            $evAttRate = $event->participants_count > 0
-                                ? round(($event->attended_count / $event->participants_count) * 100)
-                                : null;
-                            $isEnded = $event->hasEnded();
-                            $rateClass = is_null($evRate) || !$isEnded ? 'rate-na' : ($evRate >= 70 ? 'rate-high' : ($evRate >= 40 ? 'rate-mid' : 'rate-low'));
-                            $evAvgRating = $event->avg_rating && $isEnded
-                                ? round((float) $event->avg_rating, 1)
-                                : null;
-                        @endphp
-                        <tr>
-                            <td><strong>{{ \Illuminate\Support\Str::limit($event->title, 30, '…') }}</strong></td>
-                            <td>{{ $event->dateRangeLabel() }}</td>
-                            <td>
-                                <span class="badge {{ $event->type === 'conference' ? 'badge-conference' : 'badge-school' }}">
-                                    {{ $event->type === 'conference' ? 'Conference' : 'School' }}
-                                </span>
-                            </td>
-                            <td>{{ number_format($event->participants_count) }}</td>
-                            <td>{{ number_format($event->attended_count) }} @if (!is_null($evAttRate))<span class="text-muted">({{ $evAttRate }}%)</span>@endif</td>
-                            <td>{{ $isEnded ? number_format($event->evaluations_count) : '—' }}</td>
-                            <td>
-                                <span class="badge {{ $rateClass }}">
-                                    {{ !$isEnded ? '—' : (is_null($evRate) ? '—' : $evRate . '%') }}
-                                </span>
-                            </td>
-                            <td>{{ $evAvgRating ? $evAvgRating : '—' }}</td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="8" class="empty-state">No events found for this scope.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-
         @else
             <div class="empty-state">
                 No events found for the selected scope.
@@ -339,5 +292,78 @@
             <p>{{ config('app.name') }} © {{ now()->year }}</p>
         </div>
     </div>
+
+    @if ($totalEvents > 0)
+    <div class="page page-2">
+        <div class="branding">
+            <div class="branding-logo">
+                <img src="{{ public_path('eventurelogo.png') }}" alt="Eventure logo">
+            </div>
+            <div class="branding-text">
+                <div class="branding-name">Eventure</div>
+            </div>
+        </div>
+
+        <div class="section-title">Event Breakdown</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Event Name</th>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Participants</th>
+                    <th>Attended</th>
+                    <th>Evaluations</th>
+                    <th>Response Rate</th>
+                    <th>Avg Rating</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($eventsBreakdown as $event)
+                    @php
+                        $evRate = $event->participants_count > 0
+                            ? round(($event->evaluations_count / $event->participants_count) * 100)
+                            : null;
+                        $evAttRate = $event->participants_count > 0
+                            ? round(($event->attended_count / $event->participants_count) * 100)
+                            : null;
+                        $isEnded = $event->hasEnded();
+                        $rateClass = is_null($evRate) || !$isEnded ? 'rate-na' : ($evRate >= 70 ? 'rate-high' : ($evRate >= 40 ? 'rate-mid' : 'rate-low'));
+                        $evAvgRating = $event->avg_rating && $isEnded
+                            ? round((float) $event->avg_rating, 1)
+                            : null;
+                    @endphp
+                    <tr>
+                        <td><strong>{{ \Illuminate\Support\Str::limit($event->title, 30, '…') }}</strong></td>
+                        <td>{{ $event->dateRangeLabel() }}</td>
+                        <td>
+                            <span class="badge {{ $event->type === 'conference' ? 'badge-conference' : 'badge-school' }}">
+                                {{ $event->type === 'conference' ? 'Conference' : 'School' }}
+                            </span>
+                        </td>
+                        <td>{{ number_format($event->participants_count) }}</td>
+                        <td>{{ number_format($event->attended_count) }} @if (!is_null($evAttRate))<span class="text-muted">({{ $evAttRate }}%)</span>@endif</td>
+                        <td>{{ $isEnded ? number_format($event->evaluations_count) : '—' }}</td>
+                        <td>
+                            <span class="badge {{ $rateClass }}">
+                                {{ !$isEnded ? '—' : (is_null($evRate) ? '—' : $evRate . '%') }}
+                            </span>
+                        </td>
+                        <td>{{ $evAvgRating ? $evAvgRating : '—' }}</td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="8" class="empty-state">No events found for this scope.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+
+        <div class="footer">
+            <p>Eventure | Event Analytics Report</p>
+            <p>{{ config('app.name') }} © {{ now()->year }}</p>
+        </div>
+    </div>
+    @endif
 </body>
 </html>
