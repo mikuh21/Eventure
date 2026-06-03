@@ -138,8 +138,8 @@
         .btn-download-report svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
 
         /* ── Event breakdown tabs ── */
-        .event-tabs { display: flex; gap: 8px; margin-bottom: 16px; border-bottom: 2px solid #e5e7eb; }
-        .event-tab { padding: 10px 16px; font-size: 12px; font-weight: 600; color: #6b7280; cursor: pointer; border: none; background: none; border-bottom: 3px solid transparent; transition: color 150ms ease, border-color 150ms ease; white-space: nowrap; }
+        .event-tabs { display: flex; gap: 8px; margin-bottom: 16px; border-bottom: 2px solid #e5e7eb; font-family: 'Sora', sans-serif; }
+        .event-tab { padding: 10px 16px; font-size: 12px; font-weight: 600; color: #6b7280; cursor: pointer; border: none; background: none; border-bottom: 3px solid transparent; transition: color 150ms ease, border-color 150ms ease; white-space: nowrap; font-family: 'Sora', sans-serif; }
         .event-tab:hover { color: #1b6ca8; }
         .event-tab.active { color: #1b6ca8; border-bottom-color: #1b6ca8; }
 
