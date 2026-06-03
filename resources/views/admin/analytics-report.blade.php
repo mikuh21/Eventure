@@ -39,7 +39,7 @@
             widows: 1;
         }
         .page-2 {
-            page-break-before: always !important;
+            page-break-before: auto;
             page-break-inside: avoid;
             margin: 0 !important;
             padding: 40px;
@@ -50,7 +50,6 @@
             widows: 1;
         }
         .event-breakdown-section {
-            page-break-before: always !important;
             page-break-inside: avoid;
             margin: 0 !important;
             padding: 0;
