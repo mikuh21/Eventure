@@ -218,16 +218,17 @@
         @media (max-width: 900px)  { .stats-grid { grid-template-columns: repeat(2,1fr); } }
         @media (max-width: 768px) {
             .btn-download-report { margin-left: 0; margin-top: 0; }
-            .scope-badge { margin-left: 0; margin-top: 8px; width: 100%; justify-content: space-between; padding: 8px 12px; }
-            .filter-bar { flex-direction: column; gap: 10px; padding: 12px; }
-            .filter-bar > label:not(label[for="year"]):not(label[for="month"]) { font-size: 11px; font-weight: 600; margin-bottom: 2px; }
+            .scope-badge { margin-left: 0; margin-top: 6px; width: 100%; justify-content: space-between; padding: 8px 12px; font-size: 11px; }
+            .filter-bar { flex-direction: row; flex-wrap: wrap; gap: 8px; padding: 10px; display: flex; align-items: flex-start; }
+            .filter-bar > label:not(label[for="year"]):not(label[for="month"]) { font-size: 10px; font-weight: 600; margin-bottom: 0; width: 100%; }
             .filter-bar > .filter-select { width: 100%; box-sizing: border-box; }
             .filter-bar > .filter-sep { display: none; }
-            .filter-bar > .btn-filter { width: 100%; margin-top: 4px; box-sizing: border-box; }
-            .filter-bar > a { font-size: 12px; margin-top: 4px; }
-            #yearField, #monthField { width: 100% !important; display: flex !important; flex-direction: column; gap: 6px; box-sizing: border-box; }
-            #yearField > label, #monthField > label { font-size: 11px; margin-bottom: 0; }
-            #yearField > input, #monthField > input { width: 100%; box-sizing: border-box; }
+            .filter-bar > .btn-filter { width: 100%; margin-top: 2px; box-sizing: border-box; }
+            .filter-bar > a { font-size: 11px; margin-top: 2px; }
+            #yearField, #monthField { width: calc(50% - 4px) !important; display: flex !important; flex-direction: column; gap: 4px; box-sizing: border-box; }
+            #monthField { margin-left: 8px; }
+            #yearField > label, #monthField > label { font-size: 10px; margin-bottom: 0; }
+            #yearField > input, #monthField > input { width: 100%; box-sizing: border-box; padding: 6px 10px; font-size: 13px; }
             .event-tabs { flex-wrap: wrap; }
             .event-tab { flex: 1; font-size: 11px; }
             .events-table { font-size: 0.75rem; }
