@@ -327,11 +327,12 @@ class AdminController extends Controller
         $filename = 'analytics-report-' . now()->format('Y-m-d-His') . '.pdf';
         
         return $pdf->download($filename)
-            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"')
-            ->header('Content-Type', 'application/pdf')
-            ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            ->header('Content-Type', 'application/octet-stream')
+            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"; filename*=UTF-8\'\'' . $filename . '')
+            ->header('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0')
             ->header('Pragma', 'no-cache')
-            ->header('Expires', '0');
+            ->header('Expires', 'Mon, 01 Jan 1990 00:00:00 GMT')
+            ->header('X-Content-Type-Options', 'nosniff');
     }
 
     public function downloadEventReport(Request $request, Event $event)
@@ -386,10 +387,11 @@ class AdminController extends Controller
 
         $filename = 'event-report-' . \Illuminate\Support\Str::slug($event->title) . '-' . now()->format('Y-m-d-His') . '.pdf';
         return $pdf->download($filename)
-            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"')
-            ->header('Content-Type', 'application/pdf')
-            ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            ->header('Content-Type', 'application/octet-stream')
+            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"; filename*=UTF-8\'\'' . $filename . '')
+            ->header('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0')
             ->header('Pragma', 'no-cache')
-            ->header('Expires', '0');
+            ->header('Expires', 'Mon, 01 Jan 1990 00:00:00 GMT')
+            ->header('X-Content-Type-Options', 'nosniff');
     }
 }

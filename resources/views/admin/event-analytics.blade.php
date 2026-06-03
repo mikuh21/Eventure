@@ -445,7 +445,7 @@
 
                 <span class="scope-badge">
                     {{ $scopeLabel }}
-                    <a href="{{ route('admin.analytics.report', array_merge($previewAuthQuery, ['period' => $analytics['period'], 'month' => $analytics['month'], 'year' => $analytics['year']])) }}" class="btn-download-report" title="Download Report" download>
+                    <a href="{{ route('admin.analytics.report', array_merge($previewAuthQuery, ['period' => $analytics['period'], 'month' => $analytics['month'], 'year' => $analytics['year']])) }}" class="btn-download-report" title="Download Report">
                         <svg viewBox="0 0 24 24" aria-hidden="true">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                             <polyline points="7 10 12 15 17 10"></polyline>
@@ -667,7 +667,7 @@
                                         @endif
                                     </td>
                                     <td style="text-align:center;">
-                                        <a href="{{ route('admin.analytics.event-report', array_merge($previewAuthQuery, ['event' => $ev->id])) }}" class="btn-event-report" title="Download Event Report" download>
+                                        <a href="{{ route('admin.analytics.event-report', array_merge($previewAuthQuery, ['event' => $ev->id])) }}" class="btn-event-report" title="Download Event Report">
                                             <svg viewBox="0 0 24 24" aria-hidden="true">
                                                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                                                 <polyline points="7 10 12 15 17 10"></polyline>
@@ -798,6 +798,89 @@
                         }
                     });
                 });
+            });
+        })();
+    </script>
+@endpush
+
+@push('scripts')
+    <script>
+        (function () {
+            // Check if device is mobile
+            var isMobile = function () {
+                return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            };
+
+            // Handle PDF download for mobile
+            var handlePdfDownload = function (event) {
+                if (!isMobile()) {
+                    return; // Let desktop browsers use default behavior
+                }
+
+                event.preventDefault();
+                var downloadLink = this;
+                var href = downloadLink.getAttribute('href');
+                var filename = href.match(/analytics-report-[^/]*\.pdf|event-report-[^/]*\.pdf/) 
+                    ? href.match(/analytics-report-[^/]*\.pdf|event-report-[^/]*\.pdf/)[0]
+                    : 'report.pdf';
+
+                // Show loading state
+                var originalHtml = downloadLink.innerHTML;
+                downloadLink.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" style="animation: spin 1s linear infinite;"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2a10 10 0 0 1 10 10" fill="none" stroke="currentColor" stroke-width="2"/></svg>';
+                downloadLink.style.opacity = '0.6';
+                downloadLink.style.pointerEvents = 'none';
+
+                // Add CSS animation for spinner
+                if (!document.getElementById('download-spinner-style')) {
+                    var style = document.createElement('style');
+                    style.id = 'download-spinner-style';
+                    style.textContent = '@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }';
+                    document.head.appendChild(style);
+                }
+
+                // Fetch the PDF as a blob
+                fetch(href)
+                    .then(function (response) {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.blob();
+                    })
+                    .then(function (blob) {
+                        // Create a blob URL
+                        var blobUrl = window.URL.createObjectURL(blob);
+
+                        // Create a temporary link and trigger download
+                        var tempLink = document.createElement('a');
+                        tempLink.href = blobUrl;
+                        tempLink.download = filename;
+                        tempLink.style.display = 'none';
+                        document.body.appendChild(tempLink);
+                        tempLink.click();
+                        document.body.removeChild(tempLink);
+
+                        // Clean up the blob URL
+                        window.URL.revokeObjectURL(blobUrl);
+
+                        // Restore button state
+                        downloadLink.innerHTML = originalHtml;
+                        downloadLink.style.opacity = '1';
+                        downloadLink.style.pointerEvents = 'auto';
+                    })
+                    .catch(function (error) {
+                        console.error('Download failed:', error);
+                        // Restore button state on error
+                        downloadLink.innerHTML = originalHtml;
+                        downloadLink.style.opacity = '1';
+                        downloadLink.style.pointerEvents = 'auto';
+                        alert('Download failed. Please try again.');
+                    });
+            };
+
+            // Attach download handler to all download buttons
+            var downloadButtons = document.querySelectorAll('.btn-download-report, .btn-event-report');
+            downloadButtons.forEach(function (button) {
+                button.addEventListener('click', handlePdfDownload);
             });
         })();
     </script>
