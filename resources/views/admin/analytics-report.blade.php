@@ -17,35 +17,33 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: #333;
             line-height: 1.6;
+            counter-reset: page;
         }
         .page {
             page-break-after: always;
-            padding: 20px;
+            padding: 40px;
             background: #fff;
             position: relative;
-            min-height: 297mm;
+            display: block;
         }
         .page:last-child {
             page-break-after: avoid;
-            min-height: auto;
         }
         .page-1 {
             page-break-after: always;
-            padding-bottom: 10px;
-            max-height: 250mm;
-            overflow: hidden;
         }
         .page-2 {
-            margin-top: 0;
             page-break-before: always;
-            padding-top: 20px;
-            padding-bottom: 10px;
+            page-break-inside: avoid;
+            padding: 40px;
+            clear: both;
+            display: block;
         }
         .branding {
             display: flex;
             align-items: center;
-            margin-bottom: 10px;
-            padding-bottom: 8px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
             border-bottom: 2px solid #1b6ca8;
         }
         .branding-logo {
@@ -83,24 +81,24 @@
         }
         .header {
             border-bottom: 3px solid #1b6ca8;
-            padding-bottom: 10px;
-            margin-bottom: 10px;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
         }
         .header h1 {
-            font-size: 20px;
+            font-size: 28px;
             color: #1b6ca8;
-            margin-bottom: 2px;
+            margin-bottom: 5px;
         }
         .header p {
-            font-size: 10px;
+            font-size: 12px;
             color: #666;
         }
         .scope-info {
             background: #f0f4f8;
-            padding: 8px;
+            padding: 12px;
             border-left: 4px solid #1b6ca8;
-            margin-bottom: 10px;
-            font-size: 11px;
+            margin-bottom: 20px;
+            font-size: 13px;
         }
         .scope-info strong {
             color: #1b6ca8;
@@ -108,47 +106,47 @@
         .summary-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            margin-bottom: 8px;
+            gap: 15px;
+            margin-bottom: 30px;
         }
         .summary-card {
             background: #f8fafb;
             border: 1px solid #e5e7eb;
             border-radius: 8px;
-            padding: 10px;
+            padding: 15px;
             text-align: center;
         }
         .summary-card-label {
-            font-size: 9px;
+            font-size: 11px;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             color: #666;
-            margin-bottom: 4px;
+            margin-bottom: 8px;
         }
         .summary-card-value {
-            font-size: 18px;
+            font-size: 24px;
             font-weight: 700;
             color: #1b6ca8;
-            margin-bottom: 2px;
+            margin-bottom: 5px;
         }
         .summary-card-sub {
-            font-size: 9px;
+            font-size: 11px;
             color: #999;
         }
         .section-title {
-            font-size: 12px;
+            font-size: 16px;
             font-weight: 700;
             color: #0a2342;
-            margin-top: 3px;
-            margin-bottom: 8px;
-            padding-bottom: 5px;
+            margin-top: 0;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
             border-bottom: 2px solid #e5e7eb;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 5px;
+            margin-bottom: 20px;
             page-break-inside: avoid;
         }
         tbody tr {
@@ -156,9 +154,9 @@
         }
         th {
             background: #f0f4f8;
-            padding: 6px;
+            padding: 10px;
             text-align: left;
-            font-size: 9px;
+            font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.05em;
@@ -166,9 +164,9 @@
             border-bottom: 2px solid #d1d5db;
         }
         td {
-            padding: 6px;
+            padding: 10px;
             border-bottom: 1px solid #e5e7eb;
-            font-size: 10px;
+            font-size: 12px;
         }
         tr:last-child td {
             border-bottom: none;
@@ -205,18 +203,18 @@
             color: #6b7280;
         }
         .footer {
-            margin-top: 10px;
-            padding-top: 8px;
+            margin-top: 40px;
+            padding-top: 20px;
             border-top: 1px solid #e5e7eb;
             text-align: center;
-            font-size: 8px;
+            font-size: 10px;
             color: #999;
         }
         .progress-bar-wrap {
             background: #e5e7eb;
-            height: 3px;
+            height: 6px;
             border-radius: 3px;
-            margin-top: 1px;
+            margin-top: 3px;
             overflow: hidden;
         }
         .progress-bar {
@@ -236,9 +234,9 @@
         }
         .empty-state {
             text-align: center;
-            padding: 20px;
+            padding: 40px;
             color: #999;
-            font-size: 12px;
+            font-size: 13px;
         }
     </style>
 </head>
@@ -301,7 +299,7 @@
             <p>{{ config('app.name') }} © {{ now()->year }}</p>
         </div>
     </div>
-
+    <!-- PAGE BREAK -->
     @if ($totalEvents > 0)
     <div class="page page-2">
         <div class="branding">
