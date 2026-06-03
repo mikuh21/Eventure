@@ -20,28 +20,32 @@
         }
         .page {
             page-break-after: always;
-            padding: 30px;
+            padding: 20px;
             background: #fff;
             position: relative;
+            min-height: 297mm;
         }
         .page:last-child {
             page-break-after: avoid;
+            min-height: auto;
         }
         .page-1 {
             page-break-after: always;
-            padding-bottom: 20px;
+            padding-bottom: 10px;
+            max-height: 250mm;
+            overflow: hidden;
         }
         .page-2 {
             margin-top: 0;
             page-break-before: always;
-            padding-top: 40px;
-            padding-bottom: 20px;
+            padding-top: 20px;
+            padding-bottom: 10px;
         }
         .branding {
             display: flex;
             align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
             border-bottom: 2px solid #1b6ca8;
         }
         .branding-logo {
@@ -79,24 +83,24 @@
         }
         .header {
             border-bottom: 3px solid #1b6ca8;
-            padding-bottom: 15px;
-            margin-bottom: 15px;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
         }
         .header h1 {
-            font-size: 24px;
+            font-size: 20px;
             color: #1b6ca8;
-            margin-bottom: 3px;
+            margin-bottom: 2px;
         }
         .header p {
-            font-size: 11px;
+            font-size: 10px;
             color: #666;
         }
         .scope-info {
             background: #f0f4f8;
-            padding: 10px;
+            padding: 8px;
             border-left: 4px solid #1b6ca8;
-            margin-bottom: 15px;
-            font-size: 12px;
+            margin-bottom: 10px;
+            font-size: 11px;
         }
         .scope-info strong {
             color: #1b6ca8;
@@ -104,47 +108,47 @@
         .summary-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-bottom: 15px;
+            gap: 8px;
+            margin-bottom: 8px;
         }
         .summary-card {
             background: #f8fafb;
             border: 1px solid #e5e7eb;
             border-radius: 8px;
-            padding: 12px;
+            padding: 10px;
             text-align: center;
         }
         .summary-card-label {
-            font-size: 10px;
+            font-size: 9px;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             color: #666;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
         .summary-card-value {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
             color: #1b6ca8;
-            margin-bottom: 3px;
+            margin-bottom: 2px;
         }
         .summary-card-sub {
-            font-size: 10px;
+            font-size: 9px;
             color: #999;
         }
         .section-title {
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 700;
             color: #0a2342;
-            margin-top: 5px;
-            margin-bottom: 12px;
-            padding-bottom: 8px;
+            margin-top: 3px;
+            margin-bottom: 8px;
+            padding-bottom: 5px;
             border-bottom: 2px solid #e5e7eb;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
             page-break-inside: avoid;
         }
         tbody tr {
@@ -152,9 +156,9 @@
         }
         th {
             background: #f0f4f8;
-            padding: 8px;
+            padding: 6px;
             text-align: left;
-            font-size: 10px;
+            font-size: 9px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.05em;
@@ -162,9 +166,9 @@
             border-bottom: 2px solid #d1d5db;
         }
         td {
-            padding: 8px;
+            padding: 6px;
             border-bottom: 1px solid #e5e7eb;
-            font-size: 11px;
+            font-size: 10px;
         }
         tr:last-child td {
             border-bottom: none;
@@ -201,18 +205,18 @@
             color: #6b7280;
         }
         .footer {
-            margin-top: 20px;
-            padding-top: 10px;
+            margin-top: 10px;
+            padding-top: 8px;
             border-top: 1px solid #e5e7eb;
             text-align: center;
-            font-size: 9px;
+            font-size: 8px;
             color: #999;
         }
         .progress-bar-wrap {
             background: #e5e7eb;
-            height: 4px;
+            height: 3px;
             border-radius: 3px;
-            margin-top: 2px;
+            margin-top: 1px;
             overflow: hidden;
         }
         .progress-bar {
@@ -232,9 +236,9 @@
         }
         .empty-state {
             text-align: center;
-            padding: 40px;
+            padding: 20px;
             color: #999;
-            font-size: 13px;
+            font-size: 12px;
         }
     </style>
 </head>
@@ -250,7 +254,7 @@
         </div>
 
         <div class="header">
-            <h1>Analytics Summary</h1>
+            <h1>Events Report Summary</h1>
             <p>Generated on {{ now()->format('F d, Y') }} at {{ now()->format('h:i A') }}</p>
         </div>
 
@@ -293,7 +297,7 @@
         @endif
 
         <div class="footer">
-            <p>Eventure | Event Analytics Report</p>
+            <p>Eventure | Events Report Summary</p>
             <p>{{ config('app.name') }} © {{ now()->year }}</p>
         </div>
     </div>
@@ -365,7 +369,7 @@
         </table>
 
         <div class="footer">
-            <p>Eventure | Event Analytics Report</p>
+            <p>Eventure | Events Report Summary</p>
             <p>{{ config('app.name') }} © {{ now()->year }}</p>
         </div>
     </div>
