@@ -20,24 +20,33 @@
             counter-reset: page;
         }
         .page {
-            page-break-after: always;
             padding: 40px;
             background: #fff;
             position: relative;
             display: block;
+            margin: 0;
+            box-sizing: border-box;
         }
         .page:last-child {
             page-break-after: avoid;
         }
         .page-1 {
             page-break-after: always;
+            margin: 0;
+            padding: 40px;
+            orphans: 1;
+            widows: 1;
         }
         .page-2 {
             page-break-before: always;
             page-break-inside: avoid;
+            margin: 0;
             padding: 40px;
-            clear: both;
             display: block;
+            clear: both;
+            position: relative;
+            orphans: 1;
+            widows: 1;
         }
         .branding {
             display: flex;
@@ -300,7 +309,6 @@
         </div>
     </div>
     <!-- PAGE BREAK -->
-    @if ($totalEvents > 0)
     <div class="page page-2">
         <div class="branding">
             <div class="branding-logo">
@@ -312,6 +320,7 @@
         </div>
 
         <div class="section-title">Event Breakdown</div>
+        @if ($totalEvents > 0)
         <table>
             <thead>
                 <tr>
@@ -365,12 +374,16 @@
                 @endforelse
             </tbody>
         </table>
+        @else
+        <div class="empty-state">
+            No events found for this scope.
+        </div>
+        @endif
 
         <div class="footer">
             <p>Eventure | Events Report Summary</p>
             <p>{{ config('app.name') }} © {{ now()->year }}</p>
         </div>
     </div>
-    @endif
 </body>
 </html>

@@ -180,7 +180,7 @@ class AdminController extends Controller
         $eventsQuery = Event::query()
             ->withCount([
                 'participants as participants_count',
-                'participants as attended_count' => fn ($q) => $q->where('attended', true),
+                'participants as attended_count' => fn ($q) => $q->where('attended', true)->whereHas('event', fn ($q2) => $q2->whereDate('end_date', '<', now()->toDateString())),
                 'evaluations as evaluations_count' => fn ($q) => $q->whereHas('participant.event', fn ($q2) => $q2->whereDate('end_date', '<', now()->toDateString())),
             ])
             ->withAvg(['evaluations as avg_rating' => fn ($q) => $q->whereHas('participant.event', fn ($q2) => $q2->whereDate('end_date', '<', now()->toDateString()))], 'rating')
@@ -276,7 +276,7 @@ class AdminController extends Controller
         $eventsQuery = Event::query()
             ->withCount([
                 'participants as participants_count',
-                'participants as attended_count' => fn ($q) => $q->where('attended', true),
+                'participants as attended_count' => fn ($q) => $q->where('attended', true)->whereHas('event', fn ($q2) => $q2->whereDate('end_date', '<', now()->toDateString())),
                 'evaluations as evaluations_count' => fn ($q) => $q->whereHas('participant.event', fn ($q2) => $q2->whereDate('end_date', '<', now()->toDateString())),
             ])
             ->withAvg(['evaluations as avg_rating' => fn ($q) => $q->whereHas('participant.event', fn ($q2) => $q2->whereDate('end_date', '<', now()->toDateString()))], 'rating')

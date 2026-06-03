@@ -19,10 +19,12 @@
             line-height: 1.6;
         }
         .page {
-            page-break-after: always;
             padding: 30px;
             background: #fff;
             position: relative;
+            display: block;
+            margin: 0;
+            box-sizing: border-box;
         }
         .page:last-child {
             page-break-after: avoid;
