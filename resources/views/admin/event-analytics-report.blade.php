@@ -260,6 +260,9 @@
             background: #f8fafb;
             border-radius: 6px;
         }
+        .page-break {
+            page-break-before: always;
+        }
     </style>
 </head>
 <body>
@@ -312,7 +315,7 @@
                 <div class="summary-card-sub">
                     @if ($avgRating > 0)
                         @for ($s = 1; $s <= 5; $s++)
-                            {{ $s <= round($avgRating) ? '★' : '☆' }}
+                            {!! $s <= round($avgRating) ? '&#9733;' : '&#9734;' !!}
                         @endfor
                     @else
                         No ratings
@@ -322,37 +325,26 @@
         </div>
 
         @if ($totalEvaluations > 0)
-            <div class="section-title">Rating Distribution</div>
-            <div>
-                @php
-                    $maxRating = max(array_values($ratingDistribution));
-                @endphp
-                @for ($rating = 5; $rating >= 1; $rating--)
-                    <div class="rating-row">
-                        <div class="rating-label">{{ str_repeat('★', $rating) }}</div>
-                        <div class="rating-count">{{ $ratingDistribution[$rating] }}</div>
-                        <div class="distribution-bar">
-                            @if ($maxRating > 0)
-                                <div class="distribution-fill" style="width: {{ ($ratingDistribution[$rating] / $maxRating) * 100 }}%;"></div>
-                            @endif
+            <div class="page-break">
+                <div class="section-title">Rating Distribution</div>
+                <div>
+                    @php
+                        $maxRating = max(array_values($ratingDistribution));
+                    @endphp
+                    @for ($rating = 5; $rating >= 1; $rating--)
+                        <div class="rating-row">
+                            <div class="rating-label">{!! str_repeat('&#9733;', $rating) !!}</div>
+                            <div class="rating-count">{{ $ratingDistribution[$rating] }}</div>
+                            <div class="distribution-bar">
+                                @if ($maxRating > 0)
+                                    <div class="distribution-fill" style="width: {{ ($ratingDistribution[$rating] / $maxRating) * 100 }}%;"></div>
+                                @endif
+                            </div>
                         </div>
-                    </div>
-                @endfor
+                    @endfor
+                </div>
             </div>
 
-            @if ($questions->count() > 0)
-                <div class="section-title">Evaluation Questions</div>
-                <div>
-                    @foreach ($questions as $question)
-                        <div class="question-row">
-                            <div class="question-text">{{ $question['question_text'] }}</div>
-                        </div>
-                    @endforeach
-                    <div style="margin-top: 10px; font-size: 11px; color: #999;">
-                        Individual question ratings are tracked in the evaluation form responses.
-                    </div>
-                </div>
-            @endif
         @else
             <div class="section-title">Evaluation Data</div>
             <div class="empty-state">
