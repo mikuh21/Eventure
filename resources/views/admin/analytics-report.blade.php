@@ -20,7 +20,7 @@
         }
         .page {
             page-break-after: always;
-            padding: 40px;
+            padding: 30px;
             background: #fff;
             position: relative;
         }
@@ -29,16 +29,19 @@
         }
         .page-1 {
             page-break-after: always;
+            padding-bottom: 20px;
         }
         .page-2 {
             margin-top: 0;
             page-break-before: always;
+            padding-top: 40px;
+            padding-bottom: 20px;
         }
         .branding {
             display: flex;
             align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
             border-bottom: 2px solid #1b6ca8;
         }
         .branding-logo {
@@ -67,31 +70,33 @@
             margin-bottom: 3px;
         }
         .branding-name {
-            font-size: 24px;
-            font-weight: 700;
-            color: #1b6ca8;
-            letter-spacing: 0.02em;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #666;
+            font-style: italic;
         }
         .header {
             border-bottom: 3px solid #1b6ca8;
-            padding-bottom: 20px;
-            margin-bottom: 30px;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
         }
         .header h1 {
-            font-size: 28px;
+            font-size: 24px;
             color: #1b6ca8;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
         }
         .header p {
-            font-size: 12px;
+            font-size: 11px;
             color: #666;
         }
         .scope-info {
             background: #f0f4f8;
-            padding: 12px;
+            padding: 10px;
             border-left: 4px solid #1b6ca8;
-            margin-bottom: 20px;
-            font-size: 13px;
+            margin-bottom: 15px;
+            font-size: 12px;
         }
         .scope-info strong {
             color: #1b6ca8;
@@ -99,47 +104,47 @@
         .summary-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            margin-bottom: 30px;
+            gap: 10px;
+            margin-bottom: 15px;
         }
         .summary-card {
             background: #f8fafb;
             border: 1px solid #e5e7eb;
             border-radius: 8px;
-            padding: 15px;
+            padding: 12px;
             text-align: center;
         }
         .summary-card-label {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             color: #666;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
         .summary-card-value {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: 700;
             color: #1b6ca8;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
         }
         .summary-card-sub {
-            font-size: 11px;
+            font-size: 10px;
             color: #999;
         }
         .section-title {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 700;
             color: #0a2342;
-            margin-top: 30px;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
+            margin-top: 5px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
             border-bottom: 2px solid #e5e7eb;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             page-break-inside: avoid;
         }
         tbody tr {
@@ -147,9 +152,9 @@
         }
         th {
             background: #f0f4f8;
-            padding: 10px;
+            padding: 8px;
             text-align: left;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.05em;
@@ -157,9 +162,9 @@
             border-bottom: 2px solid #d1d5db;
         }
         td {
-            padding: 10px;
+            padding: 8px;
             border-bottom: 1px solid #e5e7eb;
-            font-size: 12px;
+            font-size: 11px;
         }
         tr:last-child td {
             border-bottom: none;
@@ -196,18 +201,18 @@
             color: #6b7280;
         }
         .footer {
-            margin-top: 40px;
-            padding-top: 20px;
+            margin-top: 20px;
+            padding-top: 10px;
             border-top: 1px solid #e5e7eb;
             text-align: center;
-            font-size: 10px;
+            font-size: 9px;
             color: #999;
         }
         .progress-bar-wrap {
             background: #e5e7eb;
-            height: 6px;
+            height: 4px;
             border-radius: 3px;
-            margin-top: 3px;
+            margin-top: 2px;
             overflow: hidden;
         }
         .progress-bar {
@@ -237,7 +242,7 @@
     <div class="page page-1">
         <div class="branding">
             <div class="branding-logo">
-                <img src="{{ public_path('eventurelogo.png') }}" alt="Eventure logo">
+                <img src="{{ public_path('eventure-signinlogo.png') }}" alt="Eventure logo">
             </div>
             <div class="branding-text">
                 <div class="branding-name">Eventure</div>
@@ -297,7 +302,7 @@
     <div class="page page-2">
         <div class="branding">
             <div class="branding-logo">
-                <img src="{{ public_path('eventurelogo.png') }}" alt="Eventure logo">
+                <img src="{{ public_path('eventure-signinlogo.png') }}" alt="Eventure logo">
             </div>
             <div class="branding-text">
                 <div class="branding-name">Eventure</div>

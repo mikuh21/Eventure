@@ -20,7 +20,7 @@
         }
         .page {
             page-break-after: always;
-            padding: 40px;
+            padding: 30px;
             background: #fff;
             position: relative;
         }
@@ -30,23 +30,23 @@
         .branding {
             display: flex;
             align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
             border-bottom: 2px solid #1b6ca8;
         }
         .branding-logo {
             width: 50px;
             height: 50px;
-            background: linear-gradient(135deg, #1b6ca8 0%, #0a2342 100%);
-            border-radius: 8px;
+            margin-right: 15px;
+            flex-shrink: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #fff;
-            font-weight: 700;
-            font-size: 20px;
-            margin-right: 15px;
-            flex-shrink: 0;
+        }
+        .branding-logo img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
         }
         .branding-text {
             flex: 1;
@@ -60,84 +60,87 @@
             margin-bottom: 3px;
         }
         .branding-name {
-            font-size: 18px;
-            font-weight: 700;
-            color: #1b6ca8;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #666;
+            font-style: italic;
         }
         .header {
             border-bottom: 3px solid #1b6ca8;
-            padding-bottom: 20px;
-            margin-bottom: 30px;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
         }
         .header h1 {
-            font-size: 28px;
+            font-size: 24px;
             color: #1b6ca8;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
         }
         .header p {
-            font-size: 12px;
+            font-size: 11px;
             color: #666;
         }
         .event-details {
             background: #f0f4f8;
-            padding: 15px;
+            padding: 12px;
             border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 12px;
-            line-height: 1.8;
+            margin-bottom: 15px;
+            font-size: 11px;
+            line-height: 1.6;
         }
         .event-details div {
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
         .event-details strong {
             color: #1b6ca8;
             display: inline-block;
-            width: 120px;
+            width: 110px;
         }
         .summary-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            margin-bottom: 30px;
+            gap: 10px;
+            margin-bottom: 15px;
         }
         .summary-card {
             background: #f8fafb;
             border: 1px solid #e5e7eb;
             border-radius: 8px;
-            padding: 15px;
+            padding: 12px;
             text-align: center;
         }
         .summary-card-label {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             color: #666;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
         .summary-card-value {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: 700;
             color: #1b6ca8;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
         }
         .summary-card-sub {
-            font-size: 11px;
+            font-size: 10px;
             color: #999;
         }
         .section-title {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 700;
             color: #0a2342;
-            margin-top: 30px;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
+            margin-top: 15px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
             border-bottom: 2px solid #e5e7eb;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             page-break-inside: avoid;
         }
         tbody tr {
@@ -145,9 +148,9 @@
         }
         th {
             background: #f0f4f8;
-            padding: 10px;
+            padding: 8px;
             text-align: left;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.05em;
@@ -155,18 +158,18 @@
             border-bottom: 2px solid #d1d5db;
         }
         td {
-            padding: 10px;
+            padding: 8px;
             border-bottom: 1px solid #e5e7eb;
-            font-size: 12px;
+            font-size: 11px;
         }
         tr:last-child td {
             border-bottom: none;
         }
         .progress-bar-wrap {
             background: #e5e7eb;
-            height: 6px;
+            height: 4px;
             border-radius: 3px;
-            margin-top: 3px;
+            margin-top: 2px;
             overflow: hidden;
         }
         .progress-bar {
@@ -177,20 +180,22 @@
         .rating-row {
             display: flex;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
         .rating-label {
-            width: 60px;
+            width: 50px;
             font-weight: 600;
+            font-size: 11px;
         }
         .rating-count {
-            width: 40px;
+            width: 35px;
             text-align: right;
+            font-size: 11px;
         }
         .distribution-bar {
             flex: 1;
-            margin: 0 10px;
-            height: 20px;
+            margin: 0 8px;
+            height: 16px;
             background: #e5e7eb;
             border-radius: 3px;
             overflow: hidden;
@@ -203,26 +208,27 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px;
-            margin-bottom: 8px;
+            padding: 8px;
+            margin-bottom: 6px;
             background: #f8fafb;
             border-radius: 6px;
         }
         .question-text {
             flex: 1;
-            font-size: 11px;
+            font-size: 10px;
         }
         .question-rating {
             font-weight: 700;
             color: #1b6ca8;
-            margin-left: 10px;
+            margin-left: 8px;
+            font-size: 11px;
         }
         .footer {
-            margin-top: 40px;
-            padding-top: 20px;
+            margin-top: 20px;
+            padding-top: 10px;
             border-top: 1px solid #e5e7eb;
             text-align: center;
-            font-size: 10px;
+            font-size: 9px;
             color: #999;
         }
         .badge {
@@ -257,10 +263,11 @@
 <body>
     <div class="page">
         <div class="branding">
-            <div class="branding-logo">✦</div>
+            <div class="branding-logo">
+                <img src="{{ public_path('eventure-signinlogo.png') }}" alt="Eventure logo">
+            </div>
             <div class="branding-text">
-                <div class="branding-label">Eventure</div>
-                <div class="branding-name">Event Report</div>
+                <div class="branding-name">Eventure</div>
             </div>
         </div>
 
