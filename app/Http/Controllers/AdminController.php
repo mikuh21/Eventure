@@ -176,11 +176,11 @@ class AdminController extends Controller
         $responseRate   = $participantsTotal > 0 ? round(($evaluationsTotal / $participantsTotal) * 100, 1) : 0;
         $attendanceRate = $participantsTotal > 0 ? round(($attendedTotal / $participantsTotal) * 100, 1) : 0;
 
-        // Per-event breakdown
+        // Per-event breakdown (real-time data for all events, regardless of status)
         $eventsQuery = Event::query()
             ->withCount([
                 'participants as participants_count',
-                'participants as attended_count' => fn ($q) => $q->where('attended', true)->whereHas('event', fn ($q2) => $q2->whereDate('end_date', '<', now()->toDateString())),
+                'participants as attended_count' => fn ($q) => $q->where('attended', true),
                 'evaluations as evaluations_count' => fn ($q) => $q->whereHas('participant.event', fn ($q2) => $q2->whereDate('end_date', '<', now()->toDateString())),
             ])
             ->withAvg(['evaluations as avg_rating' => fn ($q) => $q->whereHas('participant.event', fn ($q2) => $q2->whereDate('end_date', '<', now()->toDateString()))], 'rating')
@@ -272,11 +272,11 @@ class AdminController extends Controller
         $responseRate   = $participantsTotal > 0 ? round(($evaluationsTotal / $participantsTotal) * 100, 1) : 0;
         $attendanceRate = $participantsTotal > 0 ? round(($attendedTotal / $participantsTotal) * 100, 1) : 0;
 
-        // Per-event breakdown
+        // Per-event breakdown (real-time data for all events, regardless of status)
         $eventsQuery = Event::query()
             ->withCount([
                 'participants as participants_count',
-                'participants as attended_count' => fn ($q) => $q->where('attended', true)->whereHas('event', fn ($q2) => $q2->whereDate('end_date', '<', now()->toDateString())),
+                'participants as attended_count' => fn ($q) => $q->where('attended', true),
                 'evaluations as evaluations_count' => fn ($q) => $q->whereHas('participant.event', fn ($q2) => $q2->whereDate('end_date', '<', now()->toDateString())),
             ])
             ->withAvg(['evaluations as avg_rating' => fn ($q) => $q->whereHas('participant.event', fn ($q2) => $q2->whereDate('end_date', '<', now()->toDateString()))], 'rating')
