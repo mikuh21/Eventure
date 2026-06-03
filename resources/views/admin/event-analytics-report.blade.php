@@ -262,12 +262,8 @@
         }
         .page-break {
             page-break-before: always;
-        }
-        .star {
-            display: inline-block;
-            width: 14px;
-            height: 14px;
-            vertical-align: middle;
+            margin-top: -30px;
+            padding-top: 30px;
         }
         .page2-branding {
             display: flex;
@@ -366,13 +362,7 @@
                 <div class="summary-card-value">{{ $avgRating > 0 ? $avgRating : '—' }}</div>
                 <div class="summary-card-sub">
                     @if ($avgRating > 0)
-                        @for ($s = 1; $s <= 5; $s++)
-                            @if ($s <= round($avgRating))
-                                <svg class="star" viewBox="0 0 24 24" fill="#1b6ca8" xmlns="http://www.w3.org/2000/svg"><polygon points="12,2 15.09,10.26 24,10.26 17.55,15.74 19.64,24 12,19.54 4.36,24 6.45,15.74 0,10.26 8.91,10.26"/></svg>
-                            @else
-                                <svg class="star" viewBox="0 0 24 24" fill="none" stroke="#1b6ca8" stroke-width="1.5" xmlns="http://www.w3.org/2000/svg"><polygon points="12,2 15.09,10.26 24,10.26 17.55,15.74 19.64,24 12,19.54 4.36,24 6.45,15.74 0,10.26 8.91,10.26"/></svg>
-                            @endif
-                        @endfor
+                        {{ str_repeat('★', round($avgRating)) }}{{ str_repeat('☆', 5 - round($avgRating)) }}
                     @else
                         No ratings
                     @endif
@@ -388,7 +378,6 @@
                         <img src="{{ public_path('eventure-signinlogo.png') }}" alt="Eventure logo">
                     </div>
                     <div class="page2-branding-text">
-                        <div class="page2-branding-label">Report Section</div>
                         <div class="page2-branding-name">Eventure</div>
                     </div>
                 </div>
@@ -401,9 +390,7 @@
                     @for ($rating = 5; $rating >= 1; $rating--)
                         <div class="rating-row">
                             <div class="rating-label">
-                                @for ($s = 1; $s <= $rating; $s++)
-                                    <svg class="star" viewBox="0 0 24 24" fill="#1b6ca8" xmlns="http://www.w3.org/2000/svg"><polygon points="12,2 15.09,10.26 24,10.26 17.55,15.74 19.64,24 12,19.54 4.36,24 6.45,15.74 0,10.26 8.91,10.26"/></svg>
-                                @endfor
+                                {{ str_repeat('★', $rating) }}
                             </div>
                             <div class="rating-count">{{ $ratingDistribution[$rating] }}</div>
                             <div class="distribution-bar">
