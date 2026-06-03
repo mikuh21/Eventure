@@ -168,7 +168,10 @@ class AdminController extends Controller
         $endedEvaluationsQuery = (clone $baseEvaluations)
             ->whereHas('participant.event', fn ($q) => $q->whereDate('end_date', '<', now()->toDateString()));
 
-        $participantsTotal = $endedParticipantsQuery->count();
+        // Real-time participants count (all events regardless of status)
+        $participantsTotal = $baseParticipants->count();
+        
+        // Attended and evaluations from ended events only (finalized data)
         $attendedTotal     = (clone $endedParticipantsQuery)->where('attended', true)->count();
         $evaluationsTotal  = $endedEvaluationsQuery->count();
         $avgRating         = round((float) (($endedEvaluationsQuery->avg('rating') ?? 0)), 1);
