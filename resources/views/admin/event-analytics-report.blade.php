@@ -371,6 +371,11 @@
             </div>
         </div>
 
+        <div class="footer">
+            <p>Eventure | Event Report Summary</p>
+            <p>{{ config('app.name') }} © {{ now()->year }}</p>
+        </div>
+
         @if ($totalEvaluations > 0)
             <div class="page-break">
                 <div class="page2-branding">
