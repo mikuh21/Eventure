@@ -262,7 +262,7 @@
         }
         .page-break {
             page-break-before: always;
-            padding-top: 0;
+            padding-top: 30px;
             margin-top: 0;
         }
         .page2-branding {
@@ -362,7 +362,7 @@
                 <div class="summary-card-value">{{ $avgRating > 0 ? $avgRating : '—' }}</div>
                 <div class="summary-card-sub">
                     @if ($avgRating > 0)
-                        {!! str_repeat('&#9733;', round($avgRating)) !!}{!! str_repeat('&#9734;', 5 - round($avgRating)) !!}
+                        @php echo str_repeat('★', round($avgRating)) . str_repeat('☆', 5 - round($avgRating)); @endphp
                     @else
                         No ratings
                     @endif
@@ -390,7 +390,7 @@
                     @for ($rating = 5; $rating >= 1; $rating--)
                         <div class="rating-row">
                             <div class="rating-label">
-                                {!! str_repeat('&#9733;', $rating) !!}
+                                @php echo str_repeat('★', $rating); @endphp
                             </div>
                             <div class="rating-count">{{ $ratingDistribution[$rating] }}</div>
                             <div class="distribution-bar">
