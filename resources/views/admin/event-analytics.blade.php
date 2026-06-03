@@ -123,7 +123,7 @@
         /* ── Filter bar ── */
         .filter-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 12px 16px; margin-bottom: 20px; }
         .filter-bar label { font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
-        .filter-select, .filter-input-sm { border: 1px solid #d1d5db; border-radius: 8px; padding: 7px 12px; font-family: 'Sora', sans-serif; font-size: 13px; color: #111827; background: #f8fafb; transition: border-color 150ms ease, box-shadow 150ms ease; text-align: center; }
+        .filter-select, .filter-input-sm { border: 1px solid #d1d5db; border-radius: 8px; padding: 7px 12px; font-family: 'Sora', sans-serif; font-size: 13px; color: #111827; background: #f8fafb; transition: border-color 150ms ease, box-shadow 150ms ease; }
         .filter-select { appearance: none; -webkit-appearance: none; -moz-appearance: none; padding-right: 34px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235BA4CF' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; background-size: 14px 14px; }
         .filter-select:focus, .filter-input-sm:focus { border-color: #1b6ca8; outline: none; box-shadow: 0 0 0 3px rgba(27,108,168,0.12); }
         .filter-input-sm { width: 86px; }
