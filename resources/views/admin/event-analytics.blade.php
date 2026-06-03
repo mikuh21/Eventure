@@ -130,7 +130,7 @@
         .filter-sep { width: 1px; height: 24px; background: #e5e7eb; flex-shrink: 0; }
         .btn-filter { border: none; background: #1b6ca8; color: #ffffff; border-radius: 8px; padding: 8px 16px; font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 150ms ease; white-space: nowrap; }
         .btn-filter:hover { background: #0a2342; }
-        .scope-badge { margin-left: auto; background: rgba(27,108,168,0.1); color: #1b6ca8; border: 1px solid rgba(27,108,168,0.25); border-radius: 999px; padding: 4px 12px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+        .scope-badge { margin-left: auto; background: rgba(27,108,168,0.1); color: #1b6ca8; border: 1px solid rgba(27,108,168,0.25); border-radius: 999px; padding: 4px 12px; font-size: 12px; font-weight: 600; white-space: nowrap; display: flex; align-items: center; gap: 6px; }
 
         /* ── Download button ── */
         .btn-download-report { display: inline-flex; align-items: center; gap: 6px; background: none; border: none; color: #1b6ca8; cursor: pointer; font-size: 12px; font-weight: 600; padding: 4px 8px; border-radius: 6px; transition: background 150ms ease, color 150ms ease; margin-left: 6px; }
