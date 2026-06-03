@@ -343,21 +343,18 @@ class AdminController extends Controller
         $responseRate = $totalParticipants > 0 ? round(($totalEvaluations / $totalParticipants) * 100, 1) : 0;
         $avgRating = $totalEvaluations > 0 ? round($evaluations->avg('rating'), 1) : 0;
 
-        // Get evaluation questions with averages
+        // Get evaluation questions (for reference in PDF)
         $questions = $event->evaluationQuestions()
             ->where('type', '!=', 'text')
             ->get()
-            ->map(function ($question) use ($event) {
-                $avgRating = Evaluation::whereHas('participant', fn ($q) => $q->where('event_id', $event->id))
-                    ->where('question_id', $question->id)
-                    ->avg('rating');
+            ->map(function ($question) {
                 return [
                     'question_text' => $question->question,
-                    'avg_rating' => $avgRating ? round($avgRating, 1) : 0,
+                    'avg_rating' => null, // Evaluations don't store per-question ratings
                 ];
             });
 
-        // Rating distribution
+        // Rating distribution (based on overall evaluation ratings)
         $ratingDistribution = [
             5 => $evaluations->where('rating', 5)->count(),
             4 => $evaluations->where('rating', 4)->count(),

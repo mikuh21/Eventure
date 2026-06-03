@@ -278,14 +278,16 @@
             </div>
 
             @if ($questions->count() > 0)
-                <div class="section-title">Question Averages</div>
+                <div class="section-title">Evaluation Questions</div>
                 <div>
                     @foreach ($questions as $question)
                         <div class="question-row">
                             <div class="question-text">{{ $question['question_text'] }}</div>
-                            <div class="question-rating">{{ $question['avg_rating'] > 0 ? $question['avg_rating'] : '—' }}</div>
                         </div>
                     @endforeach
+                    <div style="margin-top: 10px; font-size: 11px; color: #999;">
+                        Individual question ratings are tracked in the evaluation form responses.
+                    </div>
                 </div>
             @endif
         @else
