@@ -246,25 +246,21 @@ class Event extends Model
         $startDate = $this->start_date?->startOfDay();
         $endDate = $this->end_date?->endOfDay();
 
-        if ($this->isRegistrationOpen() || ($startDate && $endDate && $now->between($startDate, $endDate))) {
+        if ($startDate && $endDate && $now->between($startDate, $endDate)) {
             return 'Ongoing';
         }
 
         if ($this->start_date?->isFuture()) {
-            return 'Scheduled';
+            return 'Upcoming';
         }
 
-        return 'Scheduled';
+        return 'Upcoming';
     }
 
     public function isOngoing(): bool
     {
         if ($this->hasEnded()) {
             return false;
-        }
-
-        if ($this->isRegistrationOpen()) {
-            return true;
         }
 
         $now = now('Asia/Manila');
