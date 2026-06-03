@@ -325,7 +325,13 @@ class AdminController extends Controller
         ]);
 
         $filename = 'analytics-report-' . now()->format('Y-m-d-His') . '.pdf';
-        return $pdf->download($filename);
+        
+        return $pdf->download($filename)
+            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"')
+            ->header('Content-Type', 'application/pdf')
+            ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
     }
 
     public function downloadEventReport(Request $request, Event $event)
@@ -379,6 +385,11 @@ class AdminController extends Controller
         ]);
 
         $filename = 'event-report-' . \Illuminate\Support\Str::slug($event->title) . '-' . now()->format('Y-m-d-His') . '.pdf';
-        return $pdf->download($filename);
+        return $pdf->download($filename)
+            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"')
+            ->header('Content-Type', 'application/pdf')
+            ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
     }
 }

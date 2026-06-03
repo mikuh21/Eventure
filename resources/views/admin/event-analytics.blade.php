@@ -445,7 +445,7 @@
 
                 <span class="scope-badge">
                     {{ $scopeLabel }}
-                    <a href="{{ route('admin.analytics.report', array_merge($previewAuthQuery, ['period' => $analytics['period'], 'month' => $analytics['month'], 'year' => $analytics['year']])) }}" class="btn-download-report" title="Download Report">
+                    <a href="{{ route('admin.analytics.report', array_merge($previewAuthQuery, ['period' => $analytics['period'], 'month' => $analytics['month'], 'year' => $analytics['year']])) }}" class="btn-download-report" title="Download Report" download>
                         <svg viewBox="0 0 24 24" aria-hidden="true">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                             <polyline points="7 10 12 15 17 10"></polyline>
@@ -667,7 +667,7 @@
                                         @endif
                                     </td>
                                     <td style="text-align:center;">
-                                        <a href="{{ route('admin.analytics.event-report', array_merge($previewAuthQuery, ['event' => $ev->id])) }}" class="btn-event-report" title="Download Event Report">
+                                        <a href="{{ route('admin.analytics.event-report', array_merge($previewAuthQuery, ['event' => $ev->id])) }}" class="btn-event-report" title="Download Event Report" download>
                                             <svg viewBox="0 0 24 24" aria-hidden="true">
                                                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                                                 <polyline points="7 10 12 15 17 10"></polyline>
