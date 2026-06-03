@@ -345,14 +345,14 @@ class AdminController extends Controller
 
         // Get evaluation questions with averages
         $questions = $event->evaluationQuestions()
-            ->where('question_type', '!=', 'text')
+            ->where('type', '!=', 'text')
             ->get()
             ->map(function ($question) use ($event) {
                 $avgRating = Evaluation::whereHas('participant', fn ($q) => $q->where('event_id', $event->id))
                     ->where('question_id', $question->id)
                     ->avg('rating');
                 return [
-                    'question_text' => $question->question_text,
+                    'question_text' => $question->question,
                     'avg_rating' => $avgRating ? round($avgRating, 1) : 0,
                 ];
             });
