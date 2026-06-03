@@ -76,6 +76,10 @@ Route::middleware(['auth', 'admin'])->group(function (): void {
     Route::get('dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::get('admin/analytics/events', [AdminController::class, 'eventAnalytics'])
         ->name('admin.analytics.events');
+    Route::get('admin/analytics/report', [AdminController::class, 'downloadAnalyticsReport'])
+        ->name('admin.analytics.report');
+    Route::get('admin/analytics/report/{event}', [AdminController::class, 'downloadEventReport'])
+        ->name('admin.analytics.event-report');
 
     Route::resource('events', EventController::class);
 

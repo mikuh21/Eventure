@@ -132,6 +132,22 @@
         .btn-filter:hover { background: #0a2342; }
         .scope-badge { margin-left: auto; background: rgba(27,108,168,0.1); color: #1b6ca8; border: 1px solid rgba(27,108,168,0.25); border-radius: 999px; padding: 4px 12px; font-size: 12px; font-weight: 600; white-space: nowrap; }
 
+        /* ── Download button ── */
+        .btn-download-report { display: inline-flex; align-items: center; gap: 6px; background: none; border: none; color: #1b6ca8; cursor: pointer; font-size: 12px; font-weight: 600; padding: 4px 8px; border-radius: 6px; transition: background 150ms ease, color 150ms ease; margin-left: 6px; }
+        .btn-download-report:hover { background: rgba(27,108,168,0.1); color: #0a2342; }
+        .btn-download-report svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+        /* ── Event breakdown tabs ── */
+        .event-tabs { display: flex; gap: 8px; margin-bottom: 16px; border-bottom: 2px solid #e5e7eb; }
+        .event-tab { padding: 10px 16px; font-size: 12px; font-weight: 600; color: #6b7280; cursor: pointer; border: none; background: none; border-bottom: 3px solid transparent; transition: color 150ms ease, border-color 150ms ease; white-space: nowrap; }
+        .event-tab:hover { color: #1b6ca8; }
+        .event-tab.active { color: #1b6ca8; border-bottom-color: #1b6ca8; }
+
+        /* ── Report column styles ── */
+        .btn-event-report { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: rgba(27,108,168,0.1); border: 1px solid rgba(27,108,168,0.3); border-radius: 6px; color: #1b6ca8; cursor: pointer; text-decoration: none; transition: background 150ms ease, border-color 150ms ease; }
+        .btn-event-report:hover { background: rgba(27,108,168,0.2); border-color: rgba(27,108,168,0.5); }
+        .btn-event-report svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
+
         /* ── Stats grid ── */
         .stats-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-bottom: 18px; }
         .stat-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 14px; padding: 18px; position: relative; overflow: hidden; transition: transform 180ms ease, box-shadow 220ms ease, border-color 220ms ease; }
@@ -200,6 +216,16 @@
 
         @media (max-width: 1180px) { .content-grid { grid-template-columns: 1fr; } }
         @media (max-width: 900px)  { .stats-grid { grid-template-columns: repeat(2,1fr); } }
+        @media (max-width: 768px) {
+            .btn-download-report { margin-left: 0; margin-top: 8px; }
+            .scope-badge { margin-left: 0; margin-top: 8px; }
+            .filter-bar { flex-direction: column; }
+            .filter-bar > * { width: 100%; }
+            .event-tabs { flex-wrap: wrap; }
+            .event-tab { flex: 1; }
+            .events-table { font-size: 0.75rem; }
+            .events-table th, .events-table td { padding: 8px 6px; }
+        }
         @media (max-width: 960px)  {
             .nav-toggle { display: inline-flex; }
             .nav-overlay {
@@ -396,7 +422,16 @@
                     <a href="{{ $analyticsAction }}" style="font-size:12px;color:#6b7280;text-decoration:none;margin-left:2px;">Clear</a>
                 @endif
 
-                <span class="scope-badge">{{ $scopeLabel }}</span>
+                <span class="scope-badge">
+                    {{ $scopeLabel }}
+                    <a href="{{ route('admin.analytics.report', array_merge($previewAuthQuery, ['period' => $analytics['period'], 'month' => $analytics['month'], 'year' => $analytics['year']])) }}" class="btn-download-report" title="Download Report">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                    </a>
+                </span>
             </form>
 
             {{-- Stat cards --}}
@@ -551,6 +586,14 @@
             {{-- Per-event breakdown table --}}
             <div class="table-panel">
                 <h2 class="panel-title">Event Breakdown</h2>
+                
+                {{-- Event type tabs --}}
+                <div class="event-tabs" role="tablist">
+                    <button class="event-tab active" data-tab="all" role="tab" aria-selected="true">All Events</button>
+                    <button class="event-tab" data-tab="school_event" role="tab" aria-selected="false">School Events</button>
+                    <button class="event-tab" data-tab="conference" role="tab" aria-selected="false">Conferences</button>
+                </div>
+
                 <div class="table-wrap">
                     <table class="events-table">
                         <thead>
@@ -563,6 +606,7 @@
                                 <th>Evaluations</th>
                                 <th>Response Rate</th>
                                 <th>Avg Rating</th>
+                                <th>Report</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -580,7 +624,7 @@
                                         ? round((float) $ev->avg_rating, 1)
                                         : null;
                                 @endphp
-                                <tr>
+                                <tr class="event-row" data-event-type="{{ $ev->type }}">
                                     <td style="font-weight:600;color:#111827;max-width:200px;overflow:hidden;text-overflow:ellipsis;">{{ $ev->title }}</td>
                                     <td class="muted">{{ $ev->dateRangeLabel() }}</td>
                                     <td><span class="event-badge {{ $ev->type === 'conference' ? 'badge-conference' : 'badge-student' }}">{{ $ev->type === 'conference' ? 'Conference' : 'School' }}</span></td>
@@ -601,9 +645,18 @@
                                             <span class="muted">—</span>
                                         @endif
                                     </td>
+                                    <td style="text-align:center;">
+                                        <a href="{{ route('admin.analytics.event-report', array_merge($previewAuthQuery, ['event' => $ev->id])) }}" class="btn-event-report" title="Download Event Report">
+                                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                                <polyline points="7 10 12 15 17 10"></polyline>
+                                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                                            </svg>
+                                        </a>
+                                    </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="8" class="tbl-empty">No events found for this scope.</td></tr>
+                                <tr><td colspan="9" class="tbl-empty">No events found for this scope.</td></tr>
                             @endforelse
                         </tbody>
                     </table>
@@ -689,3 +742,40 @@
     </script>
 @endpush
 
+@push('scripts')
+    <script>
+        (function () {
+            // Event breakdown tabs filtering
+            var tabs = document.querySelectorAll('.event-tab');
+            var rows = document.querySelectorAll('.event-row');
+
+            if (tabs.length === 0) return;
+
+            tabs.forEach(function (tab) {
+                tab.addEventListener('click', function () {
+                    var filterType = this.getAttribute('data-tab');
+
+                    // Update active tab
+                    tabs.forEach(function (t) { t.classList.remove('active'); });
+                    tab.classList.add('active');
+                    tab.setAttribute('aria-selected', 'true');
+                    tabs.forEach(function (t) {
+                        if (t !== tab) {
+                            t.setAttribute('aria-selected', 'false');
+                        }
+                    });
+
+                    // Filter rows
+                    rows.forEach(function (row) {
+                        var eventType = row.getAttribute('data-event-type');
+                        if (filterType === 'all' || eventType === filterType) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                });
+            });
+        })();
+    </script>
+@endpush

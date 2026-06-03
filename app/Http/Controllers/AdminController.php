@@ -7,6 +7,7 @@ use App\Models\Evaluation;
 use App\Models\Participant;
 use App\Models\User;
 use App\Services\SurveyActivationService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -222,5 +223,164 @@ class AdminController extends Controller
             'analytics'       => $payload,
             'eventsBreakdown' => $eventsBreakdown,
         ]);
+    }
+
+    public function downloadAnalyticsReport(Request $request)
+    {
+        $period = $request->string('period', 'overall')->toString();
+        $month  = $request->integer('month') ?: now()->month;
+        $year   = $request->integer('year')  ?: now()->year;
+        $eventId = $request->integer('event_id') ?: null;
+
+        // Base queries – scoped to the selected period
+        $baseParticipants = Participant::query();
+        $baseEvaluations  = Evaluation::query();
+
+        if (auth()->user()->role !== User::ROLE_ADMIN) {
+            $staffId = auth()->id();
+            $baseParticipants->whereHas('event', fn ($q) => $q->where('created_by', $staffId));
+            $baseEvaluations->whereHas('participant.event', fn ($q) => $q->where('created_by', $staffId));
+        }
+
+        // Filter by event if provided
+        if ($eventId) {
+            $baseParticipants->where('event_id', $eventId);
+            $baseEvaluations->whereHas('participant', fn ($q) => $q->where('event_id', $eventId));
+        }
+
+        if ($period === 'month') {
+            $baseParticipants->whereHas('event', fn ($q) => $q->whereYear('start_date', $year)->whereMonth('start_date', $month));
+            $baseEvaluations->whereHas('participant.event', fn ($q) => $q->whereYear('start_date', $year)->whereMonth('start_date', $month));
+        }
+
+        if ($period === 'year') {
+            $baseParticipants->whereHas('event', fn ($q) => $q->whereYear('start_date', $year));
+            $baseEvaluations->whereHas('participant.event', fn ($q) => $q->whereYear('start_date', $year));
+        }
+
+        $endedParticipantsQuery = (clone $baseParticipants)
+            ->whereHas('event', fn ($q) => $q->whereDate('end_date', '<', now()->toDateString()));
+
+        $endedEvaluationsQuery = (clone $baseEvaluations)
+            ->whereHas('participant.event', fn ($q) => $q->whereDate('end_date', '<', now()->toDateString()));
+
+        $participantsTotal = $endedParticipantsQuery->count();
+        $attendedTotal     = (clone $endedParticipantsQuery)->where('attended', true)->count();
+        $evaluationsTotal  = $endedEvaluationsQuery->count();
+        $avgRating         = round((float) (($endedEvaluationsQuery->avg('rating') ?? 0)), 1);
+
+        $responseRate   = $participantsTotal > 0 ? round(($evaluationsTotal / $participantsTotal) * 100, 1) : 0;
+        $attendanceRate = $participantsTotal > 0 ? round(($attendedTotal / $participantsTotal) * 100, 1) : 0;
+
+        // Per-event breakdown
+        $eventsQuery = Event::query()
+            ->withCount([
+                'participants as participants_count',
+                'participants as attended_count' => fn ($q) => $q->where('attended', true),
+                'evaluations as evaluations_count' => fn ($q) => $q->whereHas('participant.event', fn ($q2) => $q2->whereDate('end_date', '<', now()->toDateString())),
+            ])
+            ->withAvg(['evaluations as avg_rating' => fn ($q) => $q->whereHas('participant.event', fn ($q2) => $q2->whereDate('end_date', '<', now()->toDateString()))], 'rating')
+            ->orderBy('start_date', 'asc');
+
+        if (auth()->user()->hasRole('event_staff')) {
+            $eventsQuery->where('created_by', auth()->id());
+        }
+
+        if ($eventId) {
+            $eventsQuery->where('id', $eventId);
+        }
+
+        if ($period === 'month') {
+            $eventsQuery->whereYear('start_date', $year)->whereMonth('start_date', $month);
+        }
+
+        if ($period === 'year') {
+            $eventsQuery->whereYear('start_date', $year);
+        }
+
+        $eventsBreakdown = $eventsQuery->get();
+
+        $scopeLabel = match($period) {
+            'month' => \Carbon\Carbon::create($year, $month)->format('F Y'),
+            'year'  => (string) $year,
+            default => 'All Time',
+        };
+
+        $pdf = Pdf::loadView('admin.analytics-report', [
+            'period' => $period,
+            'month' => $month,
+            'year' => $year,
+            'scopeLabel' => $scopeLabel,
+            'totalEvents' => $eventsBreakdown->count(),
+            'totalParticipants' => $participantsTotal,
+            'attendedTotal' => $attendedTotal,
+            'attendanceRate' => $attendanceRate,
+            'totalEvaluations' => $evaluationsTotal,
+            'responseRate' => $responseRate,
+            'avgRating' => $avgRating,
+            'eventsBreakdown' => $eventsBreakdown,
+        ]);
+
+        $filename = 'analytics-report-' . now()->format('Y-m-d-His') . '.pdf';
+        return $pdf->download($filename);
+    }
+
+    public function downloadEventReport(Request $request, Event $event)
+    {
+        // Check authorization
+        if (auth()->user()->role !== User::ROLE_ADMIN && $event->created_by !== auth()->id()) {
+            abort(403);
+        }
+
+        $eventParticipants = $event->participants()
+            ->whereDate('event_id', $event->id)
+            ->get();
+
+        $totalParticipants = $eventParticipants->count();
+        $attendedParticipants = $eventParticipants->where('attended', true)->count();
+        $attendanceRate = $totalParticipants > 0 ? round(($attendedParticipants / $totalParticipants) * 100, 1) : 0;
+
+        $evaluations = $event->evaluations;
+        $totalEvaluations = $evaluations->count();
+        $responseRate = $totalParticipants > 0 ? round(($totalEvaluations / $totalParticipants) * 100, 1) : 0;
+        $avgRating = $totalEvaluations > 0 ? round($evaluations->avg('rating'), 1) : 0;
+
+        // Get evaluation questions with averages
+        $questions = $event->evaluationQuestions()
+            ->where('question_type', '!=', 'text')
+            ->get()
+            ->map(function ($question) use ($event) {
+                $avgRating = Evaluation::whereHas('participant', fn ($q) => $q->where('event_id', $event->id))
+                    ->where('question_id', $question->id)
+                    ->avg('rating');
+                return [
+                    'question_text' => $question->question_text,
+                    'avg_rating' => $avgRating ? round($avgRating, 1) : 0,
+                ];
+            });
+
+        // Rating distribution
+        $ratingDistribution = [
+            5 => $evaluations->where('rating', 5)->count(),
+            4 => $evaluations->where('rating', 4)->count(),
+            3 => $evaluations->where('rating', 3)->count(),
+            2 => $evaluations->where('rating', 2)->count(),
+            1 => $evaluations->where('rating', 1)->count(),
+        ];
+
+        $pdf = Pdf::loadView('admin.event-analytics-report', [
+            'event' => $event,
+            'totalParticipants' => $totalParticipants,
+            'attendedParticipants' => $attendedParticipants,
+            'attendanceRate' => $attendanceRate,
+            'totalEvaluations' => $totalEvaluations,
+            'responseRate' => $responseRate,
+            'avgRating' => $avgRating,
+            'questions' => $questions,
+            'ratingDistribution' => $ratingDistribution,
+        ]);
+
+        $filename = 'event-report-' . \Illuminate\Support\Str::slug($event->title) . '-' . now()->format('Y-m-d-His') . '.pdf';
+        return $pdf->download($filename);
     }
 }
