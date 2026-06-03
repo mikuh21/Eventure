@@ -362,7 +362,7 @@
                 <div class="summary-card-value">{{ $avgRating > 0 ? $avgRating : '—' }}</div>
                 <div class="summary-card-sub">
                     @if ($avgRating > 0)
-                        @php echo str_repeat('★', round($avgRating)) . str_repeat('☆', 5 - round($avgRating)); @endphp
+                        {!! implode('', array_fill(0, round($avgRating), '&#9733;')) !!}{!! implode('', array_fill(0, 5 - round($avgRating), '&#9734;')) !!}
                     @else
                         No ratings
                     @endif
@@ -390,7 +390,7 @@
                     @for ($rating = 5; $rating >= 1; $rating--)
                         <div class="rating-row">
                             <div class="rating-label">
-                                @php echo str_repeat('★', $rating); @endphp
+                                {!! implode('', array_fill(0, $rating, '&#9733;')) !!}
                             </div>
                             <div class="rating-count">{{ $ratingDistribution[$rating] }}</div>
                             <div class="distribution-bar">
