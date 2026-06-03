@@ -127,6 +127,12 @@
         .filter-select { appearance: none; -webkit-appearance: none; -moz-appearance: none; padding-right: 34px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235BA4CF' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; background-size: 14px 14px; }
         .filter-select:focus, .filter-input-sm:focus { border-color: #1b6ca8; outline: none; box-shadow: 0 0 0 3px rgba(27,108,168,0.12); }
         .filter-input-sm { width: 86px; }
+        .filter-field-group { display: flex; align-items: center; gap: 10px; }
+        .filter-field-group label { margin: 0; }
+        .filter-input-field { border: 1px solid #d1d5db; border-radius: 8px; padding: 7px 12px; font-family: 'Sora', sans-serif; font-size: 13px; color: #111827; background: #f8fafb; transition: border-color 150ms ease, box-shadow 150ms ease; width: 120px; }
+        .filter-input-field:focus { border-color: #1b6ca8; outline: none; box-shadow: 0 0 0 3px rgba(27,108,168,0.12); }
+        .filter-input-field::-webkit-outer-spin-button,
+        .filter-input-field::-webkit-inner-spin-button { -webkit-appearance: inner-spin-button; opacity: 1; }
         .filter-sep { width: 1px; height: 24px; background: #e5e7eb; flex-shrink: 0; }
         .btn-filter { border: none; background: #1b6ca8; color: #ffffff; border-radius: 8px; padding: 8px 16px; font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 150ms ease; white-space: nowrap; }
         .btn-filter:hover { background: #0a2342; }
@@ -219,16 +225,15 @@
         @media (max-width: 768px) {
             .btn-download-report { margin-left: 0; margin-top: 0; }
             .scope-badge { margin-left: 0; margin-top: 6px; width: 100%; justify-content: space-between; padding: 8px 12px; font-size: 11px; }
-            .filter-bar { flex-direction: row; flex-wrap: wrap; gap: 8px; padding: 10px; display: flex; align-items: flex-start; }
+            .filter-bar { flex-direction: column; gap: 8px; padding: 10px; display: flex; align-items: stretch; }
             .filter-bar > label:not(label[for="year"]):not(label[for="month"]) { font-size: 10px; font-weight: 600; margin-bottom: 0; width: 100%; }
             .filter-bar > .filter-select { width: 100%; box-sizing: border-box; }
             .filter-bar > .filter-sep { display: none; }
             .filter-bar > .btn-filter { width: 100%; margin-top: 2px; box-sizing: border-box; }
             .filter-bar > a { font-size: 11px; margin-top: 2px; }
-            #yearField, #monthField { width: calc(50% - 4px) !important; display: flex !important; flex-direction: column; gap: 4px; box-sizing: border-box; }
-            #monthField { margin-left: 8px; }
-            #yearField > label, #monthField > label { font-size: 10px; margin-bottom: 0; }
-            #yearField > input, #monthField > input { width: 100%; box-sizing: border-box; padding: 6px 10px; font-size: 13px; }
+            .filter-field-group { width: 100%; display: flex; flex-direction: column; gap: 4px; align-items: stretch; }
+            .filter-field-group label { font-size: 10px; font-weight: 600; margin-bottom: 0; }
+            .filter-input-field { width: 100%; box-sizing: border-box; padding: 8px 12px; font-size: 14px; }
             .event-tabs { flex-wrap: wrap; }
             .event-tab { flex: 1; font-size: 11px; }
             .events-table { font-size: 0.75rem; }
@@ -414,14 +419,14 @@
 
                 <span class="filter-sep"></span>
 
-                <div id="yearField" style="display:flex;align-items:center;gap:10px;">
+                <div id="yearField" class="filter-field-group">
                     <label for="year">Year</label>
-                    <input id="year" name="year" type="number" min="2000" max="2100" value="{{ $analytics['year'] }}" class="filter-input-sm">
+                    <input id="year" name="year" type="number" min="2000" max="2100" value="{{ $analytics['year'] }}" class="filter-input-field" placeholder="Select year">
                 </div>
 
-                <div id="monthField" style="display:flex;align-items:center;gap:10px;">
+                <div id="monthField" class="filter-field-group">
                     <label for="month">Month</label>
-                    <input id="month" name="month" type="number" min="1" max="12" value="{{ $analytics['month'] }}" class="filter-input-sm">
+                    <input id="month" name="month" type="number" min="1" max="12" value="{{ $analytics['month'] }}" class="filter-input-field" placeholder="Select month">
                 </div>
 
                 <button type="submit" class="btn-filter">Apply</button>
@@ -735,8 +740,13 @@
             var periodSel  = document.getElementById('period');
             var yearField  = document.getElementById('yearField');
             var monthField = document.getElementById('monthField');
+            var yearInput  = document.getElementById('year');
+            var monthInput = document.getElementById('month');
 
             if (!periodSel) return;
+
+            var monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                            'July', 'August', 'September', 'October', 'November', 'December'];
 
             var sync = function () {
                 var v = periodSel.value;
@@ -744,8 +754,35 @@
                 monthField.style.display = v === 'month'   ? 'flex'  : 'none';
             };
 
+            // Handle month input to show month name
+            var updateMonthDisplay = function () {
+                var monthNum = parseInt(monthInput.value, 10);
+                if (monthNum >= 1 && monthNum <= 12) {
+                    monthInput.placeholder = monthNames[monthNum - 1];
+                } else {
+                    monthInput.placeholder = 'Select month';
+                }
+            };
+
+            // Handle year input validation
+            var updateYearDisplay = function () {
+                var yearNum = parseInt(yearInput.value, 10);
+                if (yearNum >= 2000 && yearNum <= 2100) {
+                    yearInput.placeholder = yearNum.toString();
+                } else {
+                    yearInput.placeholder = 'Select year';
+                }
+            };
+
             periodSel.addEventListener('change', sync);
+            monthInput.addEventListener('change', updateMonthDisplay);
+            monthInput.addEventListener('input', updateMonthDisplay);
+            yearInput.addEventListener('change', updateYearDisplay);
+            yearInput.addEventListener('input', updateYearDisplay);
+            
             sync();
+            updateMonthDisplay();
+            updateYearDisplay();
         })();
     </script>
 @endpush
