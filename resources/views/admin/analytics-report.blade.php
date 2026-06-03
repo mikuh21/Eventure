@@ -34,13 +34,14 @@
             page-break-after: always;
             margin: 0;
             padding: 40px;
+            margin-bottom: 0;
             orphans: 1;
             widows: 1;
         }
         .page-2 {
-            page-break-before: always;
+            page-break-before: always !important;
             page-break-inside: avoid;
-            margin: 0;
+            margin: 0 !important;
             padding: 40px;
             display: block;
             clear: both;
@@ -48,12 +49,26 @@
             orphans: 1;
             widows: 1;
         }
+        .event-breakdown-section {
+            page-break-before: always !important;
+            page-break-inside: avoid;
+            margin: 0 !important;
+            padding: 0;
+            break-inside: avoid;
+        }
+        .section-title {
+            page-break-after: avoid;
+        }
         .branding {
             display: flex;
             align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
             border-bottom: 2px solid #1b6ca8;
+            page-break-inside: avoid;
+        }
+        .page-2 .branding {
+            margin-bottom: 8px;
         }
         .branding-logo {
             width: 50px;
@@ -90,8 +105,9 @@
         }
         .header {
             border-bottom: 3px solid #1b6ca8;
-            padding-bottom: 20px;
-            margin-bottom: 30px;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+            page-break-inside: avoid;
         }
         .header h1 {
             font-size: 28px;
@@ -104,10 +120,12 @@
         }
         .scope-info {
             background: #f0f4f8;
-            padding: 12px;
+            padding: 10px 12px;
             border-left: 4px solid #1b6ca8;
-            margin-bottom: 20px;
+            margin-bottom: 12px;
             font-size: 13px;
+            page-break-inside: avoid;
+            page-break-after: avoid;
         }
         .scope-info strong {
             color: #1b6ca8;
@@ -116,14 +134,17 @@
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 15px;
-            margin-bottom: 30px;
+            margin-bottom: 12px;
+            page-break-inside: avoid;
+            page-break-after: avoid;
         }
         .summary-card {
             background: #f8fafb;
             border: 1px solid #e5e7eb;
             border-radius: 8px;
-            padding: 15px;
+            padding: 12px;
             text-align: center;
+            page-break-inside: avoid;
         }
         .summary-card-label {
             font-size: 11px;
@@ -156,10 +177,13 @@
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
-            page-break-inside: avoid;
+            page-break-inside: avoid !important;
         }
         tbody tr {
-            page-break-inside: avoid;
+            page-break-inside: avoid !important;
+        }
+        .page-2 table {
+            page-break-inside: avoid !important;
         }
         th {
             background: #f0f4f8;
@@ -212,12 +236,17 @@
             color: #6b7280;
         }
         .footer {
-            margin-top: 40px;
-            padding-top: 20px;
+            margin-top: 20px;
+            padding-top: 10px;
             border-top: 1px solid #e5e7eb;
             text-align: center;
             font-size: 10px;
             color: #999;
+            margin-bottom: 0;
+        }
+        .page-1 .footer {
+            margin-top: 15px;
+            padding-top: 8px;
         }
         .progress-bar-wrap {
             background: #e5e7eb;
@@ -319,9 +348,10 @@
             </div>
         </div>
 
-        <div class="section-title">Event Breakdown</div>
-        @if ($totalEvents > 0)
-        <table>
+        <div class="event-breakdown-section">
+            <div class="section-title">Event Breakdown</div>
+            @if ($totalEvents > 0)
+            <table>
             <thead>
                 <tr>
                     <th>Event Name</th>
@@ -375,10 +405,11 @@
             </tbody>
         </table>
         @else
-        <div class="empty-state">
-            No events found for this scope.
+            <div class="empty-state">
+                No events found for this scope.
+            </div>
+            @endif
         </div>
-        @endif
 
         <div class="footer">
             <p>Eventure | Events Report Summary</p>
