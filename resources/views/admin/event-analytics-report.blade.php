@@ -263,6 +263,58 @@
         .page-break {
             page-break-before: always;
         }
+        .star {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            vertical-align: middle;
+        }
+        .page2-branding {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #1b6ca8;
+        }
+        .page2-branding-logo {
+            width: 40px;
+            height: 40px;
+            margin-right: 12px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .page2-branding-logo img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        .page2-branding-text {
+            flex: 1;
+        }
+        .page2-branding-label {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #999;
+            margin-bottom: 2px;
+        }
+        .page2-branding-name {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #666;
+            font-style: italic;
+        }
+        .card-footer-text {
+            margin-top: 8px;
+            font-size: 10px;
+            color: #666;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -278,7 +330,7 @@
 
         <div class="header">
             <h1>{{ \Illuminate\Support\Str::limit($event->title, 50, '…') }}</h1>
-            <p>Event Report | Generated on {{ now()->format('F d, Y') }} at {{ now()->format('h:i A') }}</p>
+            <p>Event Report Summary | Generated on {{ now()->format('F d, Y') }} at {{ now()->format('h:i A') }}</p>
         </div>
 
         <div class="event-details">
@@ -315,17 +367,32 @@
                 <div class="summary-card-sub">
                     @if ($avgRating > 0)
                         @for ($s = 1; $s <= 5; $s++)
-                            {!! $s <= round($avgRating) ? '&#9733;' : '&#9734;' !!}
+                            @if ($s <= round($avgRating))
+                                <svg class="star" viewBox="0 0 24 24" fill="#1b6ca8" xmlns="http://www.w3.org/2000/svg"><polygon points="12,2 15.09,10.26 24,10.26 17.55,15.74 19.64,24 12,19.54 4.36,24 6.45,15.74 0,10.26 8.91,10.26"/></svg>
+                            @else
+                                <svg class="star" viewBox="0 0 24 24" fill="none" stroke="#1b6ca8" stroke-width="1.5" xmlns="http://www.w3.org/2000/svg"><polygon points="12,2 15.09,10.26 24,10.26 17.55,15.74 19.64,24 12,19.54 4.36,24 6.45,15.74 0,10.26 8.91,10.26"/></svg>
+                            @endif
                         @endfor
                     @else
                         No ratings
                     @endif
                 </div>
+                <div class="card-footer-text">Based on {{ $totalEvaluations }} evaluation{{ $totalEvaluations !== 1 ? 's' : '' }}</div>
             </div>
         </div>
 
         @if ($totalEvaluations > 0)
             <div class="page-break">
+                <div class="page2-branding">
+                    <div class="page2-branding-logo">
+                        <img src="{{ public_path('eventure-signinlogo.png') }}" alt="Eventure logo">
+                    </div>
+                    <div class="page2-branding-text">
+                        <div class="page2-branding-label">Report Section</div>
+                        <div class="page2-branding-name">Eventure</div>
+                    </div>
+                </div>
+
                 <div class="section-title">Rating Distribution</div>
                 <div>
                     @php
@@ -333,7 +400,11 @@
                     @endphp
                     @for ($rating = 5; $rating >= 1; $rating--)
                         <div class="rating-row">
-                            <div class="rating-label">{!! str_repeat('&#9733;', $rating) !!}</div>
+                            <div class="rating-label">
+                                @for ($s = 1; $s <= $rating; $s++)
+                                    <svg class="star" viewBox="0 0 24 24" fill="#1b6ca8" xmlns="http://www.w3.org/2000/svg"><polygon points="12,2 15.09,10.26 24,10.26 17.55,15.74 19.64,24 12,19.54 4.36,24 6.45,15.74 0,10.26 8.91,10.26"/></svg>
+                                @endfor
+                            </div>
                             <div class="rating-count">{{ $ratingDistribution[$rating] }}</div>
                             <div class="distribution-bar">
                                 @if ($maxRating > 0)
@@ -353,7 +424,7 @@
         @endif
 
         <div class="footer">
-            <p>Eventure | Event Report</p>
+            <p>Eventure | Event Report Summary</p>
             <p>{{ config('app.name') }} © {{ now()->year }}</p>
         </div>
     </div>
