@@ -4,6 +4,10 @@
     <meta charset="utf-8">
     <title>Event Analytics Report</title>
     <style>
+        @page {
+            margin: 0;
+            padding: 0;
+        }
         * {
             margin: 0;
             padding: 0;
@@ -18,9 +22,47 @@
             page-break-after: always;
             padding: 40px;
             background: #fff;
+            position: relative;
         }
         .page:last-child {
             page-break-after: avoid;
+        }
+        .branding {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #1b6ca8;
+        }
+        .branding-logo {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #1b6ca8 0%, #0a2342 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 700;
+            font-size: 20px;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        .branding-text {
+            flex: 1;
+        }
+        .branding-label {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #999;
+            margin-bottom: 3px;
+        }
+        .branding-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1b6ca8;
         }
         .header {
             border-bottom: 3px solid #1b6ca8;
@@ -90,6 +132,10 @@
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
+            page-break-inside: avoid;
+        }
+        tbody tr {
+            page-break-inside: avoid;
         }
         th {
             background: #f0f4f8;
@@ -181,8 +227,16 @@
 </head>
 <body>
     <div class="page">
+        <div class="branding">
+            <div class="branding-logo">✦</div>
+            <div class="branding-text">
+                <div class="branding-label">Eventure</div>
+                <div class="branding-name">Event Analytics Report</div>
+            </div>
+        </div>
+
         <div class="header">
-            <h1>Event Analytics Report</h1>
+            <h1>Analytics Summary</h1>
             <p>Generated on {{ now()->format('F d, Y') }} at {{ now()->format('h:i A') }}</p>
         </div>
 
