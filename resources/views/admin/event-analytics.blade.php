@@ -220,16 +220,16 @@
             .btn-download-report { margin-left: 0; margin-top: 0; }
             .scope-badge { margin-left: 0; margin-top: 8px; width: 100%; justify-content: space-between; padding: 8px 12px; }
             .filter-bar { flex-direction: column; gap: 10px; padding: 12px; }
-            .filter-bar > label { font-size: 11px; font-weight: 600; margin-bottom: -4px; }
-            .filter-bar > .filter-select, .filter-bar > .filter-input-sm { width: 100%; }
-            .filter-bar > * { width: 100%; box-sizing: border-box; }
+            .filter-bar > label:not(label[for="year"]):not(label[for="month"]) { font-size: 11px; font-weight: 600; margin-bottom: 2px; }
+            .filter-bar > .filter-select { width: 100%; box-sizing: border-box; }
             .filter-bar > .filter-sep { display: none; }
-            .filter-bar > .btn-filter { width: 100%; margin-top: 4px; }
-            #yearField, #monthField { width: 100% !important; display: flex !important; flex-direction: column; gap: 6px; }
-            #yearField > label, #monthField > label { font-size: 11px; margin-bottom: 2px; }
-            #yearField > input, #monthField > input { width: 100%; }
+            .filter-bar > .btn-filter { width: 100%; margin-top: 4px; box-sizing: border-box; }
+            .filter-bar > a { font-size: 12px; margin-top: 4px; }
+            #yearField, #monthField { width: 100% !important; display: flex !important; flex-direction: column; gap: 6px; box-sizing: border-box; }
+            #yearField > label, #monthField > label { font-size: 11px; margin-bottom: 0; }
+            #yearField > input, #monthField > input { width: 100%; box-sizing: border-box; }
             .event-tabs { flex-wrap: wrap; }
-            .event-tab { flex: 1; }
+            .event-tab { flex: 1; font-size: 11px; }
             .events-table { font-size: 0.75rem; }
             .events-table th, .events-table td { padding: 8px 6px; }
         }
