@@ -133,6 +133,8 @@
         .filter-input-field:focus { border-color: #1b6ca8; outline: none; box-shadow: 0 0 0 3px rgba(27,108,168,0.12); }
         .filter-input-field::-webkit-outer-spin-button,
         .filter-input-field::-webkit-inner-spin-button { -webkit-appearance: inner-spin-button; opacity: 1; }
+        .filter-month-select { border: 1px solid #d1d5db; border-radius: 8px; padding: 7px 12px; font-family: 'Sora', sans-serif; font-size: 13px; color: #111827; background: #f8fafb; transition: border-color 150ms ease, box-shadow 150ms ease; width: 120px; appearance: none; -webkit-appearance: none; -moz-appearance: none; }
+        .filter-month-select:focus { border-color: #1b6ca8; outline: none; box-shadow: 0 0 0 3px rgba(27,108,168,0.12); }
         .filter-sep { width: 1px; height: 24px; background: #e5e7eb; flex-shrink: 0; }
         .btn-filter { border: none; background: #1b6ca8; color: #ffffff; border-radius: 8px; padding: 8px 16px; font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 150ms ease; white-space: nowrap; }
         .btn-filter:hover { background: #0a2342; }
@@ -223,17 +225,18 @@
         @media (max-width: 1180px) { .content-grid { grid-template-columns: 1fr; } }
         @media (max-width: 900px)  { .stats-grid { grid-template-columns: repeat(2,1fr); } }
         @media (max-width: 768px) {
-            .btn-download-report { margin-left: 0; margin-top: 0; }
-            .scope-badge { margin-left: 0; margin-top: 6px; width: 100%; justify-content: space-between; padding: 8px 12px; font-size: 11px; }
-            .filter-bar { flex-direction: column; gap: 8px; padding: 10px; display: flex; align-items: stretch; }
+            .btn-download-report { margin-left: 0; margin-top: 0; padding: 6px; }
+            .scope-badge { margin-left: 0; margin-top: 6px; width: calc(100% + 2px); margin-left: -1px; margin-right: -1px; justify-content: space-between; padding: 10px 12px; font-size: 11px; flex-shrink: 0; box-sizing: border-box; }
+            .filter-bar { flex-direction: column; gap: 8px; padding: 10px; display: flex; align-items: stretch; width: 100%; box-sizing: border-box; }
             .filter-bar > label:not(label[for="year"]):not(label[for="month"]) { font-size: 10px; font-weight: 600; margin-bottom: 0; width: 100%; }
             .filter-bar > .filter-select { width: 100%; box-sizing: border-box; }
             .filter-bar > .filter-sep { display: none; }
-            .filter-bar > .btn-filter { width: 100%; margin-top: 2px; box-sizing: border-box; }
+            .filter-bar > .btn-filter { width: 100%; margin-top: 2px; box-sizing: border-box; padding: 10px 12px; }
             .filter-bar > a { font-size: 11px; margin-top: 2px; }
             .filter-field-group { width: 100%; display: flex; flex-direction: column; gap: 4px; align-items: stretch; }
             .filter-field-group label { font-size: 10px; font-weight: 600; margin-bottom: 0; }
             .filter-input-field { width: 100%; box-sizing: border-box; padding: 8px 12px; font-size: 14px; }
+            .filter-month-select { width: 100%; box-sizing: border-box; padding: 8px 12px; font-size: 14px; }
             .event-tabs { flex-wrap: wrap; }
             .event-tab { flex: 1; font-size: 11px; }
             .events-table { font-size: 0.75rem; }
@@ -421,12 +424,17 @@
 
                 <div id="yearField" class="filter-field-group">
                     <label for="year">Year</label>
-                    <input id="year" name="year" type="number" min="2000" max="2100" value="{{ $analytics['year'] }}" class="filter-input-field" placeholder="Select year">
+                    <input id="year" name="year" type="number" inputmode="numeric" min="2000" max="2100" value="{{ $analytics['year'] }}" class="filter-input-field" placeholder="Select year">
                 </div>
 
                 <div id="monthField" class="filter-field-group">
                     <label for="month">Month</label>
-                    <input id="month" name="month" type="number" min="1" max="12" value="{{ $analytics['month'] }}" class="filter-input-field" placeholder="Select month">
+                    <select id="month" name="month" class="filter-month-select">
+                        <option value="">Select month</option>
+                        @for ($m = 1; $m <= 12; $m++)
+                            <option value="{{ $m }}" {{ $analytics['month'] == $m ? 'selected' : '' }}>{{ \Carbon\Carbon::create(null, $m, 1)->format('F') }}</option>
+                        @endfor
+                    </select>
                 </div>
 
                 <button type="submit" class="btn-filter">Apply</button>
@@ -741,12 +749,9 @@
             var yearField  = document.getElementById('yearField');
             var monthField = document.getElementById('monthField');
             var yearInput  = document.getElementById('year');
-            var monthInput = document.getElementById('month');
+            var monthSelect = document.getElementById('month');
 
             if (!periodSel) return;
-
-            var monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
-                            'July', 'August', 'September', 'October', 'November', 'December'];
 
             var sync = function () {
                 var v = periodSel.value;
@@ -754,35 +759,8 @@
                 monthField.style.display = v === 'month'   ? 'flex'  : 'none';
             };
 
-            // Handle month input to show month name
-            var updateMonthDisplay = function () {
-                var monthNum = parseInt(monthInput.value, 10);
-                if (monthNum >= 1 && monthNum <= 12) {
-                    monthInput.placeholder = monthNames[monthNum - 1];
-                } else {
-                    monthInput.placeholder = 'Select month';
-                }
-            };
-
-            // Handle year input validation
-            var updateYearDisplay = function () {
-                var yearNum = parseInt(yearInput.value, 10);
-                if (yearNum >= 2000 && yearNum <= 2100) {
-                    yearInput.placeholder = yearNum.toString();
-                } else {
-                    yearInput.placeholder = 'Select year';
-                }
-            };
-
             periodSel.addEventListener('change', sync);
-            monthInput.addEventListener('change', updateMonthDisplay);
-            monthInput.addEventListener('input', updateMonthDisplay);
-            yearInput.addEventListener('change', updateYearDisplay);
-            yearInput.addEventListener('input', updateYearDisplay);
-            
             sync();
-            updateMonthDisplay();
-            updateYearDisplay();
         })();
     </script>
 @endpush
