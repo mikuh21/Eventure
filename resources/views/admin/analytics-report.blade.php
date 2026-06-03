@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Event Analytics Report</title>
+    <title>Events Report Summary - Eventure</title>
     <style>
         @page {
             margin: 0;
