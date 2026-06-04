@@ -978,6 +978,22 @@
                 transform: translateY(0);
             }
         }
+
+        .paste-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            cursor: pointer;
+            transition: color 200ms ease;
+            flex-shrink: 0;
+        }
+        .paste-btn:hover {
+            color: #1b6ca8;
+        }
+        .paste-btn.success {
+            color: #16a34a;
+        }
     </style>
 @endpush
 
@@ -1144,6 +1160,7 @@
                                                     data-start-registration="{{ $event->start_registration?->format('Y-m-d\\TH:i') }}"
                                                     data-end-registration="{{ $event->end_registration?->format('Y-m-d\\TH:i') }}"
                                                     data-location="{{ $event->location }}"
+                                                    data-meet-link="{{ $event->meet_link }}"
                                                     data-poster-path="{{ $event->poster_path }}"
                                                     data-template-file-path="{{ $event->template_file_path }}"
                                                 >Edit</button>
@@ -1294,6 +1311,19 @@
                     <div class="field">
                         <label for="editLocation">Location</label>
                         <input id="editLocation" name="location" type="text" required>
+                    </div>
+
+                    <div class="field" id="edit-meet-link-field" style="display: none;">
+                        <label for="editMeetLink">Meet Link (Virtual & Both)</label>
+                        <div style="position: relative;">
+                            <input id="editMeetLink" name="meet_link" type="url" placeholder="https://meet.google.com/..." style="padding-right: 40px;">
+                            <button type="button" id="editPasteMeetLinkBtn" class="paste-btn" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); border: none; background: none; padding: 0; cursor: pointer;" title="Paste from clipboard" aria-label="Paste meet link from clipboard">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
+                                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="field" id="edit-poster-field">
@@ -1547,6 +1577,12 @@
                 editStartRegistration.value = eventData.startRegistration || '';
                 editEndRegistration.value = eventData.endRegistration || '';
                 editLocation.value = eventData.location || '';
+                
+                // Set meet link value if exists
+                var editMeetLink = document.getElementById('editMeetLink');
+                if (editMeetLink) {
+                    editMeetLink.value = eventData.meetLink || '';
+                }
 
                 // Clear file inputs
                 editPoster.value = '';
@@ -1618,6 +1654,7 @@
                         startRegistration: editButton.dataset.startRegistration,
                         endRegistration: editButton.dataset.endRegistration,
                         location: editButton.dataset.location,
+                        meetLink: editButton.dataset.meetLink,
                         posterPath: editButton.dataset.posterPath,
                         templateFilePath: editButton.dataset.templateFilePath
                     };
@@ -1631,7 +1668,39 @@
 
             if (editAttendanceType) {
                 editAttendanceType.addEventListener('change', function () {
-                    // no-op for now, but ensures the field is available in the edit flow
+                    var meetLinkField = document.getElementById('edit-meet-link-field');
+                    if (meetLinkField) {
+                        var isVirtualOrBoth = editAttendanceType.value === 'virtual' || editAttendanceType.value === 'both';
+                        meetLinkField.style.display = isVirtualOrBoth ? 'block' : 'none';
+                    }
+                });
+                
+                // Trigger change to set initial state
+                var event = new Event('change');
+                editAttendanceType.dispatchEvent(event);
+            }
+
+            // Handle paste button for meet link in edit modal
+            var editPasteMeetLinkBtn = document.getElementById('editPasteMeetLinkBtn');
+            var editMeetLinkInput = document.getElementById('editMeetLink');
+            
+            if (editPasteMeetLinkBtn) {
+                editPasteMeetLinkBtn.addEventListener('click', async function(e) {
+                    e.preventDefault();
+                    try {
+                        var text = await navigator.clipboard.readText();
+                        editMeetLinkInput.value = text;
+                        editMeetLinkInput.focus();
+                        
+                        // Visual feedback
+                        var originalColor = editPasteMeetLinkBtn.style.color;
+                        editPasteMeetLinkBtn.style.color = '#16a34a';
+                        setTimeout(function() {
+                            editPasteMeetLinkBtn.style.color = originalColor;
+                        }, 1500);
+                    } catch (err) {
+                        alert('Failed to paste from clipboard');
+                    }
                 });
             }
 

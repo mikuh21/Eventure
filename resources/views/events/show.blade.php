@@ -472,10 +472,16 @@
                 <span class="event-view-label">Location</span>
                 <span class="event-view-value">{{ $event->location }}</span>
             </div>
-            @if (in_array($event->attendance_type, ['virtual', 'both']) && $event->meet_link)
+            @if (in_array($event->attendance_type, ['virtual', 'both']))
                 <div class="event-view-item">
                     <span class="event-view-label">Meet Link</span>
-                    <span class="event-view-value"><a href="{{ $event->meet_link }}" target="_blank" rel="noopener noreferrer" style="color: #1B6CA8; text-decoration: underline;">{{ $event->meet_link }}</a></span>
+                    <span class="event-view-value">
+                        @if ($event->meet_link)
+                            <a href="{{ $event->meet_link }}" target="_blank" rel="noopener noreferrer" style="color: #1B6CA8; text-decoration: underline;">{{ $event->meet_link }}</a>
+                        @else
+                            Not set
+                        @endif
+                    </span>
                 </div>
             @endif
             @if ($event->department)
