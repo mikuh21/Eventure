@@ -950,6 +950,89 @@
             flex: 0 0 auto;
         }
 
+        .meet-link-section {
+            padding: 24px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .meet-link-label {
+            margin: 0 0 12px;
+            font-size: 10px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--brand);
+        }
+
+        .meet-link-card {
+            background: var(--panel);
+            border: 1px solid var(--panel-border);
+            border-radius: 14px;
+            padding: 20px;
+            backdrop-filter: blur(12px);
+        }
+
+        .meet-link-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .meet-link-icon {
+            width: 24px;
+            height: 24px;
+            flex: 0 0 auto;
+            color: var(--brand);
+        }
+
+        .meet-link-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .meet-link-title {
+            margin: 0 0 4px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .meet-link-url {
+            margin: 0;
+            font-size: 12px;
+            color: var(--muted);
+            word-break: break-all;
+        }
+
+        .meet-link-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 16px;
+            background: var(--brand);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .meet-link-button:hover,
+        .meet-link-button:focus-visible {
+            filter: brightness(1.1);
+            outline: none;
+        }
+
+        .meet-link-not-set {
+            font-size: 13px;
+            color: var(--muted);
+            font-style: italic;
+        }
+
         @media (min-width: 421px) {
             body {
                 padding: 20px 0;
@@ -1038,6 +1121,36 @@
         </section>
 
         <div id="ios-save-tip" style="display:none;width:100%;margin-top:8px;text-align:center;color:#10b981;font-size:12px;">If the image did not save, long press the image and select Save to Photos</div>
+
+        @if(in_array($participant->event->attendance_type, ['virtual', 'both']))
+        <div class="divider"></div>
+
+        <section class="meet-link-section">
+            <p class="meet-link-label">Meet Link</p>
+
+            <div class="meet-link-card">
+                @if($participant->event->meet_link)
+                    <div class="meet-link-container">
+                        <svg class="meet-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                            <path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M3 7a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <div class="meet-link-content">
+                            <div class="meet-link-title">Meeting Link Ready</div>
+                            <p class="meet-link-url">{{ $participant->event->meet_link }}</p>
+                        </div>
+                    </div>
+                    <a href="{{ $participant->event->meet_link }}" target="_blank" rel="noopener noreferrer" class="meet-link-button" style="width:100%;margin-top:16px;justify-content:center;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:16px;height:16px;">
+                            <path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M3 7a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>Join Meeting</span>
+                    </a>
+                @else
+                    <div class="meet-link-not-set">Meet link not set yet</div>
+                @endif
+            </div>
+        </section>
+        @endif
 
         <div class="divider"></div>
 
