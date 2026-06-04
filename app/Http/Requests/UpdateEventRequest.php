@@ -27,6 +27,7 @@ class UpdateEventRequest extends FormRequest
             'start_registration' => ['sometimes', 'required', 'date'],
             'end_registration' => ['sometimes', 'required', 'date', 'after:start_registration'],
             'location' => ['sometimes', 'required', 'string', 'max:255'],
+            'meet_link' => ['nullable', 'url'],
             'poster' => ['nullable', 'image', 'max:5120'],
             'template_file' => ['nullable', 'file', 'mimes:pdf,doc,docx', 'max:5120'],
             'department' => ['nullable', 'string', 'max:255'],
