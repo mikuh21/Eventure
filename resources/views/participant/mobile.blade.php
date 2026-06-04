@@ -2425,16 +2425,32 @@
             confirmAttendanceBtn.textContent = 'Confirming...';
 
             try {
-                const response = await fetch(`/participants/${participantId}/confirm-attendance`, {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+                const url = `/participants/${participantId}/confirm-attendance`;
+                
+                const response = await fetch(url, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                        'X-CSRF-TOKEN': csrfToken || '',
+                        'Accept': 'application/json',
                     },
                     body: JSON.stringify({ token }),
                 });
 
-                const data = await response.json();
+                // Try to parse JSON response
+                let data;
+                try {
+                    data = await response.json();
+                } catch (e) {
+                    // If JSON parsing fails, provide generic error
+                    console.error('JSON parse error:', e, 'Response status:', response.status);
+                    attendanceError.textContent = 'Server error. Please try again.';
+                    attendanceError.classList.add('show');
+                    confirmAttendanceBtn.disabled = false;
+                    confirmAttendanceBtn.textContent = originalText;
+                    return;
+                }
 
                 if (data.success) {
                     attendanceError.classList.remove('show');
@@ -2451,7 +2467,7 @@
                 }
             } catch (err) {
                 console.error('Attendance confirmation error:', err);
-                attendanceError.textContent = 'An error occurred. Please try again.';
+                attendanceError.textContent = 'Network error. Please check your connection and try again.';
                 attendanceError.classList.add('show');
             } finally {
                 confirmAttendanceBtn.disabled = false;

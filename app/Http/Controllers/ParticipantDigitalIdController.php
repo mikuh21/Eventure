@@ -323,17 +323,24 @@ class ParticipantDigitalIdController extends Controller
             ], 404);
         }
 
-        $token = trim($request->input('token', ''));
+        $inputToken = trim($request->input('token', ''));
         
-        if (empty($token)) {
+        if (empty($inputToken)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Token is required. Please enter your participant token.'
             ], 422);
         }
 
+        // Try to parse as JSON first (in case it's the full QR code payload)
+        $tokenToMatch = $inputToken;
+        $decodedData = json_decode($inputToken, true);
+        if (is_array($decodedData) && isset($decodedData['token'])) {
+            $tokenToMatch = $decodedData['token'];
+        }
+
         // Verify token matches participant's digital_id_token
-        if ($token !== $participant->digital_id_token) {
+        if ($tokenToMatch !== $participant->digital_id_token) {
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid token. Please check and try again.'
