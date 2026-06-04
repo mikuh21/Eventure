@@ -2349,10 +2349,16 @@
         const cancelAttendanceBtn = document.getElementById('cancelAttendanceBtn');
         const confirmAttendanceBtn = document.getElementById('confirmAttendanceBtn');
 
-        // Get participant ID and meet link from page data
+        // Get participant ID from page data
         const pageEl = document.querySelector('main[data-participant-id]');
         const participantId = pageEl?.dataset?.participantId;
-        const currentToken = pageEl?.dataset?.token;
+        
+        console.log('Page element:', pageEl);
+        console.log('Participant ID from page:', participantId);
+        
+        if (!participantId) {
+            console.error('Participant ID not found in page data');
+        }
 
         // Open modal when "Join Meeting" button is clicked
         openAttendanceModalButtons.forEach(btn => {
@@ -2411,6 +2417,12 @@
         attendanceForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
+            if (!participantId) {
+                attendanceError.textContent = 'Unable to identify participant. Please refresh the page and try again.';
+                attendanceError.classList.add('show');
+                return;
+            }
+            
             const token = attendanceTokenInput.value.trim();
             
             if (!token) {
@@ -2428,6 +2440,10 @@
                 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
                 const url = `/participants/${participantId}/confirm-attendance`;
                 
+                console.log('Attempting to confirm attendance for participant:', participantId);
+                console.log('CSRF Token:', csrfToken ? 'present' : 'missing');
+                console.log('POST to:', url);
+                
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: {
@@ -2438,10 +2454,27 @@
                     body: JSON.stringify({ token }),
                 });
 
+                console.log('Response status:', response.status);
+                console.log('Response ok:', response.ok);
+
                 // Try to parse JSON response
                 let data;
+                const contentType = response.headers.get('content-type');
+                
+                if (!contentType || !contentType.includes('application/json')) {
+                    console.error('Invalid content type. Expected JSON, got:', contentType);
+                    const responseText = await response.text();
+                    console.error('Response body:', responseText);
+                    attendanceError.textContent = 'Server error. Please try again.';
+                    attendanceError.classList.add('show');
+                    confirmAttendanceBtn.disabled = false;
+                    confirmAttendanceBtn.textContent = originalText;
+                    return;
+                }
+
                 try {
                     data = await response.json();
+                    console.log('Parsed response data:', data);
                 } catch (e) {
                     // If JSON parsing fails, provide generic error
                     console.error('JSON parse error:', e, 'Response status:', response.status);
@@ -2467,7 +2500,9 @@
                 }
             } catch (err) {
                 console.error('Attendance confirmation error:', err);
-                attendanceError.textContent = 'Network error. Please check your connection and try again.';
+                console.error('Error message:', err.message);
+                console.error('Error stack:', err.stack);
+                attendanceError.textContent = 'An error occurred. Please try again. (Check browser console for details)';
                 attendanceError.classList.add('show');
             } finally {
                 confirmAttendanceBtn.disabled = false;

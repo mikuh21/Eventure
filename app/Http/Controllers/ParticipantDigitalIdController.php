@@ -307,57 +307,70 @@ class ParticipantDigitalIdController extends Controller
 
     public function confirmAttendance(Participant $participant, Request $request)
     {
-        // Only allow virtual or both attendance types
-        if (! in_array($participant->event->attendance_type, ['virtual', 'both'], true)) {
+        try {
+            // Only allow virtual or both attendance types
+            if (! in_array($participant->event->attendance_type, ['virtual', 'both'], true)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Attendance confirmation not available for this event type.'
+                ], 400);
+            }
+
+            // Check if meet_link is set
+            if (! $participant->event->meet_link) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Meet link not available for this event.'
+                ], 404);
+            }
+
+            $inputToken = trim($request->input('token', ''));
+            
+            if (empty($inputToken)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Token is required. Please enter your participant token.'
+                ], 422);
+            }
+
+            // Try to parse as JSON first (in case it's the full QR code payload)
+            $tokenToMatch = $inputToken;
+            $decodedData = json_decode($inputToken, true);
+            if (is_array($decodedData) && isset($decodedData['token'])) {
+                $tokenToMatch = $decodedData['token'];
+            }
+
+            // Verify token matches participant's digital_id_token
+            if ($tokenToMatch !== $participant->digital_id_token) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid token. Please check and try again.'
+                ], 401);
+            }
+
+            // Mark participant as attended
+            $participant->update([
+                'attended' => true,
+                'digital_id_verified_at' => $participant->digital_id_verified_at ?? now(),
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Attendance confirmed! Redirecting to meeting...',
+                'meet_link' => $participant->event->meet_link,
+            ]);
+        } catch (\Exception $e) {
+            // Log the error for debugging
+            \Log::error('Attendance confirmation error: ' . $e->getMessage(), [
+                'participant_id' => $participant->id,
+                'error' => $e,
+            ]);
+
             return response()->json([
                 'success' => false,
-                'message' => 'Attendance confirmation not available for this event type.'
-            ], 400);
+                'message' => 'An error occurred. Please try again.',
+            ], 500);
         }
-
-        // Check if meet_link is set
-        if (! $participant->event->meet_link) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Meet link not available for this event.'
-            ], 404);
-        }
-
-        $inputToken = trim($request->input('token', ''));
-        
-        if (empty($inputToken)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Token is required. Please enter your participant token.'
-            ], 422);
-        }
-
-        // Try to parse as JSON first (in case it's the full QR code payload)
-        $tokenToMatch = $inputToken;
-        $decodedData = json_decode($inputToken, true);
-        if (is_array($decodedData) && isset($decodedData['token'])) {
-            $tokenToMatch = $decodedData['token'];
-        }
-
-        // Verify token matches participant's digital_id_token
-        if ($tokenToMatch !== $participant->digital_id_token) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Invalid token. Please check and try again.'
-            ], 401);
-        }
-
-        // Mark participant as attended
-        $participant->update([
-            'attended' => true,
-            'digital_id_verified_at' => $participant->digital_id_verified_at ?? now(),
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Attendance confirmed! Redirecting to meeting...',
-            'meet_link' => $participant->event->meet_link,
-        ]);
     }
 
     private function qrPayload(Participant $participant): string
