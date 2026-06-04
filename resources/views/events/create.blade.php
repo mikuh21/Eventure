@@ -121,6 +121,22 @@
             justify-content: flex-end;
         }
 
+        .paste-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            cursor: pointer;
+            transition: color 200ms ease;
+            flex-shrink: 0;
+        }
+        .paste-btn:hover {
+            color: #1b6ca8;
+        }
+        .paste-btn.success {
+            color: #16a34a;
+        }
+
         @media (max-width: 980px) {
             .create-event-form {
                 grid-template-columns: 1fr;
@@ -141,22 +157,6 @@
             .create-event-form .field.single-column {
                 overflow: hidden;
                 padding: 0;
-            }
-
-            .paste-btn {
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                color: #6b7280;
-                cursor: pointer;
-                transition: color 200ms ease;
-                flex-shrink: 0;
-            }
-            .paste-btn:hover {
-                color: #1b6ca8;
-            }
-            .paste-btn.success {
-                color: #16a34a;
             }
         }
     </style>
