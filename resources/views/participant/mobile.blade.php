@@ -1195,6 +1195,7 @@
             border-radius: 8px;
             font-size: 14px;
             font-weight: 600;
+            font-family: 'Sora', sans-serif;
             cursor: pointer;
             transition: all 0.2s ease;
         }
@@ -1645,7 +1646,7 @@
             <button type="button" class="attendance-modal-close" id="closeAttendanceModal">×</button>
             
             <h2 class="attendance-modal-title">Confirm Attendance</h2>
-            <p style="font-size: 12px; color: #6b7280; margin-top: 16px; text-align: center;">By entering your token ID, you will be marked as Attended</p>
+            <p style="font-size: 12px; color: #6b7280; margin-top: 16px; text-align: left;">By entering your token ID, you will be marked as Attended</p>
 
             <form id="attendanceForm">
                 <div class="attendance-modal-input-group">
