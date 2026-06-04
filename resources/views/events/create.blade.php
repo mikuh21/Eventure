@@ -142,6 +142,22 @@
                 overflow: hidden;
                 padding: 0;
             }
+
+            .paste-btn {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                color: #6b7280;
+                cursor: pointer;
+                transition: color 200ms ease;
+                flex-shrink: 0;
+            }
+            .paste-btn:hover {
+                color: #1b6ca8;
+            }
+            .paste-btn.success {
+                color: #16a34a;
+            }
         }
     </style>
 @endpush
@@ -239,7 +255,15 @@
 
             <div class="field" id="meet-link-field" style="display: none;">
                 <label for="meet_link">Meet Link (Virtual & Both)</label>
-                <input id="meet_link" name="meet_link" type="url" value="{{ old('meet_link') }}" placeholder="https://meet.google.com/...">
+                <div style="position: relative;">
+                    <input id="meet_link" name="meet_link" type="url" value="{{ old('meet_link') }}" placeholder="https://meet.google.com/..." style="padding-right: 40px;">
+                    <button type="button" id="pasteMeetLinkBtn" class="paste-btn" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); border: none; background: none; padding: 0; cursor: pointer;" title="Paste from clipboard" aria-label="Paste meet link from clipboard">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
+                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                        </svg>
+                    </button>
+                </div>
             </div>
 
             <div class="field">
@@ -303,6 +327,30 @@
 
             attendanceTypeInput.addEventListener('change', toggleMeetLinkField);
             toggleMeetLinkField();
+
+            // Handle paste button for meet link
+            var pasteMeetLinkBtn = document.getElementById('pasteMeetLinkBtn');
+            var meetLinkInput = document.getElementById('meet_link');
+            
+            if (pasteMeetLinkBtn) {
+                pasteMeetLinkBtn.addEventListener('click', async function(e) {
+                    e.preventDefault();
+                    try {
+                        var text = await navigator.clipboard.readText();
+                        meetLinkInput.value = text;
+                        meetLinkInput.focus();
+                        
+                        // Visual feedback
+                        var originalColor = pasteMeetLinkBtn.style.color;
+                        pasteMeetLinkBtn.style.color = '#16a34a';
+                        setTimeout(function() {
+                            pasteMeetLinkBtn.style.color = originalColor;
+                        }, 1500);
+                    } catch (err) {
+                        alert('Failed to paste from clipboard');
+                    }
+                });
+            }
 
             // Initialize date pickers
             var initializeDatePickers = function() {
