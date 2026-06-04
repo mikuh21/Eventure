@@ -1039,7 +1039,7 @@
             inset: 0;
             background: rgba(0, 0, 0, 0.5);
             display: none;
-            align-items: flex-end;
+            align-items: center;
             justify-content: center;
             padding: 16px;
             box-sizing: border-box;
@@ -1328,13 +1328,7 @@
                             <p class="meet-link-url">{{ $participant->event->meet_link }}</p>
                         </div>
                     </div>
-                    <a href="{{ $participant->event->meet_link }}" target="_blank" rel="noopener noreferrer" class="meet-link-button" style="width:100%;margin-top:16px;justify-content:center; pointer-events:none; opacity:0.6;">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:16px;height:16px;">
-                            <path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M3 7a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        <span>View Link</span>
-                    </a>
-                    <button type="button" class="meet-link-button open-attendance-modal" style="width:100%;margin-top:8px;justify-content:center;">
+                    <button type="button" class="meet-link-button open-attendance-modal" style="width:100%;margin-top:16px;justify-content:center;">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:16px;height:16px;">
                             <path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M3 7a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
@@ -1651,7 +1645,9 @@
             <button type="button" class="attendance-modal-close" id="closeAttendanceModal">×</button>
             
             <h2 class="attendance-modal-title">Confirm Attendance</h2>
-            <p class="attendance-modal-subtitle">Enter your token ID to mark yourself as attended</p>
+            <<p style="font-size: 12px; color: #6b7280; margin-top: 16px; text-align: center;">
+                    By entering your token ID, you will be marked as Attended
+            </p>
 
             <form id="attendanceForm">
                 <div class="attendance-modal-input-group">
@@ -1683,9 +1679,6 @@
                     <button type="submit" class="attendance-modal-btn attendance-modal-btn-confirm" id="confirmAttendanceBtn">Confirm & Join</button>
                 </div>
 
-                <p style="font-size: 12px; color: #6b7280; margin-top: 16px; text-align: center;">
-                    By entering your token ID, you will be marked as Attended
-                </p>
             </form>
         </div>
     </div>
