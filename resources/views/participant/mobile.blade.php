@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Eventure Digital ID</title>
     <link rel="icon" href="{{ asset('eventuretabicon.png') }}" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1033,6 +1034,194 @@
             font-style: italic;
         }
 
+        .attendance-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+            padding: 16px;
+            box-sizing: border-box;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .attendance-modal-overlay.is-visible {
+            display: flex;
+            opacity: 1;
+        }
+
+        .attendance-modal-content {
+            width: 100%;
+            max-width: 520px;
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-sizing: border-box;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .attendance-modal-overlay.is-visible .attendance-modal-content {
+            transform: translateY(0);
+        }
+
+        .attendance-modal-close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #1f2937;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .attendance-modal-close:hover {
+            background: #f3f4f6;
+            border-radius: 8px;
+        }
+
+        .attendance-modal-title {
+            margin: 0 0 8px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+            padding-right: 32px;
+        }
+
+        .attendance-modal-subtitle {
+            margin: 0 0 16px;
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .attendance-modal-input-group {
+            margin-bottom: 16px;
+        }
+
+        .attendance-modal-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .attendance-modal-input-wrapper {
+            position: relative;
+        }
+
+        .attendance-modal-input {
+            width: 100%;
+            padding: 10px 12px;
+            padding-right: 44px;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: 'Sora', sans-serif;
+            color: #1f2937;
+            box-sizing: border-box;
+        }
+
+        .attendance-modal-input:focus {
+            outline: none;
+            border-color: var(--brand);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(27, 108, 168, 0.1);
+        }
+
+        .attendance-modal-paste-btn {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9ca3af;
+            transition: color 0.2s ease;
+        }
+
+        .attendance-modal-paste-btn:hover {
+            color: var(--brand);
+        }
+
+        .attendance-modal-paste-btn.success {
+            color: #10b981;
+        }
+
+        .attendance-modal-paste-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .attendance-modal-error {
+            display: none;
+            margin-top: 8px;
+            font-size: 12px;
+            color: #dc2626;
+        }
+
+        .attendance-modal-error.show {
+            display: block;
+        }
+
+        .attendance-modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .attendance-modal-btn {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .attendance-modal-btn-cancel {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .attendance-modal-btn-cancel:hover {
+            background: #d1d5db;
+        }
+
+        .attendance-modal-btn-confirm {
+            background: var(--brand);
+            color: white;
+        }
+
+        .attendance-modal-btn-confirm:hover {
+            filter: brightness(1.1);
+        }
+
+        .attendance-modal-btn-confirm:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         @media (min-width: 421px) {
             body {
                 padding: 20px 0;
@@ -1139,12 +1328,18 @@
                             <p class="meet-link-url">{{ $participant->event->meet_link }}</p>
                         </div>
                     </div>
-                    <a href="{{ $participant->event->meet_link }}" target="_blank" rel="noopener noreferrer" class="meet-link-button" style="width:100%;margin-top:16px;justify-content:center;">
+                    <a href="{{ $participant->event->meet_link }}" target="_blank" rel="noopener noreferrer" class="meet-link-button" style="width:100%;margin-top:16px;justify-content:center; pointer-events:none; opacity:0.6;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:16px;height:16px;">
+                            <path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M3 7a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>View Link</span>
+                    </a>
+                    <button type="button" class="meet-link-button open-attendance-modal" style="width:100%;margin-top:8px;justify-content:center;">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:16px;height:16px;">
                             <path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M3 7a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                         <span>Join Meeting</span>
-                    </a>
+                    </button>
                 @else
                     <div class="meet-link-not-set">Meet link not set yet</div>
                 @endif
@@ -1449,6 +1644,51 @@
             <p class="copyright">© 2026 Eventure. All rights reserved.</p>
         </footer>
     </main>
+
+    <!-- Attendance Confirmation Modal -->
+    <div class="attendance-modal-overlay" id="attendanceModal">
+        <div class="attendance-modal-content">
+            <button type="button" class="attendance-modal-close" id="closeAttendanceModal">×</button>
+            
+            <h2 class="attendance-modal-title">Confirm Attendance</h2>
+            <p class="attendance-modal-subtitle">Enter your token ID to mark yourself as attended</p>
+
+            <form id="attendanceForm">
+                <div class="attendance-modal-input-group">
+                    <label class="attendance-modal-label" for="attendanceTokenInput">Token ID</label>
+                    <div class="attendance-modal-input-wrapper">
+                        <input 
+                            type="text" 
+                            id="attendanceTokenInput" 
+                            class="attendance-modal-input" 
+                            placeholder="Paste or enter your token ID"
+                            autocomplete="off"
+                        >
+                        <button 
+                            type="button" 
+                            class="attendance-modal-paste-btn" 
+                            id="attendancePasteBtn"
+                            title="Paste from clipboard"
+                        >
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2M8 9h8M8 13h8M8 17h4" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="attendance-modal-error" id="attendanceError"></div>
+                </div>
+
+                <div class="attendance-modal-actions">
+                    <button type="button" class="attendance-modal-btn attendance-modal-btn-cancel" id="cancelAttendanceBtn">Cancel</button>
+                    <button type="submit" class="attendance-modal-btn attendance-modal-btn-confirm" id="confirmAttendanceBtn">Confirm & Join</button>
+                </div>
+
+                <p style="font-size: 12px; color: #6b7280; margin-top: 16px; text-align: center;">
+                    By entering your token ID, you will be marked as Attended
+                </p>
+            </form>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script>
@@ -2105,6 +2345,127 @@
                 }
             });
         }
+
+        // Attendance Confirmation Modal Handler
+        const attendanceModal = document.getElementById('attendanceModal');
+        const attendanceForm = document.getElementById('attendanceForm');
+        const attendanceTokenInput = document.getElementById('attendanceTokenInput');
+        const attendancePasteBtn = document.getElementById('attendancePasteBtn');
+        const attendanceError = document.getElementById('attendanceError');
+        const openAttendanceModalButtons = document.querySelectorAll('.open-attendance-modal');
+        const closeAttendanceModalBtn = document.getElementById('closeAttendanceModal');
+        const cancelAttendanceBtn = document.getElementById('cancelAttendanceBtn');
+        const confirmAttendanceBtn = document.getElementById('confirmAttendanceBtn');
+
+        // Get participant ID and meet link from page data
+        const pageEl = document.querySelector('main[data-participant-id]');
+        const participantId = pageEl?.dataset?.participantId;
+        const currentToken = pageEl?.dataset?.token;
+
+        // Open modal when "Join Meeting" button is clicked
+        openAttendanceModalButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                attendanceModal.classList.add('is-visible');
+                attendanceTokenInput.focus();
+            });
+        });
+
+        // Close modal functions
+        function closeAttendanceModal() {
+            attendanceModal.classList.remove('is-visible');
+            attendanceForm.reset();
+            attendanceError.classList.remove('show');
+            attendanceError.textContent = '';
+        }
+
+        closeAttendanceModalBtn.addEventListener('click', closeAttendanceModal);
+        cancelAttendanceBtn.addEventListener('click', closeAttendanceModal);
+
+        // Close on overlay click (outside modal)
+        attendanceModal.addEventListener('click', (e) => {
+            if (e.target === attendanceModal) {
+                closeAttendanceModal();
+            }
+        });
+
+        // Close on ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && attendanceModal.classList.contains('is-visible')) {
+                closeAttendanceModal();
+            }
+        });
+
+        // Paste functionality
+        attendancePasteBtn.addEventListener('click', async () => {
+            try {
+                const text = await navigator.clipboard.readText();
+                attendanceTokenInput.value = text.trim();
+                attendanceError.classList.remove('show');
+                attendanceError.textContent = '';
+                attendanceTokenInput.focus();
+                
+                // Show success feedback
+                attendancePasteBtn.classList.add('success');
+                setTimeout(() => {
+                    attendancePasteBtn.classList.remove('success');
+                }, 1500);
+            } catch (err) {
+                console.debug('Clipboard paste not available:', err);
+            }
+        });
+
+        // Handle form submission
+        attendanceForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const token = attendanceTokenInput.value.trim();
+            
+            if (!token) {
+                attendanceError.textContent = 'Token is required. Please enter your token ID.';
+                attendanceError.classList.add('show');
+                return;
+            }
+
+            // Disable button during submission
+            confirmAttendanceBtn.disabled = true;
+            const originalText = confirmAttendanceBtn.textContent;
+            confirmAttendanceBtn.textContent = 'Confirming...';
+
+            try {
+                const response = await fetch(`/participants/${participantId}/confirm-attendance`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                    },
+                    body: JSON.stringify({ token }),
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    attendanceError.classList.remove('show');
+                    showToast(data.message, 'success');
+                    
+                    // Redirect to meet link after brief delay
+                    setTimeout(() => {
+                        window.open(data.meet_link, '_blank');
+                        closeAttendanceModal();
+                    }, 500);
+                } else {
+                    attendanceError.textContent = data.message || 'Confirmation failed. Please try again.';
+                    attendanceError.classList.add('show');
+                }
+            } catch (err) {
+                console.error('Attendance confirmation error:', err);
+                attendanceError.textContent = 'An error occurred. Please try again.';
+                attendanceError.classList.add('show');
+            } finally {
+                confirmAttendanceBtn.disabled = false;
+                confirmAttendanceBtn.textContent = originalText;
+            }
+        });
     </script>
 </body>
 </html>

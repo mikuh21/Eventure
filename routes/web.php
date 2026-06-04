@@ -58,6 +58,9 @@ Route::get('participants/{participant}/confirmation', [ParticipantController::cl
 Route::get('participants/{participant}/digital-id', [ParticipantDigitalIdController::class, 'show'])
     ->name('participants.digital-id.show');
 
+Route::post('participants/{participant}/confirm-attendance', [ParticipantDigitalIdController::class, 'confirmAttendance'])
+    ->name('participants.confirm-attendance');
+
 Route::get('participants/{participant}/digital-id/download', [ParticipantDigitalIdController::class, 'download'])
     ->name('participants.digital-id.download');
 

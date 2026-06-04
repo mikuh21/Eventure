@@ -305,6 +305,54 @@ class ParticipantDigitalIdController extends Controller
         ], 404);
     }
 
+    public function confirmAttendance(Participant $participant, Request $request)
+    {
+        // Only allow virtual or both attendance types
+        if (! in_array($participant->event->attendance_type, ['virtual', 'both'], true)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Attendance confirmation not available for this event type.'
+            ], 400);
+        }
+
+        // Check if meet_link is set
+        if (! $participant->event->meet_link) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Meet link not available for this event.'
+            ], 404);
+        }
+
+        $token = trim($request->input('token', ''));
+        
+        if (empty($token)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Token is required. Please enter your participant token.'
+            ], 422);
+        }
+
+        // Verify token matches participant's digital_id_token
+        if ($token !== $participant->digital_id_token) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid token. Please check and try again.'
+            ], 401);
+        }
+
+        // Mark participant as attended
+        $participant->update([
+            'attended' => true,
+            'digital_id_verified_at' => $participant->digital_id_verified_at ?? now(),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Attendance confirmed! Redirecting to meeting...',
+            'meet_link' => $participant->event->meet_link,
+        ]);
+    }
+
     private function qrPayload(Participant $participant): string
     {
         return json_encode([
