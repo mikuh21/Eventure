@@ -1606,6 +1606,13 @@
                 // Show/hide fields based on event type
                 toggleFieldsByType();
 
+                // Show/hide meet link field based on attendance type
+                var meetLinkField = document.getElementById('edit-meet-link-field');
+                if (meetLinkField) {
+                    var isVirtualOrBoth = editAttendanceType.value === 'virtual' || editAttendanceType.value === 'both';
+                    meetLinkField.style.display = isVirtualOrBoth ? 'block' : 'none';
+                }
+
                 // Show modal
                 editModal.classList.add('is-visible');
                 editModal.setAttribute('aria-hidden', 'false');
