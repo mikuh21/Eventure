@@ -1316,7 +1316,7 @@
                     <div class="field" id="edit-meet-link-field" style="display: none;">
                         <label for="editMeetLink">Meet Link (Virtual & Both)</label>
                         <div style="position: relative;">
-                            <input id="editMeetLink" name="meet_link" type="url" placeholder="https://meet.google.com/..." style="padding-right: 40px;">
+                            <input id="editMeetLink" name="meet_link" type="url" placeholder="https://meet.google.com/..." value="" style="padding-right: 40px;">
                             <button type="button" id="editPasteMeetLinkBtn" class="paste-btn" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); border: none; background: none; padding: 0; cursor: pointer;" title="Paste from clipboard" aria-label="Paste meet link from clipboard">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
                                     <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
