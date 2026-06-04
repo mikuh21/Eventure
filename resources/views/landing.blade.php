@@ -970,6 +970,9 @@
                                     @if($event->type === 'conference' && $event->template_file_path)
                                         <p><button type="button" class="template-download-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline><path d="M9 15l3 3 5-5"></path></svg></span> Conference Paper Template</button></p>
                                     @endif
+                                    @if(in_array($event->attendance_type, ['virtual', 'both']) && $event->meet_link)
+                                        <p><button type="button" class="meet-link-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M23 7l-7 5 7 5V7z"></path><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg></span> Meet Link</button></p>
+                                    @endif
                                 </div>
                                 @php $now = \Carbon\Carbon::now('Asia/Manila'); @endphp
                                 @if($now->lt(\Carbon\Carbon::parse($event->start_registration)->setTimezone('Asia/Manila')))
@@ -1050,6 +1053,9 @@
                                     @if($event->type === 'conference' && $event->template_file_path)
                                         <p><button type="button" class="template-download-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline><path d="M9 15l3 3 5-5"></path></svg></span> Conference Paper Template</button></p>
                                     @endif
+                                    @if(in_array($event->attendance_type, ['virtual', 'both']) && $event->meet_link)
+                                        <p><button type="button" class="meet-link-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M23 7l-7 5 7 5V7z"></path><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg></span> Meet Link</button></p>
+                                    @endif
                                 </div>
                                 <div class="mt-auto">
                                     @php $now = \Carbon\Carbon::now('Asia/Manila'); @endphp
@@ -1112,6 +1118,9 @@
                                     @endif
                                     @if($event->type === 'conference' && $event->template_file_path)
                                         <button type="button" class="template-download-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline><path d="M9 15l3 3 5-5"></path></svg></span> Conference Paper Template</button>
+                                    @endif
+                                    @if(in_array($event->attendance_type, ['virtual', 'both']) && $event->meet_link)
+                                        <button type="button" class="meet-link-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M23 7l-7 5 7 5V7z"></path><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg></span> Meet Link</button>
                                     @endif
                                 </div>
                             </div>
@@ -1870,6 +1879,61 @@
         </div>
     </div>
 
+    <!-- Meet Link Modal -->
+    <div id="meetLinkModal" class="template-modal-overlay fixed inset-0 bg-black/50 hidden items-center justify-center z-[9999]">
+        <div class="template-modal-content bg-white rounded-2xl p-8 max-w-[640px] w-full mx-4 shadow-2xl">
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">Access Meet Link</h2>
+            <p class="text-gray-600 mb-6">Are you a registered guest?</p>
+            
+            <div class="space-y-4">
+                <div>
+                    <label for="meetLinkToken" class="block text-sm font-medium text-gray-700 mb-2">
+                        Enter your Guest Token
+                    </label>
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            id="meetLinkToken" 
+                            class="w-full px-4 py-2 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-em4 focus:border-transparent outline-none"
+                            style="font-family: 'Sora', sans-serif"
+                            placeholder="Paste your digital ID token here"
+                        >
+                        <button
+                            type="button"
+                            id="pasteMeetLinkTokenBtn"
+                            class="paste-btn absolute right-1 top-1/2 transform -translate-y-1/2"
+                            title="Paste from clipboard"
+                            aria-label="Paste token from clipboard"
+                        >
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
+                                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                            </svg>
+                        </button>
+                    </div>
+                    <p id="meetLinkError" class="mt-2 text-sm text-red-600 hidden"></p>
+                </div>
+                
+                <div class="flex gap-3 pt-4">
+                    <button 
+                        type="button" 
+                        id="meetLinkCancel" 
+                        class="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition"
+                    >
+                        Cancel
+                    </button>
+                    <button 
+                        type="button" 
+                        id="meetLinkAccessBtn" 
+                        class="flex-1 px-4 py-2.5 bg-em4 text-white rounded-lg font-medium hover:brightness-110 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        Access
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         const templateModal = document.getElementById('templateDownloadModal');
         const guestTokenInput = document.getElementById('guestToken');
@@ -2044,6 +2108,173 @@
         guestTokenInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && !templateDownloadBtn.disabled) {
                 templateDownloadBtn.click();
+            }
+        });
+
+        // ========== MEET LINK MODAL HANDLERS ==========
+        const meetLinkModal = document.getElementById('meetLinkModal');
+        const meetLinkTokenInput = document.getElementById('meetLinkToken');
+        const meetLinkAccessBtn = document.getElementById('meetLinkAccessBtn');
+        const meetLinkCancel = document.getElementById('meetLinkCancel');
+        const meetLinkError = document.getElementById('meetLinkError');
+        const pasteMeetLinkTokenBtn = document.getElementById('pasteMeetLinkTokenBtn');
+        let currentMeetLinkEventId = null;
+
+        function openMeetLinkModal() {
+            currentMeetLinkEventId = event?.target?.dataset?.eventId;
+            meetLinkTokenInput.value = '';
+            meetLinkError.classList.add('hidden');
+            meetLinkError.textContent = '';
+            
+            // Show modal
+            meetLinkModal.classList.remove('hidden');
+            meetLinkModal.style.display = 'flex';
+            
+            // Trigger animation
+            setTimeout(() => {
+                meetLinkModal.classList.add('show');
+            }, 10);
+            
+            // Hide body scrollbar
+            document.body.style.overflow = 'hidden';
+            
+            // Hide scroll-to-top button pointer events
+            if (scrollTopBtn) {
+                scrollTopBtn.style.pointerEvents = 'none';
+            }
+            
+            meetLinkTokenInput.focus();
+        }
+
+        function closeMeetLinkModal() {
+            // Fade out animation
+            meetLinkModal.classList.remove('show');
+            
+            setTimeout(() => {
+                meetLinkModal.classList.add('hidden');
+                meetLinkModal.style.display = 'none';
+                
+                // Restore body scrollbar
+                document.body.style.overflow = '';
+                
+                // Restore scroll-to-top button pointer events
+                if (scrollTopBtn && scrollTopBtn.classList.contains('is-visible')) {
+                    scrollTopBtn.style.pointerEvents = 'auto';
+                }
+            }, 300);
+        }
+
+        // Open modal on button click
+        document.querySelectorAll('.meet-link-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                currentMeetLinkEventId = btn.dataset.eventId;
+                meetLinkTokenInput.value = '';
+                meetLinkError.classList.add('hidden');
+                meetLinkError.textContent = '';
+                
+                // Show modal
+                meetLinkModal.classList.remove('hidden');
+                meetLinkModal.style.display = 'flex';
+                
+                // Trigger animation
+                setTimeout(() => {
+                    meetLinkModal.classList.add('show');
+                }, 10);
+                
+                // Hide body scrollbar
+                document.body.style.overflow = 'hidden';
+                
+                // Hide scroll-to-top button pointer events
+                if (scrollTopBtn) {
+                    scrollTopBtn.style.pointerEvents = 'none';
+                }
+                
+                meetLinkTokenInput.focus();
+            });
+        });
+
+        // Close modal on cancel
+        meetLinkCancel.addEventListener('click', () => {
+            closeMeetLinkModal();
+        });
+
+        // Close modal on background click
+        meetLinkModal.addEventListener('click', (e) => {
+            if (e.target === meetLinkModal) {
+                closeMeetLinkModal();
+            }
+        });
+
+        // Paste button functionality for meet link
+        pasteMeetLinkTokenBtn.addEventListener('click', async () => {
+            try {
+                const text = await navigator.clipboard.readText();
+                meetLinkTokenInput.value = text.trim();
+                meetLinkError.classList.add('hidden');
+                meetLinkError.textContent = '';
+                meetLinkTokenInput.focus();
+                
+                // Show success feedback
+                const originalColor = pasteMeetLinkTokenBtn.style.color;
+                pasteMeetLinkTokenBtn.classList.add('success');
+                
+                setTimeout(() => {
+                    pasteMeetLinkTokenBtn.classList.remove('success');
+                }, 1500);
+            } catch (err) {
+                // Clipboard permission denied or no content
+                console.debug('Clipboard paste not available:', err);
+            }
+        });
+
+        // Handle meet link access
+        meetLinkAccessBtn.addEventListener('click', async () => {
+            const token = meetLinkTokenInput.value.trim();
+            
+            if (!token) {
+                meetLinkError.textContent = 'Token is required. Please enter your guest token.';
+                meetLinkError.classList.remove('hidden');
+                return;
+            }
+
+            meetLinkAccessBtn.disabled = true;
+            meetLinkAccessBtn.textContent = 'Accessing...';
+
+            try {
+                const response = await fetch(`/events/${currentMeetLinkEventId}/meet-link/verify`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                    },
+                    body: JSON.stringify({ token })
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.meet_link) {
+                    // Close modal and open meet link
+                    closeMeetLinkModal();
+                    window.open(data.meet_link, '_blank');
+                } else {
+                    meetLinkError.textContent = data.message || 'An error occurred. Please try again.';
+                    meetLinkError.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Meet link access error:', error);
+                meetLinkError.textContent = 'Network error. Please try again.';
+                meetLinkError.classList.remove('hidden');
+            } finally {
+                meetLinkAccessBtn.disabled = false;
+                meetLinkAccessBtn.textContent = 'Access';
+            }
+        });
+
+        // Allow Enter key to access meet link
+        meetLinkTokenInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !meetLinkAccessBtn.disabled) {
+                meetLinkAccessBtn.click();
             }
         });
     </script>

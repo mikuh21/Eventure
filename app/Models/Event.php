@@ -36,6 +36,7 @@ class Event extends Model
         'start_registration',
         'end_registration',
         'location',
+        'meet_link',
         'poster_path',
         'template_file_path',
         'keywords',

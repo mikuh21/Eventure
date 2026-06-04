@@ -243,6 +243,11 @@
                 <input id="location" name="location" type="text" value="{{ old('location', $event->location) }}" required>
             </div>
 
+            <div class="field" id="meet-link-field" style="display: {{ in_array($event->attendance_type, ['virtual', 'both']) ? 'block' : 'none' }};">
+                <label for="meet_link">Meet Link (Virtual & Both)</label>
+                <input id="meet_link" name="meet_link" type="url" value="{{ old('meet_link', $event->meet_link) }}" placeholder="https://meet.google.com/...">
+            </div>
+
             <div class="field">
                 <label for="department">Department</label>
                 <input id="department" name="department" type="text" placeholder="e.g. College of Computer Studies" value="{{ old('department', $event->department) }}">
@@ -320,6 +325,18 @@
 
             typeInput.addEventListener('change', toggleByType);
             toggleByType();
+
+            // Handle attendance type to show/hide meet link field
+            var attendanceTypeInput = document.getElementById('attendance_type');
+            var meetLinkField = document.getElementById('meet-link-field');
+
+            var toggleMeetLinkField = function () {
+                var isVirtualOrBoth = attendanceTypeInput.value === 'virtual' || attendanceTypeInput.value === 'both';
+                meetLinkField.style.display = isVirtualOrBoth ? 'block' : 'none';
+            };
+
+            attendanceTypeInput.addEventListener('change', toggleMeetLinkField);
+            toggleMeetLinkField();
 
             // Initialize date pickers
             var initializeDatePickers = function() {

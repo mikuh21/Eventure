@@ -237,6 +237,11 @@
                 <input id="location" name="location" type="text" value="{{ old('location') }}" required>
             </div>
 
+            <div class="field" id="meet-link-field" style="display: none;">
+                <label for="meet_link">Meet Link (Virtual & Both)</label>
+                <input id="meet_link" name="meet_link" type="url" value="{{ old('meet_link') }}" placeholder="https://meet.google.com/...">
+            </div>
+
             <div class="field">
                 <label for="poster">Event Poster</label>
                 <input id="poster" name="poster" type="file" accept="image/*">
@@ -286,6 +291,18 @@
 
             typeInput.addEventListener('change', toggleByType);
             toggleByType();
+
+            // Handle attendance type to show/hide meet link field
+            var attendanceTypeInput = document.getElementById('attendance_type');
+            var meetLinkField = document.getElementById('meet-link-field');
+
+            var toggleMeetLinkField = function () {
+                var isVirtualOrBoth = attendanceTypeInput.value === 'virtual' || attendanceTypeInput.value === 'both';
+                meetLinkField.style.display = isVirtualOrBoth ? 'block' : 'none';
+            };
+
+            attendanceTypeInput.addEventListener('change', toggleMeetLinkField);
+            toggleMeetLinkField();
 
             // Initialize date pickers
             var initializeDatePickers = function() {

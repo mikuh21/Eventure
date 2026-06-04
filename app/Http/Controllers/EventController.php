@@ -402,7 +402,70 @@ class EventController extends Controller
         );
     }
 
+    public function verifyAndAccessMeetLink(Event $event, Request $request)
+    {
+        // Only allow virtual or both attendance types
+        if (! in_array($event->attendance_type, ['virtual', 'both'], true)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This event does not have a meet link available.'
+            ], 404);
+        }
+
+        // Check if meet_link is set
+        if (! $event->meet_link) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Meet link not available for this event.'
+            ], 404);
+        }
+
+        $token = trim($request->input('token', ''));
+        $token = $this->normalizeGuestToken($token);
+
+        if (empty($token)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Token is required. Please enter your guest token.'
+            ], 422);
+        }
+
+        // Look up the guest by token
+        $guest = $event->guests()
+            ->whereRaw('LOWER(digital_token) = ?', [mb_strtolower($token)])
+            ->first();
+
+        if (! $guest) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid or unapproved token.'
+            ], 403);
+        }
+
+        // Check that the guest is approved
+        if ($guest->status !== 'approved') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid or unapproved token.'
+            ], 403);
+        }
+
+        // Verify guest is registered for this specific event
+        if ($guest->event_id !== $event->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid or unapproved token.'
+            ], 403);
+        }
+
+        return response()->json([
+            'success' => true,
+            'meet_link' => $event->meet_link
+        ]);
+    }
+
     private function normalizeGuestToken(string $token): string
+
     {
         if (preg_match('/[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}/', $token, $matches)) {
             return mb_strtolower($matches[0]);
@@ -427,6 +490,7 @@ class EventController extends Controller
             'start_registration' => $validated['start_registration'] ?? $event?->start_registration,
             'end_registration' => $validated['end_registration'] ?? $event?->end_registration,
             'location' => $validated['location'] ?? $event?->location,
+            'meet_link' => $validated['meet_link'] ?? $event?->meet_link,
             'keywords' => $this->normalizeKeywords($validated['keywords'] ?? $event?->keywords),
         ];
 
