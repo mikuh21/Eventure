@@ -278,6 +278,44 @@
             font-weight: 500;
         }
 
+        .digital-id-meet-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px;
+            background: #f0f9ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 6px;
+            text-decoration: none;
+            color: #1e40af;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .digital-id-meet-link:hover {
+            background: #e0f2fe;
+            border-color: #7dd3fc;
+            color: #1e3a8a;
+        }
+
+        .digital-id-meet-link-icon {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        .digital-id-meet-link-value {
+            flex: 1;
+            word-break: break-all;
+        }
+
+        .digital-id-not-set {
+            font-size: 14px;
+            color: #9ca3af;
+            font-style: italic;
+        }
+
         @media (max-width: 768px) {
             .digital-id-card {
                 padding: 20px;
@@ -305,6 +343,21 @@
 
             .digital-id-copy-btn {
                 width: 100%;
+            }
+
+            .digital-id-meet-link {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .digital-id-meet-link-icon {
+                width: 16px;
+                height: 16px;
+            }
+
+            .digital-id-section {
+                margin-bottom: 20px;
             }
         }
     </style>
@@ -348,6 +401,22 @@
             <span class="digital-id-label">Event</span>
             <div class="digital-id-value">{{ $participant->event->title }}</div>
         </div>
+
+        @if(in_array($participant->event->attendance_type, ['virtual', 'both']))
+        <div class="digital-id-section">
+            <span class="digital-id-label">Meet Link</span>
+            @if($participant->event->meet_link)
+                <a href="{{ $participant->event->meet_link }}" target="_blank" rel="noopener noreferrer" class="digital-id-meet-link">
+                    <svg class="digital-id-meet-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M3 7a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/>
+                    </svg>
+                    <span class="digital-id-meet-link-value">Join Meeting</span>
+                </a>
+            @else
+                <div class="digital-id-not-set">Not Set</div>
+            @endif
+        </div>
+        @endif
 
         <div class="digital-id-section">
             <span class="digital-id-label">Token</span>
