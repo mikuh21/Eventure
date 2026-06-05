@@ -294,8 +294,8 @@
             </div>
 
             <div class="field" id="template-file-field">
-                <label for="template_file">Conference Template (DOC/PDF)</label>
-                <input id="template_file" name="template_file" type="file" accept=".pdf,.doc,.docx">
+                <label for="template_file">Conference Template</label>
+                <input id="template_file" name="template_file" type="file" accept=".pdf,.doc,.docx,.txt,.rtf,.odt,.xls,.xlsx,.ppt,.pptx">
                 @if ($event->type === 'conference' && $event->template_file_path)
                     <div class="mt-2">
                         <p class="text-sm mb-2">Current Template:</p>

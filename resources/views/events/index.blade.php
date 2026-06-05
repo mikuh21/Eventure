@@ -1163,6 +1163,7 @@
                                                     data-meet-link="{{ $event->meet_link }}"
                                                     data-poster-path="{{ $event->poster_path }}"
                                                     data-template-file-path="{{ $event->template_file_path }}"
+                                                    data-template-file-name="{{ $event->template_file_name }}"
                                                     data-template-url="{{ $event->template_url }}"
                                                 >Edit</button>
                                             @endif
@@ -1334,8 +1335,8 @@
                     </div>
 
                     <div class="field" id="edit-template-file-field">
-                        <label for="editTemplateFile">Conference Template (DOC/PDF)</label>
-                        <input id="editTemplateFile" name="template_file" type="file" accept=".pdf,.doc,.docx">
+                        <label for="editTemplateFile">Conference Template</label>
+                        <input id="editTemplateFile" name="template_file" type="file" accept=".pdf,.doc,.docx,.txt,.rtf,.odt,.xls,.xlsx,.ppt,.pptx">
                         <div id="currentTemplateContainer" style="margin-top: 8px;"></div>
                     </div>
 
@@ -1617,8 +1618,8 @@
 
                 // Show current template if exists and conference
                 if (eventData.templateFilePath && eventData.eventType === 'conference') {
-                    var ext = eventData.templateFilePath.split('.').pop();
-                    currentTemplateContainer.innerHTML = '<p style="font-size:12px;margin-bottom:4px;color:#666;">Current Template:</p><a href="/events/' + eventData.eventId + '/template/download" style="font-size:12px;color:#2563eb;text-decoration:underline;">📄 Conference-Paper-Template.' + ext + '</a>';
+                    var templateName = eventData.templateFileName || 'Conference-Paper-Template.' + eventData.templateFilePath.split('.').pop();
+                    currentTemplateContainer.innerHTML = '<p style="font-size:12px;margin-bottom:4px;color:#666;">Current Template:</p><a href="/events/' + eventData.eventId + '/template/download" style="font-size:12px;color:#2563eb;text-decoration:underline;">📄 ' + templateName + '</a>';
                 } else {
                     currentTemplateContainer.innerHTML = '';
                 }
@@ -1684,6 +1685,7 @@
                         meetLink: editButton.dataset.meetLink,
                         posterPath: editButton.dataset.posterPath,
                         templateFilePath: editButton.dataset.templateFilePath,
+                        templateFileName: editButton.dataset.templateFileName,
                         templateUrl: editButton.dataset.templateUrl
                     };
                     openEditModal(eventData);
