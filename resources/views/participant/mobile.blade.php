@@ -2489,11 +2489,15 @@
                     attendanceError.classList.remove('show');
                     showToast(data.message, 'success');
                     
-                    // Redirect to meet link after brief delay
-                    setTimeout(() => {
+                    // Open meet link immediately (before closing modal) to avoid popup blocking
+                    if (data.meet_link) {
                         window.open(data.meet_link, '_blank');
+                    }
+                    
+                    // Close modal after opening link
+                    setTimeout(() => {
                         closeAttendanceModal();
-                    }, 500);
+                    }, 300);
                 } else {
                     attendanceError.textContent = data.message || 'Confirmation failed. Please try again.';
                     attendanceError.classList.add('show');
