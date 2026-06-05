@@ -470,6 +470,11 @@
             color: #58a4cf;
         }
 
+        .brand-text {
+            display: inline-flex;
+            letter-spacing: -0.03em;
+        }
+
         .admin-side-nav {
             display: grid;
             gap: 4px;
@@ -833,7 +838,7 @@
         <aside class="admin-sidebar" id="adminSidebar">
             <a href="{{ \App\Support\PreviewAuth::appendToUrl(route('admin.dashboard', [], false), $previewAuthQuery) }}" class="admin-brand">
                 <img src="{{ asset('eventurelogo.png') }}" alt="Eventure logo">
-                <span class="admin-brand-text"><span class="admin-brand-event">Even</span><span class="admin-brand-flow">ture</span></span>
+                <span class="brand-text"><span class="text-white">Event</span><span class="text-em4">ure</span></span>
             </a>
 
             <nav class="admin-side-nav" aria-label="Main navigation">
