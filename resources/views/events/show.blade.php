@@ -585,11 +585,11 @@
             @endif
 
             @if ($event->program_file_path)
-                <div class="event-asset-card">
+                <div class="event-asset-card" data-program-path="{{ $event->program_file_path }}" data-program-name="{{ $event->program_file_name ?? basename($event->program_file_path) }}">
                     <h3 class="event-asset-title">Program</h3>
                     <div class="template-preview" style="margin-bottom: 1rem;">
                         <iframe 
-                            src="https://docs.google.com/viewer?url=https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/event-programs/{{ $event->program_file_path }}&embedded=true"
+                            src="https://docs.google.com/viewer?url={{ urlencode('https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/event-programs/' . $event->program_file_path) }}&embedded=true"
                             width="100%" 
                             height="400px"
                             frameborder="0"

@@ -205,6 +205,13 @@
             opacity: 1;
         }
 
+        @media (max-width: 640px) {
+            .template-modal-content {
+                max-width: calc(100vw - 32px) !important;
+                max-height: calc(100vh - 32px) !important;
+            }
+        }
+
         .paste-btn {
             display: inline-flex;
             align-items: center;
@@ -1954,13 +1961,14 @@
 
     <!-- Program Download Modal -->
     <div id="programDownloadModal" class="template-modal-overlay fixed inset-0 bg-black/50 hidden items-center justify-center z-[9999]">
-        <div class="template-modal-content bg-white rounded-2xl p-8 max-w-2xl w-full mx-4 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div class="flex items-center justify-between mb-4">
+        <div class="template-modal-content bg-white rounded-2xl shadow-2xl max-h-[95vh] overflow-hidden flex flex-col w-full mx-4" style="max-width: 900px;">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between p-6 border-b border-gray-200 flex-shrink-0">
                 <h2 class="text-2xl font-bold text-gray-900">Program</h2>
                 <button 
                     type="button" 
                     id="programModalClose" 
-                    class="p-1 hover:bg-gray-100 rounded transition"
+                    class="p-1 hover:bg-gray-100 rounded transition text-gray-500 hover:text-gray-700"
                     aria-label="Close modal"
                 >
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
@@ -1970,11 +1978,13 @@
                 </button>
             </div>
             
-            <div id="programPreviewContainer" class="mb-6">
+            <!-- Modal Content -->
+            <div id="programPreviewContainer" class="overflow-y-auto flex-grow p-6 bg-gray-50">
                 <!-- Preview will be loaded here -->
             </div>
             
-            <div class="flex gap-3 pt-4 border-t border-gray-200">
+            <!-- Modal Footer -->
+            <div class="flex gap-3 p-6 border-t border-gray-200 bg-white flex-shrink-0">
                 <button 
                     type="button" 
                     id="programDownloadCancel" 
@@ -1985,7 +1995,6 @@
                 <a 
                     id="programDownloadLink" 
                     href="#" 
-                    download 
                     class="flex-1 px-4 py-2.5 bg-em4 text-white rounded-lg font-medium hover:brightness-110 transition text-center flex items-center justify-center gap-2"
                 >
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
@@ -2428,8 +2437,9 @@
                 // Load preview
                 loadProgramPreview(currentProgramEventId);
                 
-                // Set download link
+                // Set download link to use public route
                 programDownloadLink.href = `/events/${currentProgramEventId}/program/download`;
+                programDownloadLink.setAttribute('download', '');
             });
         });
 
@@ -2459,56 +2469,56 @@
 
         // Load program preview
         function loadProgramPreview(eventId) {
-            // Get the program file path from button data
-            const btn = document.querySelector(`.program-download-btn[data-event-id="${eventId}"]`);
-            if (!btn) return;
-
-            // Get event data from nearby elements
-            const eventCard = btn.closest('[data-event-id]')?.parentElement || btn.closest('.event-card');
-            
             // Show loading state
-            programPreviewContainer.innerHTML = '<div class="flex items-center justify-center h-96"><p class="text-gray-600">Loading preview...</p></div>';
+            programPreviewContainer.innerHTML = '<div class="flex items-center justify-center py-16"><div class="flex flex-col items-center gap-2"><div class="w-8 h-8 border-3 border-em4 border-t-transparent rounded-full animate-spin"></div><p class="text-sm text-gray-600">Loading preview...</p></div></div>';
             
-            // Try to load preview from server
+            // Fetch event details to get program file path
             fetch(`/events/${eventId}`)
-                .then(response => response.text())
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to load event');
+                    return response.text();
+                })
                 .then(html => {
                     // Extract program file path from the fetched HTML
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(html, 'text/html');
                     
-                    // Look for program preview in the response
+                    // Look for program preview container with data attributes
                     const programSection = doc.querySelector('[data-program-path]');
                     if (programSection && programSection.dataset.programPath) {
                         const filePath = programSection.dataset.programPath;
                         const fileName = programSection.dataset.programName || 'Program';
                         
-                        // Create iframe for preview
+                        // Create full file URL and encode it for Google Docs Viewer
                         const baseUrl = 'https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/event-programs';
+                        const fullFileUrl = `${baseUrl}/${filePath}`;
+                        const encodedUrl = encodeURIComponent(fullFileUrl);
+                        
                         programPreviewContainer.innerHTML = `
-                            <div class="bg-gray-100 rounded-lg overflow-hidden" style="height: 500px;">
-                                <iframe 
-                                    src="https://docs.google.com/viewer?url=${baseUrl}/${filePath}&embedded=true"
-                                    width="100%" 
-                                    height="100%"
-                                    frameborder="0"
-                                    style="border-radius: 8px;">
-                                </iframe>
+                            <div class="space-y-3">
+                                <p class="text-sm font-medium text-gray-700">Preview:</p>
+                                <div class="bg-gray-100 rounded-lg overflow-hidden border border-gray-200" style="height: 500px;">
+                                    <iframe 
+                                        src="https://docs.google.com/viewer?url=${encodedUrl}&embedded=true"
+                                        width="100%" 
+                                        height="100%"
+                                        frameborder="0"
+                                        sandbox="allow-same-origin allow-scripts allow-popups allow-modals"
+                                        style="border: none;">
+                                    </iframe>
+                                </div>
                             </div>
                         `;
                     } else {
                         // Fallback: show file info
                         programPreviewContainer.innerHTML = `
-                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
-                                <div class="flex items-center gap-3">
-                                    <svg class="w-8 h-8 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline>
-                                    </svg>
-                                    <div>
-                                        <p class="font-semibold text-gray-900">Program file ready</p>
-                                        <p class="text-sm text-gray-600">Click download to get the file</p>
-                                    </div>
-                                </div>
+                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
+                                <svg class="w-12 h-12 text-blue-600 mx-auto mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                                    <polyline points="13 2 13 9 20 9"></polyline>
+                                </svg>
+                                <p class="font-semibold text-gray-900 mb-1">Program file ready</p>
+                                <p class="text-sm text-gray-600">Click the download button below to get the file</p>
                             </div>
                         `;
                     }
@@ -2516,16 +2526,13 @@
                 .catch(error => {
                     console.error('Error loading preview:', error);
                     programPreviewContainer.innerHTML = `
-                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
-                            <div class="flex items-center gap-3">
-                                <svg class="w-8 h-8 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline>
-                                </svg>
-                                <div>
-                                    <p class="font-semibold text-gray-900">Program file ready</p>
-                                    <p class="text-sm text-gray-600">Click download to get the file</p>
-                                </div>
-                            </div>
+                        <div class="bg-amber-50 border border-amber-200 rounded-lg p-6 text-center">
+                            <svg class="w-12 h-12 text-amber-600 mx-auto mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                                <polyline points="13 2 13 9 20 9"></polyline>
+                            </svg>
+                            <p class="font-semibold text-gray-900 mb-1">Program available for download</p>
+                            <p class="text-sm text-gray-600">Click the download button below to access the file</p>
                         </div>
                     `;
                 });
