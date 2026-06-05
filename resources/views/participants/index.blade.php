@@ -443,17 +443,36 @@
 
         .participants-pagination {
             margin-top: 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .participants-pagination nav {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 4px;
+            width: 100%;
         }
 
         .participants-pagination nav div,
         .participants-pagination nav span,
         .participants-pagination nav a {
-            font-size: 13px;
+            font-size: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 32px;
+            padding: 0 8px;
         }
 
         .participants-pagination nav a,
         .participants-pagination nav span[aria-current="page"] {
-            border-radius: 6px !important;
+            border-radius: 4px !important;
         }
 
         .participants-pagination nav a {
@@ -461,11 +480,51 @@
             border-color: var(--color-sky) !important;
         }
 
+        .participants-pagination nav svg {
+            width: 16px !important;
+            height: 16px !important;
+            min-width: 16px;
+            min-height: 16px;
+        }
+
         .participants-pagination nav span[aria-current="page"] span {
             background: var(--color-ocean) !important;
             color: #ffffff !important;
             border-color: var(--color-ocean) !important;
-            border-radius: 6px !important;
+            border-radius: 4px !important;
+            padding: 0 8px;
+            display: inline-block;
+            min-height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (max-width: 640px) {
+            .participants-pagination {
+                gap: 2px;
+                margin-top: 10px;
+            }
+
+            .participants-pagination nav div,
+            .participants-pagination nav span,
+            .participants-pagination nav a {
+                font-size: 11px;
+                min-height: 28px;
+                padding: 0 6px;
+            }
+
+            .participants-pagination nav svg {
+                width: 14px !important;
+                height: 14px !important;
+                min-width: 14px;
+                min-height: 14px;
+            }
+
+            .participants-pagination nav span[aria-current="page"] span {
+                padding: 0 6px;
+                min-height: 28px;
+            }
         }
 
         .participant-modal-overlay {
