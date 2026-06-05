@@ -597,7 +597,7 @@
                         </iframe>
                     </div>
                     <div class="event-asset-actions">
-                        <a class="btn" href="{{ route('events.download-program-public', $event) }}" style="font-family: 'Sora', sans-serif;">Download Program</a>
+                        <a class="btn" href="/events/{{ $event->id }}/program/download" style="font-family: 'Sora', sans-serif;">Download Program</a>
                     </div>
                 </div>
             @endif
