@@ -1237,7 +1237,7 @@
     </style>
 </head>
 <body>
-    <main class="page" data-participant-name="{{ addslashes($participant->name) }}" data-participant-id="{{ $participant->id }}" data-token="{{ $digitalId->token }}" data-certificate-url="{{ route('participants.certificate.show', ['token' => $participant->digital_id_token, 'type' => $certificateType]) }}" data-certificate-type="{{ $certificateType }}">
+    <main class="page" data-participant-name="{{ addslashes($participant->name) }}" data-participant-id="{{ $participant->digital_id_token }}" data-token="{{ $digitalId->token }}" data-certificate-url="{{ route('participants.certificate.show', ['token' => $participant->digital_id_token, 'type' => $certificateType]) }}" data-certificate-type="{{ $certificateType }}">
         <nav class="topbar" aria-label="Participant navigation">
             <div class="wordmark">
                 <img src="{{ asset('eventurelogo.png') }}" alt="Eventure logo">

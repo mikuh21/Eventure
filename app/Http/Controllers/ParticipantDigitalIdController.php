@@ -352,17 +352,21 @@ class ParticipantDigitalIdController extends Controller
                 ], 401);
             }
 
+            // Get meet link before update (while relationship is fresh)
+            $meetLink = $participant->event->meet_link;
+            
+            \Log::info('Attendance Confirmation Debug', [
+                'participant_id' => $participant->id,
+                'event_id' => $participant->event_id,
+                'meet_link' => $meetLink,
+                'meet_link_exists' => !empty($meetLink),
+            ]);
+
             // Mark participant as attended
             $participant->update([
                 'attended' => true,
                 'digital_id_verified_at' => $participant->digital_id_verified_at ?? now(),
             ]);
-
-            // Load fresh event relationship
-            $participant->load('event');
-            
-            // Get the event meet link
-            $meetLink = $participant->event?->meet_link;
             
             return response()->json([
                 'success' => true,
