@@ -563,7 +563,7 @@ class EventController extends Controller
             ], 422);
         }
 
-        // Try to verify as guest first
+        // Verify as guest only (participants have digital IDs and can join via their own interface)
         $guest = $event->guests()
             ->whereRaw('LOWER(digital_token) = ?', [mb_strtolower($token)])
             ->first();
@@ -575,19 +575,7 @@ class EventController extends Controller
             ]);
         }
 
-        // Try to verify as participant
-        $participant = $event->participants()
-            ->whereRaw('LOWER(digital_id_token) = ?', [mb_strtolower($token)])
-            ->first();
-
-        if ($participant) {
-            return response()->json([
-                'success' => true,
-                'meet_link' => $event->meet_link
-            ]);
-        }
-
-        // Token not found
+        // Guest token not found or not approved
         return response()->json([
             'success' => false,
             'message' => 'Invalid token. Please check your token and try again.'
