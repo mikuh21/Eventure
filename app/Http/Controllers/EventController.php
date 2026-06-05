@@ -571,7 +571,9 @@ class EventController extends Controller
         if ($guest && $guest->status === 'approved') {
             return response()->json([
                 'success' => true,
-                'meet_link' => $event->meet_link
+                'meet_link' => $event->meet_link,
+                'title' => $event->title,
+                'dateRange' => $event->dateRangeLabel()
             ]);
         }
 
