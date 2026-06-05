@@ -109,7 +109,7 @@ class EventController extends Controller
                 END ASC
             ")
             ->orderBy('start_date', 'asc')
-            ->paginate(10);
+            ->get();
 
         $overviewQuery = Event::query();
 

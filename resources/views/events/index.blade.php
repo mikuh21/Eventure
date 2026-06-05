@@ -820,32 +820,7 @@
             font-size: 14px;
         }
 
-        .events-pagination {
-            margin-top: 14px;
-        }
 
-        .events-pagination nav div,
-        .events-pagination nav span,
-        .events-pagination nav a {
-            font-size: 13px;
-        }
-
-        .events-pagination nav a,
-        .events-pagination nav span[aria-current="page"] {
-            border-radius: 6px !important;
-        }
-
-        .events-pagination nav a {
-            color: var(--color-ocean) !important;
-            border-color: var(--color-sky) !important;
-        }
-
-        .events-pagination nav span[aria-current="page"] span {
-            background: var(--color-ocean) !important;
-            color: #ffffff !important;
-            border-color: var(--color-ocean) !important;
-            border-radius: 6px !important;
-        }
 
         @media (max-width: 960px) {
             .overview-grid {
@@ -1203,10 +1178,6 @@
                     </tr>
                     </tbody>
                 </table>
-            </div>
-
-            <div class="events-pagination">
-                {{ $events->appends(request()->query())->links() }}
             </div>
         @endif
     </div>

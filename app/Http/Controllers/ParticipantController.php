@@ -69,8 +69,7 @@ class ParticipantController extends Controller
 
                 $participants = Participant::where('event_id', $selectedEvent->id)
                     ->latest()
-                    ->paginate(10)
-                    ->appends($request->query());
+                    ->get();
             }
         }
 
@@ -78,8 +77,7 @@ class ParticipantController extends Controller
             $selectedEvent = $event;
             $participants = $event->participants()
                 ->latest()
-                ->paginate(10)
-                ->appends($request->query());
+                ->get();
         }
 
         if (! $wantsJson) {

@@ -1196,9 +1196,7 @@
                 </table>
             </div>
 
-            @if ($guests->count() > 0)
-                <div class="pagination">{{ $guests->links() }}</div>
-            @endif
+
         @endif
     </div>
 

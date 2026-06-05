@@ -65,9 +65,8 @@ class GuestController extends Controller
             ? Guest::query()
                 ->where('event_id', $selectedEvent->id)
                 ->latest()
-                ->paginate(10)
-                ->appends($request->query())
-            : Guest::query()->whereRaw('1 = 0')->paginate(10);
+                ->get()
+            : Guest::query()->whereRaw('1 = 0')->get();
 
         return view('guests.index', [
             'events' => $events,
