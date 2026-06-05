@@ -1534,13 +1534,13 @@
 
                             const paperSubtext = document.createElement('p');
                             paperSubtext.style.cssText = 'font-size:0.7rem;color:#64748b;margin:0 0 4px;';
-                            paperSubtext.textContent = 'Upload your paper (PDF, DOC, DOCX — max 10MB)';
+                            paperSubtext.textContent = 'Upload your paper (PDF, DOC, DOCX, TXT, RTF, ODT, XLS, XLSX, PPT, PPTX — max 10MB)';
 
                             const paperInput = document.createElement('input');
                             paperInput.id = 'landingGuestPaper';
                             paperInput.name = 'conference_paper';
                             paperInput.type = 'file';
-                            paperInput.accept = '.pdf,.doc,.docx';
+                            paperInput.accept = '.pdf,.doc,.docx,.txt,.rtf,.odt,.xls,.xlsx,.ppt,.pptx';
 
                             guestPaperField.appendChild(paperLabel);
                             guestPaperField.appendChild(paperSubtext);

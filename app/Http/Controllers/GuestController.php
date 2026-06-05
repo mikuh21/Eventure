@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\GuestDigitalIdMail;
 use App\Models\Event;
 use App\Models\Guest;
+use App\Rules\ValidateDocumentFile;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -98,7 +99,7 @@ class GuestController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255'],
             'bio' => ['nullable', 'string'],
-            'conference_paper' => ['nullable', 'file', 'mimes:pdf,doc,docx', 'max:10240'],
+            'conference_paper' => ['nullable', 'file', new ValidateDocumentFile(), 'max:10240'],
         ]);
 
         $event = Event::findOrFail($validated['event_id']);
@@ -141,7 +142,7 @@ class GuestController extends Controller
             'email' => ['required', 'email', 'max:255'],
             'role' => ['required', 'string', 'max:100'],
             'bio' => ['nullable', 'string'],
-            'conference_paper' => ['nullable', 'file', 'mimes:pdf,doc,docx', 'max:10240'],
+            'conference_paper' => ['nullable', 'file', new ValidateDocumentFile(), 'max:10240'],
         ]);
 
         // Check permission: Event Staff can only add guests to their own events
