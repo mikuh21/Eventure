@@ -30,7 +30,7 @@ class StoreEventRequest extends FormRequest
             'meet_link' => ['nullable', 'url', 'max:500'],
             'template_url' => ['nullable', 'url', 'max:2048'],
             'poster' => ['nullable', 'image', 'max:5120'],
-            'template_file' => ['nullable', 'file', 'mimes:pdf,doc,docx,txt,rtf,odt,xls,xlsx,ppt,pptx', 'max:5120'],
+            'template_file' => ['nullable', 'file', 'mimetypes:application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,application/rtf,application/vnd.oasis.opendocument.text,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation', 'max:5120'],
             'department' => ['nullable', 'string', 'max:255'],
             'program' => ['nullable', 'string', 'max:255'],
             'keywords' => ['nullable'],
