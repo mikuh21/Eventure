@@ -833,7 +833,7 @@
         <aside class="admin-sidebar" id="adminSidebar">
             <a href="{{ \App\Support\PreviewAuth::appendToUrl(route('admin.dashboard', [], false), $previewAuthQuery) }}" class="admin-brand">
                 <img src="{{ asset('eventurelogo.png') }}" alt="Eventure logo">
-                <span class="admin-brand-text"><span class="admin-brand-event">Even</span><span class="admin-brand-flow">ture</span></span>
+                <span class="admin-brand-text"><span class="admin-brand-event">Event</span><span class="admin-brand-flow">ure</span></span>
             </a>
 
             <nav class="admin-side-nav" aria-label="Main navigation">
