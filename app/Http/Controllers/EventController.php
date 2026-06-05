@@ -491,6 +491,7 @@ class EventController extends Controller
             'end_registration' => $validated['end_registration'] ?? $event?->end_registration,
             'location' => $validated['location'] ?? $event?->location,
             'meet_link' => $validated['meet_link'] ?? $event?->meet_link,
+            'template_url' => $validated['template_url'] ?? $event?->template_url,
             'keywords' => $this->normalizeKeywords($validated['keywords'] ?? $event?->keywords),
         ];
 
@@ -553,6 +554,11 @@ class EventController extends Controller
             $data['template_file_name'] = null;
             $data['template_url'] = null;
             $data['keywords'] = null;
+        } else {
+            // For conference events, preserve template_url if not provided in validated data
+            if (!isset($validated['template_url'])) {
+                $data['template_url'] = $event?->template_url;
+            }
         }
 
         return $data;

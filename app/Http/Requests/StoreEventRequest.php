@@ -28,6 +28,7 @@ class StoreEventRequest extends FormRequest
             'end_registration' => ['required', 'date', 'after:start_registration'],
             'location' => ['required', 'string', 'max:255'],
             'meet_link' => ['nullable', 'url', 'max:500'],
+            'template_url' => ['nullable', 'url', 'max:2048'],
             'poster' => ['nullable', 'image', 'max:5120'],
             'template_file' => ['nullable', 'file', 'mimes:pdf,doc,docx', 'max:5120'],
             'department' => ['nullable', 'string', 'max:255'],
