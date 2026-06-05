@@ -311,7 +311,7 @@
             </div>
 
             <div class="field">
-                <label for="program_file">Program</label>
+                <label for="program_file">Program File</label>
                 <input id="program_file" name="program_file" type="file" accept=".pdf,.doc,.docx,.txt,.rtf,.odt,.xls,.xlsx,.ppt,.pptx">
                 @if ($event->program_file_path)
                     <div class="mt-2">
