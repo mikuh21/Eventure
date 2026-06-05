@@ -441,13 +441,31 @@
             font-family: 'Sora', sans-serif;
         }
 
-        .participants-pagination {
-            margin-top: 14px;
+        .participants-pagination-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding: 12px 0;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .participants-results-info {
+            font-size: 13px;
+            color: #666;
+            white-space: nowrap;
+        }
+
+        .participants-pagination-numbers {
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-wrap: wrap;
             gap: 4px;
+        }
+
+        .participants-pagination {
+            display: none;
         }
 
         .participants-pagination nav {
@@ -459,9 +477,9 @@
             width: 100%;
         }
 
-        .participants-pagination nav div,
-        .participants-pagination nav span,
-        .participants-pagination nav a {
+        .participants-pagination-top nav div,
+        .participants-pagination-top nav span,
+        .participants-pagination-top nav a {
             font-size: 12px;
             display: inline-flex;
             align-items: center;
@@ -470,58 +488,70 @@
             padding: 0 8px;
         }
 
-        .participants-pagination nav a,
-        .participants-pagination nav span[aria-current="page"] {
+        .participants-pagination-top nav a,
+        .participants-pagination-top nav span[aria-current="page"] {
             border-radius: 4px !important;
         }
 
-        .participants-pagination nav a {
+        .participants-pagination-top nav a {
             color: var(--color-ocean) !important;
             border-color: var(--color-sky) !important;
         }
 
-        .participants-pagination nav svg {
+        .participants-pagination-top nav svg {
             width: 16px !important;
             height: 16px !important;
             min-width: 16px;
             min-height: 16px;
         }
 
-        .participants-pagination nav span[aria-current="page"] span {
+        .participants-pagination-top nav span[aria-current="page"] span {
             background: var(--color-ocean) !important;
             color: #ffffff !important;
             border-color: var(--color-ocean) !important;
             border-radius: 4px !important;
             padding: 0 8px;
-            display: inline-block;
-            min-height: 32px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            min-height: 32px;
         }
 
         @media (max-width: 640px) {
-            .participants-pagination {
-                gap: 2px;
-                margin-top: 10px;
+            .participants-pagination-top {
+                flex-direction: column;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 12px;
+                padding: 8px 0;
             }
 
-            .participants-pagination nav div,
-            .participants-pagination nav span,
-            .participants-pagination nav a {
+            .participants-results-info {
+                font-size: 12px;
+                width: 100%;
+                text-align: center;
+            }
+
+            .participants-pagination-numbers {
+                gap: 2px;
+            }
+
+            .participants-pagination-top nav div,
+            .participants-pagination-top nav span,
+            .participants-pagination-top nav a {
                 font-size: 11px;
                 min-height: 28px;
                 padding: 0 6px;
             }
 
-            .participants-pagination nav svg {
+            .participants-pagination-top nav svg {
                 width: 14px !important;
                 height: 14px !important;
                 min-width: 14px;
                 min-height: 14px;
             }
 
-            .participants-pagination nav span[aria-current="page"] span {
+            .participants-pagination-top nav span[aria-current="page"] span {
                 padding: 0 6px;
                 min-height: 28px;
             }
@@ -1265,6 +1295,17 @@
                 </span>
                 <span class="participants-count">{{ number_format($participants->total()) }} participant(s) registered</span>
             </div>
+            
+            @if ($participants->count() > 0)
+                <div class="participants-pagination-top">
+                    <div class="participants-results-info">
+                        Showing {{ $participants->from() }} to {{ $participants->to() }} of {{ $participants->total() }} results
+                    </div>
+                    <div class="participants-pagination-numbers">
+                        {{ $participants->links() }}
+                    </div>
+                </div>
+            @endif
         @endif
 
         @if (!request('event_id'))
@@ -1364,11 +1405,7 @@
             </table>
             </div>
 
-            @if ($participants->count() > 0)
-                <div class="pagination participants-pagination">
-                    {{ $participants->links() }}
-                </div>
-            @endif
+
         @endif
     </div>
 
@@ -2351,6 +2388,30 @@
             });
 
             syncQrFabWithModalState();
+
+            // Hide Previous and Next links in pagination, keep only numbers
+            const hidePageNavigationText = () => {
+                const paginationContainer = document.querySelector('.participants-pagination-numbers');
+                if (paginationContainer) {
+                    const links = paginationContainer.querySelectorAll('a');
+                    links.forEach(link => {
+                        const text = link.textContent.trim();
+                        if (text === 'Previous' || text === 'Next' || text === '«' || text === '»') {
+                            link.style.display = 'none';
+                        }
+                    });
+                }
+            };
+
+            // Call on page load and after any navigation
+            hidePageNavigationText();
+
+            // If pagination links are dynamically updated, observe for changes
+            const paginationContainer = document.querySelector('.participants-pagination-numbers');
+            if (paginationContainer) {
+                const observer = new MutationObserver(hidePageNavigationText);
+                observer.observe(paginationContainer, { childList: true, subtree: true });
+            }
         })();
     </script>
 @endpush
