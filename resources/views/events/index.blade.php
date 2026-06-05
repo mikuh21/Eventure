@@ -1163,6 +1163,7 @@
                                                     data-meet-link="{{ $event->meet_link }}"
                                                     data-poster-path="{{ $event->poster_path }}"
                                                     data-template-file-path="{{ $event->template_file_path }}"
+                                                    data-template-url="{{ $event->template_url }}"
                                                 >Edit</button>
                                             @endif
                                             @if (!auth()->user()->hasRole('event_staff') || $event->created_by === auth()->id())
@@ -1336,6 +1337,19 @@
                         <label for="editTemplateFile">Conference Template (DOC/PDF)</label>
                         <input id="editTemplateFile" name="template_file" type="file" accept=".pdf,.doc,.docx">
                         <div id="currentTemplateContainer" style="margin-top: 8px;"></div>
+                    </div>
+
+                    <div class="field">
+                        <label for="editTemplateUrl">Resources Link (Google Drive, OneDrive, etc.)</label>
+                        <div style="position: relative;">
+                            <input id="editTemplateUrl" name="template_url" type="url" placeholder="https://drive.google.com/..." style="padding-right: 40px;">
+                            <button type="button" id="pasteEditTemplateUrlBtn" class="paste-btn" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); border: none; background: none; padding: 0; cursor: pointer;" title="Paste from clipboard" aria-label="Paste resources link from clipboard">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
+                                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -1584,6 +1598,12 @@
                     editMeetLink.value = eventData.meetLink || '';
                 }
 
+                // Set template URL value if exists
+                var editTemplateUrl = document.getElementById('editTemplateUrl');
+                if (editTemplateUrl) {
+                    editTemplateUrl.value = eventData.templateUrl || '';
+                }
+
                 // Clear file inputs
                 editPoster.value = '';
                 editTemplateFile.value = '';
@@ -1663,7 +1683,8 @@
                         location: editButton.dataset.location,
                         meetLink: editButton.dataset.meetLink,
                         posterPath: editButton.dataset.posterPath,
-                        templateFilePath: editButton.dataset.templateFilePath
+                        templateFilePath: editButton.dataset.templateFilePath,
+                        templateUrl: editButton.dataset.templateUrl
                     };
                     openEditModal(eventData);
                 }
@@ -1704,6 +1725,30 @@
                         editPasteMeetLinkBtn.style.color = '#16a34a';
                         setTimeout(function() {
                             editPasteMeetLinkBtn.style.color = originalColor;
+                        }, 1500);
+                    } catch (err) {
+                        alert('Failed to paste from clipboard');
+                    }
+                });
+            }
+
+            // Handle paste button for template URL in edit modal
+            var editPasteTemplateUrlBtn = document.getElementById('pasteEditTemplateUrlBtn');
+            var editTemplateUrlInput = document.getElementById('editTemplateUrl');
+            
+            if (editPasteTemplateUrlBtn && editTemplateUrlInput) {
+                editPasteTemplateUrlBtn.addEventListener('click', async function(e) {
+                    e.preventDefault();
+                    try {
+                        var text = await navigator.clipboard.readText();
+                        editTemplateUrlInput.value = text;
+                        editTemplateUrlInput.focus();
+                        
+                        // Visual feedback
+                        var originalColor = editPasteTemplateUrlBtn.style.color;
+                        editPasteTemplateUrlBtn.style.color = '#16a34a';
+                        setTimeout(function() {
+                            editPasteTemplateUrlBtn.style.color = originalColor;
                         }, 1500);
                     } catch (err) {
                         alert('Failed to paste from clipboard');

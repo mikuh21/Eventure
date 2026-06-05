@@ -564,7 +564,24 @@
                         <div class="asset-placeholder">No conference template uploaded yet.</div>
                     @endif
                 </div>
-            @endif
+
+                @if ($event->template_url)
+                    <div class="event-asset-card">
+                        <h3 class="event-asset-title">Resources Link</h3>
+                        <div class="event-asset-actions">
+                            <a class="btn" href="{{ $event->template_url }}" target="_blank" rel="noopener noreferrer" style="font-family: 'Sora', sans-serif;">Open Resources Link</a>
+                        </div>
+                    </div>
+                @endif
+            @else
+                @if ($event->template_url)
+                    <div class="event-asset-card">
+                        <h3 class="event-asset-title">Resources Link</h3>
+                        <div class="event-asset-actions">
+                            <a class="btn" href="{{ $event->template_url }}" target="_blank" rel="noopener noreferrer" style="font-family: 'Sora', sans-serif;">Open Resources Link</a>
+                        </div>
+                    </div>
+                @endif
         </div>
     </div>
 
