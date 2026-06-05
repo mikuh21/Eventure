@@ -1241,7 +1241,7 @@
         <nav class="topbar" aria-label="Participant navigation">
             <div class="wordmark">
                 <img src="{{ asset('eventurelogo.png') }}" alt="Eventure logo">
-                <span><span class="wordmark-event">Even</span><span class="wordmark-flow">ture</span></span>
+                <span><span class="wordmark-event">Event</span><span class="wordmark-flow">ure</span></span>
             </div>
         </nav>
 
@@ -1633,7 +1633,7 @@
         @endif
         <footer class="footer">
             <div class="wordmark">
-                <span class="wordmark-event">Even</span><span class="wordmark-flow">ture</span>
+                <span class="wordmark-event">Event</span><span class="wordmark-flow">ure</span>
             </div>
             <p class="tagline">Empowering Events. Connecting People.</p>
             <p class="copyright">© 2026 Eventure. All rights reserved.</p>
