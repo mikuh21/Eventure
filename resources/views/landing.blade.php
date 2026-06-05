@@ -849,7 +849,7 @@
         <div class="max-w-7xl mx-auto flex items-center justify-between px-6 py-3.5">
             <a href="{{ url('/') }}" class="brand text-2xl font-bold">
                 <img src="{{ asset('eventurelogo.png') }}" alt="Eventure logo">
-                <span class="brand-text"><span class="text-em4">Even</span><span class="text-white">ture</span></span>
+                <span class="brand-text"><span class="text-white">Event</span><span class="text-em4">ure</span></span>
             </a>
 
             <div class="hidden md:flex items-center gap-8 text-sm font-normal" style="color:rgba(255,255,255,0.6)">
@@ -1211,7 +1211,7 @@
         <div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-8">
             <div>
                 <a href="{{ url('/') }}" class="text-xl font-bold">
-                    <span class="text-em4">Even</span><span class="text-white">ture</span>
+                    <span class="text-white">Event</span><span class="text-em4">ure</span>
                 </a>
                 <p class="mt-3 text-sm" style="color:rgba(255,255,255,0.5)">Empowering Events. Connecting People.</p>
             </div>
