@@ -8,7 +8,8 @@ class LandingController extends Controller
 {
     public function __invoke()
     {
-        $today = now('Asia/Manila')->startOfDay();
+        $now = now('Asia/Manila');
+        $today = $now->copy()->startOfDay();
         $todayEnd = $today->copy()->endOfDay();
 
         $ongoingEvents = Event::query()
@@ -42,6 +43,7 @@ class LandingController extends Controller
         ];
 
         return view('landing', compact(
+            'now',
             'ongoingEvents',
             'upcomingEvents',
             'recentEvents',
