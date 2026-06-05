@@ -337,7 +337,7 @@
         <aside class="sidebar" id="analyticsSidebar">
             <a href="{{ \App\Support\PreviewAuth::appendToUrl(route('admin.dashboard', [], false), $previewAuthQuery) }}" class="brand">
                 <img src="{{ asset('eventurelogo.png') }}" alt="Eventure logo">
-                <span class="brand-text"><span class="brand-event">Even</span><span class="brand-flow">ture</span></span>
+                <span class="brand-text"><span class="brand-event">Event</span><span class="brand-flow">ure</span></span>
             </a>
 
             <nav class="side-nav" aria-label="Main navigation">
