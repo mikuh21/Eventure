@@ -2489,9 +2489,20 @@
                     attendanceError.classList.remove('show');
                     showToast(data.message, 'success');
                     
+                    console.log('Confirmation successful!');
+                    console.log('Meet link from response:', data.meet_link);
+                    console.log('Full response data:', data);
+                    
                     // Open meet link immediately (before closing modal) to avoid popup blocking
                     if (data.meet_link) {
-                        window.open(data.meet_link, '_blank');
+                        console.log('Opening meet link:', data.meet_link);
+                        const meetWindow = window.open(data.meet_link, '_blank');
+                        if (!meetWindow) {
+                            console.warn('Popup was blocked! Meet link: ' + data.meet_link);
+                            showToast('Please allow popups to open the meeting link', 'warning');
+                        }
+                    } else {
+                        console.warn('No meet_link in response!');
                     }
                     
                     // Close modal after opening link

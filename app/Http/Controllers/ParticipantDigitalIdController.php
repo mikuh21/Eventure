@@ -358,16 +358,23 @@ class ParticipantDigitalIdController extends Controller
                 'digital_id_verified_at' => $participant->digital_id_verified_at ?? now(),
             ]);
 
+            // Load fresh event relationship
+            $participant->load('event');
+            
+            // Get the event meet link
+            $meetLink = $participant->event?->meet_link;
+            
             return response()->json([
                 'success' => true,
                 'message' => 'Attendance confirmed! Redirecting to meeting...',
-                'meet_link' => $participant->event->meet_link,
+                'meet_link' => $meetLink,
             ]);
         } catch (\Exception $e) {
             // Log the error for debugging
             \Log::error('Attendance confirmation error: ' . $e->getMessage(), [
                 'participant_id' => $participant->id,
                 'error' => $e,
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return response()->json([
