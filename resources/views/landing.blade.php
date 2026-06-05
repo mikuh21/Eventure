@@ -981,13 +981,8 @@
                                         <p><button type="button" class="template-download-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline><path d="M9 15l3 3 5-5"></path></svg></span> {{ $event->template_file_name ?? basename($event->template_file_path) }}</button></p>
                                     @endif
                                     @if($event->template_url)
-                                        <p><a href="{{ $event->template_url }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 underline hover:opacity-80 transition"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></span> Resources Link</a></p>
+                                        <p><button type="button" class="resource-link-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></span> Resources Link</button></p>
                                     @endif
-                                    @if(in_array($event->attendance_type, ['virtual', 'both']) && $event->meet_link)
-                                        <p><button type="button" class="meet-link-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M23 7l-7 5 7 5V7z"></path><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg></span> Meet Link</button></p>
-                                    @endif
-                                </div>
-                                @php $now = \Carbon\Carbon::now('Asia/Manila'); @endphp
                                 @if($now->lt(\Carbon\Carbon::parse($event->start_registration)->setTimezone('Asia/Manila')))
                                     <button disabled class="mt-4 inline-block px-5 py-2.5 rounded-[10px] text-sm font-semibold cursor-not-allowed" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.35)">
                                         Registration Not Yet Open
@@ -1070,7 +1065,7 @@
                                         <p><button type="button" class="template-download-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline><path d="M9 15l3 3 5-5"></path></svg></span> {{ $event->template_file_name ?? basename($event->template_file_path) }}</button></p>
                                     @endif
                                     @if($event->template_url)
-                                        <p><a href="{{ $event->template_url }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 underline hover:opacity-80 transition"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></span> Resources Link</a></p>
+                                        <p><button type="button" class="resource-link-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></span> Resources Link</button></p>
                                     @endif
                                     @if(in_array($event->attendance_type, ['virtual', 'both']) && $event->meet_link)
                                         <p><button type="button" class="meet-link-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M23 7l-7 5 7 5V7z"></path><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg></span> Meet Link</button></p>
@@ -1142,7 +1137,7 @@
                                         <button type="button" class="template-download-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline><path d="M9 15l3 3 5-5"></path></svg></span> {{ $event->template_file_name ?? basename($event->template_file_path) }}</button>
                                     @endif
                                     @if($event->template_url)
-                                        <a href="{{ $event->template_url }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 underline hover:opacity-80 transition"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></span> Resources Link</a>
+                                        <button type="button" class="resource-link-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></span> Resources Link</button>
                                     @endif
                                     @if(in_array($event->attendance_type, ['virtual', 'both']) && $event->meet_link)
                                         <button type="button" class="meet-link-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M23 7l-7 5 7 5V7z"></path><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg></span> Meet Link</button>
@@ -1959,51 +1954,112 @@
         </div>
     </div>
 
+    <!-- Resource Link Modal -->
+    <div id="resourceLinkModal" class="template-modal-overlay fixed inset-0 bg-black/50 hidden items-center justify-center z-[9999]">
+        <div class="template-modal-content bg-white rounded-2xl p-8 max-w-[640px] w-full mx-4 shadow-2xl">
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">Access Resource Link</h2>
+            <p class="text-gray-600 mb-6">Enter your guest or participant token to access resources.</p>
+            
+            <div class="space-y-4">
+                <div>
+                    <label for="resourceLinkToken" class="block text-sm font-medium text-gray-700 mb-2">
+                        Enter your Token
+                    </label>
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            id="resourceLinkToken" 
+                            class="w-full px-4 py-2 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-em4 focus:border-transparent outline-none"
+                            style="font-family: 'Sora', sans-serif"
+                            placeholder="Paste your digital ID token here"
+                        >
+                        <button
+                            type="button"
+                            id="resourceLinkPasteBtn"
+                            class="paste-btn absolute right-1 top-1/2 transform -translate-y-1/2"
+                            title="Paste from clipboard"
+                            aria-label="Paste token from clipboard"
+                        >
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
+                                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                            </svg>
+                        </button>
+                    </div>
+                    <p id="resourceLinkError" class="mt-2 text-sm text-red-600 hidden"></p>
+                </div>
+                
+                <div class="flex gap-3 pt-4">
+                    <button 
+                        type="button" 
+                        id="resourceLinkCancel" 
+                        class="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition"
+                    >
+                        Cancel
+                    </button>
+                    <button 
+                        type="button" 
+                        id="resourceLinkAccessBtn" 
+                        class="flex-1 px-4 py-2.5 bg-em4 text-white rounded-lg font-medium hover:brightness-110 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        Access
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Program Download Modal -->
     <div id="programDownloadModal" class="template-modal-overlay fixed inset-0 bg-black/50 hidden items-center justify-center z-[9999]">
-        <div class="template-modal-content bg-white rounded-2xl shadow-2xl max-h-[95vh] overflow-hidden flex flex-col w-full mx-4" style="max-width: 900px;">
-            <!-- Modal Header -->
-            <div class="flex items-center justify-between p-6 border-b border-gray-200 flex-shrink-0">
-                <h2 class="text-2xl font-bold text-gray-900">Program</h2>
-                <button 
-                    type="button" 
-                    id="programModalClose" 
-                    class="p-1 hover:bg-gray-100 rounded transition text-gray-500 hover:text-gray-700"
-                    aria-label="Close modal"
-                >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                </button>
-            </div>
+        <div class="template-modal-content bg-white rounded-2xl p-8 max-w-[640px] w-full mx-4 shadow-2xl">
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">Download Program</h2>
+            <p class="text-gray-600 mb-6">Enter your guest or participant token to download the program.</p>
             
-            <!-- Modal Content -->
-            <div id="programPreviewContainer" class="overflow-y-auto flex-grow p-6 bg-gray-50">
-                <!-- Preview will be loaded here -->
-            </div>
-            
-            <!-- Modal Footer -->
-            <div class="flex gap-3 p-6 border-t border-gray-200 bg-white flex-shrink-0">
-                <button 
-                    type="button" 
-                    id="programDownloadCancel" 
-                    class="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition"
-                >
-                    Close
-                </button>
-                <a 
-                    id="programDownloadLink" 
-                    href="#" 
-                    class="flex-1 px-4 py-2.5 bg-em4 text-white rounded-lg font-medium hover:brightness-110 transition text-center flex items-center justify-center gap-2"
-                >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="7 10 12 15 17 10"></polyline>
-                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                    </svg>
-                    Download
-                </a>
+            <div class="space-y-4">
+                <div>
+                    <label for="programDownloadToken" class="block text-sm font-medium text-gray-700 mb-2">
+                        Enter your Token
+                    </label>
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            id="programDownloadToken" 
+                            class="w-full px-4 py-2 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-em4 focus:border-transparent outline-none"
+                            style="font-family: 'Sora', sans-serif"
+                            placeholder="Paste your digital ID token here"
+                        >
+                        <button
+                            type="button"
+                            id="programPasteBtn"
+                            class="paste-btn absolute right-1 top-1/2 transform -translate-y-1/2"
+                            title="Paste from clipboard"
+                            aria-label="Paste token from clipboard"
+                        >
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
+                                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                            </svg>
+                        </button>
+                    </div>
+                    <p id="programDownloadError" class="mt-2 text-sm text-red-600 hidden"></p>
+                </div>
+                
+                <div class="flex gap-3 pt-4">
+                    <button 
+                        type="button" 
+                        id="programDownloadCancel" 
+                        class="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition"
+                    >
+                        Cancel
+                    </button>
+                    <button 
+                        type="button" 
+                        id="programDownloadBtn" 
+                        class="flex-1 px-4 py-2.5 bg-em4 text-white rounded-lg font-medium hover:brightness-110 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        Download
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -2386,146 +2442,379 @@
             }
         });
 
-        // Program Download Modal
+        // ========== PROGRAM DOWNLOAD MODAL HANDLERS ==========
         const programDownloadModal = document.getElementById('programDownloadModal');
-        const programDownloadLink = document.getElementById('programDownloadLink');
+        const programDownloadTokenInput = document.getElementById('programDownloadToken');
+        const programDownloadBtn = document.getElementById('programDownloadBtn');
         const programDownloadCancel = document.getElementById('programDownloadCancel');
-        const programModalClose = document.getElementById('programModalClose');
-        const programPreviewContainer = document.getElementById('programPreviewContainer');
+        const programDownloadError = document.getElementById('programDownloadError');
+        const programPasteBtn = document.getElementById('programPasteBtn');
         let currentProgramEventId = null;
 
-        // Only initialize program modal handlers if modal exists
-        if (programDownloadModal && programDownloadLink && programDownloadCancel && programModalClose && programPreviewContainer) {
-            function closeProgramModal() {
-                programDownloadModal.classList.remove('show');
+        function openProgramModal() {
+            currentProgramEventId = event?.target?.dataset?.eventId;
+            programDownloadTokenInput.value = '';
+            programDownloadError.classList.add('hidden');
+            programDownloadError.textContent = '';
+            
+            // Show modal
+            programDownloadModal.classList.remove('hidden');
+            programDownloadModal.style.display = 'flex';
+            
+            // Trigger animation
+            setTimeout(() => {
+                programDownloadModal.classList.add('show');
+            }, 10);
+            
+            // Hide body scrollbar
+            document.body.style.overflow = 'hidden';
+            
+            // Hide scroll-to-top button pointer events
+            if (scrollTopBtn) {
+                scrollTopBtn.style.pointerEvents = 'none';
+            }
+            
+            programDownloadTokenInput.focus();
+        }
+
+        function closeProgramModal() {
+            // Fade out animation
+            programDownloadModal.classList.remove('show');
+            
+            setTimeout(() => {
+                programDownloadModal.classList.add('hidden');
+                programDownloadModal.style.display = 'none';
+                
+                // Restore body scrollbar
+                document.body.style.overflow = '';
+                
+                // Restore scroll-to-top button pointer events
+                if (scrollTopBtn && scrollTopBtn.classList.contains('is-visible')) {
+                    scrollTopBtn.style.pointerEvents = 'auto';
+                }
+            }, 300);
+        }
+
+        // Open modal on button click
+        document.querySelectorAll('.program-download-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                currentProgramEventId = btn.dataset.eventId;
+                programDownloadTokenInput.value = '';
+                programDownloadError.classList.add('hidden');
+                programDownloadError.textContent = '';
+                
+                // Show modal
+                programDownloadModal.classList.remove('hidden');
+                programDownloadModal.style.display = 'flex';
+                
+                // Trigger animation
+                setTimeout(() => {
+                    programDownloadModal.classList.add('show');
+                }, 10);
+                
+                // Hide body scrollbar
+                document.body.style.overflow = 'hidden';
+                
+                // Hide scroll-to-top button pointer events
+                if (scrollTopBtn) {
+                    scrollTopBtn.style.pointerEvents = 'none';
+                }
+                
+                programDownloadTokenInput.focus();
+            });
+        });
+
+        // Close modal on cancel
+        programDownloadCancel.addEventListener('click', () => {
+            closeProgramModal();
+        });
+
+        // Close modal on background click
+        programDownloadModal.addEventListener('click', (e) => {
+            if (e.target === programDownloadModal) {
+                closeProgramModal();
+            }
+        });
+
+        // Paste button functionality for program
+        programPasteBtn.addEventListener('click', async () => {
+            try {
+                const text = await navigator.clipboard.readText();
+                programDownloadTokenInput.value = text.trim();
+                programDownloadError.classList.add('hidden');
+                programDownloadError.textContent = '';
+                programDownloadTokenInput.focus();
+                
+                // Show success feedback
+                programPasteBtn.classList.add('success');
                 
                 setTimeout(() => {
-                    programDownloadModal.classList.add('hidden');
-                    programDownloadModal.style.display = 'none';
-                    
-                    // Restore body scrollbar
-                    document.body.style.overflow = '';
-                    
-                    // Restore scroll-to-top button pointer events
-                    if (scrollTopBtn && scrollTopBtn.classList.contains('is-visible')) {
-                        scrollTopBtn.style.pointerEvents = 'auto';
-                    }
-                }, 300);
+                    programPasteBtn.classList.remove('success');
+                }, 1500);
+            } catch (err) {
+                // Clipboard permission denied or no content
+                console.debug('Clipboard paste not available:', err);
+            }
+        });
+
+        // Handle program download
+        programDownloadBtn.addEventListener('click', async () => {
+            const token = programDownloadTokenInput.value.trim();
+            
+            if (!token) {
+                programDownloadError.textContent = 'Token is required. Please enter your token.';
+                programDownloadError.classList.remove('hidden');
+                return;
             }
 
-            // Open program modal on button click
-            const programBtns = document.querySelectorAll('.program-download-btn');
-            programBtns.forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    currentProgramEventId = btn.dataset.eventId;
-                    
-                    // Show modal
-                    programDownloadModal.classList.remove('hidden');
-                    programDownloadModal.style.display = 'flex';
-                    
-                    // Trigger animation
-                    setTimeout(() => {
-                        programDownloadModal.classList.add('show');
-                    }, 10);
-                    
-                    // Hide body scrollbar
-                    document.body.style.overflow = 'hidden';
-                    
-                    // Hide scroll-to-top button pointer events
-                    if (scrollTopBtn) {
-                        scrollTopBtn.style.pointerEvents = 'none';
-                    }
-                    
-                    // Load preview
-                    loadProgramPreview(currentProgramEventId);
-                    
-                    // Set download link to use public route
-                    programDownloadLink.href = `/events/${currentProgramEventId}/program/download`;
-                    programDownloadLink.setAttribute('download', '');
+            programDownloadBtn.disabled = true;
+            programDownloadBtn.textContent = 'Downloading...';
+
+            try {
+                const response = await fetch(`/events/${currentProgramEventId}/program/download/verify`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                    },
+                    body: JSON.stringify({ token })
                 });
-            });
 
-            // Close modal on cancel button
-            programDownloadCancel.addEventListener('click', () => {
-                closeProgramModal();
-            });
-
-            // Close modal on close button
-            programModalClose.addEventListener('click', () => {
-                closeProgramModal();
-            });
-
-            // Close modal on background click
-            programDownloadModal.addEventListener('click', (e) => {
-                if (e.target === programDownloadModal) {
-                    closeProgramModal();
-                }
-            });
-
-            // Close modal on Escape key
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && !programDownloadModal.classList.contains('hidden')) {
-                    closeProgramModal();
-                }
-            });
-
-            // Load program preview
-            function loadProgramPreview(eventId) {
-                // Show loading state
-                programPreviewContainer.innerHTML = '<div class="flex items-center justify-center py-16"><div class="flex flex-col items-center gap-2"><div class="w-8 h-8 border-3 border-em4 border-t-transparent rounded-full animate-spin"></div><p class="text-sm text-gray-600">Loading preview...</p></div></div>';
-                
-                // Fetch program file info from API endpoint
-            fetch(`/events/${eventId}/program-file`)
-                .then(response => {
-                    if (!response.ok) throw new Error('Failed to load program file');
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success && data.program_file_path) {
-                        const filePath = data.program_file_path;
-                        const fileName = data.program_file_name || 'Program';
+                if (response.ok) {
+                    try {
+                        // File download
+                        const blob = await response.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
                         
-                        programPreviewContainer.innerHTML = `
-                            <div class="template-preview" style="margin-bottom: 1rem;">
-                                <iframe 
-                                    src="https://docs.google.com/viewer?url=https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/event-programs/${filePath}&embedded=true"
-                                    width="100%" 
-                                    height="400px"
-                                    frameborder="0"
-                                    style="border-radius: 8px;">
-                                </iframe>
-                            </div>
-                        `;
-                    } else {
-                        // Fallback: show file info
-                        programPreviewContainer.innerHTML = `
-                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
-                                <svg class="w-12 h-12 text-blue-600 mx-auto mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
-                                    <polyline points="13 2 13 9 20 9"></polyline>
-                                </svg>
-                                <p class="font-semibold text-gray-900 mb-1">Program file ready</p>
-                                <p class="text-sm text-gray-600">Click the download button below to get the file</p>
-                            </div>
-                        `;
+                        // Extract filename from Content-Disposition header
+                        const contentDisposition = response.headers.get('Content-Disposition');
+                        const filename = getFilenameFromContentDisposition(contentDisposition) || 'program';
+                        a.download = filename;
+                        
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        a.remove();
+                        
+                        // Close modal
+                        closeProgramModal();
+                    } catch (blobError) {
+                        console.error('Blob processing error:', blobError);
+                        programDownloadError.textContent = 'Failed to process file. Please try again.';
+                        programDownloadError.classList.remove('hidden');
                     }
-                })
-                .catch(error => {
-                    console.error('Error loading preview:', error);
-                    programPreviewContainer.innerHTML = `
-                        <div class="bg-amber-50 border border-amber-200 rounded-lg p-6 text-center">
-                            <svg class="w-12 h-12 text-amber-600 mx-auto mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
-                                <polyline points="13 2 13 9 20 9"></polyline>
-                            </svg>
-                            <p class="font-semibold text-gray-900 mb-1">Program available for download</p>
-                            <p class="text-sm text-gray-600">Click the download button below to access the file</p>
-                        </div>
-                    `;
-                });
+                } else {
+                    try {
+                        const errorData = await response.json();
+                        programDownloadError.textContent = errorData.error || 'An error occurred. Please try again.';
+                    } catch {
+                        programDownloadError.textContent = 'Server error: ' + response.status + '. Please try again.';
+                    }
+                    programDownloadError.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+                programDownloadError.textContent = 'Network error. Please check your connection and try again.';
+                programDownloadError.classList.remove('hidden');
+            } finally {
+                programDownloadBtn.disabled = false;
+                programDownloadBtn.textContent = 'Download';
             }
+        });
+
+        // Allow Enter key to download program
+        programDownloadTokenInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !programDownloadBtn.disabled) {
+                programDownloadBtn.click();
+            }
+        });
+
+        // ========== RESOURCE LINK MODAL HANDLERS ==========
+        const resourceLinkModal = document.getElementById('resourceLinkModal');
+        const resourceLinkTokenInput = document.getElementById('resourceLinkToken');
+        const resourceLinkAccessBtn = document.getElementById('resourceLinkAccessBtn');
+        const resourceLinkCancel = document.getElementById('resourceLinkCancel');
+        const resourceLinkError = document.getElementById('resourceLinkError');
+        const resourceLinkPasteBtn = document.getElementById('resourceLinkPasteBtn');
+        let currentResourceLinkEventId = null;
+
+        function openResourceLinkModal() {
+            currentResourceLinkEventId = event?.target?.dataset?.eventId;
+            resourceLinkTokenInput.value = '';
+            resourceLinkError.classList.add('hidden');
+            resourceLinkError.textContent = '';
+            
+            // Show modal
+            resourceLinkModal.classList.remove('hidden');
+            resourceLinkModal.style.display = 'flex';
+            
+            // Trigger animation
+            setTimeout(() => {
+                resourceLinkModal.classList.add('show');
+            }, 10);
+            
+            // Hide body scrollbar
+            document.body.style.overflow = 'hidden';
+            
+            // Hide scroll-to-top button pointer events
+            if (scrollTopBtn) {
+                scrollTopBtn.style.pointerEvents = 'none';
+            }
+            
+            resourceLinkTokenInput.focus();
         }
+
+        function closeResourceLinkModal() {
+            // Fade out animation
+            resourceLinkModal.classList.remove('show');
+            
+            setTimeout(() => {
+                resourceLinkModal.classList.add('hidden');
+                resourceLinkModal.style.display = 'none';
+                
+                // Restore body scrollbar
+                document.body.style.overflow = '';
+                
+                // Restore scroll-to-top button pointer events
+                if (scrollTopBtn && scrollTopBtn.classList.contains('is-visible')) {
+                    scrollTopBtn.style.pointerEvents = 'auto';
+                }
+            }, 300);
+        }
+
+        // Open modal on button click
+        document.querySelectorAll('.resource-link-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                currentResourceLinkEventId = btn.dataset.eventId;
+                resourceLinkTokenInput.value = '';
+                resourceLinkError.classList.add('hidden');
+                resourceLinkError.textContent = '';
+                
+                // Show modal
+                resourceLinkModal.classList.remove('hidden');
+                resourceLinkModal.style.display = 'flex';
+                
+                // Trigger animation
+                setTimeout(() => {
+                    resourceLinkModal.classList.add('show');
+                }, 10);
+                
+                // Hide body scrollbar
+                document.body.style.overflow = 'hidden';
+                
+                // Hide scroll-to-top button pointer events
+                if (scrollTopBtn) {
+                    scrollTopBtn.style.pointerEvents = 'none';
+                }
+                
+                resourceLinkTokenInput.focus();
+            });
+        });
+
+        // Close modal on cancel
+        resourceLinkCancel.addEventListener('click', () => {
+            closeResourceLinkModal();
+        });
+
+        // Close modal on background click
+        resourceLinkModal.addEventListener('click', (e) => {
+            if (e.target === resourceLinkModal) {
+                closeResourceLinkModal();
+            }
+        });
+
+        // Paste button functionality for resource link
+        resourceLinkPasteBtn.addEventListener('click', async () => {
+            try {
+                const text = await navigator.clipboard.readText();
+                resourceLinkTokenInput.value = text.trim();
+                resourceLinkError.classList.add('hidden');
+                resourceLinkError.textContent = '';
+                resourceLinkTokenInput.focus();
+                
+                // Show success feedback
+                resourceLinkPasteBtn.classList.add('success');
+                
+                setTimeout(() => {
+                    resourceLinkPasteBtn.classList.remove('success');
+                }, 1500);
+            } catch (err) {
+                // Clipboard permission denied or no content
+                console.debug('Clipboard paste not available:', err);
+            }
+        });
+
+        // Handle resource link access
+        resourceLinkAccessBtn.addEventListener('click', async () => {
+            const token = resourceLinkTokenInput.value.trim();
+            
+            if (!token) {
+                resourceLinkError.textContent = 'Token is required. Please enter your token.';
+                resourceLinkError.classList.remove('hidden');
+                return;
+            }
+
+            resourceLinkAccessBtn.disabled = true;
+            resourceLinkAccessBtn.textContent = 'Accessing...';
+
+            try {
+                const response = await fetch(`/events/${currentResourceLinkEventId}/resource-link/verify`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                    },
+                    body: JSON.stringify({ token })
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.resource_link) {
+                    // Close modal and open resource link
+                    closeResourceLinkModal();
+                    window.open(data.resource_link, '_blank');
+                } else {
+                    resourceLinkError.textContent = data.error || 'An error occurred. Please try again.';
+                    resourceLinkError.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Resource link access error:', error);
+                resourceLinkError.textContent = 'Network error. Please try again.';
+                resourceLinkError.classList.remove('hidden');
+            } finally {
+                resourceLinkAccessBtn.disabled = false;
+                resourceLinkAccessBtn.textContent = 'Access';
+            }
+        });
+
+        // Allow Enter key to access resource link
+        resourceLinkTokenInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !resourceLinkAccessBtn.disabled) {
+                resourceLinkAccessBtn.click();
+            }
+        });
+
+        // Close modal on Escape key for all modals
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (!programDownloadModal.classList.contains('hidden')) {
+                    closeProgramModal();
+                }
+                if (!resourceLinkModal.classList.contains('hidden')) {
+                    closeResourceLinkModal();
+                }
+                if (!meetLinkModal.classList.contains('hidden')) {
+                    closeMeetLinkModal();
+                }
+                if (!templateModal.classList.contains('hidden')) {
+                    closeModal();
+                }
+            }
+        });
     </script>
 </body>
 </html>

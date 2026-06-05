@@ -377,53 +377,146 @@ class EventController extends Controller
         abort_if(! $event->template_file_path, 404, 'No template file uploaded for this conference event.');
 
         $token = trim($request->input('token', ''));
-        $token = $this->normalizeGuestToken($token);
+        $token = $this->normalizeToken($token);
 
         if (empty($token)) {
             return response()->json([
-                'error' => 'Token is required. Please enter your guest token.'
+                'error' => 'Token is required. Please enter your token.'
             ], 422);
         }
 
-        // Look up the guest by token, normalizing the stored value for safe comparison.
+        // Try to verify as guest first
         $guest = $event->guests()
             ->whereRaw('LOWER(digital_token) = ?', [mb_strtolower($token)])
             ->first();
 
-        if (!$guest) {
-            return response()->json([
-                'error' => 'Invalid or unapproved token. Please check your guest token and try again.'
-            ], 403);
+        if ($guest && $guest->status === 'approved') {
+            // Guest verified - return file download
+            $downloadName = $event->template_file_name ?? basename($event->template_file_path);
+            
+            return response(Storage::disk('event-templates')->get($event->template_file_path), 200)
+                ->header('Content-Type', Storage::disk('event-templates')->mimeType($event->template_file_path))
+                ->header('Content-Disposition', 'attachment; filename="' . $downloadName . '"')
+                ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+                ->header('Pragma', 'no-cache');
         }
 
-        // Check that the guest is approved
-        if ($guest->status !== 'approved') {
-            return response()->json([
-                'error' => 'Invalid or unapproved token. Please check your guest token and try again.'
-            ], 403);
+        // Try to verify as participant
+        $participant = $event->participants()
+            ->whereRaw('LOWER(digital_id_token) = ?', [mb_strtolower($token)])
+            ->first();
+
+        if ($participant) {
+            // Participant verified - return file download
+            $downloadName = $event->template_file_name ?? basename($event->template_file_path);
+            
+            return response(Storage::disk('event-templates')->get($event->template_file_path), 200)
+                ->header('Content-Type', Storage::disk('event-templates')->mimeType($event->template_file_path))
+                ->header('Content-Disposition', 'attachment; filename="' . $downloadName . '"')
+                ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+                ->header('Pragma', 'no-cache');
         }
 
-        // Return the file download
-        $downloadName = $event->template_file_name ?? basename($event->template_file_path);
-        
-        return response(Storage::disk('event-templates')->get($event->template_file_path), 200)
-            ->header('Content-Type', Storage::disk('event-templates')->mimeType($event->template_file_path))
-            ->header('Content-Disposition', 'attachment; filename="' . $downloadName . '"')
-            ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
-            ->header('Pragma', 'no-cache');
+        // Token not found or not approved
+        return response()->json([
+            'error' => 'Invalid token. Please check your token and try again.'
+        ], 403);
     }
 
-    public function downloadProgram(Event $event)
+    public function verifyAndDownloadProgram(Event $event, Request $request)
     {
         abort_if(! $event->program_file_path, 404, 'No program file uploaded for this event.');
 
-        $downloadName = $event->program_file_name ?? basename($event->program_file_path);
-        
-        return response(Storage::disk('event-programs')->get($event->program_file_path), 200)
-            ->header('Content-Type', Storage::disk('event-programs')->mimeType($event->program_file_path))
-            ->header('Content-Disposition', 'attachment; filename="' . $downloadName . '"')
-            ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
-            ->header('Pragma', 'no-cache');
+        $token = trim($request->input('token', ''));
+        $token = $this->normalizeToken($token);
+
+        if (empty($token)) {
+            return response()->json([
+                'error' => 'Token is required. Please enter your token.'
+            ], 422);
+        }
+
+        // Try to verify as guest first
+        $guest = $event->guests()
+            ->whereRaw('LOWER(digital_token) = ?', [mb_strtolower($token)])
+            ->first();
+
+        if ($guest && $guest->status === 'approved') {
+            // Guest verified - return file download
+            $downloadName = $event->program_file_name ?? basename($event->program_file_path);
+            
+            return response(Storage::disk('event-programs')->get($event->program_file_path), 200)
+                ->header('Content-Type', Storage::disk('event-programs')->mimeType($event->program_file_path))
+                ->header('Content-Disposition', 'attachment; filename="' . $downloadName . '"')
+                ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+                ->header('Pragma', 'no-cache');
+        }
+
+        // Try to verify as participant
+        $participant = $event->participants()
+            ->whereRaw('LOWER(digital_id_token) = ?', [mb_strtolower($token)])
+            ->first();
+
+        if ($participant) {
+            // Participant verified - return file download
+            $downloadName = $event->program_file_name ?? basename($event->program_file_path);
+            
+            return response(Storage::disk('event-programs')->get($event->program_file_path), 200)
+                ->header('Content-Type', Storage::disk('event-programs')->mimeType($event->program_file_path))
+                ->header('Content-Disposition', 'attachment; filename="' . $downloadName . '"')
+                ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+                ->header('Pragma', 'no-cache');
+        }
+
+        // Token not found or not approved
+        return response()->json([
+            'error' => 'Invalid token. Please check your token and try again.'
+        ], 403);
+    }
+
+    public function verifyAndAccessResourceLink(Event $event, Request $request)
+    {
+        abort_if(! $event->template_url, 404, 'No resource link available for this event.');
+
+        $token = trim($request->input('token', ''));
+        $token = $this->normalizeToken($token);
+
+        if (empty($token)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Token is required. Please enter your token.'
+            ], 422);
+        }
+
+        // Try to verify as guest first
+        $guest = $event->guests()
+            ->whereRaw('LOWER(digital_token) = ?', [mb_strtolower($token)])
+            ->first();
+
+        if ($guest && $guest->status === 'approved') {
+            return response()->json([
+                'success' => true,
+                'resource_link' => $event->template_url
+            ]);
+        }
+
+        // Try to verify as participant
+        $participant = $event->participants()
+            ->whereRaw('LOWER(digital_id_token) = ?', [mb_strtolower($token)])
+            ->first();
+
+        if ($participant) {
+            return response()->json([
+                'success' => true,
+                'resource_link' => $event->template_url
+            ]);
+        }
+
+        // Token not found
+        return response()->json([
+            'success' => false,
+            'message' => 'Invalid token. Please check your token and try again.'
+        ], 403);
     }
 
     public function getProgramFile(Event $event)
@@ -461,57 +554,59 @@ class EventController extends Controller
         }
 
         $token = trim($request->input('token', ''));
-        $token = $this->normalizeGuestToken($token);
+        $token = $this->normalizeToken($token);
 
         if (empty($token)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Token is required. Please enter your guest token.'
+                'message' => 'Token is required. Please enter your token.'
             ], 422);
         }
 
-        // Look up the guest by token
+        // Try to verify as guest first
         $guest = $event->guests()
             ->whereRaw('LOWER(digital_token) = ?', [mb_strtolower($token)])
             ->first();
 
-        if (! $guest) {
+        if ($guest && $guest->status === 'approved') {
             return response()->json([
-                'success' => false,
-                'message' => 'Invalid or unapproved token.'
-            ], 403);
+                'success' => true,
+                'meet_link' => $event->meet_link
+            ]);
         }
 
-        // Check that the guest is approved
-        if ($guest->status !== 'approved') {
+        // Try to verify as participant
+        $participant = $event->participants()
+            ->whereRaw('LOWER(digital_id_token) = ?', [mb_strtolower($token)])
+            ->first();
+
+        if ($participant) {
             return response()->json([
-                'success' => false,
-                'message' => 'Invalid or unapproved token.'
-            ], 403);
+                'success' => true,
+                'meet_link' => $event->meet_link
+            ]);
         }
 
-        // Verify guest is registered for this specific event
-        if ($guest->event_id !== $event->id) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Invalid or unapproved token.'
-            ], 403);
-        }
-
+        // Token not found
         return response()->json([
-            'success' => true,
-            'meet_link' => $event->meet_link
-        ]);
+            'success' => false,
+            'message' => 'Invalid token. Please check your token and try again.'
+        ], 403);
     }
 
-    private function normalizeGuestToken(string $token): string
-
+    private function normalizeToken(string $token): string
     {
         if (preg_match('/[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}/', $token, $matches)) {
             return mb_strtolower($matches[0]);
         }
 
         return mb_strtolower(trim($token));
+    }
+
+    private function normalizeGuestToken(string $token): string
+    {
+        // Backward compatibility - calls normalizeToken
+        return $this->normalizeToken($token);
     }
 
     private function buildEventData(array $validated, Request $request, ?Event $event = null): array

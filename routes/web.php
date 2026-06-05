@@ -20,6 +20,8 @@ Route::get('events/{event}/template/download', [EventController::class, 'downloa
 Route::get('events/{event}/program/download', [EventController::class, 'downloadProgram'])->name('events.download-program-public');
 Route::get('events/{event}/program-file', [EventController::class, 'getProgramFile'])->name('events.get-program-file');
 Route::post('events/{event}/template/download/verify', [EventController::class, 'verifyAndDownloadTemplate'])->name('events.template.verify-download');
+Route::post('events/{event}/program/download/verify', [EventController::class, 'verifyAndDownloadProgram'])->name('events.program.verify-download');
+Route::post('events/{event}/resource-link/verify', [EventController::class, 'verifyAndAccessResourceLink'])->name('events.resource-link.verify');
 Route::post('events/{event}/meet-link/verify', [EventController::class, 'verifyAndAccessMeetLink'])->name('events.meet-link.verify');
 
 Route::get('participant/events', [EventController::class, 'index'])
