@@ -2328,119 +2328,151 @@
         
         console.log('Page element:', pageEl);
         console.log('Participant ID from page:', participantId);
+        console.log('Form element:', attendanceForm);
+        console.log('Modal element:', attendanceModal);
+        console.log('Confirm button:', confirmAttendanceBtn);
         
         if (!participantId) {
             console.error('Participant ID not found in page data');
         }
 
-        // Open modal when "Join Meeting" button is clicked
-        openAttendanceModalButtons.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                attendanceModal.classList.add('is-visible');
-            });
-        });
-
-        // Close modal functions
-        function closeAttendanceModal() {
-            attendanceModal.classList.remove('is-visible');
-            attendanceForm.reset();
+        if (!attendanceForm) {
+            console.error('Attendance form not found in DOM');
         }
 
-        closeAttendanceModalBtn.addEventListener('click', closeAttendanceModal);
-        cancelAttendanceBtn.addEventListener('click', closeAttendanceModal);
-
-        // Close on overlay click (outside modal)
-        attendanceModal.addEventListener('click', (e) => {
-            if (e.target === attendanceModal) {
-                closeAttendanceModal();
-            }
-        });
-
-        // Close on ESC key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && attendanceModal.classList.contains('is-visible')) {
-                closeAttendanceModal();
-            }
-        });
-
-        // Handle form submission
-        attendanceForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            if (!participantId) {
-                showToast('Unable to identify participant. Please refresh the page and try again.', 'error');
-                return;
-            }
-
-            // Disable button during submission
-            confirmAttendanceBtn.disabled = true;
-            const originalText = confirmAttendanceBtn.textContent;
-            confirmAttendanceBtn.textContent = 'Confirming...';
-
-            try {
-                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
-                const url = `/participants/${participantId}/confirm-attendance`;
-                
-                console.log('Marking attendance for participant:', participantId);
-                console.log('POST to:', url);
-                
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken || '',
-                        'Accept': 'application/json',
-                    },
-                    body: JSON.stringify({}),
+        // Only proceed if form exists
+        if (attendanceForm) {
+            // Open modal when "Join Meeting" button is clicked
+            openAttendanceModalButtons.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    console.log('Open attendance modal clicked');
+                    attendanceModal.classList.add('is-visible');
                 });
+            });
 
-                console.log('Response status:', response.status);
-                console.log('Response ok:', response.ok);
+            // Close modal functions
+            function closeAttendanceModal() {
+                attendanceModal.classList.remove('is-visible');
+                attendanceForm.reset();
+            }
 
-                let data;
-                try {
-                    data = await response.json();
-                    console.log('Parsed response data:', data);
-                } catch (e) {
-                    console.error('JSON parse error:', e);
-                    showToast('Server error. Please try again.', 'error');
-                    confirmAttendanceBtn.disabled = false;
-                    confirmAttendanceBtn.textContent = originalText;
+            closeAttendanceModalBtn.addEventListener('click', closeAttendanceModal);
+            cancelAttendanceBtn.addEventListener('click', closeAttendanceModal);
+
+            // Close on overlay click (outside modal)
+            attendanceModal.addEventListener('click', (e) => {
+                if (e.target === attendanceModal) {
+                    closeAttendanceModal();
+                }
+            });
+
+            // Close on ESC key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && attendanceModal.classList.contains('is-visible')) {
+                    closeAttendanceModal();
+                }
+            });
+
+            // Handle form submission
+            attendanceForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                console.log('Form submitted!');
+                handleAttendanceConfirmation();
+            });
+
+            // Also handle direct button click as backup
+            confirmAttendanceBtn.addEventListener('click', async (e) => {
+                // If this is a form submission, the event above will handle it
+                // This is a backup in case the form submission doesn't trigger
+                if (attendanceForm.requestSubmit) {
+                    attendanceForm.requestSubmit();
+                } else {
+                    handleAttendanceConfirmation();
+                }
+            });
+
+            // Centralized confirmation handler
+            async function handleAttendanceConfirmation() {
+                console.log('Handling attendance confirmation');
+                
+                if (!participantId) {
+                    showToast('Unable to identify participant. Please refresh the page and try again.', 'error');
                     return;
                 }
 
-                if (data.success) {
-                    showToast(data.message, 'success');
+                // Disable button during submission
+                confirmAttendanceBtn.disabled = true;
+                const originalText = confirmAttendanceBtn.textContent;
+                confirmAttendanceBtn.textContent = 'Confirming...';
+
+                try {
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+                    const url = `/participants/${participantId}/confirm-attendance`;
                     
-                    console.log('Attendance marked successfully!');
-                    console.log('Meet link:', data.meet_link);
+                    console.log('Marking attendance for participant:', participantId);
+                    console.log('POST to:', url);
+                    console.log('CSRF Token:', csrfToken ? 'present' : 'missing');
                     
-                    // Open meet link immediately (before closing modal) to avoid popup blocking
-                    if (data.meet_link) {
-                        console.log('Opening meet link:', data.meet_link);
-                        const meetWindow = window.open(data.meet_link, '_blank');
-                        if (!meetWindow) {
-                            console.warn('Popup was blocked! Meet link: ' + data.meet_link);
-                            showToast('Please allow popups to open the meeting link', 'warning');
-                        }
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken || '',
+                            'Accept': 'application/json',
+                        },
+                        body: JSON.stringify({}),
+                    });
+
+                    console.log('Response status:', response.status);
+                    console.log('Response ok:', response.ok);
+
+                    let data;
+                    try {
+                        data = await response.json();
+                        console.log('Parsed response data:', data);
+                    } catch (e) {
+                        console.error('JSON parse error:', e);
+                        showToast('Server error. Please try again.', 'error');
+                        confirmAttendanceBtn.disabled = false;
+                        confirmAttendanceBtn.textContent = originalText;
+                        return;
                     }
-                    
-                    // Close modal after opening link
-                    setTimeout(() => {
-                        closeAttendanceModal();
-                    }, 300);
-                } else {
-                    showToast(data.message || 'Attendance confirmation failed. Please try again.', 'error');
+
+                    if (data.success) {
+                        showToast(data.message, 'success');
+                        
+                        console.log('Attendance marked successfully!');
+                        console.log('Meet link:', data.meet_link);
+                        
+                        // Open meet link immediately (before closing modal) to avoid popup blocking
+                        if (data.meet_link) {
+                            console.log('Opening meet link:', data.meet_link);
+                            const meetWindow = window.open(data.meet_link, '_blank');
+                            if (!meetWindow) {
+                                console.warn('Popup was blocked! Meet link: ' + data.meet_link);
+                                showToast('Please allow popups to open the meeting link', 'warning');
+                            }
+                        }
+                        
+                        // Close modal after opening link
+                        setTimeout(() => {
+                            closeAttendanceModal();
+                        }, 300);
+                    } else {
+                        showToast(data.message || 'Attendance confirmation failed. Please try again.', 'error');
+                    }
+                } catch (err) {
+                    console.error('Attendance confirmation error:', err);
+                    showToast('An error occurred. Please try again.', 'error');
+                } finally {
+                    confirmAttendanceBtn.disabled = false;
+                    confirmAttendanceBtn.textContent = originalText;
                 }
-            } catch (err) {
-                console.error('Attendance confirmation error:', err);
-                showToast('An error occurred. Please try again.', 'error');
-            } finally {
-                confirmAttendanceBtn.disabled = false;
-                confirmAttendanceBtn.textContent = originalText;
             }
-        });
+        } else {
+            console.error('Cannot initialize attendance modal handlers - form not found');
+        }
     </script>
 </body>
 </html>
