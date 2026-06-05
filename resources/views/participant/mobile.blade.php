@@ -1416,11 +1416,11 @@
                         $eventTimeDisplay = $startDate->format('g:i A');
 
                         $sessionFeedbackRatingLabels = [
-                            1 => '1 (Poor)',
-                            2 => '2 (Needs Improvement)',
-                            3 => '3 (Satisfactory)',
-                            4 => '4 (Good)',
-                            5 => '5 (Excellent)',
+                            1 => '1 (Strongly Disagree)',
+                            2 => '2 (Disagree)',
+                            3 => '3 (Neutral)',
+                            4 => '4 (Agree)',
+                            5 => '5 (Strongly Agree)',
                         ];
                     @endphp
                     <div class="survey-form-progress">

@@ -453,6 +453,15 @@
 
                             @if ($question->renderingType() === 'likert')
                                 <div class="evaluation-form-likert">
+                                    @php
+                                        $likertLabels = [
+                                            1 => '1 (Strongly Disagree)',
+                                            2 => '2 (Disagree)',
+                                            3 => '3 (Neutral)',
+                                            4 => '4 (Agree)',
+                                            5 => '5 (Strongly Agree)',
+                                        ];
+                                    @endphp
                                     @for ($i = 1; $i <= 5; $i++)
                                         <div class="evaluation-form-likert-item">
                                             <input
@@ -464,7 +473,7 @@
                                                 class="evaluation-form-likert-input"
                                             >
                                             <label for="question_{{ $question->id }}_{{ $i }}" class="evaluation-form-likert-label">
-                                                {{ $i }}
+                                                {{ $likertLabels[$i] }}
                                             </label>
                                         </div>
                                     @endfor
