@@ -1905,7 +1905,7 @@
     <!-- Meet Link Token Verification Modal -->
     <div id="meetLinkModal" class="template-modal-overlay fixed inset-0 bg-black/50 hidden items-center justify-center z-[9999]">
         <div class="template-modal-content bg-white rounded-2xl p-8 max-w-[640px] w-full mx-4 shadow-2xl">
-            <h2 class="text-2xl font-bold text-gray-900 mb-2">Access Meet Link</h2>
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">Join Meet Link</h2>
             <p class="text-gray-600 mb-6">Are you a registered guest?</p>
             
             <div class="space-y-4">
@@ -1950,45 +1950,9 @@
                         id="meetLinkAccessBtn" 
                         class="flex-1 px-4 py-2.5 bg-em4 text-white rounded-lg font-medium hover:brightness-110 transition disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        Access
+                        Join
                     </button>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Meet Link Confirmation Modal -->
-    <div id="meetLinkConfirmModal" class="template-modal-overlay fixed inset-0 bg-black/50 hidden items-center justify-center z-[9999]">
-        <div class="template-modal-content bg-white rounded-2xl p-8 max-w-[640px] w-full mx-4 shadow-2xl">
-            <h2 class="text-2xl font-bold text-gray-900 mb-2">Join Meeting</h2>
-            <p class="text-gray-600 mb-6">You're about to join the meeting for this event.</p>
-            
-            <div class="space-y-4 mb-6 p-4 rounded-lg bg-blue-50 border border-blue-200">
-                <div>
-                    <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1">Event</p>
-                    <p class="text-lg font-semibold text-gray-900" id="meetLinkConfirmEventTitle">-</p>
-                </div>
-                <div>
-                    <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1">Date & Time</p>
-                    <p class="text-sm text-gray-700" id="meetLinkConfirmEventDate">-</p>
-                </div>
-            </div>
-            
-            <div class="flex gap-3">
-                <button 
-                    type="button" 
-                    id="meetLinkConfirmCancel" 
-                    class="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition"
-                >
-                    Cancel
-                </button>
-                <button 
-                    type="button" 
-                    id="meetLinkConfirmBtn" 
-                    class="flex-1 px-4 py-2.5 bg-em4 text-white rounded-lg font-medium hover:brightness-110 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                    Join Meeting
-                </button>
             </div>
         </div>
     </div>
@@ -2316,47 +2280,15 @@
 
         // ========== MEET LINK MODAL HANDLERS ==========
         const meetLinkModal = document.getElementById('meetLinkModal');
-        const meetLinkConfirmModal = document.getElementById('meetLinkConfirmModal');
         const meetLinkTokenInput = document.getElementById('meetLinkToken');
         const meetLinkAccessBtn = document.getElementById('meetLinkAccessBtn');
         const meetLinkCancel = document.getElementById('meetLinkCancel');
         const meetLinkError = document.getElementById('meetLinkError');
         const pasteMeetLinkTokenBtn = document.getElementById('pasteMeetLinkTokenBtn');
-        const meetLinkConfirmCancel = document.getElementById('meetLinkConfirmCancel');
-        const meetLinkConfirmBtn = document.getElementById('meetLinkConfirmBtn');
-        const meetLinkConfirmEventTitle = document.getElementById('meetLinkConfirmEventTitle');
-        const meetLinkConfirmEventDate = document.getElementById('meetLinkConfirmEventDate');
 
         // Only initialize if all elements exist
-        if (meetLinkModal && meetLinkTokenInput && meetLinkAccessBtn && meetLinkCancel && meetLinkError && pasteMeetLinkTokenBtn && meetLinkConfirmModal && meetLinkConfirmCancel && meetLinkConfirmBtn && meetLinkConfirmEventTitle && meetLinkConfirmEventDate) {
+        if (meetLinkModal && meetLinkTokenInput && meetLinkAccessBtn && meetLinkCancel && meetLinkError && pasteMeetLinkTokenBtn) {
             let currentMeetLinkEventId = null;
-            let currentMeetLinkData = null;
-
-            function openMeetLinkModal() {
-                currentMeetLinkEventId = event?.target?.dataset?.eventId;
-                meetLinkTokenInput.value = '';
-                meetLinkError.classList.add('hidden');
-                meetLinkError.textContent = '';
-                
-                // Show modal
-                meetLinkModal.classList.remove('hidden');
-                meetLinkModal.style.display = 'flex';
-                
-                // Trigger animation
-                setTimeout(() => {
-                    meetLinkModal.classList.add('show');
-                }, 10);
-                
-                // Hide body scrollbar
-                document.body.style.overflow = 'hidden';
-                
-                // Hide scroll-to-top button pointer events
-                if (scrollTopBtn) {
-                    scrollTopBtn.style.pointerEvents = 'none';
-                }
-                
-                meetLinkTokenInput.focus();
-            }
 
             function closeMeetLinkModal() {
                 // Fade out animation
@@ -2376,44 +2308,7 @@
                 }, 300);
             }
 
-            function closeMeetLinkConfirmModal() {
-                // Fade out animation
-                meetLinkConfirmModal.classList.remove('show');
-                
-                setTimeout(() => {
-                    meetLinkConfirmModal.classList.add('hidden');
-                    meetLinkConfirmModal.style.display = 'none';
-                    
-                    // Restore body scrollbar
-                    document.body.style.overflow = '';
-                    
-                    // Restore scroll-to-top button pointer events
-                    if (scrollTopBtn && scrollTopBtn.classList.contains('is-visible')) {
-                        scrollTopBtn.style.pointerEvents = 'auto';
-                    }
-                }, 300);
-            }
 
-            function showMeetLinkConfirmModal(eventData) {
-                // Set event details
-                meetLinkConfirmEventTitle.textContent = eventData.title || '-';
-                meetLinkConfirmEventDate.textContent = eventData.dateRange || '-';
-                
-                // Close token modal
-                meetLinkModal.classList.remove('show');
-                setTimeout(() => {
-                    meetLinkModal.classList.add('hidden');
-                    meetLinkModal.style.display = 'none';
-                    
-                    // Show confirmation modal
-                    meetLinkConfirmModal.classList.remove('hidden');
-                    meetLinkConfirmModal.style.display = 'flex';
-                    
-                    setTimeout(() => {
-                        meetLinkConfirmModal.classList.add('show');
-                    }, 10);
-                }, 300);
-            }
 
             // Open modal on button click
             document.querySelectorAll('.meet-link-btn').forEach(btn => {
@@ -2450,21 +2345,10 @@
                 closeMeetLinkModal();
             });
 
-            // Close confirmation modal on cancel
-            meetLinkConfirmCancel.addEventListener('click', () => {
-                closeMeetLinkConfirmModal();
-            });
-
             // Close modals on background click
             meetLinkModal.addEventListener('click', (e) => {
                 if (e.target === meetLinkModal) {
                     closeMeetLinkModal();
-                }
-            });
-
-            meetLinkConfirmModal.addEventListener('click', (e) => {
-                if (e.target === meetLinkConfirmModal) {
-                    closeMeetLinkConfirmModal();
                 }
             });
 
@@ -2516,13 +2400,9 @@
                     const data = await response.json();
 
                     if (data.success && data.meet_link) {
-                        // Store meet link data and show confirmation modal
-                        currentMeetLinkData = {
-                            meet_link: data.meet_link,
-                            title: data.title || 'Event Meeting',
-                            dateRange: data.dateRange || 'TBA'
-                        };
-                        showMeetLinkConfirmModal(currentMeetLinkData);
+                        // Close modal and open meet link
+                        closeMeetLinkModal();
+                        window.open(data.meet_link, '_blank');
                     } else {
                         meetLinkError.textContent = data.message || 'An error occurred. Please try again.';
                         meetLinkError.classList.remove('hidden');
@@ -2534,14 +2414,6 @@
                 } finally {
                     meetLinkAccessBtn.disabled = false;
                     meetLinkAccessBtn.textContent = 'Access';
-                }
-            });
-
-            // Handle meet link confirmation
-            meetLinkConfirmBtn.addEventListener('click', () => {
-                if (currentMeetLinkData && currentMeetLinkData.meet_link) {
-                    closeMeetLinkConfirmModal();
-                    window.open(currentMeetLinkData.meet_link, '_blank');
                 }
             });
 
