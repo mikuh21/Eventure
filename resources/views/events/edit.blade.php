@@ -314,15 +314,34 @@
                 <label for="program_file">Program File</label>
                 <input id="program_file" name="program_file" type="file" accept=".pdf,.doc,.docx,.txt,.rtf,.odt,.xls,.xlsx,.ppt,.pptx">
                 @if ($event->program_file_path)
-                    <div class="mt-2">
-                        <p class="text-sm mb-2">Current Program:</p>
-                        <a href="{{ route('events.download-program', $event) }}" class="text-blue-600 underline text-sm flex items-center gap-1">
-                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
-                                <polyline points="13 2 13 9 20 9"></polyline>
-                            </svg>
-                            {{ $event->program_file_name ?? basename($event->program_file_path) }}
-                        </a>
+                    <div class="mt-2 space-y-3">
+                        <div>
+                            <p class="text-sm mb-2 font-medium">Preview:</p>
+                            <div class="bg-gray-100 rounded-lg overflow-hidden border border-gray-200" style="height: 300px; background: #f5f5f5;">
+                                <?php
+                                    $programUrl = 'https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/event-programs/' . $event->program_file_path;
+                                    $encodedUrl = rawurlencode($programUrl);
+                                ?>
+                                <iframe 
+                                    src="https://docs.google.com/viewer?url={{ $encodedUrl }}&embedded=true"
+                                    width="100%" 
+                                    height="100%"
+                                    frameborder="0"
+                                    allow="camera; microphone; geolocation; accelerometer; magnetometer; gyroscope; payment; usb"
+                                    style="border: none; border-radius: 8px;">
+                                </iframe>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-sm mb-2">Current Program:</p>
+                            <a href="{{ route('events.download-program', $event) }}" class="text-blue-600 underline text-sm flex items-center gap-1">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                                    <polyline points="13 2 13 9 20 9"></polyline>
+                                </svg>
+                                {{ $event->program_file_name ?? basename($event->program_file_path) }}
+                            </a>
+                        </div>
                     </div>
                 @endif
             </div>
