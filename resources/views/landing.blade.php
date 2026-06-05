@@ -2486,21 +2486,15 @@
                         const filePath = data.program_file_path;
                         const fileName = data.program_file_name || 'Program';
                         
-                        // Create full file URL and encode it for Google Docs Viewer
-                        const baseUrl = 'https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/event-programs';
-                        const fullFileUrl = `${baseUrl}/${filePath}`;
-                        const encodedUrl = encodeURIComponent(fullFileUrl);
-                        
                         programPreviewContainer.innerHTML = `
                             <div class="space-y-3">
                                 <p class="text-sm font-medium text-gray-700">Preview:</p>
                                 <div class="bg-gray-100 rounded-lg overflow-hidden border border-gray-200" style="height: 500px; background: #f5f5f5;">
                                     <iframe 
-                                        src="https://docs.google.com/viewer?url=${encodedUrl}&embedded=true"
+                                        src="https://docs.google.com/viewer?url=https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/event-programs/${filePath}&embedded=true"
                                         width="100%" 
                                         height="100%"
                                         frameborder="0"
-                                        allow="camera; microphone; geolocation; accelerometer; magnetometer; gyroscope; payment; usb"
                                         style="border: none; border-radius: 8px;">
                                     </iframe>
                                 </div>

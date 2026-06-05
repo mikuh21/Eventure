@@ -318,16 +318,11 @@
                         <div>
                             <p class="text-sm mb-2 font-medium">Preview:</p>
                             <div class="bg-gray-100 rounded-lg overflow-hidden border border-gray-200" style="height: 300px; background: #f5f5f5;">
-                                <?php
-                                    $programUrl = 'https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/event-programs/' . $event->program_file_path;
-                                    $encodedUrl = rawurlencode($programUrl);
-                                ?>
                                 <iframe 
-                                    src="https://docs.google.com/viewer?url={{ $encodedUrl }}&embedded=true"
+                                    src="https://docs.google.com/viewer?url=https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/event-programs/{{ $event->program_file_path }}&embedded=true"
                                     width="100%" 
                                     height="100%"
                                     frameborder="0"
-                                    allow="camera; microphone; geolocation; accelerometer; magnetometer; gyroscope; payment; usb"
                                     style="border: none; border-radius: 8px;">
                                 </iframe>
                             </div>
