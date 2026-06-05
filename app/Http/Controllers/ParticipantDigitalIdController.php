@@ -340,8 +340,12 @@ class ParticipantDigitalIdController extends Controller
                 $tokenToMatch = $decodedData['token'];
             }
 
-            // Verify token matches participant's digital_id_token
-            if ($tokenToMatch !== $participant->digital_id_token) {
+            // Normalize both tokens to lowercase for case-insensitive comparison
+            $normalizedInput = mb_strtolower(trim($tokenToMatch));
+            $normalizedStored = mb_strtolower(trim($participant->digital_id_token));
+
+            // Verify token matches participant's digital_id_token (case-insensitive)
+            if ($normalizedInput !== $normalizedStored) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Invalid token. Please check and try again.'
