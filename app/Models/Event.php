@@ -40,6 +40,7 @@ class Event extends Model
         'poster_path',
         'template_file_path',
         'template_file_name',
+        'template_url',
         'keywords',
         'survey_activated_at',
         'evaluation_form_enabled',

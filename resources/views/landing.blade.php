@@ -970,6 +970,9 @@
                                     @if($event->type === 'conference' && $event->template_file_path)
                                         <p><button type="button" class="template-download-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline><path d="M9 15l3 3 5-5"></path></svg></span> {{ $event->template_file_name ?? basename($event->template_file_path) }}</button></p>
                                     @endif
+                                    @if($event->template_url)
+                                        <p><a href="{{ $event->template_url }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 underline hover:opacity-80 transition"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10 6H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></span> Resources Link</a></p>
+                                    @endif
                                     @if(in_array($event->attendance_type, ['virtual', 'both']) && $event->meet_link)
                                         <p><button type="button" class="meet-link-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M23 7l-7 5 7 5V7z"></path><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg></span> Meet Link</button></p>
                                     @endif
@@ -1053,6 +1056,9 @@
                                     @if($event->type === 'conference' && $event->template_file_path)
                                         <p><button type="button" class="template-download-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline><path d="M9 15l3 3 5-5"></path></svg></span> {{ $event->template_file_name ?? basename($event->template_file_path) }}</button></p>
                                     @endif
+                                    @if($event->template_url)
+                                        <p><a href="{{ $event->template_url }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 underline hover:opacity-80 transition"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10 6H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></span> Resources Link</a></p>
+                                    @endif
                                     @if(in_array($event->attendance_type, ['virtual', 'both']) && $event->meet_link)
                                         <p><button type="button" class="meet-link-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M23 7l-7 5 7 5V7z"></path><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg></span> Meet Link</button></p>
                                     @endif
@@ -1118,6 +1124,9 @@
                                     @endif
                                     @if($event->type === 'conference' && $event->template_file_path)
                                         <button type="button" class="template-download-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline><path d="M9 15l3 3 5-5"></path></svg></span> {{ $event->template_file_name ?? basename($event->template_file_path) }}</button>
+                                    @endif
+                                    @if($event->template_url)
+                                        <a href="{{ $event->template_url }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 underline hover:opacity-80 transition"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10 6H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></span> Resources Link</a>
                                     @endif
                                     @if(in_array($event->attendance_type, ['virtual', 'both']) && $event->meet_link)
                                         <button type="button" class="meet-link-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M23 7l-7 5 7 5V7z"></path><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg></span> Meet Link</button>
@@ -1521,11 +1530,11 @@
 
                             const paperLabel = document.createElement('label');
                             paperLabel.setAttribute('for', 'landingGuestPaper');
-                            paperLabel.textContent = 'Conference Paper';
+                            paperLabel.textContent = 'Conference Paper / Presentation';
 
                             const paperSubtext = document.createElement('p');
                             paperSubtext.style.cssText = 'font-size:0.7rem;color:#64748b;margin:0 0 4px;';
-                            paperSubtext.textContent = 'Upload your conference paper (PDF, DOC, DOCX — max 10MB)';
+                            paperSubtext.textContent = 'Upload your paper (PDF, DOC, DOCX — max 10MB)';
 
                             const paperInput = document.createElement('input');
                             paperInput.id = 'landingGuestPaper';

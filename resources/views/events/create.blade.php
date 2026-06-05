@@ -276,6 +276,19 @@
                 <input id="template_file" name="template_file" type="file" accept=".pdf,.doc,.docx">
             </div>
 
+            <div class="field" id="template-url-field">
+                <label for="template_url">Resources Link (Google Drive, OneDrive, etc.)</label>
+                <div style="position: relative;">
+                    <input id="template_url" name="template_url" type="url" value="{{ old('template_url') }}" placeholder="https://drive.google.com/..." style="padding-right: 40px;">
+                    <button type="button" id="pasteTemplateUrlBtn" class="paste-btn" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); border: none; background: none; padding: 0; cursor: pointer;" title="Paste from clipboard" aria-label="Paste resources link from clipboard">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
+                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
             <div class="form-group">
     <label for="auto_activate_evaluation">Auto-open Evaluation Form</label>
     <div style="display:flex;align-items:center;gap:8px;">
@@ -345,6 +358,30 @@
                         pasteMeetLinkBtn.style.color = '#16a34a';
                         setTimeout(function() {
                             pasteMeetLinkBtn.style.color = originalColor;
+                        }, 1500);
+                    } catch (err) {
+                        alert('Failed to paste from clipboard');
+                    }
+                });
+            }
+
+            // Handle paste button for template URL
+            var pasteTemplateUrlBtn = document.getElementById('pasteTemplateUrlBtn');
+            var templateUrlInput = document.getElementById('template_url');
+            
+            if (pasteTemplateUrlBtn) {
+                pasteTemplateUrlBtn.addEventListener('click', async function(e) {
+                    e.preventDefault();
+                    try {
+                        var text = await navigator.clipboard.readText();
+                        templateUrlInput.value = text;
+                        templateUrlInput.focus();
+                        
+                        // Visual feedback
+                        var originalColor = pasteTemplateUrlBtn.style.color;
+                        pasteTemplateUrlBtn.style.color = '#16a34a';
+                        setTimeout(function() {
+                            pasteTemplateUrlBtn.style.color = originalColor;
                         }, 1500);
                     } catch (err) {
                         alert('Failed to paste from clipboard');

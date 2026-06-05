@@ -551,6 +551,7 @@ class EventController extends Controller
 
             $data['template_file_path'] = null;
             $data['template_file_name'] = null;
+            $data['template_url'] = null;
             $data['keywords'] = null;
         }
 
