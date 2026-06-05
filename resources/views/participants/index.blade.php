@@ -1177,7 +1177,7 @@
                     Viewing participants for: <strong>{{ $selectedEvent->title }}</strong>
                     <a class="participants-clear-link" href="{{ $clearLink }}">x Clear</a>
                 </span>
-                <span class="participants-count">{{ number_format($participants->total()) }} participant(s) registered</span>
+                <span class="participants-count">{{ number_format($participants->count()) }} participant(s) registered</span>
             </div>
         @endif
 

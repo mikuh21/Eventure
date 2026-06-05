@@ -1105,7 +1105,7 @@
                     Viewing guests for: <strong>{{ $selectedEvent->title }}</strong>
                     <a class="guests-clear-link" href="{{ route('guests.index') }}">x Clear</a>
                 </span>
-                <span>{{ number_format($guests->total()) }} guest(s)</span>
+                <span>{{ number_format($guests->count()) }} guest(s)</span>
             </div>
         @endif
 
