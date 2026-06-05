@@ -582,8 +582,8 @@
                         </div>
                     </div>
                 @endif
+            @endif
         </div>
-    </div>
 
     @if (!auth()->user()->hasRole('event_staff') || $event->created_by === auth()->id())
         <div class="card event-view-card">
