@@ -2487,17 +2487,14 @@
                         const fileName = data.program_file_name || 'Program';
                         
                         programPreviewContainer.innerHTML = `
-                            <div class="space-y-3">
-                                <p class="text-sm font-medium text-gray-700">Preview:</p>
-                                <div class="bg-gray-100 rounded-lg overflow-hidden border border-gray-200" style="height: 500px; background: #f5f5f5;">
-                                    <iframe 
-                                        src="https://docs.google.com/viewer?url=https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/event-programs/${filePath}&embedded=true"
-                                        width="100%" 
-                                        height="100%"
-                                        frameborder="0"
-                                        style="border: none; border-radius: 8px;">
-                                    </iframe>
-                                </div>
+                            <div class="template-preview" style="margin-bottom: 1rem;">
+                                <iframe 
+                                    src="https://docs.google.com/viewer?url=https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/event-programs/${filePath}&embedded=true"
+                                    width="100%" 
+                                    height="400px"
+                                    frameborder="0"
+                                    style="border-radius: 8px;">
+                                </iframe>
                             </div>
                         `;
                     } else {

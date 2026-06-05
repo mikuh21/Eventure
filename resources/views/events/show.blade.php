@@ -585,7 +585,7 @@
             @endif
 
             @if ($event->program_file_path)
-                <div class="event-asset-card" data-program-path="{{ $event->program_file_path }}" data-program-name="{{ $event->program_file_name ?? basename($event->program_file_path) }}">
+                <div class="event-asset-card">
                     <h3 class="event-asset-title">Program</h3>
                     <div class="template-preview" style="margin-bottom: 1rem;">
                         <iframe 
@@ -597,7 +597,7 @@
                         </iframe>
                     </div>
                     <div class="event-asset-actions">
-                        <a class="btn" href="{{ route('events.download-program', $event) }}" style="font-family: 'Sora', sans-serif;">Download Program</a>
+                        <a class="btn" href="{{ route('events.download-program-public', $event) }}" style="font-family: 'Sora', sans-serif;">Download Program</a>
                     </div>
                 </div>
             @endif
