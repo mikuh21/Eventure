@@ -2326,97 +2326,14 @@
         const meetLinkConfirmBtn = document.getElementById('meetLinkConfirmBtn');
         const meetLinkConfirmEventTitle = document.getElementById('meetLinkConfirmEventTitle');
         const meetLinkConfirmEventDate = document.getElementById('meetLinkConfirmEventDate');
-        let currentMeetLinkEventId = null;
-        let currentMeetLinkData = null;
 
-        function openMeetLinkModal() {
-            currentMeetLinkEventId = event?.target?.dataset?.eventId;
-            meetLinkTokenInput.value = '';
-            meetLinkError.classList.add('hidden');
-            meetLinkError.textContent = '';
-            
-            // Show modal
-            meetLinkModal.classList.remove('hidden');
-            meetLinkModal.style.display = 'flex';
-            
-            // Trigger animation
-            setTimeout(() => {
-                meetLinkModal.classList.add('show');
-            }, 10);
-            
-            // Hide body scrollbar
-            document.body.style.overflow = 'hidden';
-            
-            // Hide scroll-to-top button pointer events
-            if (scrollTopBtn) {
-                scrollTopBtn.style.pointerEvents = 'none';
-            }
-            
-            meetLinkTokenInput.focus();
-        }
+        // Only initialize if all elements exist
+        if (meetLinkModal && meetLinkTokenInput && meetLinkAccessBtn && meetLinkCancel && meetLinkError && pasteMeetLinkTokenBtn && meetLinkConfirmModal && meetLinkConfirmCancel && meetLinkConfirmBtn && meetLinkConfirmEventTitle && meetLinkConfirmEventDate) {
+            let currentMeetLinkEventId = null;
+            let currentMeetLinkData = null;
 
-        function closeMeetLinkModal() {
-            // Fade out animation
-            meetLinkModal.classList.remove('show');
-            
-            setTimeout(() => {
-                meetLinkModal.classList.add('hidden');
-                meetLinkModal.style.display = 'none';
-                
-                // Restore body scrollbar
-                document.body.style.overflow = '';
-                
-                // Restore scroll-to-top button pointer events
-                if (scrollTopBtn && scrollTopBtn.classList.contains('is-visible')) {
-                    scrollTopBtn.style.pointerEvents = 'auto';
-                }
-            }, 300);
-        }
-
-        function closeMeetLinkConfirmModal() {
-            // Fade out animation
-            meetLinkConfirmModal.classList.remove('show');
-            
-            setTimeout(() => {
-                meetLinkConfirmModal.classList.add('hidden');
-                meetLinkConfirmModal.style.display = 'none';
-                
-                // Restore body scrollbar
-                document.body.style.overflow = '';
-                
-                // Restore scroll-to-top button pointer events
-                if (scrollTopBtn && scrollTopBtn.classList.contains('is-visible')) {
-                    scrollTopBtn.style.pointerEvents = 'auto';
-                }
-            }, 300);
-        }
-
-        function showMeetLinkConfirmModal(eventData) {
-            // Set event details
-            meetLinkConfirmEventTitle.textContent = eventData.title || '-';
-            meetLinkConfirmEventDate.textContent = eventData.dateRange || '-';
-            
-            // Close token modal
-            meetLinkModal.classList.remove('show');
-            setTimeout(() => {
-                meetLinkModal.classList.add('hidden');
-                meetLinkModal.style.display = 'none';
-                
-                // Show confirmation modal
-                meetLinkConfirmModal.classList.remove('hidden');
-                meetLinkConfirmModal.style.display = 'flex';
-                
-                setTimeout(() => {
-                    meetLinkConfirmModal.classList.add('show');
-                }, 10);
-            }, 300);
-        }
-
-        // Open modal on button click
-        document.querySelectorAll('.meet-link-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                currentMeetLinkEventId = btn.dataset.eventId;
+            function openMeetLinkModal() {
+                currentMeetLinkEventId = event?.target?.dataset?.eventId;
                 meetLinkTokenInput.value = '';
                 meetLinkError.classList.add('hidden');
                 meetLinkError.textContent = '';
@@ -2439,115 +2356,202 @@
                 }
                 
                 meetLinkTokenInput.focus();
-            });
-        });
-
-        // Close token modal on cancel
-        meetLinkCancel.addEventListener('click', () => {
-            closeMeetLinkModal();
-        });
-
-        // Close confirmation modal on cancel
-        meetLinkConfirmCancel.addEventListener('click', () => {
-            closeMeetLinkConfirmModal();
-        });
-
-        // Close modals on background click
-        meetLinkModal.addEventListener('click', (e) => {
-            if (e.target === meetLinkModal) {
-                closeMeetLinkModal();
             }
-        });
 
-        meetLinkConfirmModal.addEventListener('click', (e) => {
-            if (e.target === meetLinkConfirmModal) {
-                closeMeetLinkConfirmModal();
-            }
-        });
-
-        // Paste button functionality for meet link
-        pasteMeetLinkTokenBtn.addEventListener('click', async () => {
-            try {
-                const text = await navigator.clipboard.readText();
-                meetLinkTokenInput.value = text.trim();
-                meetLinkError.classList.add('hidden');
-                meetLinkError.textContent = '';
-                meetLinkTokenInput.focus();
-                
-                // Show success feedback
-                const originalColor = pasteMeetLinkTokenBtn.style.color;
-                pasteMeetLinkTokenBtn.classList.add('success');
+            function closeMeetLinkModal() {
+                // Fade out animation
+                meetLinkModal.classList.remove('show');
                 
                 setTimeout(() => {
-                    pasteMeetLinkTokenBtn.classList.remove('success');
-                }, 1500);
-            } catch (err) {
-                // Clipboard permission denied or no content
-                console.debug('Clipboard paste not available:', err);
-            }
-        });
-
-        // Handle meet link access (token verification)
-        meetLinkAccessBtn.addEventListener('click', async () => {
-            const token = meetLinkTokenInput.value.trim();
-            
-            if (!token) {
-                meetLinkError.textContent = 'Token is required. Please enter your guest token.';
-                meetLinkError.classList.remove('hidden');
-                return;
+                    meetLinkModal.classList.add('hidden');
+                    meetLinkModal.style.display = 'none';
+                    
+                    // Restore body scrollbar
+                    document.body.style.overflow = '';
+                    
+                    // Restore scroll-to-top button pointer events
+                    if (scrollTopBtn && scrollTopBtn.classList.contains('is-visible')) {
+                        scrollTopBtn.style.pointerEvents = 'auto';
+                    }
+                }, 300);
             }
 
-            meetLinkAccessBtn.disabled = true;
-            meetLinkAccessBtn.textContent = 'Verifying...';
+            function closeMeetLinkConfirmModal() {
+                // Fade out animation
+                meetLinkConfirmModal.classList.remove('show');
+                
+                setTimeout(() => {
+                    meetLinkConfirmModal.classList.add('hidden');
+                    meetLinkConfirmModal.style.display = 'none';
+                    
+                    // Restore body scrollbar
+                    document.body.style.overflow = '';
+                    
+                    // Restore scroll-to-top button pointer events
+                    if (scrollTopBtn && scrollTopBtn.classList.contains('is-visible')) {
+                        scrollTopBtn.style.pointerEvents = 'auto';
+                    }
+                }, 300);
+            }
 
-            try {
-                const response = await fetch(`/events/${currentMeetLinkEventId}/meet-link/verify`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
-                    },
-                    body: JSON.stringify({ token })
+            function showMeetLinkConfirmModal(eventData) {
+                // Set event details
+                meetLinkConfirmEventTitle.textContent = eventData.title || '-';
+                meetLinkConfirmEventDate.textContent = eventData.dateRange || '-';
+                
+                // Close token modal
+                meetLinkModal.classList.remove('show');
+                setTimeout(() => {
+                    meetLinkModal.classList.add('hidden');
+                    meetLinkModal.style.display = 'none';
+                    
+                    // Show confirmation modal
+                    meetLinkConfirmModal.classList.remove('hidden');
+                    meetLinkConfirmModal.style.display = 'flex';
+                    
+                    setTimeout(() => {
+                        meetLinkConfirmModal.classList.add('show');
+                    }, 10);
+                }, 300);
+            }
+
+            // Open modal on button click
+            document.querySelectorAll('.meet-link-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    currentMeetLinkEventId = btn.dataset.eventId;
+                    meetLinkTokenInput.value = '';
+                    meetLinkError.classList.add('hidden');
+                    meetLinkError.textContent = '';
+                    
+                    // Show modal
+                    meetLinkModal.classList.remove('hidden');
+                    meetLinkModal.style.display = 'flex';
+                    
+                    // Trigger animation
+                    setTimeout(() => {
+                        meetLinkModal.classList.add('show');
+                    }, 10);
+                    
+                    // Hide body scrollbar
+                    document.body.style.overflow = 'hidden';
+                    
+                    // Hide scroll-to-top button pointer events
+                    if (scrollTopBtn) {
+                        scrollTopBtn.style.pointerEvents = 'none';
+                    }
+                    
+                    meetLinkTokenInput.focus();
                 });
+            });
 
-                const data = await response.json();
+            // Close token modal on cancel
+            meetLinkCancel.addEventListener('click', () => {
+                closeMeetLinkModal();
+            });
 
-                if (data.success && data.meet_link) {
-                    // Store meet link data and show confirmation modal
-                    currentMeetLinkData = {
-                        meet_link: data.meet_link,
-                        title: data.title || 'Event Meeting',
-                        dateRange: data.dateRange || 'TBA'
-                    };
-                    showMeetLinkConfirmModal(currentMeetLinkData);
-                } else {
-                    meetLinkError.textContent = data.message || 'An error occurred. Please try again.';
-                    meetLinkError.classList.remove('hidden');
-                }
-            } catch (error) {
-                console.error('Meet link access error:', error);
-                meetLinkError.textContent = 'Network error. Please try again.';
-                meetLinkError.classList.remove('hidden');
-            } finally {
-                meetLinkAccessBtn.disabled = false;
-                meetLinkAccessBtn.textContent = 'Access';
-            }
-        });
-
-        // Handle meet link confirmation
-        meetLinkConfirmBtn.addEventListener('click', () => {
-            if (currentMeetLinkData && currentMeetLinkData.meet_link) {
+            // Close confirmation modal on cancel
+            meetLinkConfirmCancel.addEventListener('click', () => {
                 closeMeetLinkConfirmModal();
-                window.open(currentMeetLinkData.meet_link, '_blank');
-            }
-        });
+            });
 
-        // Allow Enter key to access meet link
-        meetLinkTokenInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && !meetLinkAccessBtn.disabled) {
-                meetLinkAccessBtn.click();
-            }
-        });
+            // Close modals on background click
+            meetLinkModal.addEventListener('click', (e) => {
+                if (e.target === meetLinkModal) {
+                    closeMeetLinkModal();
+                }
+            });
+
+            meetLinkConfirmModal.addEventListener('click', (e) => {
+                if (e.target === meetLinkConfirmModal) {
+                    closeMeetLinkConfirmModal();
+                }
+            });
+
+            // Paste button functionality for meet link
+            pasteMeetLinkTokenBtn.addEventListener('click', async () => {
+                try {
+                    const text = await navigator.clipboard.readText();
+                    meetLinkTokenInput.value = text.trim();
+                    meetLinkError.classList.add('hidden');
+                    meetLinkError.textContent = '';
+                    meetLinkTokenInput.focus();
+                    
+                    // Show success feedback
+                    const originalColor = pasteMeetLinkTokenBtn.style.color;
+                    pasteMeetLinkTokenBtn.classList.add('success');
+                    
+                    setTimeout(() => {
+                        pasteMeetLinkTokenBtn.classList.remove('success');
+                    }, 1500);
+                } catch (err) {
+                    // Clipboard permission denied or no content
+                    console.debug('Clipboard paste not available:', err);
+                }
+            });
+
+            // Handle meet link access (token verification)
+            meetLinkAccessBtn.addEventListener('click', async () => {
+                const token = meetLinkTokenInput.value.trim();
+                
+                if (!token) {
+                    meetLinkError.textContent = 'Token is required. Please enter your guest token.';
+                    meetLinkError.classList.remove('hidden');
+                    return;
+                }
+
+                meetLinkAccessBtn.disabled = true;
+                meetLinkAccessBtn.textContent = 'Verifying...';
+
+                try {
+                    const response = await fetch(`/events/${currentMeetLinkEventId}/meet-link/verify`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                        },
+                        body: JSON.stringify({ token })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success && data.meet_link) {
+                        // Store meet link data and show confirmation modal
+                        currentMeetLinkData = {
+                            meet_link: data.meet_link,
+                            title: data.title || 'Event Meeting',
+                            dateRange: data.dateRange || 'TBA'
+                        };
+                        showMeetLinkConfirmModal(currentMeetLinkData);
+                    } else {
+                        meetLinkError.textContent = data.message || 'An error occurred. Please try again.';
+                        meetLinkError.classList.remove('hidden');
+                    }
+                } catch (error) {
+                    console.error('Meet link access error:', error);
+                    meetLinkError.textContent = 'Network error. Please try again.';
+                    meetLinkError.classList.remove('hidden');
+                } finally {
+                    meetLinkAccessBtn.disabled = false;
+                    meetLinkAccessBtn.textContent = 'Access';
+                }
+            });
+
+            // Handle meet link confirmation
+            meetLinkConfirmBtn.addEventListener('click', () => {
+                if (currentMeetLinkData && currentMeetLinkData.meet_link) {
+                    closeMeetLinkConfirmModal();
+                    window.open(currentMeetLinkData.meet_link, '_blank');
+                }
+            });
+
+            // Allow Enter key to access meet link
+            meetLinkTokenInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !meetLinkAccessBtn.disabled) {
+                    meetLinkAccessBtn.click();
+                }
+            });
+        }
 
         // ========== PROGRAM DOWNLOAD MODAL HANDLERS ==========
         const programDownloadModal = document.getElementById('programDownloadModal');
