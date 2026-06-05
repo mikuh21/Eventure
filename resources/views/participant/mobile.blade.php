@@ -1646,34 +1646,10 @@
             <button type="button" class="attendance-modal-close" id="closeAttendanceModal">×</button>
             
             <h2 class="attendance-modal-title">Confirm Attendance</h2>
-            <p style="font-size: 12px; color: #6b7280; margin-top: 16px; text-align: left;">By entering your token ID, you will be marked as Attended</p>
+            <p style="font-size: 13px; color: #4b5563; margin-top: 16px; text-align: center; line-height: 1.6;">By clicking Confirm & Join, you will be marked as attended for this event and will be redirected to the meeting link.</p>
 
             <form id="attendanceForm">
-                <div class="attendance-modal-input-group">
-                    <label class="attendance-modal-label" for="attendanceTokenInput">Token ID</label>
-                    <div class="attendance-modal-input-wrapper">
-                        <input 
-                            type="text" 
-                            id="attendanceTokenInput" 
-                            class="attendance-modal-input" 
-                            placeholder="Paste or enter your token ID"
-                            autocomplete="off"
-                        >
-                        <button 
-                            type="button" 
-                            class="attendance-modal-paste-btn" 
-                            id="attendancePasteBtn"
-                            title="Paste from clipboard"
-                        >
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2M8 9h8M8 13h8M8 17h4" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="attendance-modal-error" id="attendanceError"></div>
-                </div>
-
-                <div class="attendance-modal-actions">
+                <div class="attendance-modal-actions" style="margin-top: 24px;">
                     <button type="button" class="attendance-modal-btn attendance-modal-btn-cancel" id="cancelAttendanceBtn">Cancel</button>
                     <button type="submit" class="attendance-modal-btn attendance-modal-btn-confirm" id="confirmAttendanceBtn">Confirm & Join</button>
                 </div>
@@ -2341,9 +2317,6 @@
         // Attendance Confirmation Modal Handler
         const attendanceModal = document.getElementById('attendanceModal');
         const attendanceForm = document.getElementById('attendanceForm');
-        const attendanceTokenInput = document.getElementById('attendanceTokenInput');
-        const attendancePasteBtn = document.getElementById('attendancePasteBtn');
-        const attendanceError = document.getElementById('attendanceError');
         const openAttendanceModalButtons = document.querySelectorAll('.open-attendance-modal');
         const closeAttendanceModalBtn = document.getElementById('closeAttendanceModal');
         const cancelAttendanceBtn = document.getElementById('cancelAttendanceBtn');
@@ -2365,7 +2338,6 @@
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
                 attendanceModal.classList.add('is-visible');
-                attendanceTokenInput.focus();
             });
         });
 
@@ -2373,8 +2345,6 @@
         function closeAttendanceModal() {
             attendanceModal.classList.remove('is-visible');
             attendanceForm.reset();
-            attendanceError.classList.remove('show');
-            attendanceError.textContent = '';
         }
 
         closeAttendanceModalBtn.addEventListener('click', closeAttendanceModal);
@@ -2394,40 +2364,12 @@
             }
         });
 
-        // Paste functionality
-        attendancePasteBtn.addEventListener('click', async () => {
-            try {
-                const text = await navigator.clipboard.readText();
-                attendanceTokenInput.value = text.trim();
-                attendanceError.classList.remove('show');
-                attendanceError.textContent = '';
-                attendanceTokenInput.focus();
-                
-                // Show success feedback
-                attendancePasteBtn.classList.add('success');
-                setTimeout(() => {
-                    attendancePasteBtn.classList.remove('success');
-                }, 1500);
-            } catch (err) {
-                console.debug('Clipboard paste not available:', err);
-            }
-        });
-
         // Handle form submission
         attendanceForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
             if (!participantId) {
-                attendanceError.textContent = 'Unable to identify participant. Please refresh the page and try again.';
-                attendanceError.classList.add('show');
-                return;
-            }
-            
-            const token = attendanceTokenInput.value.trim();
-            
-            if (!token) {
-                attendanceError.textContent = 'Token is required. Please enter your token ID.';
-                attendanceError.classList.add('show');
+                showToast('Unable to identify participant. Please refresh the page and try again.', 'error');
                 return;
             }
 
@@ -2440,8 +2382,7 @@
                 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
                 const url = `/participants/${participantId}/confirm-attendance`;
                 
-                console.log('Attempting to confirm attendance for participant:', participantId);
-                console.log('CSRF Token:', csrfToken ? 'present' : 'missing');
+                console.log('Marking attendance for participant:', participantId);
                 console.log('POST to:', url);
                 
                 const response = await fetch(url, {
@@ -2451,47 +2392,29 @@
                         'X-CSRF-TOKEN': csrfToken || '',
                         'Accept': 'application/json',
                     },
-                    body: JSON.stringify({ token }),
+                    body: JSON.stringify({}),
                 });
 
                 console.log('Response status:', response.status);
                 console.log('Response ok:', response.ok);
 
-                // Try to parse JSON response
                 let data;
-                const contentType = response.headers.get('content-type');
-                
-                if (!contentType || !contentType.includes('application/json')) {
-                    console.error('Invalid content type. Expected JSON, got:', contentType);
-                    const responseText = await response.text();
-                    console.error('Response body:', responseText);
-                    attendanceError.textContent = 'Server error. Please try again.';
-                    attendanceError.classList.add('show');
-                    confirmAttendanceBtn.disabled = false;
-                    confirmAttendanceBtn.textContent = originalText;
-                    return;
-                }
-
                 try {
                     data = await response.json();
                     console.log('Parsed response data:', data);
                 } catch (e) {
-                    // If JSON parsing fails, provide generic error
-                    console.error('JSON parse error:', e, 'Response status:', response.status);
-                    attendanceError.textContent = 'Server error. Please try again.';
-                    attendanceError.classList.add('show');
+                    console.error('JSON parse error:', e);
+                    showToast('Server error. Please try again.', 'error');
                     confirmAttendanceBtn.disabled = false;
                     confirmAttendanceBtn.textContent = originalText;
                     return;
                 }
 
                 if (data.success) {
-                    attendanceError.classList.remove('show');
                     showToast(data.message, 'success');
                     
-                    console.log('Confirmation successful!');
-                    console.log('Meet link from response:', data.meet_link);
-                    console.log('Full response data:', data);
+                    console.log('Attendance marked successfully!');
+                    console.log('Meet link:', data.meet_link);
                     
                     // Open meet link immediately (before closing modal) to avoid popup blocking
                     if (data.meet_link) {
@@ -2501,8 +2424,6 @@
                             console.warn('Popup was blocked! Meet link: ' + data.meet_link);
                             showToast('Please allow popups to open the meeting link', 'warning');
                         }
-                    } else {
-                        console.warn('No meet_link in response!');
                     }
                     
                     // Close modal after opening link
@@ -2510,15 +2431,11 @@
                         closeAttendanceModal();
                     }, 300);
                 } else {
-                    attendanceError.textContent = data.message || 'Confirmation failed. Please try again.';
-                    attendanceError.classList.add('show');
+                    showToast(data.message || 'Attendance confirmation failed. Please try again.', 'error');
                 }
             } catch (err) {
                 console.error('Attendance confirmation error:', err);
-                console.error('Error message:', err.message);
-                console.error('Error stack:', err.stack);
-                attendanceError.textContent = 'An error occurred. Please try again. (Check browser console for details)';
-                attendanceError.classList.add('show');
+                showToast('An error occurred. Please try again.', 'error');
             } finally {
                 confirmAttendanceBtn.disabled = false;
                 confirmAttendanceBtn.textContent = originalText;

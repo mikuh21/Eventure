@@ -324,43 +324,8 @@ class ParticipantDigitalIdController extends Controller
                 ], 404);
             }
 
-            $inputToken = trim($request->input('token', ''));
-            
-            if (empty($inputToken)) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Token is required. Please enter your participant token.'
-                ], 422);
-            }
-
-            // Try to parse as JSON first (in case it's the full QR code payload)
-            $tokenToMatch = $inputToken;
-            $decodedData = json_decode($inputToken, true);
-            if (is_array($decodedData) && isset($decodedData['token'])) {
-                $tokenToMatch = $decodedData['token'];
-            }
-
-            // Normalize both tokens to lowercase for case-insensitive comparison
-            $normalizedInput = mb_strtolower(trim($tokenToMatch));
-            $normalizedStored = mb_strtolower(trim($participant->digital_id_token));
-
-            // Verify token matches participant's digital_id_token (case-insensitive)
-            if ($normalizedInput !== $normalizedStored) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Invalid token. Please check and try again.'
-                ], 401);
-            }
-
             // Get meet link before update (while relationship is fresh)
             $meetLink = $participant->event->meet_link;
-            
-            \Log::info('Attendance Confirmation Debug', [
-                'participant_id' => $participant->id,
-                'event_id' => $participant->event_id,
-                'meet_link' => $meetLink,
-                'meet_link_exists' => !empty($meetLink),
-            ]);
 
             // Mark participant as attended
             $participant->update([
