@@ -1329,7 +1329,7 @@
                             <p class="meet-link-url">{{ $participant->event->meet_link }}</p>
                         </div>
                     </div>
-                    <button type="button" class="meet-link-button open-attendance-modal" style="width:100%;margin-top:16px;justify-content:center;">
+                    <button type="button" class="meet-link-button join-meeting-btn" style="width:100%;margin-top:16px;justify-content:center;font-family: 'Sora', sans-serif;">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:16px;height:16px;">
                             <path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M3 7a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
@@ -1640,23 +1640,7 @@
         </footer>
     </main>
 
-    <!-- Attendance Confirmation Modal -->
-    <div class="attendance-modal-overlay" id="attendanceModal">
-        <div class="attendance-modal-content">
-            <button type="button" class="attendance-modal-close" id="closeAttendanceModal">×</button>
-            
-            <h2 class="attendance-modal-title">Confirm Attendance</h2>
-            <p style="font-size: 13px; color: #4b5563; margin-top: 16px; text-align: center; line-height: 1.6;">By clicking Confirm & Join, you will be marked as attended for this event and will be redirected to the meeting link.</p>
 
-            <form id="attendanceForm">
-                <div class="attendance-modal-actions" style="margin-top: 24px;">
-                    <button type="button" class="attendance-modal-btn attendance-modal-btn-cancel" id="cancelAttendanceBtn">Cancel</button>
-                    <button type="submit" class="attendance-modal-btn attendance-modal-btn-confirm" id="confirmAttendanceBtn">Confirm & Join</button>
-                </div>
-
-            </form>
-        </div>
-    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script>
@@ -2314,87 +2298,25 @@
             });
         }
 
-        // Attendance Confirmation Modal Handler
-        const attendanceModal = document.getElementById('attendanceModal');
-        const attendanceForm = document.getElementById('attendanceForm');
-        const openAttendanceModalButtons = document.querySelectorAll('.open-attendance-modal');
-        const closeAttendanceModalBtn = document.getElementById('closeAttendanceModal');
-        const cancelAttendanceBtn = document.getElementById('cancelAttendanceBtn');
-        const confirmAttendanceBtn = document.getElementById('confirmAttendanceBtn');
-
+        // Join Meeting Handler
+        const joinMeetingButtons = document.querySelectorAll('.join-meeting-btn');
+        
         // Get participant ID from page data
         const pageEl = document.querySelector('main[data-participant-id]');
         const participantId = pageEl?.dataset?.participantId;
         
-        console.log('Page element:', pageEl);
         console.log('Participant ID from page:', participantId);
-        console.log('Form element:', attendanceForm);
-        console.log('Modal element:', attendanceModal);
-        console.log('Confirm button:', confirmAttendanceBtn);
-        
+        console.log('Join Meeting buttons found:', joinMeetingButtons.length);
+
         if (!participantId) {
             console.error('Participant ID not found in page data');
         }
 
-        if (!attendanceForm) {
-            console.error('Attendance form not found in DOM');
-        }
-
-        // Only proceed if form exists
-        if (attendanceForm) {
-            // Open modal when "Join Meeting" button is clicked
-            openAttendanceModalButtons.forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    console.log('Open attendance modal clicked');
-                    attendanceModal.classList.add('is-visible');
-                });
-            });
-
-            // Close modal functions
-            function closeAttendanceModal() {
-                attendanceModal.classList.remove('is-visible');
-                attendanceForm.reset();
-            }
-
-            closeAttendanceModalBtn.addEventListener('click', closeAttendanceModal);
-            cancelAttendanceBtn.addEventListener('click', closeAttendanceModal);
-
-            // Close on overlay click (outside modal)
-            attendanceModal.addEventListener('click', (e) => {
-                if (e.target === attendanceModal) {
-                    closeAttendanceModal();
-                }
-            });
-
-            // Close on ESC key
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && attendanceModal.classList.contains('is-visible')) {
-                    closeAttendanceModal();
-                }
-            });
-
-            // Handle form submission
-            attendanceForm.addEventListener('submit', async (e) => {
+        // Handle join meeting button click
+        joinMeetingButtons.forEach(btn => {
+            btn.addEventListener('click', async (e) => {
                 e.preventDefault();
-                console.log('Form submitted!');
-                handleAttendanceConfirmation();
-            });
-
-            // Also handle direct button click as backup
-            confirmAttendanceBtn.addEventListener('click', async (e) => {
-                // If this is a form submission, the event above will handle it
-                // This is a backup in case the form submission doesn't trigger
-                if (attendanceForm.requestSubmit) {
-                    attendanceForm.requestSubmit();
-                } else {
-                    handleAttendanceConfirmation();
-                }
-            });
-
-            // Centralized confirmation handler
-            async function handleAttendanceConfirmation() {
-                console.log('Handling attendance confirmation');
+                console.log('Join Meeting button clicked');
                 
                 if (!participantId) {
                     showToast('Unable to identify participant. Please refresh the page and try again.', 'error');
@@ -2402,17 +2324,16 @@
                 }
 
                 // Disable button during submission
-                confirmAttendanceBtn.disabled = true;
-                const originalText = confirmAttendanceBtn.textContent;
-                confirmAttendanceBtn.textContent = 'Confirming...';
+                btn.disabled = true;
+                const originalText = btn.textContent;
+                btn.textContent = 'Joining...';
 
                 try {
                     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
                     const url = `/participants/${participantId}/confirm-attendance`;
                     
-                    console.log('Marking attendance for participant:', participantId);
+                    console.log('Marking attendance and getting meet link for participant:', participantId);
                     console.log('POST to:', url);
-                    console.log('CSRF Token:', csrfToken ? 'present' : 'missing');
                     
                     const response = await fetch(url, {
                         method: 'POST',
@@ -2425,54 +2346,36 @@
                     });
 
                     console.log('Response status:', response.status);
-                    console.log('Response ok:', response.ok);
 
                     let data;
                     try {
                         data = await response.json();
-                        console.log('Parsed response data:', data);
+                        console.log('Response data:', data);
                     } catch (e) {
                         console.error('JSON parse error:', e);
                         showToast('Server error. Please try again.', 'error');
-                        confirmAttendanceBtn.disabled = false;
-                        confirmAttendanceBtn.textContent = originalText;
+                        btn.disabled = false;
+                        btn.textContent = originalText;
                         return;
                     }
 
-                    if (data.success) {
-                        showToast(data.message, 'success');
-                        
-                        console.log('Attendance marked successfully!');
-                        console.log('Meet link:', data.meet_link);
-                        
-                        // Open meet link immediately (before closing modal) to avoid popup blocking
-                        if (data.meet_link) {
-                            console.log('Opening meet link:', data.meet_link);
-                            const meetWindow = window.open(data.meet_link, '_blank');
-                            if (!meetWindow) {
-                                console.warn('Popup was blocked! Meet link: ' + data.meet_link);
-                                showToast('Please allow popups to open the meeting link', 'warning');
-                            }
-                        }
-                        
-                        // Close modal after opening link
-                        setTimeout(() => {
-                            closeAttendanceModal();
-                        }, 300);
+                    if (data.success && data.meet_link) {
+                        console.log('Opening meet link:', data.meet_link);
+                        window.open(data.meet_link, '_blank');
+                        showToast('Attendance marked! Redirecting to meeting...', 'success');
                     } else {
-                        showToast(data.message || 'Attendance confirmation failed. Please try again.', 'error');
+                        showToast(data.message || 'Unable to join meeting. Please try again.', 'error');
+                        btn.disabled = false;
+                        btn.textContent = originalText;
                     }
                 } catch (err) {
-                    console.error('Attendance confirmation error:', err);
+                    console.error('Join meeting error:', err);
                     showToast('An error occurred. Please try again.', 'error');
-                } finally {
-                    confirmAttendanceBtn.disabled = false;
-                    confirmAttendanceBtn.textContent = originalText;
+                    btn.disabled = false;
+                    btn.textContent = originalText;
                 }
-            }
-        } else {
-            console.error('Cannot initialize attendance modal handlers - form not found');
-        }
+            });
+        });
     </script>
 </body>
 </html>
