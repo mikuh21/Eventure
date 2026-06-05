@@ -968,7 +968,7 @@
                                         <p><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span> {{ is_array($event->keywords) ? implode(', ', $event->keywords) : $event->keywords }}</p>
                                     @endif
                                     @if($event->type === 'conference' && $event->template_file_path)
-                                        <p><button type="button" class="template-download-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline><path d="M9 15l3 3 5-5"></path></svg></span> Conference Paper Template</button></p>
+                                        <p><button type="button" class="template-download-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline><path d="M9 15l3 3 5-5"></path></svg></span> {{ $event->template_file_name ?? basename($event->template_file_path) }}</button></p>
                                     @endif
                                     @if(in_array($event->attendance_type, ['virtual', 'both']) && $event->meet_link)
                                         <p><button type="button" class="meet-link-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M23 7l-7 5 7 5V7z"></path><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg></span> Meet Link</button></p>
@@ -1051,7 +1051,7 @@
                                         <p><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span> {{ is_array($event->keywords) ? implode(', ', $event->keywords) : $event->keywords }}</p>
                                     @endif
                                     @if($event->type === 'conference' && $event->template_file_path)
-                                        <p><button type="button" class="template-download-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline><path d="M9 15l3 3 5-5"></path></svg></span> Conference Paper Template</button></p>
+                                        <p><button type="button" class="template-download-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline><path d="M9 15l3 3 5-5"></path></svg></span> {{ $event->template_file_name ?? basename($event->template_file_path) }}</button></p>
                                     @endif
                                     @if(in_array($event->attendance_type, ['virtual', 'both']) && $event->meet_link)
                                         <p><button type="button" class="meet-link-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M23 7l-7 5 7 5V7z"></path><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg></span> Meet Link</button></p>
@@ -1117,7 +1117,7 @@
                                         <span><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12 3.8 2.57 5.2 5.74.83-4.16 4.05.98 5.72L12 16.9l-5.13 2.7.98-5.72L3.69 9.83l5.74-.83L12 3.8z" fill="currentColor" stroke="none"></path></svg></span> {{ $event->averageRating() }}/5</span>
                                     @endif
                                     @if($event->type === 'conference' && $event->template_file_path)
-                                        <button type="button" class="template-download-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline><path d="M9 15l3 3 5-5"></path></svg></span> Conference Paper Template</button>
+                                        <button type="button" class="template-download-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline><path d="M9 15l3 3 5-5"></path></svg></span> {{ $event->template_file_name ?? basename($event->template_file_path) }}</button>
                                     @endif
                                     @if(in_array($event->attendance_type, ['virtual', 'both']) && $event->meet_link)
                                         <button type="button" class="meet-link-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M23 7l-7 5 7 5V7z"></path><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg></span> Meet Link</button>
@@ -1248,7 +1248,7 @@
                     <p class="privacy-notice-section-text">Your information is collected and processed for legitimate purposes, including:</p>
                     <ul class="privacy-notice-bullet-list">
                         <li>Account registration and verification</li>
-                        <li>Event registration, management, and attendance tracking</li>
+                        <li>Event registration, attendance tracking, and generation of certificate</li>
                         <li>Platform communication, announcements, and support services</li>
                         <li>System security, monitoring, and platform improvement</li>
                         <li>Compliance with applicable legal and regulatory requirements</li>

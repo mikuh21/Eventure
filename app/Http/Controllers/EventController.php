@@ -541,6 +541,7 @@ class EventController extends Controller
             $filename = Str::random(40) . '.' . $request->file('template_file')->getClientOriginalExtension();
             Storage::disk('event-templates')->putFileAs('', $request->file('template_file'), $filename);
             $data['template_file_path'] = $filename;
+            $data['template_file_name'] = $request->file('template_file')->getClientOriginalName();
         }
 
         if ($data['type'] !== 'conference') {
@@ -549,6 +550,7 @@ class EventController extends Controller
             }
 
             $data['template_file_path'] = null;
+            $data['template_file_name'] = null;
             $data['keywords'] = null;
         }
 
