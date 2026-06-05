@@ -359,16 +359,12 @@ class EventController extends Controller
         abort_if(! $event->template_file_path, 404, 'No template file uploaded for this conference event.');
 
         $downloadName = $event->template_file_name ?? basename($event->template_file_path);
-        $path = $event->template_file_path;
         
-        return response()->download(
-            Storage::disk('event-templates')->path($path),
-            $downloadName,
-            [
-                'Content-Type' => Storage::disk('event-templates')->mimeType($path),
-                'Content-Disposition' => 'attachment; filename="' . $downloadName . '"',
-            ]
-        );
+        return response(Storage::disk('event-templates')->get($event->template_file_path), 200)
+            ->header('Content-Type', Storage::disk('event-templates')->mimeType($event->template_file_path))
+            ->header('Content-Disposition', 'attachment; filename="' . $downloadName . '"')
+            ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            ->header('Pragma', 'no-cache');
     }
 
     public function verifyAndDownloadTemplate(Event $event, Request $request)
@@ -405,16 +401,12 @@ class EventController extends Controller
 
         // Return the file download
         $downloadName = $event->template_file_name ?? basename($event->template_file_path);
-        $path = $event->template_file_path;
         
-        return response()->download(
-            Storage::disk('event-templates')->path($path),
-            $downloadName,
-            [
-                'Content-Type' => Storage::disk('event-templates')->mimeType($path),
-                'Content-Disposition' => 'attachment; filename="' . $downloadName . '"',
-            ]
-        );
+        return response(Storage::disk('event-templates')->get($event->template_file_path), 200)
+            ->header('Content-Type', Storage::disk('event-templates')->mimeType($event->template_file_path))
+            ->header('Content-Disposition', 'attachment; filename="' . $downloadName . '"')
+            ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            ->header('Pragma', 'no-cache');
     }
 
     public function verifyAndAccessMeetLink(Event $event, Request $request)

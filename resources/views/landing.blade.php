@@ -2064,8 +2064,20 @@
         // Extract filename from Content-Disposition header
         function getFilenameFromContentDisposition(contentDisposition) {
             if (!contentDisposition) return null;
-            const match = contentDisposition.match(/filename="?([^";\n]+)"?/);
-            return match ? match[1] : null;
+            
+            // Try quoted filename first
+            let match = contentDisposition.match(/filename="([^"]+)"/);
+            if (match) return match[1];
+            
+            // Try unquoted filename
+            match = contentDisposition.match(/filename=([^;\s]+)/);
+            if (match) return match[1];
+            
+            // Try filename* (RFC 5987)
+            match = contentDisposition.match(/filename\*=(?:UTF-8'')?([^;\s]+)/);
+            if (match) return decodeURIComponent(match[1]);
+            
+            return null;
         }
 
         // Handle download
@@ -2092,32 +2104,42 @@
                 });
 
                 if (response.ok) {
-                    // File download
-                    const blob = await response.blob();
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    
-                    // Extract filename from Content-Disposition header
-                    const contentDisposition = response.headers.get('Content-Disposition');
-                    const filename = getFilenameFromContentDisposition(contentDisposition) || 'template';
-                    a.download = filename;
-                    
-                    document.body.appendChild(a);
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                    a.remove();
-                    
-                    // Close modal
-                    closeModal();
+                    try {
+                        // File download
+                        const blob = await response.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        
+                        // Extract filename from Content-Disposition header
+                        const contentDisposition = response.headers.get('Content-Disposition');
+                        const filename = getFilenameFromContentDisposition(contentDisposition) || 'template';
+                        a.download = filename;
+                        
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        a.remove();
+                        
+                        // Close modal
+                        closeModal();
+                    } catch (blobError) {
+                        console.error('Blob processing error:', blobError);
+                        tokenError.textContent = 'Failed to process file. Please try again.';
+                        tokenError.classList.remove('hidden');
+                    }
                 } else {
-                    const errorData = await response.json();
-                    tokenError.textContent = errorData.error || 'An error occurred. Please try again.';
+                    try {
+                        const errorData = await response.json();
+                        tokenError.textContent = errorData.error || 'An error occurred. Please try again.';
+                    } catch {
+                        tokenError.textContent = 'Server error: ' + response.status + '. Please try again.';
+                    }
                     tokenError.classList.remove('hidden');
                 }
             } catch (error) {
-                console.error('Download error:', error);
-                tokenError.textContent = 'Network error. Please try again.';
+                console.error('Fetch error:', error);
+                tokenError.textContent = 'Network error. Please check your connection and try again.';
                 tokenError.classList.remove('hidden');
             } finally {
                 templateDownloadBtn.disabled = false;
