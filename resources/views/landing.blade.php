@@ -2394,85 +2394,88 @@
         const programPreviewContainer = document.getElementById('programPreviewContainer');
         let currentProgramEventId = null;
 
-        function closeProgramModal() {
-            programDownloadModal.classList.remove('show');
-            
-            setTimeout(() => {
-                programDownloadModal.classList.add('hidden');
-                programDownloadModal.style.display = 'none';
+        // Only initialize program modal handlers if modal exists
+        if (programDownloadModal && programDownloadLink && programDownloadCancel && programModalClose && programPreviewContainer) {
+            function closeProgramModal() {
+                programDownloadModal.classList.remove('show');
                 
-                // Restore body scrollbar
-                document.body.style.overflow = '';
-                
-                // Restore scroll-to-top button pointer events
-                if (scrollTopBtn && scrollTopBtn.classList.contains('is-visible')) {
-                    scrollTopBtn.style.pointerEvents = 'auto';
-                }
-            }, 300);
-        }
-
-        // Open program modal on button click
-        document.querySelectorAll('.program-download-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                currentProgramEventId = btn.dataset.eventId;
-                
-                // Show modal
-                programDownloadModal.classList.remove('hidden');
-                programDownloadModal.style.display = 'flex';
-                
-                // Trigger animation
                 setTimeout(() => {
-                    programDownloadModal.classList.add('show');
-                }, 10);
-                
-                // Hide body scrollbar
-                document.body.style.overflow = 'hidden';
-                
-                // Hide scroll-to-top button pointer events
-                if (scrollTopBtn) {
-                    scrollTopBtn.style.pointerEvents = 'none';
-                }
-                
-                // Load preview
-                loadProgramPreview(currentProgramEventId);
-                
-                // Set download link to use public route
-                programDownloadLink.href = `/events/${currentProgramEventId}/program/download`;
-                programDownloadLink.setAttribute('download', '');
+                    programDownloadModal.classList.add('hidden');
+                    programDownloadModal.style.display = 'none';
+                    
+                    // Restore body scrollbar
+                    document.body.style.overflow = '';
+                    
+                    // Restore scroll-to-top button pointer events
+                    if (scrollTopBtn && scrollTopBtn.classList.contains('is-visible')) {
+                        scrollTopBtn.style.pointerEvents = 'auto';
+                    }
+                }, 300);
+            }
+
+            // Open program modal on button click
+            const programBtns = document.querySelectorAll('.program-download-btn');
+            programBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    currentProgramEventId = btn.dataset.eventId;
+                    
+                    // Show modal
+                    programDownloadModal.classList.remove('hidden');
+                    programDownloadModal.style.display = 'flex';
+                    
+                    // Trigger animation
+                    setTimeout(() => {
+                        programDownloadModal.classList.add('show');
+                    }, 10);
+                    
+                    // Hide body scrollbar
+                    document.body.style.overflow = 'hidden';
+                    
+                    // Hide scroll-to-top button pointer events
+                    if (scrollTopBtn) {
+                        scrollTopBtn.style.pointerEvents = 'none';
+                    }
+                    
+                    // Load preview
+                    loadProgramPreview(currentProgramEventId);
+                    
+                    // Set download link to use public route
+                    programDownloadLink.href = `/events/${currentProgramEventId}/program/download`;
+                    programDownloadLink.setAttribute('download', '');
+                });
             });
-        });
 
-        // Close modal on cancel button
-        programDownloadCancel.addEventListener('click', () => {
-            closeProgramModal();
-        });
-
-        // Close modal on close button
-        programModalClose.addEventListener('click', () => {
-            closeProgramModal();
-        });
-
-        // Close modal on background click
-        programDownloadModal.addEventListener('click', (e) => {
-            if (e.target === programDownloadModal) {
+            // Close modal on cancel button
+            programDownloadCancel.addEventListener('click', () => {
                 closeProgramModal();
-            }
-        });
+            });
 
-        // Close modal on Escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && !programDownloadModal.classList.contains('hidden')) {
+            // Close modal on close button
+            programModalClose.addEventListener('click', () => {
                 closeProgramModal();
-            }
-        });
+            });
 
-        // Load program preview
-        function loadProgramPreview(eventId) {
-            // Show loading state
-            programPreviewContainer.innerHTML = '<div class="flex items-center justify-center py-16"><div class="flex flex-col items-center gap-2"><div class="w-8 h-8 border-3 border-em4 border-t-transparent rounded-full animate-spin"></div><p class="text-sm text-gray-600">Loading preview...</p></div></div>';
-            
-            // Fetch program file info from API endpoint
+            // Close modal on background click
+            programDownloadModal.addEventListener('click', (e) => {
+                if (e.target === programDownloadModal) {
+                    closeProgramModal();
+                }
+            });
+
+            // Close modal on Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && !programDownloadModal.classList.contains('hidden')) {
+                    closeProgramModal();
+                }
+            });
+
+            // Load program preview
+            function loadProgramPreview(eventId) {
+                // Show loading state
+                programPreviewContainer.innerHTML = '<div class="flex items-center justify-center py-16"><div class="flex flex-col items-center gap-2"><div class="w-8 h-8 border-3 border-em4 border-t-transparent rounded-full animate-spin"></div><p class="text-sm text-gray-600">Loading preview...</p></div></div>';
+                
+                // Fetch program file info from API endpoint
             fetch(`/events/${eventId}/program-file`)
                 .then(response => {
                     if (!response.ok) throw new Error('Failed to load program file');
@@ -2530,25 +2533,7 @@
                         </div>
                     `;
                 });
-        }
-                                <p class="text-sm text-gray-600">Click the download button below to get the file</p>
-                            </div>
-                        `;
-                    }
-                })
-                .catch(error => {
-                    console.error('Error loading preview:', error);
-                    programPreviewContainer.innerHTML = `
-                        <div class="bg-amber-50 border border-amber-200 rounded-lg p-6 text-center">
-                            <svg class="w-12 h-12 text-amber-600 mx-auto mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
-                                <polyline points="13 2 13 9 20 9"></polyline>
-                            </svg>
-                            <p class="font-semibold text-gray-900 mb-1">Program available for download</p>
-                            <p class="text-sm text-gray-600">Click the download button below to access the file</p>
-                        </div>
-                    `;
-                });
+            }
         }
     </script>
 </body>
