@@ -358,8 +358,8 @@ class EventController extends Controller
         abort_if($event->type !== 'conference', 404);
         abort_if(! $event->template_file_path, 404, 'No template file uploaded for this conference event.');
 
-        $extension = pathinfo($event->template_file_path, PATHINFO_EXTENSION);
-        return Storage::disk('event-templates')->download($event->template_file_path, 'Conference-Paper-Template.' . $extension);
+        $downloadName = $event->template_file_name ?? basename($event->template_file_path);
+        return Storage::disk('event-templates')->download($event->template_file_path, $downloadName);
     }
 
     public function verifyAndDownloadTemplate(Event $event, Request $request)
@@ -395,10 +395,10 @@ class EventController extends Controller
         }
 
         // Return the file download
-        $extension = pathinfo($event->template_file_path, PATHINFO_EXTENSION);
+        $downloadName = $event->template_file_name ?? basename($event->template_file_path);
         return Storage::disk('event-templates')->download(
             $event->template_file_path,
-            'Conference-Paper-Template.' . $extension
+            $downloadName
         );
     }
 
