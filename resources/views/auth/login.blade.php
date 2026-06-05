@@ -498,7 +498,7 @@
     <nav class="top-nav">
         <a href="{{ route('landing', [], false) }}" class="brand" aria-label="Eventure home">
             <img src="{{ asset('eventure-signinlogo.png') }}" alt="Eventure logo">
-            <span class="brand-text"><span class="brand-event">Even</span><span class="brand-flow">ture</span></span>
+            <span class="brand-text"><span class="brand-event">Event</span><span class="brand-flow">ure</span></span>
         </a>
     </nav>
 
