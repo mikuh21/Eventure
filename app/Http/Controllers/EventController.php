@@ -426,6 +426,22 @@ class EventController extends Controller
             ->header('Pragma', 'no-cache');
     }
 
+    public function getProgramFile(Event $event)
+    {
+        if (! $event->program_file_path) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No program file available'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'program_file_path' => $event->program_file_path,
+            'program_file_name' => $event->program_file_name ?? basename($event->program_file_path)
+        ]);
+    }
+
     public function verifyAndAccessMeetLink(Event $event, Request $request)
     {
         // Only allow virtual or both attendance types

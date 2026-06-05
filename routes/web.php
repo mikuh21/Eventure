@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', LandingController::class)->name('landing');
 Route::get('events/{event}/template/download', [EventController::class, 'downloadTemplate'])->name('events.download-template-public');
 Route::get('events/{event}/program/download', [EventController::class, 'downloadProgram'])->name('events.download-program-public');
+Route::get('events/{event}/program-file', [EventController::class, 'getProgramFile'])->name('events.get-program-file');
 Route::post('events/{event}/template/download/verify', [EventController::class, 'verifyAndDownloadTemplate'])->name('events.template.verify-download');
 Route::post('events/{event}/meet-link/verify', [EventController::class, 'verifyAndAccessMeetLink'])->name('events.meet-link.verify');
 

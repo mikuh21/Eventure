@@ -2472,22 +2472,16 @@
             // Show loading state
             programPreviewContainer.innerHTML = '<div class="flex items-center justify-center py-16"><div class="flex flex-col items-center gap-2"><div class="w-8 h-8 border-3 border-em4 border-t-transparent rounded-full animate-spin"></div><p class="text-sm text-gray-600">Loading preview...</p></div></div>';
             
-            // Fetch event details to get program file path
-            fetch(`/events/${eventId}`)
+            // Fetch program file info from API endpoint
+            fetch(`/events/${eventId}/program-file`)
                 .then(response => {
-                    if (!response.ok) throw new Error('Failed to load event');
-                    return response.text();
+                    if (!response.ok) throw new Error('Failed to load program file');
+                    return response.json();
                 })
-                .then(html => {
-                    // Extract program file path from the fetched HTML
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, 'text/html');
-                    
-                    // Look for program preview container with data attributes
-                    const programSection = doc.querySelector('[data-program-path]');
-                    if (programSection && programSection.dataset.programPath) {
-                        const filePath = programSection.dataset.programPath;
-                        const fileName = programSection.dataset.programName || 'Program';
+                .then(data => {
+                    if (data.success && data.program_file_path) {
+                        const filePath = data.program_file_path;
+                        const fileName = data.program_file_name || 'Program';
                         
                         // Create full file URL and encode it for Google Docs Viewer
                         const baseUrl = 'https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/event-programs';
@@ -2518,6 +2512,25 @@
                                     <polyline points="13 2 13 9 20 9"></polyline>
                                 </svg>
                                 <p class="font-semibold text-gray-900 mb-1">Program file ready</p>
+                                <p class="text-sm text-gray-600">Click the download button below to get the file</p>
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading preview:', error);
+                    programPreviewContainer.innerHTML = `
+                        <div class="bg-amber-50 border border-amber-200 rounded-lg p-6 text-center">
+                            <svg class="w-12 h-12 text-amber-600 mx-auto mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                                <polyline points="13 2 13 9 20 9"></polyline>
+                            </svg>
+                            <p class="font-semibold text-gray-900 mb-1">Program available for download</p>
+                            <p class="text-sm text-gray-600">Click the download button below to access the file</p>
+                        </div>
+                    `;
+                });
+        }
                                 <p class="text-sm text-gray-600">Click the download button below to get the file</p>
                             </div>
                         `;
