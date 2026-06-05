@@ -443,12 +443,26 @@
 
         .participants-pagination-bottom {
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             margin-top: 16px;
             padding: 12px 0;
+            gap: 8px;
+        }
+
+        .participants-pagination-numbers-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
             flex-wrap: wrap;
             gap: 4px;
+        }
+
+        .participants-results-info {
+            font-size: 13px;
+            color: #666;
+            white-space: nowrap;
         }
 
         .participants-pagination {
@@ -464,9 +478,17 @@
             width: 100%;
         }
 
-        .participants-pagination-bottom nav div,
-        .participants-pagination-bottom nav span,
-        .participants-pagination-bottom nav a {
+        .participants-pagination-numbers-wrapper nav {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .participants-pagination-numbers-wrapper nav div,
+        .participants-pagination-numbers-wrapper nav span,
+        .participants-pagination-numbers-wrapper nav a {
             font-size: 12px;
             display: inline-flex;
             align-items: center;
@@ -475,24 +497,25 @@
             padding: 0 8px;
         }
 
-        .participants-pagination-bottom nav a,
-        .participants-pagination-bottom nav span[aria-current="page"] {
+        .participants-pagination-numbers-wrapper nav a,
+        .participants-pagination-numbers-wrapper nav span[aria-current="page"] {
             border-radius: 4px !important;
         }
 
-        .participants-pagination-bottom nav a {
+        .participants-pagination-numbers-wrapper nav a {
             color: var(--color-ocean) !important;
             border-color: var(--color-sky) !important;
         }
 
-        .participants-pagination-bottom nav svg {
+        .participants-pagination-numbers-wrapper nav svg {
             width: 16px !important;
             height: 16px !important;
             min-width: 16px;
             min-height: 16px;
+            display: none !important;
         }
 
-        .participants-pagination-bottom nav span[aria-current="page"] span {
+        .participants-pagination-numbers-wrapper nav span[aria-current="page"] span {
             background: var(--color-ocean) !important;
             color: #ffffff !important;
             border-color: var(--color-ocean) !important;
@@ -504,37 +527,40 @@
             min-height: 32px;
         }
 
-        .participants-pagination-bottom nav a[rel="prev"],
-        .participants-pagination-bottom nav a[rel="next"],
-        .participants-pagination-bottom nav span.disabled {
+        .participants-pagination-numbers-wrapper nav a[rel="prev"],
+        .participants-pagination-numbers-wrapper nav a[rel="next"] {
             display: none !important;
         }
 
         @media (max-width: 640px) {
             .participants-pagination-bottom {
-                flex-direction: column;
-                align-items: center;
                 gap: 8px;
                 margin-top: 12px;
                 padding: 8px 0;
             }
 
-            .participants-pagination-bottom nav div,
-            .participants-pagination-bottom nav span,
-            .participants-pagination-bottom nav a {
+            .participants-results-info {
+                font-size: 12px;
+                width: 100%;
+                text-align: center;
+            }
+
+            .participants-pagination-numbers-wrapper nav div,
+            .participants-pagination-numbers-wrapper nav span,
+            .participants-pagination-numbers-wrapper nav a {
                 font-size: 11px;
                 min-height: 28px;
                 padding: 0 6px;
             }
 
-            .participants-pagination-bottom nav svg {
+            .participants-pagination-numbers-wrapper nav svg {
                 width: 14px !important;
                 height: 14px !important;
                 min-width: 14px;
                 min-height: 14px;
             }
 
-            .participants-pagination-bottom nav span[aria-current="page"] span {
+            .participants-pagination-numbers-wrapper nav span[aria-current="page"] span {
                 padding: 0 6px;
                 min-height: 28px;
             }
@@ -1377,7 +1403,16 @@
             </table>
             @if ($participants->count() > 0)
                 <div class="participants-pagination-bottom">
-                    {{ $participants->links() }}
+                    <div class="participants-pagination-numbers-wrapper">
+                        {{ $participants->links() }}
+                    </div>
+                    @php
+                        $from = ($participants->currentPage() - 1) * $participants->perPage() + 1;
+                        $to = min($participants->currentPage() * $participants->perPage(), $participants->total());
+                    @endphp
+                    <div class="participants-results-info">
+                        Showing {{ $from }} to {{ $to }} of {{ $participants->total() }} results
+                    </div>
                 </div>
             @endif
             </div>
