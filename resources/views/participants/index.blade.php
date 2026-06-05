@@ -1298,8 +1298,12 @@
             
             @if ($participants->count() > 0)
                 <div class="participants-pagination-top">
+                    @php
+                        $from = ($participants->currentPage() - 1) * $participants->perPage() + 1;
+                        $to = min($participants->currentPage() * $participants->perPage(), $participants->total());
+                    @endphp
                     <div class="participants-results-info">
-                        Showing {{ $participants->from() }} to {{ $participants->to() }} of {{ $participants->total() }} results
+                        Showing {{ $from }} to {{ $to }} of {{ $participants->total() }} results
                     </div>
                     <div class="participants-pagination-numbers">
                         {{ $participants->links() }}
