@@ -359,7 +359,16 @@ class EventController extends Controller
         abort_if(! $event->template_file_path, 404, 'No template file uploaded for this conference event.');
 
         $downloadName = $event->template_file_name ?? basename($event->template_file_path);
-        return Storage::disk('event-templates')->download($event->template_file_path, $downloadName);
+        $path = $event->template_file_path;
+        
+        return response()->download(
+            Storage::disk('event-templates')->path($path),
+            $downloadName,
+            [
+                'Content-Type' => Storage::disk('event-templates')->mimeType($path),
+                'Content-Disposition' => 'attachment; filename="' . $downloadName . '"',
+            ]
+        );
     }
 
     public function verifyAndDownloadTemplate(Event $event, Request $request)
@@ -396,9 +405,15 @@ class EventController extends Controller
 
         // Return the file download
         $downloadName = $event->template_file_name ?? basename($event->template_file_path);
-        return Storage::disk('event-templates')->download(
-            $event->template_file_path,
-            $downloadName
+        $path = $event->template_file_path;
+        
+        return response()->download(
+            Storage::disk('event-templates')->path($path),
+            $downloadName,
+            [
+                'Content-Type' => Storage::disk('event-templates')->mimeType($path),
+                'Content-Disposition' => 'attachment; filename="' . $downloadName . '"',
+            ]
         );
     }
 

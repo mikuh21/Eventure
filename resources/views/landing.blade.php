@@ -2061,6 +2061,13 @@
             }
         });
 
+        // Extract filename from Content-Disposition header
+        function getFilenameFromContentDisposition(contentDisposition) {
+            if (!contentDisposition) return null;
+            const match = contentDisposition.match(/filename="?([^";\n]+)"?/);
+            return match ? match[1] : null;
+        }
+
         // Handle download
         templateDownloadBtn.addEventListener('click', async () => {
             const token = guestTokenInput.value.trim();
@@ -2090,7 +2097,12 @@
                     const url = window.URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
-                    a.download = 'Conference-Paper-Template.' + (currentEventId || 'doc');
+                    
+                    // Extract filename from Content-Disposition header
+                    const contentDisposition = response.headers.get('Content-Disposition');
+                    const filename = getFilenameFromContentDisposition(contentDisposition) || 'template';
+                    a.download = filename;
+                    
                     document.body.appendChild(a);
                     a.click();
                     window.URL.revokeObjectURL(url);
