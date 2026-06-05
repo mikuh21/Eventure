@@ -276,6 +276,11 @@
                 <input id="template_file" name="template_file" type="file" accept=".pdf,.doc,.docx,.txt,.rtf,.odt,.xls,.xlsx,.ppt,.pptx">
             </div>
 
+            <div class="field">
+                <label for="program_file">Program</label>
+                <input id="program_file" name="program_file" type="file" accept=".pdf,.doc,.docx,.txt,.rtf,.odt,.xls,.xlsx,.ppt,.pptx">
+            </div>
+
             <div class="field" id="template-url-field">
                 <label for="template_url">Resources Link (Google Drive, OneDrive, etc.)</label>
                 <div style="position: relative;">

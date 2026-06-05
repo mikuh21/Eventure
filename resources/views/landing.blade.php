@@ -967,6 +967,9 @@
                                     @if($event->type === 'conference' && $event->keywords)
                                         <p><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span> {{ is_array($event->keywords) ? implode(', ', $event->keywords) : $event->keywords }}</p>
                                     @endif
+                                    @if($event->program_file_path)
+                                        <p><button type="button" class="program-download-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline><path d="M9 15l3 3 5-5"></path></svg></span> {{ $event->program_file_name ?? basename($event->program_file_path) }}</button></p>
+                                    @endif
                                     @if($event->type === 'conference' && $event->template_file_path)
                                         <p><button type="button" class="template-download-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline><path d="M9 15l3 3 5-5"></path></svg></span> {{ $event->template_file_name ?? basename($event->template_file_path) }}</button></p>
                                     @endif
@@ -1053,6 +1056,9 @@
                                     @if($event->type === 'conference' && $event->keywords)
                                         <p><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span> {{ is_array($event->keywords) ? implode(', ', $event->keywords) : $event->keywords }}</p>
                                     @endif
+                                    @if($event->program_file_path)
+                                        <p><button type="button" class="program-download-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline><path d="M9 15l3 3 5-5"></path></svg></span> {{ $event->program_file_name ?? basename($event->program_file_path) }}</button></p>
+                                    @endif
                                     @if($event->type === 'conference' && $event->template_file_path)
                                         <p><button type="button" class="template-download-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline><path d="M9 15l3 3 5-5"></path></svg></span> {{ $event->template_file_name ?? basename($event->template_file_path) }}</button></p>
                                     @endif
@@ -1121,6 +1127,9 @@
                                     <span><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></span> {{ $event->participants_count ?? $event->participants->count() }} attended</span>
                                     @if($event->averageRating())
                                         <span><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12 3.8 2.57 5.2 5.74.83-4.16 4.05.98 5.72L12 16.9l-5.13 2.7.98-5.72L3.69 9.83l5.74-.83L12 3.8z" fill="currentColor" stroke="none"></path></svg></span> {{ $event->averageRating() }}/5</span>
+                                    @endif
+                                    @if($event->program_file_path)
+                                        <button type="button" class="program-download-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline><path d="M9 15l3 3 5-5"></path></svg></span> {{ $event->program_file_name ?? basename($event->program_file_path) }}</button>
                                     @endif
                                     @if($event->type === 'conference' && $event->template_file_path)
                                         <button type="button" class="template-download-btn inline-flex items-center gap-1 underline hover:opacity-80 transition" data-event-id="{{ $event->id }}"><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline><path d="M9 15l3 3 5-5"></path></svg></span> {{ $event->template_file_name ?? basename($event->template_file_path) }}</button>
@@ -1943,6 +1952,53 @@
         </div>
     </div>
 
+    <!-- Program Download Modal -->
+    <div id="programDownloadModal" class="template-modal-overlay fixed inset-0 bg-black/50 hidden items-center justify-center z-[9999]">
+        <div class="template-modal-content bg-white rounded-2xl p-8 max-w-2xl w-full mx-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-2xl font-bold text-gray-900">Program</h2>
+                <button 
+                    type="button" 
+                    id="programModalClose" 
+                    class="p-1 hover:bg-gray-100 rounded transition"
+                    aria-label="Close modal"
+                >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            
+            <div id="programPreviewContainer" class="mb-6">
+                <!-- Preview will be loaded here -->
+            </div>
+            
+            <div class="flex gap-3 pt-4 border-t border-gray-200">
+                <button 
+                    type="button" 
+                    id="programDownloadCancel" 
+                    class="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition"
+                >
+                    Close
+                </button>
+                <a 
+                    id="programDownloadLink" 
+                    href="#" 
+                    download 
+                    class="flex-1 px-4 py-2.5 bg-em4 text-white rounded-lg font-medium hover:brightness-110 transition text-center flex items-center justify-center gap-2"
+                >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Download
+                </a>
+            </div>
+        </div>
+    </div>
+
     <script>
         const templateModal = document.getElementById('templateDownloadModal');
         const guestTokenInput = document.getElementById('guestToken');
@@ -2320,6 +2376,160 @@
                 meetLinkAccessBtn.click();
             }
         });
+
+        // Program Download Modal
+        const programDownloadModal = document.getElementById('programDownloadModal');
+        const programDownloadLink = document.getElementById('programDownloadLink');
+        const programDownloadCancel = document.getElementById('programDownloadCancel');
+        const programModalClose = document.getElementById('programModalClose');
+        const programPreviewContainer = document.getElementById('programPreviewContainer');
+        let currentProgramEventId = null;
+
+        function closeProgramModal() {
+            programDownloadModal.classList.remove('show');
+            
+            setTimeout(() => {
+                programDownloadModal.classList.add('hidden');
+                programDownloadModal.style.display = 'none';
+                
+                // Restore body scrollbar
+                document.body.style.overflow = '';
+                
+                // Restore scroll-to-top button pointer events
+                if (scrollTopBtn && scrollTopBtn.classList.contains('is-visible')) {
+                    scrollTopBtn.style.pointerEvents = 'auto';
+                }
+            }, 300);
+        }
+
+        // Open program modal on button click
+        document.querySelectorAll('.program-download-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                currentProgramEventId = btn.dataset.eventId;
+                
+                // Show modal
+                programDownloadModal.classList.remove('hidden');
+                programDownloadModal.style.display = 'flex';
+                
+                // Trigger animation
+                setTimeout(() => {
+                    programDownloadModal.classList.add('show');
+                }, 10);
+                
+                // Hide body scrollbar
+                document.body.style.overflow = 'hidden';
+                
+                // Hide scroll-to-top button pointer events
+                if (scrollTopBtn) {
+                    scrollTopBtn.style.pointerEvents = 'none';
+                }
+                
+                // Load preview
+                loadProgramPreview(currentProgramEventId);
+                
+                // Set download link
+                programDownloadLink.href = `/events/${currentProgramEventId}/program/download`;
+            });
+        });
+
+        // Close modal on cancel button
+        programDownloadCancel.addEventListener('click', () => {
+            closeProgramModal();
+        });
+
+        // Close modal on close button
+        programModalClose.addEventListener('click', () => {
+            closeProgramModal();
+        });
+
+        // Close modal on background click
+        programDownloadModal.addEventListener('click', (e) => {
+            if (e.target === programDownloadModal) {
+                closeProgramModal();
+            }
+        });
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !programDownloadModal.classList.contains('hidden')) {
+                closeProgramModal();
+            }
+        });
+
+        // Load program preview
+        function loadProgramPreview(eventId) {
+            // Get the program file path from button data
+            const btn = document.querySelector(`.program-download-btn[data-event-id="${eventId}"]`);
+            if (!btn) return;
+
+            // Get event data from nearby elements
+            const eventCard = btn.closest('[data-event-id]')?.parentElement || btn.closest('.event-card');
+            
+            // Show loading state
+            programPreviewContainer.innerHTML = '<div class="flex items-center justify-center h-96"><p class="text-gray-600">Loading preview...</p></div>';
+            
+            // Try to load preview from server
+            fetch(`/events/${eventId}`)
+                .then(response => response.text())
+                .then(html => {
+                    // Extract program file path from the fetched HTML
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    
+                    // Look for program preview in the response
+                    const programSection = doc.querySelector('[data-program-path]');
+                    if (programSection && programSection.dataset.programPath) {
+                        const filePath = programSection.dataset.programPath;
+                        const fileName = programSection.dataset.programName || 'Program';
+                        
+                        // Create iframe for preview
+                        const baseUrl = 'https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/event-programs';
+                        programPreviewContainer.innerHTML = `
+                            <div class="bg-gray-100 rounded-lg overflow-hidden" style="height: 500px;">
+                                <iframe 
+                                    src="https://docs.google.com/viewer?url=${baseUrl}/${filePath}&embedded=true"
+                                    width="100%" 
+                                    height="100%"
+                                    frameborder="0"
+                                    style="border-radius: 8px;">
+                                </iframe>
+                            </div>
+                        `;
+                    } else {
+                        // Fallback: show file info
+                        programPreviewContainer.innerHTML = `
+                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                                <div class="flex items-center gap-3">
+                                    <svg class="w-8 h-8 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline>
+                                    </svg>
+                                    <div>
+                                        <p class="font-semibold text-gray-900">Program file ready</p>
+                                        <p class="text-sm text-gray-600">Click download to get the file</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading preview:', error);
+                    programPreviewContainer.innerHTML = `
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-8 h-8 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline>
+                                </svg>
+                                <div>
+                                    <p class="font-semibold text-gray-900">Program file ready</p>
+                                    <p class="text-sm text-gray-600">Click download to get the file</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+        }
     </script>
 </body>
 </html>

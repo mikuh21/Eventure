@@ -90,6 +90,9 @@ Route::middleware(['auth', 'admin'])->group(function (): void {
     Route::get('events/{event}/template/download', [EventController::class, 'downloadTemplate'])
         ->name('events.download-template');
 
+    Route::get('events/{event}/program/download', [EventController::class, 'downloadProgram'])
+        ->name('events.download-program');
+
     Route::get('events/{event}/submissions', [EventController::class, 'submissions'])
         ->name('events.submissions.index');
 

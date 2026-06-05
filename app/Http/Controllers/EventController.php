@@ -315,6 +315,10 @@ class EventController extends Controller
             Storage::disk('event-templates')->delete($event->template_file_path);
         }
 
+        if ($event->program_file_path) {
+            Storage::disk('event-programs')->delete($event->program_file_path);
+        }
+
         $event->delete();
 
         if ($wantsJson) {
@@ -404,6 +408,19 @@ class EventController extends Controller
         
         return response(Storage::disk('event-templates')->get($event->template_file_path), 200)
             ->header('Content-Type', Storage::disk('event-templates')->mimeType($event->template_file_path))
+            ->header('Content-Disposition', 'attachment; filename="' . $downloadName . '"')
+            ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            ->header('Pragma', 'no-cache');
+    }
+
+    public function downloadProgram(Event $event)
+    {
+        abort_if(! $event->program_file_path, 404, 'No program file uploaded for this event.');
+
+        $downloadName = $event->program_file_name ?? basename($event->program_file_path);
+        
+        return response(Storage::disk('event-programs')->get($event->program_file_path), 200)
+            ->header('Content-Type', Storage::disk('event-programs')->mimeType($event->program_file_path))
             ->header('Content-Disposition', 'attachment; filename="' . $downloadName . '"')
             ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
             ->header('Pragma', 'no-cache');
@@ -550,6 +567,17 @@ class EventController extends Controller
             Storage::disk('event-templates')->putFileAs('', $request->file('template_file'), $filename);
             $data['template_file_path'] = $filename;
             $data['template_file_name'] = $request->file('template_file')->getClientOriginalName();
+        }
+
+        if ($request->hasFile('program_file')) {
+            if ($event?->program_file_path) {
+                Storage::disk('event-programs')->delete($event->program_file_path);
+            }
+
+            $filename = Str::random(40) . '.' . $request->file('program_file')->getClientOriginalExtension();
+            Storage::disk('event-programs')->putFileAs('', $request->file('program_file'), $filename);
+            $data['program_file_path'] = $filename;
+            $data['program_file_name'] = $request->file('program_file')->getClientOriginalName();
         }
 
         if ($data['type'] !== 'conference') {

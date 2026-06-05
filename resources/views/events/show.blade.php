@@ -583,6 +583,24 @@
                     </div>
                 @endif
             @endif
+
+            @if ($event->program_file_path)
+                <div class="event-asset-card">
+                    <h3 class="event-asset-title">Program</h3>
+                    <div class="template-preview" style="margin-bottom: 1rem;">
+                        <iframe 
+                            src="https://docs.google.com/viewer?url=https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/event-programs/{{ $event->program_file_path }}&embedded=true"
+                            width="100%" 
+                            height="400px"
+                            frameborder="0"
+                            style="border-radius: 8px;">
+                        </iframe>
+                    </div>
+                    <div class="event-asset-actions">
+                        <a class="btn" href="{{ route('events.download-program', $event) }}" style="font-family: 'Sora', sans-serif;">Download Program</a>
+                    </div>
+                </div>
+            @endif
         </div>
 
     @if (!auth()->user()->hasRole('event_staff') || $event->created_by === auth()->id())

@@ -38,6 +38,8 @@ class Event extends Model
         'location',
         'meet_link',
         'poster_path',
+        'program_file_path',
+        'program_file_name',
         'template_file_path',
         'template_file_name',
         'template_url',
