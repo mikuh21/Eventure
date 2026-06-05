@@ -586,7 +586,7 @@
         </div>
 
     @if (!auth()->user()->hasRole('event_staff') || $event->created_by === auth()->id())
-        <div class="card event-view-card">
+        <div class="card event-view-card" style="margin-top: 32px;">
             <div class="header-row event-view-header">
                 <h2>Participants</h2>
                 <a class="btn" href="{{ route('events.participants.index', $event) }}?event_id={{ $event->id }}">Open Full List</a>
