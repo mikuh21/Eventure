@@ -537,7 +537,7 @@ class ParticipantDigitalIdController extends Controller
             $x = ($width - $textWidth) / 2;
             
             // Y position: 52% of image height (adjusted for text baseline)
-            $y = (int)($height * 0.40);
+            $y = (int)($height * 0.42);
             
             // Draw text on image
             $result = imagettftext($img, $fontSize, 0, $x, $y, $color, $fontPath, $name);
