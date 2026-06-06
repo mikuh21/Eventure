@@ -511,7 +511,7 @@ class ParticipantDigitalIdController extends Controller
             $height = imagesy($img);
             
             // Font configuration
-            $fontPath = public_path('fonts/Montserrat-Bold.ttf');
+            $fontPath = public_path('fonts/Sora-Bold.ttf');
             if (!file_exists($fontPath)) {
                 $fontPath = public_path('fonts/Sora-Bold.ttf');
             }
@@ -537,7 +537,7 @@ class ParticipantDigitalIdController extends Controller
             $x = ($width - $textWidth) / 2;
             
             // Y position: 52% of image height (adjusted for text baseline)
-            $y = (int)($height * 0.52);
+            $y = (int)($height * 0.40);
             
             // Draw text on image
             $result = imagettftext($img, $fontSize, 0, $x, $y, $color, $fontPath, $name);
