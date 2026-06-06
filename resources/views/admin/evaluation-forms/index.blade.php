@@ -2378,12 +2378,12 @@
                 addButton.addEventListener('click', () => {
                     const nextOrder = rowsContainer.querySelectorAll('.question-edit-row').length + 1;
                     const newRow = createQuestionRow({
-                        question: '',
-                        type: 'text',
-                        is_required: false,
-                        is_matrix: false,
-                        matrix_items: null
-                    }, section, nextOrder, eventType, true);
+    question: '',
+    type: section === 'Session Feedback' ? 'likert' : 'text',
+    is_required: false,
+    is_matrix: false,
+    matrix_items: null
+}, section, nextOrder, eventType, true);
                     rowsContainer.appendChild(newRow);
                     updateSectionOrder(rowsContainer);
                     newRow.querySelector('.question-text-input')?.focus();
