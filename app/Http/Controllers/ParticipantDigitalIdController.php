@@ -146,6 +146,12 @@ class ParticipantDigitalIdController extends Controller
         }
 
         $event = $participant->event;
+        
+        // Custom image-based certificate for Converge 2026 (Event ID 27)
+        if ($event->id === 27) {
+            return $this->generateConverge2026Certificate($participant, $event);
+        }
+        
         $eventDate = $event->dateRangeLabel();
         $eventLocation = $event->location ?: 'TBA';
 
@@ -476,5 +482,93 @@ class ParticipantDigitalIdController extends Controller
         }
 
         return null;
+    }
+
+    /**
+     * Generate a custom image-based certificate for Converge 2026 (Event ID 27).
+     * Loads certificate background image from Supabase and overlays participant name.
+     */
+    private function generateConverge2026Certificate(Participant $participant, Event $event)
+    {
+        try {
+            // Certificate image URL in Supabase Storage
+            $certImageUrl = 'https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/event-posters/converge-2026-cert.png';
+            
+            // Fetch the certificate background image
+            $imageData = @file_get_contents($certImageUrl);
+            if ($imageData === false) {
+                abort(500, 'Unable to load certificate template image from storage.');
+            }
+            
+            // Create image from data
+            $img = @imagecreatefromstring($imageData);
+            if ($img === false) {
+                abort(500, 'Unable to process certificate template image.');
+            }
+            
+            // Get image dimensions
+            $width = imagesx($img);
+            $height = imagesy($img);
+            
+            // Font configuration
+            $fontPath = public_path('fonts/Montserrat-Bold.ttf');
+            if (!file_exists($fontPath)) {
+                $fontPath = public_path('fonts/Sora-Bold.ttf');
+            }
+            if (!file_exists($fontPath)) {
+                abort(500, 'Certificate font file not found.');
+            }
+            
+            // Color: Dark Navy (#0D1B3E)
+            $color = imagecolorallocate($img, 13, 27, 62);
+            
+            // Font size and text
+            $fontSize = 60;
+            $name = $participant->name;
+            
+            // Calculate text bounds to center horizontally
+            $bbox = imagettfbbox($fontSize, 0, $fontPath, $name);
+            if ($bbox === false) {
+                imagedestroy($img);
+                abort(500, 'Unable to calculate text bounds.');
+            }
+            
+            $textWidth = abs($bbox[4] - $bbox[0]);
+            $x = ($width - $textWidth) / 2;
+            
+            // Y position: 52% of image height (adjusted for text baseline)
+            $y = (int)($height * 0.52);
+            
+            // Draw text on image
+            $result = imagettftext($img, $fontSize, 0, $x, $y, $color, $fontPath, $name);
+            if ($result === false) {
+                imagedestroy($img);
+                abort(500, 'Unable to draw text on certificate.');
+            }
+            
+            // Generate PNG output
+            ob_start();
+            imagepng($img, null, 9);
+            $imageData = ob_get_clean();
+            imagedestroy($img);
+            
+            // Prepare filename
+            $filename = 'Certificate-of-Participation-' . Str::slug($participant->name) . '.png';
+            
+            // Return PNG response with mobile-friendly headers
+            $fileSize = strlen($imageData);
+            
+            return response($imageData, 200, [
+                'Content-Type' => 'image/png',
+                'Content-Length' => $fileSize,
+                'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+                'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                'Pragma' => 'no-cache',
+                'Expires' => '0',
+                'Accept-Ranges' => 'bytes',
+            ]);
+        } catch (\Exception $e) {
+            abort(500, 'Error generating certificate: ' . $e->getMessage());
+        }
     }
 }
