@@ -2083,72 +2083,86 @@
             };
 
             async function downloadCertificate(url) {
-                const btn = document.querySelector('.cert-download-btn');
+    const btn = document.querySelector('.cert-download-btn');
+    if (btn) {
+        btn.textContent = 'Saving...';
+        btn.disabled = true;
+    }
+    const isIOS = /iP(hone|od|ad)/.test(navigator.userAgent) ||
+        (navigator.platform && /MacIntel/.test(navigator.platform) && navigator.maxTouchPoints > 1);
+    try {
+        // Try fetching the certificate PNG directly from the controller
+        const response = await fetch(url, { method: 'GET', headers: { 'Accept': 'image/png' } });
+        if (response.ok && response.headers.get('Content-Type')?.includes('image/png')) {
+            const blob = await response.blob();
+            const dataUrl = await new Promise(resolve => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.readAsDataURL(blob);
+            });
+            const filename = 'Certificate-of-Participation.png';
+            if (isIOS) {
+                showCertModal([{ dataUrl, label: 'Certificate of Participation' }]);
+            } else {
+                const a = document.createElement('a');
+                a.href = dataUrl;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
                 if (btn) {
-                    btn.textContent = 'Saving...';
-                    btn.disabled = true;
-                }
-
-                const isIOS = /iP(hone|od|ad)/.test(navigator.userAgent) ||
-                    (navigator.platform && /MacIntel/.test(navigator.platform) && navigator.maxTouchPoints > 1);
-
-                try {
-                    const pages = document.querySelectorAll('#certificateCanvas .cert-page');
-                const iosImages = [];
-
-                for (let i = 0; i < pages.length; i++) {
-                    const canvas = await html2canvas(pages[i], {
-                        scale: 2,
-                        useCORS: true,
-                        allowTaint: true,
-                        backgroundColor: '#ffffff',
-                        logging: false,
-                    });
-
-                    const dataUrl = canvas.toDataURL('image/png');
-                    const filename = pages.length > 1
-                        ? 'certificate-' + (i === 0 ? 'attendance' : 'participation') + '.png'
-                        : 'certificate.png';
-
-                    if (isIOS) {
-                        iosImages.push({
-                            dataUrl,
-                            label: pages.length > 1
-                                ? (i === 0 ? 'Certificate of Attendance' : 'Certificate of Participation')
-                                : 'Certificate',
-                        });
-                    } else {
-                        const a = document.createElement('a');
-                        a.href = dataUrl;
-                        a.download = filename;
-                        document.body.appendChild(a);
-                        a.click();
-                        a.remove();
-                        if (i < pages.length - 1) await new Promise(r => setTimeout(r, 800));
-                    }
-                }
-
-                if (isIOS && iosImages.length > 0) {
-                    showCertModal(iosImages);
-                }
-
-                if (!isIOS && btn) {
                     btn.textContent = 'Saved!';
-                    setTimeout(() => {
-                        if (btn) {
-                            btn.textContent = 'Save Certificate';
-                            btn.disabled = false;
-                        }
-                    }, 2000);
-                }
-                } catch (err) {
-                    console.error(err);
-                    if (btn) {
-                        btn.textContent = 'Save Certificate';
-                        btn.disabled = false;
-                    }
+                    setTimeout(() => { btn.textContent = 'Save Certificate'; btn.disabled = false; }, 2000);
                 }
             }
+            return;
+        }
+        // Fallback: html2canvas for other events
+        const pages = document.querySelectorAll('#certificateCanvas .cert-page');
+        const iosImages = [];
+        for (let i = 0; i < pages.length; i++) {
+            const canvas = await html2canvas(pages[i], {
+                scale: 2,
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: '#ffffff',
+                logging: false,
+            });
+            const dataUrl = canvas.toDataURL('image/png');
+            const filename = pages.length > 1
+                ? 'certificate-' + (i === 0 ? 'attendance' : 'participation') + '.png'
+                : 'certificate.png';
+            if (isIOS) {
+                iosImages.push({
+                    dataUrl,
+                    label: pages.length > 1
+                        ? (i === 0 ? 'Certificate of Attendance' : 'Certificate of Participation')
+                        : 'Certificate',
+                });
+            } else {
+                const a = document.createElement('a');
+                a.href = dataUrl;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                if (i < pages.length - 1) await new Promise(r => setTimeout(r, 800));
+            }
+        }
+        if (isIOS && iosImages.length > 0) {
+            showCertModal(iosImages);
+        }
+        if (!isIOS && btn) {
+            btn.textContent = 'Saved!';
+            setTimeout(() => {
+                if (btn) { btn.textContent = 'Save Certificate'; btn.disabled = false; }
+            }, 2000);
+        }
+    } catch (err) {
+        console.error(err);
+        if (btn) { btn.textContent = 'Save Certificate'; btn.disabled = false; }
+    }
+}
 
             function showCertModal(images) {
                 const existing = document.getElementById('certSaveModal');
