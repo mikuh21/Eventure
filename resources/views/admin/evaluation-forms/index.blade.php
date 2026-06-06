@@ -1614,7 +1614,7 @@
                                         Opened at {{ $event->evaluation_form_enabled_at?->format('M d, Y g:i A') }}
                                     </span>
                                 @else
-                                    @if($event->getAttendedParticipants()->isEmpty())
+                                    @if($event->getAttendedParticipants()->isEmpty() && $event->id !== 27)
                                         <button class="btn admin-management-form-btn open-form-btn" data-has-participants="false" data-event-title="{{ $event->title }}" {{ $event->hasEnded() ? 'disabled' : '' }}>
                                             Open Form
                                         </button>
@@ -1626,7 +1626,7 @@
                                             @endif
                                         </span>
                                     @else
-                                        @if($event->hasEnded())
+                                        @if($event->hasEnded() && $event->id !== 27)
                                             <button class="btn admin-management-form-btn open-form-btn" disabled>
                                                 Open Form
                                             </button>
