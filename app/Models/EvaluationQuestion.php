@@ -61,7 +61,14 @@ class EvaluationQuestion extends Model
 
     public function isProgramQuestion(): bool
     {
-        return str_contains(strtolower(trim($this->question)), 'program');
+        // Check if this is specifically a question about participant's program/course of study
+        // Used in Event Details section to identify pre-filled fields
+        $questionLower = trim(strtolower($this->question));
+        return in_array($questionLower, [
+            'program',
+            'program/course',
+            'program or course of study',
+        ]);
     }
 
     public function renderingType(): string
