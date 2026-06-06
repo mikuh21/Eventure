@@ -391,16 +391,23 @@ class EventController extends Controller
         $downloadName = $event->template_file_name ?? basename($event->template_file_path);
         $disk = Storage::disk('event-templates');
         $mimeType = $this->getMimeType($event->template_file_path);
-
-        return response()->stream(function () use ($disk, $event) {
-            echo $disk->get($event->template_file_path);
-        }, 200, [
-            'Content-Type' => $mimeType,
-            'Content-Disposition' => 'attachment; filename="' . $downloadName . '"',
-            'Cache-Control' => 'no-cache, no-store, must-revalidate',
-            'Pragma' => 'no-cache',
-            'Expires' => '0',
-        ]);
+        
+        try {
+            $fileContent = $disk->get($event->template_file_path);
+            $fileSize = strlen($fileContent);
+            
+            return response()->make($fileContent, 200, [
+                'Content-Type' => $mimeType,
+                'Content-Length' => $fileSize,
+                'Content-Disposition' => 'attachment; filename="' . $downloadName . '"',
+                'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                'Pragma' => 'no-cache',
+                'Expires' => '0',
+                'Accept-Ranges' => 'bytes',
+            ]);
+        } catch (\Exception $e) {
+            abort(404, 'File not found or cannot be accessed.');
+        }
     }
 
     public function verifyAndDownloadTemplate(Event $event, Request $request)
@@ -423,20 +430,27 @@ class EventController extends Controller
             ->first();
 
         if ($guest && $guest->status === 'approved') {
-            // Guest verified - return file download using proper stream
+            // Guest verified - return file download
             $downloadName = $event->template_file_name ?? basename($event->template_file_path);
             $disk = Storage::disk('event-templates');
             $mimeType = $this->getMimeType($event->template_file_path);
             
-            return response()->stream(function () use ($disk, $event) {
-                echo $disk->get($event->template_file_path);
-            }, 200, [
-                'Content-Type' => $mimeType,
-                'Content-Disposition' => 'attachment; filename="' . $downloadName . '"',
-                'Cache-Control' => 'no-cache, no-store, must-revalidate',
-                'Pragma' => 'no-cache',
-                'Expires' => '0',
-            ]);
+            try {
+                $fileContent = $disk->get($event->template_file_path);
+                $fileSize = strlen($fileContent);
+                
+                return response()->make($fileContent, 200, [
+                    'Content-Type' => $mimeType,
+                    'Content-Length' => $fileSize,
+                    'Content-Disposition' => 'attachment; filename="' . $downloadName . '"',
+                    'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                    'Pragma' => 'no-cache',
+                    'Expires' => '0',
+                    'Accept-Ranges' => 'bytes',
+                ]);
+            } catch (\Exception $e) {
+                abort(404, 'File not found or cannot be accessed.');
+            }
         }
 
         // Try to verify as participant
@@ -445,20 +459,27 @@ class EventController extends Controller
             ->first();
 
         if ($participant) {
-            // Participant verified - return file download using proper stream
+            // Participant verified - return file download
             $downloadName = $event->template_file_name ?? basename($event->template_file_path);
             $disk = Storage::disk('event-templates');
             $mimeType = $this->getMimeType($event->template_file_path);
             
-            return response()->stream(function () use ($disk, $event) {
-                echo $disk->get($event->template_file_path);
-            }, 200, [
-                'Content-Type' => $mimeType,
-                'Content-Disposition' => 'attachment; filename="' . $downloadName . '"',
-                'Cache-Control' => 'no-cache, no-store, must-revalidate',
-                'Pragma' => 'no-cache',
-                'Expires' => '0',
-            ]);
+            try {
+                $fileContent = $disk->get($event->template_file_path);
+                $fileSize = strlen($fileContent);
+                
+                return response()->make($fileContent, 200, [
+                    'Content-Type' => $mimeType,
+                    'Content-Length' => $fileSize,
+                    'Content-Disposition' => 'attachment; filename="' . $downloadName . '"',
+                    'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                    'Pragma' => 'no-cache',
+                    'Expires' => '0',
+                    'Accept-Ranges' => 'bytes',
+                ]);
+            } catch (\Exception $e) {
+                abort(404, 'File not found or cannot be accessed.');
+            }
         }
 
         // Token not found or not approved
@@ -486,20 +507,27 @@ class EventController extends Controller
             ->first();
 
         if ($guest && $guest->status === 'approved') {
-            // Guest verified - return file download using proper stream
+            // Guest verified - return file download
             $downloadName = $event->program_file_name ?? basename($event->program_file_path);
             $disk = Storage::disk('event-programs');
             $mimeType = $this->getMimeType($event->program_file_path);
             
-            return response()->stream(function () use ($disk, $event) {
-                echo $disk->get($event->program_file_path);
-            }, 200, [
-                'Content-Type' => $mimeType,
-                'Content-Disposition' => 'attachment; filename="' . $downloadName . '"',
-                'Cache-Control' => 'no-cache, no-store, must-revalidate',
-                'Pragma' => 'no-cache',
-                'Expires' => '0',
-            ]);
+            try {
+                $fileContent = $disk->get($event->program_file_path);
+                $fileSize = strlen($fileContent);
+                
+                return response()->make($fileContent, 200, [
+                    'Content-Type' => $mimeType,
+                    'Content-Length' => $fileSize,
+                    'Content-Disposition' => 'attachment; filename="' . $downloadName . '"',
+                    'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                    'Pragma' => 'no-cache',
+                    'Expires' => '0',
+                    'Accept-Ranges' => 'bytes',
+                ]);
+            } catch (\Exception $e) {
+                abort(404, 'File not found or cannot be accessed.');
+            }
         }
 
         // Try to verify as participant
@@ -508,20 +536,27 @@ class EventController extends Controller
             ->first();
 
         if ($participant) {
-            // Participant verified - return file download using proper stream
+            // Participant verified - return file download
             $downloadName = $event->program_file_name ?? basename($event->program_file_path);
             $disk = Storage::disk('event-programs');
             $mimeType = $this->getMimeType($event->program_file_path);
             
-            return response()->stream(function () use ($disk, $event) {
-                echo $disk->get($event->program_file_path);
-            }, 200, [
-                'Content-Type' => $mimeType,
-                'Content-Disposition' => 'attachment; filename="' . $downloadName . '"',
-                'Cache-Control' => 'no-cache, no-store, must-revalidate',
-                'Pragma' => 'no-cache',
-                'Expires' => '0',
-            ]);
+            try {
+                $fileContent = $disk->get($event->program_file_path);
+                $fileSize = strlen($fileContent);
+                
+                return response()->make($fileContent, 200, [
+                    'Content-Type' => $mimeType,
+                    'Content-Length' => $fileSize,
+                    'Content-Disposition' => 'attachment; filename="' . $downloadName . '"',
+                    'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                    'Pragma' => 'no-cache',
+                    'Expires' => '0',
+                    'Accept-Ranges' => 'bytes',
+                ]);
+            } catch (\Exception $e) {
+                abort(404, 'File not found or cannot be accessed.');
+            }
         }
 
         // Token not found or not approved
@@ -598,16 +633,23 @@ class EventController extends Controller
         $downloadName = $event->program_file_name ?? basename($event->program_file_path);
         $disk = Storage::disk('event-programs');
         $mimeType = $this->getMimeType($event->program_file_path);
-
-        return response()->stream(function () use ($disk, $event) {
-            echo $disk->get($event->program_file_path);
-        }, 200, [
-            'Content-Type' => $mimeType,
-            'Content-Disposition' => 'attachment; filename="' . $downloadName . '"',
-            'Cache-Control' => 'no-cache, no-store, must-revalidate',
-            'Pragma' => 'no-cache',
-            'Expires' => '0',
-        ]);
+        
+        try {
+            $fileContent = $disk->get($event->program_file_path);
+            $fileSize = strlen($fileContent);
+            
+            return response()->make($fileContent, 200, [
+                'Content-Type' => $mimeType,
+                'Content-Length' => $fileSize,
+                'Content-Disposition' => 'attachment; filename="' . $downloadName . '"',
+                'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                'Pragma' => 'no-cache',
+                'Expires' => '0',
+                'Accept-Ranges' => 'bytes',
+            ]);
+        } catch (\Exception $e) {
+            abort(404, 'File not found or cannot be accessed.');
+        }
     }
 
     public function verifyAndAccessMeetLink(Event $event, Request $request)
