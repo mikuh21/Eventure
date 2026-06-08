@@ -254,7 +254,7 @@
             </div>
 
             <div class="field" id="meet-link-field" style="display: none;">
-                <label for="meet_link">Meet Link (Virtual & Both)</label>
+                <label for="meet_link">Meet Link</label>
                 <div style="position: relative;">
                     <input id="meet_link" name="meet_link" type="url" value="{{ old('meet_link') }}" placeholder="https://meet.google.com/..." style="padding-right: 40px;">
                     <button type="button" id="pasteMeetLinkBtn" class="paste-btn" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); border: none; background: none; padding: 0; cursor: pointer;" title="Paste from clipboard" aria-label="Paste meet link from clipboard">
