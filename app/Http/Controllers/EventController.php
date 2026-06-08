@@ -394,7 +394,7 @@ class EventController extends Controller
         
         try {
             $fileContent = $disk->get($event->template_file_path);
-            $fileSize = strlen($fileContent);
+            $fileSize = mb_strlen($fileContent, '8bit');
             
             return response()->make($fileContent, 200, [
                 'Content-Type' => $mimeType,
@@ -437,7 +437,7 @@ class EventController extends Controller
             
             try {
                 $fileContent = $disk->get($event->template_file_path);
-                $fileSize = strlen($fileContent);
+                $fileSize = mb_strlen($fileContent, '8bit');
                 
                 return response()->make($fileContent, 200, [
                     'Content-Type' => $mimeType,
@@ -466,7 +466,7 @@ class EventController extends Controller
             
             try {
                 $fileContent = $disk->get($event->template_file_path);
-                $fileSize = strlen($fileContent);
+                $fileSize = mb_strlen($fileContent, '8bit');
                 
                 return response()->make($fileContent, 200, [
                     'Content-Type' => $mimeType,
@@ -514,7 +514,7 @@ class EventController extends Controller
             
             try {
                 $fileContent = $disk->get($event->program_file_path);
-                $fileSize = strlen($fileContent);
+                $fileSize = mb_strlen($fileContent, '8bit');
                 
                 return response()->make($fileContent, 200, [
                     'Content-Type' => $mimeType,
@@ -543,7 +543,7 @@ class EventController extends Controller
             
             try {
                 $fileContent = $disk->get($event->program_file_path);
-                $fileSize = strlen($fileContent);
+                $fileSize = mb_strlen($fileContent, '8bit');
                 
                 return response()->make($fileContent, 200, [
                     'Content-Type' => $mimeType,
@@ -636,7 +636,7 @@ class EventController extends Controller
         
         try {
             $fileContent = $disk->get($event->program_file_path);
-            $fileSize = strlen($fileContent);
+            $fileSize = mb_strlen($fileContent, '8bit');
             
             return response()->make($fileContent, 200, [
                 'Content-Type' => $mimeType,
