@@ -336,15 +336,38 @@
 
             // Handle attendance type to show/hide meet link field
             var attendanceTypeInput = document.getElementById('attendance_type');
-            var meetLinkField = document.getElementById('meet-link-field');
+var meetLinkField = document.getElementById('meet-link-field');
 
-            var toggleMeetLinkField = function () {
-                var isVirtualOrBoth = attendanceTypeInput.value === 'virtual' || attendanceTypeInput.value === 'both';
-                meetLinkField.style.display = isVirtualOrBoth ? 'block' : 'none';
-            };
+var locationInput = document.getElementById('location');
+var locationLabel = document.querySelector('label[for="location"]');
 
-            attendanceTypeInput.addEventListener('change', toggleMeetLinkField);
-            toggleMeetLinkField();
+var toggleAttendanceFields = function () {
+    var attendanceType = attendanceTypeInput.value;
+    var isVirtualOrBoth = attendanceType === 'virtual' || attendanceType === 'both';
+
+    // Existing meet link logic
+    meetLinkField.style.display = isVirtualOrBoth ? 'block' : 'none';
+
+    // Change Location label for Virtual events
+    if (attendanceType === 'virtual') {
+        locationLabel.textContent = 'Via';
+        
+        // Optional: auto-fill if empty
+        if (!locationInput.value.trim()) {
+            locationInput.value = 'Via';
+        }
+    } else {
+        locationLabel.textContent = 'Location';
+
+        // Optional: clear auto-filled value
+        if (locationInput.value === 'Via') {
+            locationInput.value = '';
+        }
+    }
+};
+
+attendanceTypeInput.addEventListener('change', toggleAttendanceFields);
+toggleAttendanceFields();
 
             // Handle paste button for meet link
             var pasteMeetLinkBtn = document.getElementById('pasteMeetLinkBtn');
