@@ -345,24 +345,16 @@ var toggleAttendanceFields = function () {
     var attendanceType = attendanceTypeInput.value;
     var isVirtualOrBoth = attendanceType === 'virtual' || attendanceType === 'both';
 
-    // Existing meet link logic
+    // Show Meet Link field for Virtual and Both
     meetLinkField.style.display = isVirtualOrBoth ? 'block' : 'none';
 
-    // Change Location label for Virtual events
+    // Change label only
     if (attendanceType === 'virtual') {
         locationLabel.textContent = 'Via';
-        
-        // Optional: auto-fill if empty
-        if (!locationInput.value.trim()) {
-            locationInput.value = 'Via';
-        }
+        locationInput.placeholder = 'Google Meet, Zoom, Microsoft Teams, etc.';
     } else {
         locationLabel.textContent = 'Location';
-
-        // Optional: clear auto-filled value
-        if (locationInput.value === 'Via') {
-            locationInput.value = '';
-        }
+        locationInput.placeholder = '';
     }
 };
 
