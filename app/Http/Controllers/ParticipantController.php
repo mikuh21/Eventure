@@ -24,6 +24,9 @@ class ParticipantController extends Controller
     public function index(Request $request, ?Event $event = null)
     {
         $wantsJson = $request->expectsJson() || $request->is('api/*');
+        $search = trim((string) $request->string('search'));
+        $attendanceFilter = trim((string) $request->string('attendance'));
+        $participantTypeFilter = trim((string) $request->string('participant_type'));
         $eventsQuery = Event::query();
         
         // Event Staff can only see events they created
@@ -67,7 +70,33 @@ class ParticipantController extends Controller
                         ]);
                     });
 
-                $participants = Participant::where('event_id', $selectedEvent->id)
+                $participantsQuery = Participant::query()
+                    ->where('event_id', $selectedEvent->id);
+
+                if ($search !== '') {
+                    $participantsQuery->where(function ($query) use ($search): void {
+                        $query->where('name', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%");
+                    });
+                }
+
+                if ($attendanceFilter !== '') {
+                    $normalizedAttendance = strtolower($attendanceFilter);
+
+                    if (in_array($normalizedAttendance, ['attended', 'not_attended'], true)) {
+                        $participantsQuery->where('attended', $normalizedAttendance === 'attended');
+                    }
+                }
+
+                if ($participantTypeFilter !== '') {
+                    $normalizedParticipantType = strtolower($participantTypeFilter);
+
+                    if (in_array($normalizedParticipantType, ['faculty', 'student'], true)) {
+                        $participantsQuery->where('participant_type', $normalizedParticipantType);
+                    }
+                }
+
+                $participants = $participantsQuery
                     ->latest()
                     ->get();
             }
@@ -75,7 +104,32 @@ class ParticipantController extends Controller
 
         if ($wantsJson && ! $selectedEvent && $event) {
             $selectedEvent = $event;
-            $participants = $event->participants()
+            $participantsQuery = $event->participants();
+
+            if ($search !== '') {
+                $participantsQuery->where(function ($query) use ($search): void {
+                    $query->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%");
+                });
+            }
+
+            if ($attendanceFilter !== '') {
+                $normalizedAttendance = strtolower($attendanceFilter);
+
+                if (in_array($normalizedAttendance, ['attended', 'not_attended'], true)) {
+                    $participantsQuery->where('attended', $normalizedAttendance === 'attended');
+                }
+            }
+
+            if ($participantTypeFilter !== '') {
+                $normalizedParticipantType = strtolower($participantTypeFilter);
+
+                if (in_array($normalizedParticipantType, ['faculty', 'student'], true)) {
+                    $participantsQuery->where('participant_type', $normalizedParticipantType);
+                }
+            }
+
+            $participants = $participantsQuery
                 ->latest()
                 ->get();
         }
@@ -90,12 +144,12 @@ class ParticipantController extends Controller
         }
 
         $payload = [
-            'data' => $participants->items(),
+            'data' => $participants->values()->all(),
             'meta' => [
-                'current_page' => $participants->currentPage(),
-                'per_page' => $participants->perPage(),
-                'total' => $participants->total(),
-                'last_page' => $participants->lastPage(),
+                'current_page' => 1,
+                'per_page' => $participants->count(),
+                'total' => $participants->count(),
+                'last_page' => 1,
                 'filtered_event_id' => $selectedEvent?->id,
             ],
         ];

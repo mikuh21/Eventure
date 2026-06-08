@@ -52,6 +52,91 @@
             box-shadow: 0 0 0 3px rgba(91, 164, 207, 0.18);
         }
 
+        .filters-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin: 16px 0 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-field {
+            position: relative;
+            width: 250px;
+        }
+
+        .search-field .filter-input {
+            width: 100%;
+            padding-left: 34px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 14px;
+            height: 14px;
+            color: var(--color-steel-blue);
+            pointer-events: none;
+        }
+
+        .filter-input,
+        .filter-select {
+            border: 1px solid var(--color-sky);
+            border-radius: 8px;
+            padding: 6px 12px;
+            background: #ffffff;
+            color: var(--color-midnight);
+            font-size: 13px;
+            font-family: 'Sora', sans-serif;
+            box-sizing: border-box;
+        }
+
+        .filter-select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            padding-right: 34px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235BA4CF' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 14px 14px;
+        }
+
+        .filter-input:focus,
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--color-steel-blue);
+            box-shadow: 0 0 0 3px rgba(91, 164, 207, 0.18);
+        }
+
+        .showing-text {
+            margin-left: auto;
+            color: var(--color-ocean);
+            font-size: 13px;
+        }
+
+        .filters-row .btn {
+            font-family: 'Sora', sans-serif;
+            font-size: 13px;
+            padding: 6px 12px;
+            line-height: 1.2;
+        }
+
+        @media (max-width: 980px) {
+            .search-field,
+            .filter-select,
+            .filters-row .btn,
+            .showing-text {
+                width: 100%;
+            }
+
+            .filters-row {
+                align-items: stretch;
+            }
+        }
+
         .participants-filter-info {
             display: flex;
             align-items: center;
@@ -1159,9 +1244,8 @@
             @endif
         </div>
 
-        <form class="participants-filter-wrap" action="{{ $formAction }}" method="GET">
-            <label for="event_id">Filter by event</label>
-            <select id="event_id" name="event_id" class="participants-filter-select" onchange="this.form.submit()">
+        <form class="filters-row" action="{{ $formAction }}" method="GET">
+            <select id="event_id" name="event_id" class="filter-select" onchange="this.form.submit()">
                 <option value="">-- Select an Event --</option>
                 @foreach ($events as $item)
                     <option value="{{ $item->id }}" {{ (string) request('event_id') === (string) $item->id ? 'selected' : '' }}>
@@ -1169,6 +1253,36 @@
                     </option>
                 @endforeach
             </select>
+
+            <div class="search-field">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="11" cy="11" r="7"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input
+                    class="filter-input"
+                    type="text"
+                    name="search"
+                    placeholder="Search participants..."
+                    value="{{ request('search') }}"
+                >
+            </div>
+
+            <select class="filter-select" name="attendance">
+                <option value="">All Attendance</option>
+                <option value="attended" {{ request('attendance') === 'attended' ? 'selected' : '' }}>Attended</option>
+                <option value="not_attended" {{ request('attendance') === 'not_attended' ? 'selected' : '' }}>Not Attended</option>
+            </select>
+
+            <select class="filter-select" name="participant_type">
+                <option value="">All Types</option>
+                <option value="faculty" {{ request('participant_type') === 'faculty' ? 'selected' : '' }}>Faculty</option>
+                <option value="student" {{ request('participant_type') === 'student' ? 'selected' : '' }}>Student</option>
+            </select>
+
+            <button class="btn btn-primary" type="button" id="filtersApplyBtn">Apply</button>
+
+            <span class="showing-text" id="showingCount" data-total="{{ $participants->count() }}">Showing {{ $participants->count() }} participant(s)</span>
         </form>
 
         @if ($selectedEvent)
@@ -1212,7 +1326,13 @@
                     </tr>
                 @else
                     @foreach ($participants as $participant)
-                        <tr data-participant-id="{{ $participant->id }}">
+                        <tr
+                            data-participant-id="{{ $participant->id }}"
+                            data-participant-name="{{ $participant->name }}"
+                            data-participant-email="{{ $participant->email }}"
+                            data-participant-attendance="{{ $participant->attended ? 'attended' : 'not_attended' }}"
+                            data-participant-type="{{ strtolower((string) $participant->participant_type) }}"
+                        >
                             <td>{{ $participant->name }}</td>
                             <td class="cell-muted">{{ $participant->email }}</td>
                             <td>
@@ -1273,6 +1393,9 @@
                             </td>
                         </tr>
                     @endforeach
+                    <tr id="liveSearchEmpty" style="display: none;">
+                        <td colspan="6" class="participants-empty-table">No participants match the current filters.</td>
+                    </tr>
                 @endif
                 </tbody>
             </table>
@@ -1479,6 +1602,78 @@
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <script>
         (function () {
+            const searchInput = document.querySelector('input[name="search"]');
+            const tableRows = Array.from(document.querySelectorAll('.participants-table tbody tr[data-participant-name]'));
+            const liveSearchEmpty = document.getElementById('liveSearchEmpty');
+            const showingCount = document.getElementById('showingCount');
+            const attendanceSelect = document.querySelector('select[name="attendance"]');
+            const participantTypeSelect = document.querySelector('select[name="participant_type"]');
+            const applyBtn = document.getElementById('filtersApplyBtn');
+
+            if (!searchInput || tableRows.length === 0) {
+                return;
+            }
+
+            let appliedFilters = {
+                attendance: attendanceSelect ? attendanceSelect.value : '',
+                participantType: participantTypeSelect ? participantTypeSelect.value : ''
+            };
+
+            const normalize = (value) => value.toLowerCase().trim();
+
+            const filterRows = () => {
+                const query = normalize(searchInput.value);
+                const terms = query === '' ? [] : query.split(/\s+/).filter(Boolean);
+                let visibleCount = 0;
+
+                tableRows.forEach((row) => {
+                    const name = normalize(row.getAttribute('data-participant-name') || '');
+                    const email = normalize(row.getAttribute('data-participant-email') || '');
+                    const rowAttendance = row.getAttribute('data-participant-attendance') || '';
+                    const rowParticipantType = row.getAttribute('data-participant-type') || '';
+
+                    const searchable = (name + ' ' + email).trim();
+                    const matchesSearch = terms.length === 0 || terms.every((term) => searchable.includes(term));
+                    const matchesAttendance = !appliedFilters.attendance || appliedFilters.attendance === rowAttendance;
+                    const matchesParticipantType = !appliedFilters.participantType || appliedFilters.participantType === rowParticipantType;
+                    const isVisible = matchesSearch && matchesAttendance && matchesParticipantType;
+
+                    row.style.display = isVisible ? '' : 'none';
+
+                    if (isVisible) visibleCount++;
+                });
+
+                if (liveSearchEmpty) liveSearchEmpty.style.display = visibleCount === 0 ? '' : 'none';
+                if (showingCount) {
+                    const total = Number(showingCount.getAttribute('data-total')) || tableRows.length;
+                    showingCount.textContent = 'Showing ' + visibleCount + ' of ' + total + ' participant(s)';
+                }
+            };
+
+            searchInput.addEventListener('input', filterRows);
+
+            if (applyBtn) {
+                applyBtn.addEventListener('click', function () {
+                    appliedFilters.attendance = attendanceSelect ? attendanceSelect.value : '';
+                    appliedFilters.participantType = participantTypeSelect ? participantTypeSelect.value : '';
+                    filterRows();
+
+                    try {
+                        const params = new URLSearchParams(window.location.search);
+                        if (appliedFilters.attendance) params.set('attendance', appliedFilters.attendance); else params.delete('attendance');
+                        if (appliedFilters.participantType) params.set('participant_type', appliedFilters.participantType); else params.delete('participant_type');
+                        const newUrl = window.location.pathname + '?' + params.toString();
+                        window.history.replaceState({}, '', newUrl);
+                    } catch (err) {
+                        // ignore
+                    }
+                });
+            }
+
+            filterRows();
+        })();
+
+        (function () {
             var modal = document.getElementById('registerParticipantModal');
             var openButton = document.getElementById('openRegisterParticipantModal');
             var closeButton = document.getElementById('closeRegisterParticipantModal');
@@ -1540,6 +1735,7 @@
                 }
 
                 var isAttended = participant.attended === true || participant.attended === 'true';
+                row.setAttribute('data-participant-attendance', isAttended ? 'attended' : 'not_attended');
                 attendedBadge.textContent = isAttended ? 'Yes' : 'No';
                 attendedBadge.dataset.attended = isAttended ? 'true' : 'false';
                 attendedBadge.classList.toggle('badge-attended-yes', isAttended);
