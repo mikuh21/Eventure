@@ -18,6 +18,9 @@ class GuestController extends Controller
 {
     public function index(Request $request)
     {
+        $search = trim((string) $request->string('search'));
+        $statusFilter = trim((string) $request->string('status'));
+        $guestTypeFilter = trim((string) $request->string('guest_type'));
         $eventsQuery = Event::query();
         
         // Event Staff can only see events they created
@@ -61,12 +64,36 @@ class GuestController extends Controller
             ? Event::find((int) $request->query('event_id'))
             : null;
 
-        $guests = $selectedEvent
-            ? Guest::query()
-                ->where('event_id', $selectedEvent->id)
-                ->latest()
-                ->get()
-            : Guest::query()->whereRaw('1 = 0')->get();
+        $guestsQuery = $selectedEvent
+            ? Guest::query()->where('event_id', $selectedEvent->id)
+            : Guest::query()->whereRaw('1 = 0');
+
+        if ($selectedEvent && $search !== '') {
+            $guestsQuery->where(function ($query) use ($search): void {
+                $query->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        if ($selectedEvent && $statusFilter !== '') {
+            $normalizedStatus = strtolower($statusFilter);
+
+            if (in_array($normalizedStatus, ['pending', 'approved'], true)) {
+                $guestsQuery->where('status', $normalizedStatus);
+            }
+        }
+
+        if ($selectedEvent && $guestTypeFilter !== '') {
+            $normalizedGuestType = strtolower($guestTypeFilter);
+
+            if (in_array($normalizedGuestType, ['presenter', 'exhibitor'], true)) {
+                $guestsQuery->whereRaw('LOWER(role) = ?', [$normalizedGuestType]);
+            }
+        }
+
+        $guests = $guestsQuery
+            ->latest()
+            ->get();
 
         return view('guests.index', [
             'events' => $events,

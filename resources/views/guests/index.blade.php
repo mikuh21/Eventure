@@ -51,6 +51,91 @@
             box-shadow: 0 0 0 3px rgba(91, 164, 207, 0.18);
         }
 
+        .filters-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin: 16px 0 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-field {
+            position: relative;
+            width: 250px;
+        }
+
+        .search-field .filter-input {
+            width: 100%;
+            padding-left: 34px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 14px;
+            height: 14px;
+            color: var(--color-steel-blue);
+            pointer-events: none;
+        }
+
+        .filter-input,
+        .filter-select {
+            border: 1px solid var(--color-sky);
+            border-radius: 8px;
+            padding: 6px 12px;
+            background: #ffffff;
+            color: var(--color-midnight);
+            font-size: 13px;
+            font-family: 'Sora', sans-serif;
+            box-sizing: border-box;
+        }
+
+        .filter-select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            padding-right: 34px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235BA4CF' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 14px 14px;
+        }
+
+        .filter-input:focus,
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--color-steel-blue);
+            box-shadow: 0 0 0 3px rgba(91, 164, 207, 0.18);
+        }
+
+        .showing-text {
+            margin-left: auto;
+            color: var(--color-ocean);
+            font-size: 13px;
+        }
+
+        .filters-row .btn {
+            font-family: 'Sora', sans-serif;
+            font-size: 13px;
+            padding: 6px 12px;
+            line-height: 1.2;
+        }
+
+        @media (max-width: 980px) {
+            .search-field,
+            .filter-select,
+            .filters-row .btn,
+            .showing-text {
+                width: 100%;
+            }
+
+            .filters-row {
+                align-items: stretch;
+            }
+        }
+
         .guests-info-strip {
             background: var(--color-ice-white);
             border-left: 3px solid var(--color-steel-blue);
@@ -1080,9 +1165,8 @@
             </div>
         </div>
 
-        <form class="guests-filter-wrap" action="{{ route('guests.index') }}" method="GET">
-            <label for="event_id">Filter by event</label>
-            <select id="event_id" name="event_id" class="guests-filter-select" onchange="this.form.submit()">
+        <form class="filters-row" action="{{ route('guests.index') }}" method="GET">
+            <select id="event_id" name="event_id" class="filter-select" onchange="this.form.submit()">
                 <option value="">-- Select an Event --</option>
                 @foreach ($events as $item)
                     <option value="{{ $item->id }}" {{ (string) request('event_id') === (string) $item->id ? 'selected' : '' }}>
@@ -1105,8 +1189,42 @@
                     Viewing guests for: <strong>{{ $selectedEvent->title }}</strong>
                     <a class="guests-clear-link" href="{{ route('guests.index') }}">x Clear</a>
                 </span>
-                <span>{{ number_format($guests->count()) }} guest(s)</span>
+                <span>{{ number_format($guests->count()) }} guest(s) registered</span>
             </div>
+
+            <form class="filters-row" action="{{ route('guests.index') }}" method="GET">
+                <input type="hidden" name="event_id" value="{{ $selectedEvent->id }}">
+
+                <div class="search-field">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="11" cy="11" r="7"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input
+                        class="filter-input"
+                        type="text"
+                        name="search"
+                        placeholder="Search guests..."
+                        value="{{ request('search') }}"
+                    >
+                </div>
+
+                <select class="filter-select" name="status">
+                    <option value="">All Statuses</option>
+                    <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
+                    <option value="approved" {{ request('status') === 'approved' ? 'selected' : '' }}>Approved</option>
+                </select>
+
+                <select class="filter-select" name="guest_type">
+                    <option value="">All Types</option>
+                    <option value="presenter" {{ request('guest_type') === 'presenter' ? 'selected' : '' }}>Presenter</option>
+                    <option value="exhibitor" {{ request('guest_type') === 'exhibitor' ? 'selected' : '' }}>Exhibitor</option>
+                </select>
+
+                <button class="btn btn-primary" type="button" id="filtersApplyBtn">Apply</button>
+
+                <span class="showing-text" id="showingCount" data-total="{{ $guests->count() }}">Showing {{ $guests->count() }} guest(s)</span>
+            </form>
         @endif
 
         @if (!request('event_id'))
@@ -1140,7 +1258,13 @@
                         </tr>
                     @else
                         @foreach ($guests as $guest)
-                            <tr data-guest-id="{{ $guest->id }}">
+                            <tr
+                                data-guest-id="{{ $guest->id }}"
+                                data-guest-name="{{ $guest->name }}"
+                                data-guest-email="{{ $guest->email }}"
+                                data-guest-status="{{ strtolower((string) ($guest->status ?? 'approved')) }}"
+                                data-guest-type="{{ strtolower((string) $guest->role) }}"
+                            >
                                 <td>{{ $guest->name }}</td>
                                 <td>{{ $guest->email }}</td>
                                 <td>{{ ucfirst($guest->role) }}</td>
@@ -1191,6 +1315,9 @@
                                 </td>
                             </tr>
                         @endforeach
+                        <tr id="liveSearchEmpty" style="display: none;">
+                            <td colspan="7" class="guests-empty-table">No guests match the current filters.</td>
+                        </tr>
                     @endif
                     </tbody>
                 </table>
@@ -1374,6 +1501,78 @@
 
     <script>
         (function () {
+            const searchInput = document.querySelector('input[name="search"]');
+            const tableRows = Array.from(document.querySelectorAll('.guests-table tbody tr[data-guest-name]'));
+            const liveSearchEmpty = document.getElementById('liveSearchEmpty');
+            const showingCount = document.getElementById('showingCount');
+            const statusSelect = document.querySelector('select[name="status"]');
+            const guestTypeSelect = document.querySelector('select[name="guest_type"]');
+            const applyBtn = document.getElementById('filtersApplyBtn');
+
+            if (!searchInput || tableRows.length === 0) {
+                return;
+            }
+
+            let appliedFilters = {
+                status: statusSelect ? statusSelect.value : '',
+                guestType: guestTypeSelect ? guestTypeSelect.value : ''
+            };
+
+            const normalize = (value) => value.toLowerCase().trim();
+
+            const filterRows = () => {
+                const query = normalize(searchInput.value);
+                const terms = query === '' ? [] : query.split(/\s+/).filter(Boolean);
+                let visibleCount = 0;
+
+                tableRows.forEach((row) => {
+                    const name = normalize(row.getAttribute('data-guest-name') || '');
+                    const email = normalize(row.getAttribute('data-guest-email') || '');
+                    const rowStatus = row.getAttribute('data-guest-status') || '';
+                    const rowGuestType = row.getAttribute('data-guest-type') || '';
+
+                    const searchable = (name + ' ' + email).trim();
+                    const matchesSearch = terms.length === 0 || terms.every((term) => searchable.includes(term));
+                    const matchesStatus = !appliedFilters.status || appliedFilters.status === rowStatus;
+                    const matchesGuestType = !appliedFilters.guestType || appliedFilters.guestType === rowGuestType;
+                    const isVisible = matchesSearch && matchesStatus && matchesGuestType;
+
+                    row.style.display = isVisible ? '' : 'none';
+
+                    if (isVisible) visibleCount++;
+                });
+
+                if (liveSearchEmpty) liveSearchEmpty.style.display = visibleCount === 0 ? '' : 'none';
+                if (showingCount) {
+                    const total = Number(showingCount.getAttribute('data-total')) || tableRows.length;
+                    showingCount.textContent = 'Showing ' + visibleCount + ' of ' + total + ' guest(s)';
+                }
+            };
+
+            searchInput.addEventListener('input', filterRows);
+
+            if (applyBtn) {
+                applyBtn.addEventListener('click', function () {
+                    appliedFilters.status = statusSelect ? statusSelect.value : '';
+                    appliedFilters.guestType = guestTypeSelect ? guestTypeSelect.value : '';
+                    filterRows();
+
+                    try {
+                        const params = new URLSearchParams(window.location.search);
+                        if (appliedFilters.status) params.set('status', appliedFilters.status); else params.delete('status');
+                        if (appliedFilters.guestType) params.set('guest_type', appliedFilters.guestType); else params.delete('guest_type');
+                        const newUrl = window.location.pathname + '?' + params.toString();
+                        window.history.replaceState({}, '', newUrl);
+                    } catch (err) {
+                        // ignore
+                    }
+                });
+            }
+
+            filterRows();
+        })();
+
+        (function () {
             function showToast(message, type = 'info', duration = 4000) {
                 var toastContainer = document.getElementById('toastContainer');
                 if (!toastContainer) return;
@@ -1460,6 +1659,7 @@
                         showToast(result.data.message || 'Guest approved and digital ID email sent.', 'success');
                         var row = pendingApproveForm.closest('tr');
                         if (row) {
+                            row.setAttribute('data-guest-status', 'approved');
                             var statusBadge = row.querySelector('.guest-status-badge');
                             if (statusBadge) {
                                 statusBadge.textContent = 'Approved';
