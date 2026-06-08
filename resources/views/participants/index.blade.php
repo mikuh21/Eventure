@@ -1253,36 +1253,6 @@
                     </option>
                 @endforeach
             </select>
-
-            <div class="search-field">
-                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <circle cx="11" cy="11" r="7"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-                <input
-                    class="filter-input"
-                    type="text"
-                    name="search"
-                    placeholder="Search participants..."
-                    value="{{ request('search') }}"
-                >
-            </div>
-
-            <select class="filter-select" name="attendance">
-                <option value="">All Attendance</option>
-                <option value="attended" {{ request('attendance') === 'attended' ? 'selected' : '' }}>Attended</option>
-                <option value="not_attended" {{ request('attendance') === 'not_attended' ? 'selected' : '' }}>Not Attended</option>
-            </select>
-
-            <select class="filter-select" name="participant_type">
-                <option value="">All Types</option>
-                <option value="faculty" {{ request('participant_type') === 'faculty' ? 'selected' : '' }}>Faculty</option>
-                <option value="student" {{ request('participant_type') === 'student' ? 'selected' : '' }}>Student</option>
-            </select>
-
-            <button class="btn btn-primary" type="button" id="filtersApplyBtn">Apply</button>
-
-            <span class="showing-text" id="showingCount" data-total="{{ $participants->count() }}">Showing {{ $participants->count() }} participant(s)</span>
         </form>
 
         @if ($selectedEvent)
@@ -1293,6 +1263,40 @@
                 </span>
                 <span class="participants-count">{{ number_format($participants->count()) }} participant(s) registered</span>
             </div>
+
+            <form class="filters-row" action="{{ $formAction }}" method="GET">
+                <input type="hidden" name="event_id" value="{{ $selectedEvent->id }}">
+
+                <div class="search-field">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="11" cy="11" r="7"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input
+                        class="filter-input"
+                        type="text"
+                        name="search"
+                        placeholder="Search participants..."
+                        value="{{ request('search') }}"
+                    >
+                </div>
+
+                <select class="filter-select" name="attendance">
+                    <option value="">All Attendance</option>
+                    <option value="attended" {{ request('attendance') === 'attended' ? 'selected' : '' }}>Attended</option>
+                    <option value="not_attended" {{ request('attendance') === 'not_attended' ? 'selected' : '' }}>Not Attended</option>
+                </select>
+
+                <select class="filter-select" name="participant_type">
+                    <option value="">All Types</option>
+                    <option value="faculty" {{ request('participant_type') === 'faculty' ? 'selected' : '' }}>Faculty</option>
+                    <option value="student" {{ request('participant_type') === 'student' ? 'selected' : '' }}>Student</option>
+                </select>
+
+                <button class="btn btn-primary" type="button" id="filtersApplyBtn">Apply</button>
+
+                <span class="showing-text" id="showingCount" data-total="{{ $participants->count() }}">Showing {{ $participants->count() }} participant(s)</span>
+            </form>
         @endif
 
         @if (!request('event_id'))
