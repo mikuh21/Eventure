@@ -1522,11 +1522,9 @@
                                             <input
                                                 id="question_{{ $question->id }}"
                                                 name="answers[{{ $question->id }}]"
-                                                type="{{ $isEventDetailsTitleField || $isEventDetailsVenueField || $isEventDetailsTimeField || ($isEventDetailsDateField && $isSingleDay) ? 'text' : ($isEventDetailsDateField && !$isSingleDay ? 'date' : (in_array($question->renderingType(), ['date', 'time']) ? $question->renderingType() : 'text')) }}"
+                                                type="{{ $isEventDetailsTitleField || $isEventDetailsVenueField ? 'text' : ($isEventDetailsDateField ? ($isSingleDay ? 'text' : 'date') : ($isEventDetailsTimeField ? 'time' : (in_array($question->renderingType(), ['date', 'time']) ? $question->renderingType() : 'text'))) }}"
                                                 class="survey-form-input"
-                                                placeholder="{{ $question->placeholder }}"
-                                                value="{{ $isEventDetailsTitleField ? $event->title : ($isEventDetailsDateField && $isSingleDay ? $eventDateDisplay : ($isEventDetailsTimeField ? $eventTimeDisplay : ($isEventDetailsVenueField ? $event->location : ''))) }}"
-                                                {{ $isEventDetailsTitleField || ($isEventDetailsDateField && $isSingleDay) || $isEventDetailsVenueField || $isEventDetailsTimeField ? 'readonly' : '' }}
+                                                value="{{ $isEventDetailsTitleField ? $event->title : ($isEventDetailsDateField && $isSingleDay ? $eventDateDisplay : ($isEventDetailsTimeField ? $startDate->format('H:i') : ($isEventDetailsVenueField ? $event->location : ''))) }}"
                                                 {{ $question->is_required ? 'required' : '' }}
                                                 @if ($question->isProgramQuestion()) aria-label="{{ $question->question }}" @endif
                                             >
