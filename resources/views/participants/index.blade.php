@@ -1352,18 +1352,19 @@
             <table class="participants-table">
                 <thead>
                 <tr>
-                    <th style="width:20%">Name</th>
-                    <th style="width:22%">Email</th>
-                    <th style="width:10%">Attended</th>
-                    <th style="width:18%">Registered At</th>
-                    <th style="width:15%">Status</th>
+                    <th style="width:18%">Name</th>
+                    <th style="width:20%">Email</th>
+                    <th style="width:10%">Role</th>
+                    <th style="width:9%">Attended</th>
+                    <th style="width:16%">Registered At</th>
+                    <th style="width:12%">Status</th>
                     <th style="width:15%">Actions</th>
                 </tr>
                 </thead>
                 <tbody>
                 @if ($participants->total() === 0)
                     <tr>
-                        <td colspan="6" class="participants-empty-table">No participants registered for this event yet.</td>
+                        <td colspan="7" class="participants-empty-table">No participants registered for this event yet.</td>
                     </tr>
                 @else
                     @foreach ($participants as $participant)
@@ -1376,6 +1377,7 @@
                         >
                             <td>{{ $participant->name }}</td>
                             <td class="cell-muted">{{ $participant->email }}</td>
+                            <td>{{ ucfirst($participant->participant_type ?? '—') }}</td>
                             <td>
                                 <span class="badge-pill badge-attended-toggle {{ $participant->attended ? 'badge-attended-yes' : 'badge-attended-no' }}" data-participant-id="{{ $participant->id }}" data-attended="{{ $participant->attended ? 'true' : 'false' }}" title="Click to toggle attendance" style="cursor: pointer;">
                                     {{ $participant->attended ? 'Yes' : 'No' }}
@@ -1435,7 +1437,7 @@
                         </tr>
                     @endforeach
                     <tr id="liveSearchEmpty" style="display: none;">
-                        <td colspan="6" class="participants-empty-table">No participants match the current filters.</td>
+                        <td colspan="7" class="participants-empty-table">No participants match the current filters.</td>
                     </tr>
                 @endif
                 </tbody>
