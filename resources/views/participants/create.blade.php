@@ -149,6 +149,18 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        .participant-register-form select {
+    font-family: 'Sora', sans-serif;
+    font-size: 14px;
+    width: 100%;
+    min-height: 40px;
+    padding: 8px 10px;
+    border: 1px solid #cfe0ef;
+    border-radius: 8px;
+    background: #ffffff;
+    color: var(--color-midnight);
+}
     </style>
 @endpush
 
@@ -208,8 +220,21 @@
 
                     <div class="field">
                         <label for="institution">School/University</label>
-                        <input id="institution" name="institution" type="text" value="{{ old('institution') }}" required>
+                        <input id="institution" name="institution" type="text" value="{{ old('institution') }}" placeholder="e.g. NU Lipa" required>
                     </div>
+
+                    <div class="field">
+                        <label for="college">College</label>
+                        <select id="college" name="college" required>
+                            <option value="">Select college</option>
+                            <option value="SACE" {{ old('college') === 'SACE' ? 'selected' : '' }}>SACE</option>
+                            <option value="SABM" {{ old('college') === 'SABM' ? 'selected' : '' }}>SABM</option>
+                            <option value="SAHS" {{ old('college') === 'SAHS' ? 'selected' : '' }}>SAHS</option>
+                            <option value="SHS" {{ old('college') === 'SHS' ? 'selected' : '' }}>SHS</option>
+                        </select>
+                    </div>
+
+                    <div class="form-actions">
 
                     <div class="form-actions">
                         <button class="btn btn-primary" type="submit">Register Participant</button>
