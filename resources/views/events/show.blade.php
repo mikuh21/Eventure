@@ -339,13 +339,17 @@
         /* Poster Modal Styles */
         .poster-modal-overlay {
             position: fixed;
-            inset: 0;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
             background: rgba(10, 35, 66, 0.55);
-            z-index: 9999;
+            z-index: 99999;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            box-sizing: border-box;
             opacity: 0;
             visibility: hidden;
             pointer-events: none;
