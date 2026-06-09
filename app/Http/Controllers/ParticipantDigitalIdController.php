@@ -511,9 +511,9 @@ class ParticipantDigitalIdController extends Controller
             $height = imagesy($img);
             
             // Font configuration
-            $fontPath = public_path($event->id === 36 ? "fonts/Montserrat-Bold.ttf" : "fonts/Sora-Bold.ttf");
+            $fontPath = public_path($event->id === 36 ? "fonts/Montserrat-Bold-Static.ttf" : "fonts/Sora-Bold.ttf");
             if (!file_exists($fontPath)) {
-            $fontPath = public_path($event->id === 36 ? "fonts/Montserrat-Bold.ttf" : "fonts/Sora-Bold.ttf");
+            $fontPath = public_path($event->id === 36 ? "fonts/Montserrat-Bold-Static.ttf" : "fonts/Sora-Bold.ttf");
             }
             if (!file_exists($fontPath)) {
                 abort(500, 'Certificate font file not found.');
