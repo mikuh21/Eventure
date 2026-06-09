@@ -1440,7 +1440,7 @@
                             <h3 class="survey-step-title">{{ $section }}</h3>
 
                             @foreach ($sectionQuestions as $question)
-                                @if ($question->is_matrix && str_starts_with($section, 'Session Feedback') && is_array($question->matrix_items))
+                                @if ($question->is_matrix && preg_match('/^[A-F]\./', $section) || str_starts_with($section, 'Session Feedback') && is_array($question->matrix_items))
                                     @foreach ($question->matrix_items as $itemIndex => $item)
                                         <div class="survey-question" data-question-id="{{ $question->id }}_{{ $itemIndex }}" data-required="{{ $question->is_required ? 'true' : 'false' }}">
                                             <label class="survey-question-label" for="question_{{ $question->id }}_{{ $itemIndex }}">
@@ -1475,7 +1475,7 @@
                                             $isEventDetailsTimeField = $section === 'Event Details' && in_array(trim(strtolower($question->question)), ['time of activity', 'time']);
                                             $isEventDetailsVenueField = $section === 'Event Details' && trim(strtolower($question->question)) === 'venue';
                                             $isEventDetailsProgramField = $section === 'Event Details' && in_array(trim(strtolower($question->question)), ['program', 'program/course', 'program or course of study']);
-                                            $shouldShowHelpText = $question->help_text && !str_starts_with($section, 'Session Feedback') && ! $isEventDetailsProgramField && ! $isEventDetailsTitleField && ! $isEventDetailsDateField && ! $isEventDetailsTimeField;
+                                            $shouldShowHelpText = $question->help_text && !preg_match('/^[A-F]\./', $section) || str_starts_with($section, 'Session Feedback') && ! $isEventDetailsProgramField && ! $isEventDetailsTitleField && ! $isEventDetailsDateField && ! $isEventDetailsTimeField;
                                         @endphp
 
                                         @if ($shouldShowHelpText)
@@ -1484,13 +1484,13 @@
 
                                         @if (in_array($question->renderingType(), ['likert', 'rating']))
                                             @php
-                                                $optionClass = str_starts_with($section, 'Session Feedback') ? ' survey-form-vertical' : '';
+                                                $optionClass = preg_match('/^[A-F]\./', $section) || str_starts_with($section, 'Session Feedback') ? ' survey-form-vertical' : '';
                                             @endphp
                                             <div class="survey-form-likert{{ $optionClass }}">
                                                 @foreach ([1, 2, 3, 4, 5] as $i)
                                                     <label class="survey-form-likert-option">
                                                         <input type="radio" id="question_{{ $question->id }}_{{ $i }}" name="answers[{{ $question->id }}]" value="{{ $i }}" {{ $question->is_required ? 'required' : '' }}>
-                                                        <span>{{ str_starts_with($section, 'Session Feedback') ? $sessionFeedbackRatingLabels[$i] : $i }}</span>
+                                                        <span>{{ preg_match('/^[A-F]\./', $section) || str_starts_with($section, 'Session Feedback') ? $sessionFeedbackRatingLabels[$i] : $i }}</span>
                                                     </label>
                                                 @endforeach
                                             </div>
@@ -2072,6 +2072,12 @@
                     return;
                 }
                 setSurveyStep(activeSurveyStep + 1);
+                const surveyShell = document.querySelector('.survey-form-shell');
+                if (surveyShell) {
+                    surveyShell.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
             });
         }
 
