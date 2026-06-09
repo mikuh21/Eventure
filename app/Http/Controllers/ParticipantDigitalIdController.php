@@ -511,9 +511,9 @@ class ParticipantDigitalIdController extends Controller
             $height = imagesy($img);
             
             // Font configuration
-            $fontPath = public_path('fonts/Sora-Bold.ttf');
+            $fontPath = public_path($event->id === 36 ? "fonts/Montserrat-Bold.ttf" : "fonts/Sora-Bold.ttf");
             if (!file_exists($fontPath)) {
-                $fontPath = public_path('fonts/Sora-Bold.ttf');
+            $fontPath = public_path($event->id === 36 ? "fonts/Montserrat-Bold.ttf" : "fonts/Sora-Bold.ttf");
             }
             if (!file_exists($fontPath)) {
                 abort(500, 'Certificate font file not found.');
@@ -524,7 +524,7 @@ class ParticipantDigitalIdController extends Controller
             
             // Font size and text
             // Font size - auto-scale for long names
-            $fontSize = 60;
+            $fontSize = 44;
             $name = $participant->name;
             $maxWidth = (int)($width * 0.80);
             do {
