@@ -166,3 +166,13 @@ Route::middleware(['auth', 'admin'])->group(function (): void {
         Route::delete('events/{event}/evaluation-forms/clear', [\App\Http\Controllers\Admin\EventEvaluationFormController::class, 'clear'])->name('event-evaluation-forms.clear');
     });
 });
+
+// TEMP DEBUG - remove after fix
+Route::get('/debug-php', function () {
+    return response()->json([
+        'upload_max_filesize' => ini_get('upload_max_filesize'),
+        'post_max_size' => ini_get('post_max_size'),
+        'memory_limit' => ini_get('memory_limit'),
+        'php_version' => PHP_VERSION,
+    ]);
+});
