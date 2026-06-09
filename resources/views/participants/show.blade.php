@@ -565,10 +565,6 @@
                     <p class="profile-item-value">{{ $participant->college ?? 'N/A' }}</p>
                 </div>
                 <div>
-                    <p class="profile-item-label">College</p>
-                    <p class="profile-item-value">{{ $participant->college ?? 'N/A' }}</p>
-                </div>
-                <div>
                     <p class="profile-item-label">Registered At</p>
                     <p class="profile-item-value">{{ \Carbon\Carbon::parse($participant->created_at)->format('M d, Y h:i A') }}</p>
                 </div>
