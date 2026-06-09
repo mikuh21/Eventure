@@ -1435,7 +1435,7 @@
 
     @if ($selectedEvent)
         @php
-            $modalErrorMessage = $errors->first('name') ?: $errors->first('email') ?: $errors->first('participant_type') ?: $errors->first('institution') ?: $errors->first('registration');
+            $modalErrorMessage = $errors->first('name') ?: $errors->first('email') ?: $errors->first('participant_type') ?: $errors->first('institution') ?: $errors->first('college') ?: $errors->first('registration');
         @endphp
 
         <div class="participant-modal-overlay" id="registerParticipantModal" aria-hidden="true">
@@ -1488,8 +1488,19 @@
                     </div>
 
                     <div class="field">
-                        <label for="modal_institution">School/University</label>
-                        <input id="modal_institution" name="institution" type="text" value="{{ old('institution') }}" required>
+                        <label for="modal_institution">School / University</label>
+                        <input id="modal_institution" name="institution" type="text" value="{{ old('institution') }}" placeholder="e.g. NU Lipa" required>
+                    </div>
+
+                    <div class="field">
+                        <label for="modal_college">College / Department</label>
+                        <select id="modal_college" name="college" required>
+                            <option value="">Select college/department</option>
+                            <option value="SACE" {{ old('college') === 'SACE' ? 'selected' : '' }}>SACE</option>
+                            <option value="SABM" {{ old('college') === 'SABM' ? 'selected' : '' }}>SABM</option>
+                            <option value="SAHS" {{ old('college') === 'SAHS' ? 'selected' : '' }}>SAHS</option>
+                            <option value="SHS" {{ old('college') === 'SHS' ? 'selected' : '' }}>SHS</option>
+                        </select>
                     </div>
 
                     <div class="participant-modal-form-actions">
@@ -1972,9 +1983,9 @@
                 }
             }
 
-            @if ($errors->has('name') || $errors->has('email') || $errors->has('participant_type') || $errors->has('institution') || $errors->has('registration'))
+            @if ($errors->has('name') || $errors->has('email') || $errors->has('participant_type') || $errors->has('institution') || $errors->has('college') || $errors->has('registration'))
                 setTimeout(function () {
-                    showToast({!! json_encode($errors->first('name') ?: $errors->first('email') ?: $errors->first('participant_type') ?: $errors->first('institution') ?: $errors->first('registration')) !!}, 'error', 5000);
+                    showToast({!! json_encode($errors->first('name') ?: $errors->first('email') ?: $errors->first('participant_type') ?: $errors->first('institution') ?: $errors->first('college') ?: $errors->first('registration')) !!}, 'error', 5000);
                 }, 300);
             @endif
 
