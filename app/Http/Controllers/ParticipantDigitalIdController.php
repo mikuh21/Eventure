@@ -148,7 +148,7 @@ class ParticipantDigitalIdController extends Controller
         $event = $participant->event;
         
         // Custom image-based certificate for Converge 2026 (Event ID 27)
-        if ($event->id === 27) {
+        if (in_array($event->id, [27, 36])) {
             return $this->generateConverge2026Certificate($participant, $event);
         }
         
@@ -492,7 +492,7 @@ class ParticipantDigitalIdController extends Controller
     {
         try {
             // Certificate image URL in Supabase Storage
-            $certImageUrl = 'https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/event-posters/converge-2026-cert.png';
+            $certImageUrl = $event->id === 36 ? 'https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/event-posters/CFP-2026-cert.png' : 'https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/event-posters/converge-2026-cert.png';
             
             // Fetch the certificate background image
             $imageData = @file_get_contents($certImageUrl);
