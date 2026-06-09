@@ -244,6 +244,7 @@ class ParticipantController extends Controller
                     'email' => $participant->email,
                     'participant_type' => $participant->participant_type,
                     'institution' => $participant->institution,
+                    'college' => $participant->college,
                     'event' => $participant->event->title,
                     'registered_by_admin' => $isAdminOrStaff,
                 ]);
