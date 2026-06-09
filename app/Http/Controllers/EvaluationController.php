@@ -131,6 +131,23 @@ class EvaluationController extends Controller
         }
 
         $validated = $request->validated();
+
+        // Event 36: answers use fake IDs (e36_*), save them as-is bypassing prepareEvaluationPayload
+        if ($event->id === 36) {
+            $answers = $validated['answers'] ?? [];
+            $feedback = $validated['feedback'] ?? ($answers['e36_18'] ?? null);
+            $evaluation = $participant->evaluations()->create([
+                'rating' => null,
+                'feedback' => $feedback,
+                'answers' => $answers,
+            ]);
+
+            if ($request->expectsJson()) {
+                return response()->json(['success' => true, 'message' => 'Evaluation submitted successfully'], 201);
+            }
+            return redirect()->back()->with('success', 'Evaluation submitted successfully');
+        }
+
         $evaluation = $participant->evaluations()->create($this->prepareEvaluationPayload($validated, $event));
 
         if ($request->expectsJson()) {

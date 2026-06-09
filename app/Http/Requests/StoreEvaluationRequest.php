@@ -22,6 +22,16 @@ class StoreEvaluationRequest extends FormRequest
             'guest_answers' => ['nullable', 'array'],
         ];
 
+        $participant = $this->route('participant');
+        $event = $participant?->event;
+
+        // Event 36 uses hardcoded fake IDs (e36_*), validate answers loosely
+        if ($event && $event->id === 36) {
+            $rules['answers.*'] = ['nullable'];
+            $rules['answers.*.*'] = ['nullable'];
+            return $rules;
+        }
+
         foreach ($this->activeQuestions() as $question) {
             if ($question->is_matrix) {
                 $rules['answers.'.$question->id] = ['nullable', 'array'];
