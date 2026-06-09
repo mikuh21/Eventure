@@ -1416,7 +1416,13 @@
 
                         $eventTimeDisplay = $startDate->format('g:i A');
 
-                        $sessionFeedbackRatingLabels = [
+                        $sessionFeedbackRatingLabels = $participant->event->id === 36 ? [
+                            1 => '1 (Poor)',
+                            2 => '2 (Fair)',
+                            3 => '3 (Good)',
+                            4 => '4 (Very Good)',
+                            5 => '5 (Excellent)',
+                        ] : [
                             1 => '1 (Strongly Disagree)',
                             2 => '2 (Disagree)',
                             3 => '3 (Neutral)',
@@ -1434,7 +1440,7 @@
                             <h3 class="survey-step-title">{{ $section }}</h3>
 
                             @foreach ($sectionQuestions as $question)
-                                @if ($question->is_matrix && $section === 'Session Feedback' && is_array($question->matrix_items))
+                                @if ($question->is_matrix && str_starts_with($section, 'Session Feedback') && is_array($question->matrix_items))
                                     @foreach ($question->matrix_items as $itemIndex => $item)
                                         <div class="survey-question" data-question-id="{{ $question->id }}_{{ $itemIndex }}" data-required="{{ $question->is_required ? 'true' : 'false' }}">
                                             <label class="survey-question-label" for="question_{{ $question->id }}_{{ $itemIndex }}">
@@ -1469,7 +1475,7 @@
                                             $isEventDetailsTimeField = $section === 'Event Details' && in_array(trim(strtolower($question->question)), ['time of activity', 'time']);
                                             $isEventDetailsVenueField = $section === 'Event Details' && trim(strtolower($question->question)) === 'venue';
                                             $isEventDetailsProgramField = $section === 'Event Details' && in_array(trim(strtolower($question->question)), ['program', 'program/course', 'program or course of study']);
-                                            $shouldShowHelpText = $question->help_text && $section !== 'Session Feedback' && ! $isEventDetailsProgramField && ! $isEventDetailsTitleField && ! $isEventDetailsDateField && ! $isEventDetailsTimeField;
+                                            $shouldShowHelpText = $question->help_text && !str_starts_with($section, 'Session Feedback') && ! $isEventDetailsProgramField && ! $isEventDetailsTitleField && ! $isEventDetailsDateField && ! $isEventDetailsTimeField;
                                         @endphp
 
                                         @if ($shouldShowHelpText)
@@ -1478,13 +1484,13 @@
 
                                         @if (in_array($question->renderingType(), ['likert', 'rating']))
                                             @php
-                                                $optionClass = $section === 'Session Feedback' ? ' survey-form-vertical' : '';
+                                                $optionClass = str_starts_with($section, 'Session Feedback') ? ' survey-form-vertical' : '';
                                             @endphp
                                             <div class="survey-form-likert{{ $optionClass }}">
                                                 @foreach ([1, 2, 3, 4, 5] as $i)
                                                     <label class="survey-form-likert-option">
                                                         <input type="radio" id="question_{{ $question->id }}_{{ $i }}" name="answers[{{ $question->id }}]" value="{{ $i }}" {{ $question->is_required ? 'required' : '' }}>
-                                                        <span>{{ $section === 'Session Feedback' ? $sessionFeedbackRatingLabels[$i] : $i }}</span>
+                                                        <span>{{ str_starts_with($section, 'Session Feedback') ? $sessionFeedbackRatingLabels[$i] : $i }}</span>
                                                     </label>
                                                 @endforeach
                                             </div>
