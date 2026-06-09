@@ -365,8 +365,9 @@
             border-radius: 16px;
             width: 100%;
             max-width: 42rem;
-            max-height: 100vh;
+            max-height: 90vh;
             padding: 24px;
+            padding-top: 52px;
             box-shadow: 0 8px 40px rgba(10, 35, 66, 0.22);
             transform: translateY(10px) scale(0.98);
             opacity: 0;
@@ -375,7 +376,8 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            overflow: visible;
+            overflow: hidden;
+            position: relative;
         }
 
         .poster-modal-overlay.is-visible .poster-modal-content {
