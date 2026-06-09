@@ -235,8 +235,6 @@
                     </div>
 
                     <div class="form-actions">
-
-                    <div class="form-actions">
                         <button class="btn btn-primary" type="submit">Register Participant</button>
                     </div>
                 </form>
