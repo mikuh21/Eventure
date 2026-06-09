@@ -1465,8 +1465,8 @@
 
                                         @php
                                             $isEventDetailsTitleField = $section === 'Event Details' && trim(strtolower($question->question)) === 'title of activity';
-                                            $isEventDetailsDateField = $section === 'Event Details' && trim(strtolower($question->question)) === 'date of activity';
-                                            $isEventDetailsTimeField = $section === 'Event Details' && trim(strtolower($question->question)) === 'time of activity';
+                                            $isEventDetailsDateField = $section === 'Event Details' && in_array(trim(strtolower($question->question)), ['date of activity', 'date']);
+                                            $isEventDetailsTimeField = $section === 'Event Details' && in_array(trim(strtolower($question->question)), ['time of activity', 'time']);
                                             $isEventDetailsVenueField = $section === 'Event Details' && trim(strtolower($question->question)) === 'venue';
                                             $isEventDetailsProgramField = $section === 'Event Details' && in_array(trim(strtolower($question->question)), ['program', 'program/course', 'program or course of study']);
                                             $shouldShowHelpText = $question->help_text && $section !== 'Session Feedback' && ! $isEventDetailsProgramField && ! $isEventDetailsTitleField && ! $isEventDetailsDateField && ! $isEventDetailsTimeField;
