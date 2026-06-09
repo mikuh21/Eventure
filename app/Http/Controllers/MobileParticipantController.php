@@ -21,7 +21,7 @@ class MobileParticipantController extends Controller
         ];
 
         $evaluation = $participant->evaluations->first();
-        $surveyAvailable = ($participant->event?->isSurveyActive() ?? false) && ($participant->event?->isEvaluationFormEnabled() ?? false);
+        $surveyAvailable = ($participant->event?->isSurveyActive() ?? false) $surveyAvailable = ($participant->event?->isSurveyActive() ?? false) && ($participant->event?->isEvaluationFormEnabled() ?? false);$surveyAvailable = ($participant->event?->isSurveyActive() ?? false) && ($participant->event?->isEvaluationFormEnabled() ?? false); ($participant->event?->isEvaluationFormEnabled() ?? false) && ($participant->attended ?? false);
         $eventHasEnded = $participant->event?->hasEnded() ?? false;
         $questions = $participant->event?->getActiveEvaluationQuestions() ?? collect();
         $sections = $questions->groupBy('section');
