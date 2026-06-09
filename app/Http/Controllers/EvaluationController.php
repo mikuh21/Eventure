@@ -136,8 +136,23 @@ class EvaluationController extends Controller
         if ($event->id === 36) {
             $answers = $validated['answers'] ?? [];
             $feedback = $validated['feedback'] ?? ($answers['e36_18'] ?? null);
+
+            // Compute rating from matrix question answers (e36_9 to e36_14)
+            $matrixKeys = ['e36_9','e36_10','e36_11','e36_12','e36_13','e36_14'];
+            $allValues = [];
+            foreach ($matrixKeys as $key) {
+                if (!empty($answers[$key]) && is_array($answers[$key])) {
+                    foreach ($answers[$key] as $val) {
+                        if (is_numeric($val)) {
+                            $allValues[] = (int) $val;
+                        }
+                    }
+                }
+            }
+            $rating = count($allValues) > 0 ? (int) round(array_sum($allValues) / count($allValues)) : 3;
+
             $evaluation = $participant->evaluations()->create([
-                'rating' => null,
+                'rating' => $rating,
                 'feedback' => $feedback,
                 'answers' => $answers,
             ]);
