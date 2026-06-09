@@ -524,7 +524,7 @@ class ParticipantDigitalIdController extends Controller
             
             // Font size and text
             // Font size - auto-scale for long names
-            $fontSize = 44;
+            $fontSize = 38;
             $name = $participant->name;
             $maxWidth = (int)($width * 0.80);
             do {
@@ -535,7 +535,7 @@ class ParticipantDigitalIdController extends Controller
                 $fontSize -= 2;
             } while (true);
             $x = ($width - $textWidth) / 2;
-            $y = (int)($height * 0.50);
+            $y = (int)($height * 0.46);
             
             // Draw text on image
             $result = imagettftext($img, $fontSize, 0, $x, $y, $color, $fontPath, $name);
