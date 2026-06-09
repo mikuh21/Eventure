@@ -1529,6 +1529,7 @@
                         <p class="participant-confirmation-item"><strong>Email:</strong> {{ $registered['email'] ?? '' }}</p>
                         <p class="participant-confirmation-item"><strong>Participant Type:</strong> {{ ucfirst($registered['participant_type'] ?? '') ?: 'N/A' }}</p>
                         <p class="participant-confirmation-item"><strong>Institution:</strong> {{ $registered['institution'] ?? 'N/A' }}</p>
+                        <p class="participant-confirmation-item"><strong>College:</strong> {{ $registered['college'] ?? 'N/A' }}</p>
                         <p class="participant-confirmation-item"><strong>Event:</strong> {{ $registered['event'] ?? '' }}</p>
 
                         <div class="participant-confirmation-actions">
