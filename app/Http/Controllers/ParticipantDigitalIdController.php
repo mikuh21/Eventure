@@ -523,21 +523,19 @@ class ParticipantDigitalIdController extends Controller
             $color = imagecolorallocate($img, 13, 27, 62);
             
             // Font size and text
+            // Font size - auto-scale for long names
             $fontSize = 60;
             $name = $participant->name;
-            
-            // Calculate text bounds to center horizontally
-            $bbox = imagettfbbox($fontSize, 0, $fontPath, $name);
-            if ($bbox === false) {
-                imagedestroy($img);
-                abort(500, 'Unable to calculate text bounds.');
-            }
-            
-            $textWidth = abs($bbox[4] - $bbox[0]);
+            $maxWidth = (int)($width * 0.80);
+            do {
+                $bbox = imagettfbbox($fontSize, 0, $fontPath, $name);
+                if ($bbox === false) { imagedestroy($img); abort(500, 'Unable to calculate text bounds.'); }
+                $textWidth = abs($bbox[4] - $bbox[0]);
+                if ($textWidth <= $maxWidth || $fontSize <= 20) break;
+                $fontSize -= 2;
+            } while (true);
             $x = ($width - $textWidth) / 2;
-            
-            // Y position: 52% of image height (adjusted for text baseline)
-            $y = (int)($height * 0.42);
+            $y = (int)($height * 0.50);
             
             // Draw text on image
             $result = imagettftext($img, $fontSize, 0, $x, $y, $color, $fontPath, $name);
