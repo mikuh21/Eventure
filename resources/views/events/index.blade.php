@@ -1140,6 +1140,7 @@
                                                     data-template-file-path="{{ $event->template_file_path }}"
                                                     data-template-file-name="{{ $event->template_file_name }}"
                                                     data-template-url="{{ $event->template_url }}"
+                                                    data-program-file-path="{{ $event->program_file_path }}"
                                                 >Edit</button>
                                             @endif
                                             @if (!auth()->user()->hasRole('event_staff') || $event->created_by === auth()->id())
@@ -1309,6 +1310,11 @@
                         <label for="editTemplateFile">Conference Template</label>
                         <input id="editTemplateFile" name="template_file" type="file" accept=".pdf,.doc,.docx,.txt,.rtf,.odt,.xls,.xlsx,.ppt,.pptx">
                         <div id="currentTemplateContainer" style="margin-top: 8px;"></div>
+                    </div>
+                    <div class="field">
+                        <label for="editProgramFile">Program</label>
+                        <input id="editProgramFile" name="program_file" type="file" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.gif,.webp">
+                        <div id="currentProgramContainer" style="margin-top: 8px;"></div>
                     </div>
 
                     <div class="field">
@@ -1619,6 +1625,8 @@
                 editForm.reset();
                 currentPosterContainer.innerHTML = '';
                 currentTemplateContainer.innerHTML = '';
+                var currentProgramContainer = document.getElementById('currentProgramContainer');
+                if (currentProgramContainer) currentProgramContainer.innerHTML = '';
             };
 
             var toggleFieldsByType = function () {
@@ -1657,7 +1665,8 @@
                         posterPath: editButton.dataset.posterPath,
                         templateFilePath: editButton.dataset.templateFilePath,
                         templateFileName: editButton.dataset.templateFileName,
-                        templateUrl: editButton.dataset.templateUrl
+                        templateUrl: editButton.dataset.templateUrl,
+                        programFilePath: editButton.dataset.programFilePath
                     };
                     openEditModal(eventData);
                 }
