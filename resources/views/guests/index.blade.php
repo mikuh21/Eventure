@@ -1153,56 +1153,40 @@
         }
         .eventure-pagination {
             display: flex;
+            align-items: center;
             justify-content: center;
+            gap: 12px;
             margin-top: 20px;
             margin-bottom: 4px;
         }
-        .eventure-pagination nav {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .eventure-pagination span[aria-current="page"] > span,
-        .eventure-pagination a {
+        .page-arrow {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            min-width: 34px;
+            width: 34px;
             height: 34px;
-            padding: 0 10px;
             border-radius: 8px;
-            font-family: 'Sora', sans-serif;
-            font-size: 13px;
-            font-weight: 500;
             border: 1px solid var(--color-sky, #BFDFFF);
             background: #ffffff;
             color: var(--color-ocean, #1B6CA8);
             text-decoration: none;
-            transition: background 140ms, border-color 140ms, color 140ms;
+            transition: background 140ms, border-color 140ms;
+            flex-shrink: 0;
         }
-        .eventure-pagination a:hover {
+        .page-arrow:hover:not(.disabled) {
             background: var(--color-ice-white, #E8F4FD);
             border-color: var(--color-steel-blue, #5BA4CF);
         }
-        .eventure-pagination span[aria-current="page"] > span {
-            background: var(--color-ocean, #1B6CA8);
-            color: #ffffff;
-            border-color: var(--color-ocean, #1B6CA8);
-        }
-        .eventure-pagination span.disabled,
-        .eventure-pagination span > span:not([aria-current]) {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 34px;
-            height: 34px;
-            padding: 0 10px;
-            border-radius: 8px;
-            font-size: 13px;
-            border: 1px solid var(--color-sky, #BFDFFF);
-            background: #f8fbff;
+        .page-arrow.disabled {
             color: #aac4de;
+            background: #f8fbff;
             pointer-events: none;
+        }
+        .page-results-text {
+            font-family: 'Sora', sans-serif;
+            font-size: 13px;
+            color: var(--color-midnight, #0A2342);
+            white-space: nowrap;
         }
     </style>
 @endpush
