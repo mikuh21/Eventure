@@ -18,7 +18,7 @@ class ValidateDocumentFile implements ValidationRule
             return;
         }
 
-        $allowedExtensions = ['pdf', 'doc', 'docx', 'txt', 'rtf', 'odt', 'xls', 'xlsx', 'ppt', 'pptx'];
+        $allowedExtensions = ['pdf', 'doc', 'docx', 'txt', 'rtf', 'odt', 'xls', 'xlsx', 'ppt', 'pptx', 'png', 'jpg', 'jpeg'];
         $allowedMimeTypes = [
             'application/pdf',
             'application/msword',
@@ -31,6 +31,8 @@ class ValidateDocumentFile implements ValidationRule
             'application/vnd.ms-powerpoint',
             'application/vnd.openxmlformats-officedocument.presentationml.presentation',
             'application/zip', // Office files may be detected as zip
+            'image/png',
+            'image/jpeg',
         ];
 
         $extension = strtolower($value->getClientOriginalExtension());
