@@ -588,13 +588,21 @@
                 <div class="event-asset-card">
                     <h3 class="event-asset-title">Program</h3>
                     <div class="template-preview" style="margin-bottom: 1rem;">
-                        <iframe 
-                            src="https://docs.google.com/viewer?url=https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/event-programs/{{ $event->program_file_path }}&embedded=true"
-                            width="100%" 
-                            height="400px"
-                            frameborder="0"
-                            style="border-radius: 8px;">
-                        </iframe>
+                        @php
+                            $programExt = strtolower(pathinfo($event->program_file_path, PATHINFO_EXTENSION));
+                            $programUrl = 'https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/event-programs/' . $event->program_file_path;
+                        @endphp
+                        @if (in_array($programExt, ['jpg', 'jpeg', 'png', 'gif', 'webp']))
+                            <img src="{{ $programUrl }}" alt="Program" style="width: 100%; border-radius: 8px; display: block;">
+                        @else
+                            <iframe
+                                src="https://docs.google.com/viewer?url={{ urlencode($programUrl) }}&embedded=true"
+                                width="100%"
+                                height="400px"
+                                frameborder="0"
+                                style="border-radius: 8px;">
+                            </iframe>
+                        @endif
                     </div>
                     <div class="event-asset-actions">
                         <a class="btn" href="/events/{{ $event->id }}/program/download" style="font-family: 'Sora', sans-serif;">Download Program</a>
