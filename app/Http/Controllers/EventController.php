@@ -30,6 +30,9 @@ class EventController extends Controller
             'jpeg' => 'image/jpeg',
             'png' => 'image/png',
             'gif' => 'image/gif',
+            'jpg' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'png' => 'image/png',
             'zip' => 'application/zip',
             'txt' => 'text/plain',
         ];

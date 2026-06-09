@@ -295,7 +295,7 @@
 
             <div class="field" id="template-file-field">
                 <label for="template_file">Conference Template</label>
-                <input id="template_file" name="template_file" type="file" accept=".pdf,.doc,.docx,.txt,.rtf,.odt,.xls,.xlsx,.ppt,.pptx">
+                <input id="template_file" name="template_file" type="file" accept=".pdf,.doc,.docx,.txt,.rtf,.odt,.xls,.xlsx,.ppt,.pptx,.png,.jpg,.jpeg">
                 @if ($event->type === 'conference' && $event->template_file_path)
                     <div class="mt-2">
                         <p class="text-sm mb-2">Current Template:</p>
@@ -312,7 +312,7 @@
 
             <div class="field">
                 <label for="program_file">Program File</label>
-                <input id="program_file" name="program_file" type="file" accept=".pdf,.doc,.docx,.txt,.rtf,.odt,.xls,.xlsx,.ppt,.pptx">
+                <input id="program_file" name="program_file" type="file" accept=".pdf,.doc,.docx,.txt,.rtf,.odt,.xls,.xlsx,.ppt,.pptx,.png,.jpg,.jpeg">
                 @if ($event->program_file_path)
                     <div class="template-preview" style="margin-bottom: 1rem;">
                         <iframe 
