@@ -1601,6 +1601,23 @@
                     currentTemplateContainer.innerHTML = '';
                 }
 
+                // Show current program if exists
+                var currentProgramContainer = document.getElementById('currentProgramContainer');
+                if (currentProgramContainer) {
+                    if (eventData.programFilePath) {
+                        var programExt = eventData.programFilePath.split('.').pop().toLowerCase();
+                        var programUrl = 'https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/event-programs/' + eventData.programFilePath;
+                        var imageExts = ['jpg','jpeg','png','gif','webp'];
+                        if (imageExts.includes(programExt)) {
+                            currentProgramContainer.innerHTML = '<p style="font-size:12px;margin-bottom:4px;color:#666;">Current Program:</p><img src="' + programUrl + '" style="width:100px;height:100px;object-fit:contain;border:1px solid #ddd;border-radius:4px;">';
+                        } else {
+                            var programName = eventData.programFilePath.split('/').pop();
+                            currentProgramContainer.innerHTML = '<p style="font-size:12px;margin-bottom:4px;color:#666;">Current Program:</p><a href="/events/' + eventData.eventId + '/program/download" style="font-size:12px;color:#2563eb;text-decoration:underline;">📄 ' + programName + '</a>';
+                        }
+                    } else {
+                        currentProgramContainer.innerHTML = '';
+                    }
+                }
                 // Show/hide fields based on event type
                 toggleFieldsByType();
 
