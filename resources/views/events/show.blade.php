@@ -632,15 +632,7 @@
         </div>
     @endif
 
-    <!-- Poster Modal -->
-    <div id="posterModal" class="poster-modal-overlay" aria-hidden="true" role="dialog" aria-modal="true">
-        <div class="poster-modal-content">
-            <div class="poster-modal-header">
-                <button type="button" class="poster-modal-close" aria-label="Close modal">×</button>
-            </div>
-            <img id="modalPosterImage" class="poster-modal-image" alt="Event Poster" src="">
-        </div>
-    </div>
+
 
     <button id="scrollTopBtn" type="button" class="scroll-top-btn" aria-label="Scroll to top" title="Scroll to top">
         <svg viewBox="0 0 24 24" fill="none" width="20" height="20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -649,6 +641,15 @@
         </svg>
     </button>
     </div>
+<!-- Poster Modal (outside all containers for correct fixed positioning) -->
+<div id="posterModal" class="poster-modal-overlay" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="poster-modal-content">
+        <div class="poster-modal-header">
+            <button type="button" class="poster-modal-close" aria-label="Close modal">×</button>
+        </div>
+        <img id="modalPosterImage" class="poster-modal-image" alt="Event Poster" src="">
+    </div>
+</div>
 @endsection
 
 @push('scripts')
