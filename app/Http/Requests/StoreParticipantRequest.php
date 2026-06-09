@@ -27,6 +27,7 @@ class StoreParticipantRequest extends FormRequest
                 Rule::unique('participants', 'email')->where(fn ($query) => $query->where('event_id', $eventId)),
             ],
             'institution' => ['required', 'string', 'max:255'],
+            'college' => ['nullable', Rule::in(['SACE', 'SABM', 'SAHS', 'SHS'])],
         ];
     }
 }

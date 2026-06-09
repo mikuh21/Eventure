@@ -1379,7 +1379,18 @@
 
                             <div class="landing-registration-field hidden" id="landingInstitutionField">
                                 <label for="landingInstitution" class="text-sm">School / University</label>
-                                <input id="landingInstitution" name="institution" type="text" class="text-sm" placeholder="School or university" required>
+                                <input id="landingInstitution" name="institution" type="text" class="text-sm" placeholder="e.g. NU Lipa" required>
+                            </div>
+
+                            <div class="landing-registration-field hidden" id="landingCollegeField">
+                                <label for="landingCollege" class="text-sm">College / Department</label>
+                                <select id="landingCollege" name="college" class="text-sm">
+                                    <option value="">Select college/department</option>
+                                    <option value="SACE">SACE</option>
+                                    <option value="SABM">SABM</option>
+                                    <option value="SAHS">SAHS</option>
+                                    <option value="SHS">SHS</option>
+                                </select>
                             </div>
 
 
@@ -1420,6 +1431,7 @@
             const registrationTypeOptions = document.querySelectorAll('.landing-registration-option');
             const participantTypeField = document.getElementById('participantTypeField');
             const landingInstitutionField = document.getElementById('landingInstitutionField');
+            const landingCollegeField = document.getElementById('landingCollegeField');
             let guestRoleField = null;
             let guestBioField = null;
             let guestPaperField = null;
@@ -1475,6 +1487,7 @@
                 landingGuestRole = null;
                 participantTypeField.classList.remove('hidden');
                 landingInstitutionField.classList.remove('hidden');
+                landingCollegeField.classList.remove('hidden');
                 document.getElementById('landingParticipantType').required = true;
                 document.getElementById('landingInstitution').required = true;
                 landingRegistrationTypeSelection.classList.remove('hidden');
@@ -1535,6 +1548,8 @@
                     guestRoleField.insertAdjacentElement('afterend', guestBioField);
                     landingInstitutionField.classList.add('hidden');
                     landingInstitutionField.style.display = 'none';
+                    landingCollegeField.classList.add('hidden');
+                    landingCollegeField.style.display = 'none';
 
                     if (currentEventType === 'conference') {
                         if (!guestPaperField) {
@@ -1578,6 +1593,7 @@
                     landingInstitutionField.style.display = 'none';
                     participantTypeField.classList.add('hidden');
                     landingInstitutionField.classList.add('hidden');
+                    landingCollegeField.classList.add('hidden');
                     guestRoleField.classList.remove('hidden');
                     guestBioField.classList.remove('hidden');
                     document.getElementById('landingParticipantType').required = false;
@@ -1588,16 +1604,19 @@
                     landingGuestRole.className = 'bg-slate-100 text-slate-500 border border-slate-200 rounded-lg px-3 py-1.5 text-sm cursor-not-allowed';
                     guestBioField.querySelector('textarea').rows = 2;
                     landingInstitutionField.classList.add('hidden');
+                    landingCollegeField.classList.add('hidden');
                 } else {
                     participantTypeField.style.display = '';
                     landingInstitutionField.style.display = '';
                     participantTypeField.classList.remove('hidden');
                     landingInstitutionField.classList.remove('hidden');
+                    landingCollegeField.classList.remove('hidden');
                     landingRegistrationForm.enctype = 'application/x-www-form-urlencoded';
                     participantTypeField.style.display = '';
                     landingInstitutionField.style.display = '';
                     participantTypeField.classList.remove('hidden');
                     landingInstitutionField.classList.remove('hidden');
+                    landingCollegeField.classList.remove('hidden');
                     if (guestRoleField && guestRoleField.parentNode) {
                         guestRoleField.remove();
                         guestRoleField = null;
