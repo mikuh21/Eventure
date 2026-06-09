@@ -1223,6 +1223,59 @@
                 border-color: #ccc !important;
             }
         }
+        .eventure-pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            margin-bottom: 4px;
+        }
+        .eventure-pagination nav {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .eventure-pagination span[aria-current="page"] > span,
+        .eventure-pagination a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 34px;
+            height: 34px;
+            padding: 0 10px;
+            border-radius: 8px;
+            font-family: 'Sora', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            border: 1px solid var(--color-sky, #BFDFFF);
+            background: #ffffff;
+            color: var(--color-ocean, #1B6CA8);
+            text-decoration: none;
+            transition: background 140ms, border-color 140ms, color 140ms;
+        }
+        .eventure-pagination a:hover {
+            background: var(--color-ice-white, #E8F4FD);
+            border-color: var(--color-steel-blue, #5BA4CF);
+        }
+        .eventure-pagination span[aria-current="page"] > span {
+            background: var(--color-ocean, #1B6CA8);
+            color: #ffffff;
+            border-color: var(--color-ocean, #1B6CA8);
+        }
+        .eventure-pagination span.disabled,
+        .eventure-pagination span > span:not([aria-current]) {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 34px;
+            height: 34px;
+            padding: 0 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            border: 1px solid var(--color-sky, #BFDFFF);
+            background: #f8fbff;
+            color: #aac4de;
+            pointer-events: none;
+        }
     </style>
 @endpush
 
@@ -1261,7 +1314,7 @@
                     Viewing participants for: <strong>{{ $selectedEvent->title }}</strong>
                     <a class="participants-clear-link" href="{{ $clearLink }}">x Clear</a>
                 </span>
-                <span class="participants-count">{{ number_format($participants->count()) }} participant(s) registered</span>
+                <span class="participants-count">{{ number_format($participants->total()) }} participant(s) registered</span>
             </div>
 
             <form class="filters-row" action="{{ $formAction }}" method="GET">
@@ -1295,7 +1348,7 @@
 
                 <button class="btn btn-primary" type="button" id="filtersApplyBtn">Apply</button>
 
-                <span class="showing-text" id="showingCount" data-total="{{ $participants->count() }}">Showing {{ $participants->count() }} participant(s)</span>
+                <span class="showing-text" id="showingCount" data-total="{{ $participants->total() }}">Showing {{ $participants->count() }} of {{ $participants->total() }} participant(s)</span>
             </form>
         @endif
 
@@ -1324,7 +1377,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                @if ($participants->count() === 0)
+                @if ($participants->total() === 0)
                     <tr>
                         <td colspan="6" class="participants-empty-table">No participants registered for this event yet.</td>
                     </tr>
@@ -1405,6 +1458,11 @@
             </table>
             </div>
 
+            @if ($participants->hasPages())
+                <div class="eventure-pagination">
+                    {{ $participants->links() }}
+                </div>
+            @endif
 
         @endif
     </div>

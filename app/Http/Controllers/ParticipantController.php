@@ -98,7 +98,8 @@ class ParticipantController extends Controller
 
                 $participants = $participantsQuery
                     ->latest()
-                    ->get();
+                    ->paginate(10)
+                    ->withQueryString();
             }
         }
 

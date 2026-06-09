@@ -93,7 +93,8 @@ class GuestController extends Controller
 
         $guests = $guestsQuery
             ->latest()
-            ->get();
+            ->paginate(10)
+            ->withQueryString();
 
         return view('guests.index', [
             'events' => $events,

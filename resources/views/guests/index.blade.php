@@ -1151,6 +1151,59 @@
                 flex-direction: column-reverse;
             }
         }
+        .eventure-pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            margin-bottom: 4px;
+        }
+        .eventure-pagination nav {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .eventure-pagination span[aria-current="page"] > span,
+        .eventure-pagination a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 34px;
+            height: 34px;
+            padding: 0 10px;
+            border-radius: 8px;
+            font-family: 'Sora', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            border: 1px solid var(--color-sky, #BFDFFF);
+            background: #ffffff;
+            color: var(--color-ocean, #1B6CA8);
+            text-decoration: none;
+            transition: background 140ms, border-color 140ms, color 140ms;
+        }
+        .eventure-pagination a:hover {
+            background: var(--color-ice-white, #E8F4FD);
+            border-color: var(--color-steel-blue, #5BA4CF);
+        }
+        .eventure-pagination span[aria-current="page"] > span {
+            background: var(--color-ocean, #1B6CA8);
+            color: #ffffff;
+            border-color: var(--color-ocean, #1B6CA8);
+        }
+        .eventure-pagination span.disabled,
+        .eventure-pagination span > span:not([aria-current]) {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 34px;
+            height: 34px;
+            padding: 0 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            border: 1px solid var(--color-sky, #BFDFFF);
+            background: #f8fbff;
+            color: #aac4de;
+            pointer-events: none;
+        }
     </style>
 @endpush
 
@@ -1189,7 +1242,7 @@
                     Viewing guests for: <strong>{{ $selectedEvent->title }}</strong>
                     <a class="guests-clear-link" href="{{ route('guests.index') }}">x Clear</a>
                 </span>
-                <span>{{ number_format($guests->count()) }} guest(s) registered</span>
+                <span>{{ number_format($guests->total()) }} guest(s) registered</span>
             </div>
 
             <form class="filters-row" action="{{ route('guests.index') }}" method="GET">
@@ -1252,7 +1305,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    @if ($guests->count() === 0)
+                    @if ($guests->total() === 0)
                         <tr>
                             <td colspan="7" class="guests-empty-table">No guests registered for this event yet.</td>
                         </tr>
@@ -1323,6 +1376,11 @@
                 </table>
             </div>
 
+            @if ($guests->hasPages())
+                <div class="eventure-pagination">
+                    {{ $guests->links() }}
+                </div>
+            @endif
 
         @endif
     </div>
