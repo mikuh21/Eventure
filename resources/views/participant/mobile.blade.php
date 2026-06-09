@@ -1407,7 +1407,8 @@
                         $event = $participant->event;
                         $startDate = \Carbon\Carbon::parse($event->start_date)->setTimezone('Asia/Manila');
                         $endDate = \Carbon\Carbon::parse($event->end_date)->setTimezone('Asia/Manila');
-                        if ($startDate->isSameDay($endDate)) {
+                        $isSingleDay = $startDate->isSameDay($endDate);
+                        if ($isSingleDay) {
                             $eventDateDisplay = $startDate->format('F j, Y');
                         } else {
                             $eventDateDisplay = '';
@@ -1525,8 +1526,8 @@
                                                 type="{{ $isEventDetailsTitleField || $isEventDetailsVenueField ? 'text' : ($isEventDetailsDateField ? ($isSingleDay ? 'text' : 'date') : ($isEventDetailsTimeField ? 'time' : (in_array($question->renderingType(), ['date', 'time']) ? $question->renderingType() : 'text'))) }}"
                                                 class="survey-form-input"
                                                 value="{{ $isEventDetailsTitleField ? $event->title : ($isEventDetailsDateField && $isSingleDay ? $eventDateDisplay : ($isEventDetailsTimeField ? $startDate->format('H:i') : ($isEventDetailsVenueField ? $event->location : ''))) }}"
+                                                {{ $isEventDetailsTitleField || ($isEventDetailsDateField && $isSingleDay) || $isEventDetailsVenueField || $isEventDetailsTimeField ? 'readonly' : '' }}
                                                 {{ $question->is_required ? 'required' : '' }}
-                                                @if ($question->isProgramQuestion()) aria-label="{{ $question->question }}" @endif
                                             >
                                         @endif
                                     </div>
