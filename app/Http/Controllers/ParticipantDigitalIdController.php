@@ -492,7 +492,7 @@ class ParticipantDigitalIdController extends Controller
     {
         try {
             // Certificate image URL in Supabase Storage
-            $certImageUrl = $event->id === 36 ? 'https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/event-posters/CFP-2026-cert.png' : 'https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/event-posters/converge-2026-cert.png';
+            $certImageUrl = $event->id === 36 ? 'https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/event-posters/CFP-2026-cert.jpg' : 'https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/event-posters/converge-2026-cert.png';
             
             // Fetch the certificate background image
             $imageData = @file_get_contents($certImageUrl);
