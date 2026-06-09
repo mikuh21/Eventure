@@ -1496,6 +1496,19 @@
                                                 {{ $question->is_required ? 'required' : '' }}
                                                 @if ($question->isProgramQuestion()) aria-label="{{ $question->question }}" @endif
                                             ></textarea>
+                                        @elseif ($participant->event->id === 36 && trim(strtolower($question->question)) === 'position/designation')
+                                            <select
+                                                id="question_{{ $question->id }}"
+                                                name="answers[{{ $question->id }}]"
+                                                class="survey-form-input"
+                                                {{ $question->is_required ? 'required' : '' }}
+                                            >
+                                                <option value="" disabled selected>Select your position</option>
+                                                <option value="Faculty/ASP">Faculty/ASP</option>
+                                                <option value="Student">Student</option>
+                                                <option value="External Participant">External Participant</option>
+                                                <option value="Research Presenter">Research Presenter</option>
+                                            </select>
                                         @elseif ($question->renderingType() === 'radio' && is_array($question->matrix_items))
                                             <div class="survey-form-radio-group">
                                                 @foreach ($question->matrix_items as $item)
