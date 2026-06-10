@@ -1229,7 +1229,7 @@
                 <span>{{ number_format($guests->total()) }} guest(s) registered</span>
             </div>
 
-            <form class="filters-row" action="{{ route('guests.index') }}" method="GET">
+            <form class="filters-row" id="filtersForm" action="{{ route('guests.index') }}" method="GET">
                 <input type="hidden" name="event_id" value="{{ $selectedEvent->id }}">
 
                 <div class="search-field">
@@ -1258,7 +1258,7 @@
                     <option value="exhibitor" {{ request('guest_type') === 'exhibitor' ? 'selected' : '' }}>Exhibitor</option>
                 </select>
 
-                <button class="btn btn-primary" type="button" id="filtersApplyBtn">Apply</button>
+                <button class="btn btn-primary" type="submit" id="filtersApplyBtn">Apply</button>
 
                 <span class="showing-text" id="showingCount" data-total="{{ $guests->count() }}">Showing {{ $guests->count() }} guest(s)</span>
             </form>
@@ -1543,34 +1543,15 @@
 
     <script>
         (function () {
-            const searchInput = document.querySelector('input[name="search"]');
-            const statusSelect = document.querySelector('select[name="status"]');
-            const guestTypeSelect = document.querySelector('select[name="guest_type"]');
-            const applyBtn = document.getElementById('filtersApplyBtn');
-            const filterForm = applyBtn ? applyBtn.closest('form') : null;
-
-            // Apply button submits server-side
-            if (applyBtn && filterForm) {
-                applyBtn.addEventListener('click', function () {
-                    filterForm.submit();
-                });
-            }
-
-            // Debounced live search across full dataset
-            if (searchInput && filterForm) {
+            var filtersForm = document.getElementById('filtersForm');
+            var searchInput = filtersForm ? filtersForm.querySelector('input[name="search"]') : null;
+            if (searchInput && filtersForm) {
                 var searchDebounce;
                 searchInput.addEventListener('input', function () {
                     clearTimeout(searchDebounce);
                     searchDebounce = setTimeout(function () {
-                        filterForm.submit();
+                        filtersForm.submit();
                     }, 400);
-                });
-                searchInput.addEventListener('keydown', function (e) {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        clearTimeout(searchDebounce);
-                        filterForm.submit();
-                    }
                 });
             }
         })();

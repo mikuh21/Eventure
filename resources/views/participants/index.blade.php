@@ -1301,7 +1301,7 @@
                 <span class="participants-count">{{ number_format($participants->total()) }} participant(s) registered</span>
             </div>
 
-            <form class="filters-row" action="{{ $formAction }}" method="GET">
+            <form class="filters-row" id="filtersForm" action="{{ $formAction }}" method="GET">
                 <input type="hidden" name="event_id" value="{{ $selectedEvent->id }}">
 
                 <div class="search-field">
@@ -1330,7 +1330,7 @@
                     <option value="student" {{ request('participant_type') === 'student' ? 'selected' : '' }}>Student</option>
                 </select>
 
-                <button class="btn btn-primary" type="button" id="filtersApplyBtn">Apply</button>
+                <button class="btn btn-primary" type="submit" id="filtersApplyBtn">Apply</button>
 
                 <span class="showing-text" id="showingCount" data-total="{{ $participants->total() }}">Showing {{ $participants->count() }} of {{ $participants->total() }} participant(s)</span>
             </form>
@@ -1662,39 +1662,17 @@
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <script>
         (function () {
-            const searchInput = document.querySelector('input[name="search"]');
-            const attendanceSelect = document.querySelector('select[name="attendance"]');
-            const participantTypeSelect = document.querySelector('select[name="participant_type"]');
-            const applyBtn = document.getElementById('filtersApplyBtn');
-            const filterForm = applyBtn ? applyBtn.closest('form') : null;
-
-            // Submit filter form server-side (searches entire dataset, not just current page)
-            if (applyBtn && filterForm) {
-                applyBtn.addEventListener('click', function () {
-                    filterForm.submit();
-                });
-            }
-
-            // Submit on Enter or debounced input for live search across full dataset
-            if (searchInput && filterForm) {
+            var filtersForm = document.getElementById('filtersForm');
+            var searchInput = filtersForm ? filtersForm.querySelector('input[name="search"]') : null;
+            if (searchInput && filtersForm) {
                 var searchDebounce;
                 searchInput.addEventListener('input', function () {
                     clearTimeout(searchDebounce);
                     searchDebounce = setTimeout(function () {
-                        filterForm.submit();
+                        filtersForm.submit();
                     }, 400);
                 });
-                searchInput.addEventListener('keydown', function (e) {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        clearTimeout(searchDebounce);
-                        filterForm.submit();
-                    }
-                });
             }
-            }
-
-            filterRows();
         })();
 
         (function () {
