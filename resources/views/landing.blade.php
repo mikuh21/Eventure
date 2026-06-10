@@ -1221,7 +1221,7 @@
                 <div class="grid md:grid-cols-2 gap-16">
                     <div>
                         <p style="color:rgba(255,255,255,0.82);font-size:15px;line-height:1.9;margin-bottom:18px;">
-                            Eventure is a comprehensive event management platform designed to streamline the planning, organization, and execution of events. It provides organizers with a centralized system for creating events, managing registrations, tracking attendance, communicating with participants, and gathering post-event feedback. By digitizing these processes, Eventure helps reduce administrative workload while delivering a smoother and more engaging experience for attendees.
+                            Eventure is a comprehensive event management platform designed to streamline the planning, organization, and execution of events. It provides organizers with a centralized system for creating events, managing registrations, tracking attendance, generating certificates, and gathering post-event feedback. By digitizing these processes, Eventure helps reduce administrative workload while delivering a smoother and more engaging experience for attendees.
                         </p>
                         <p style="color:rgba(255,255,255,0.82);font-size:15px;line-height:1.9;">
                             Built with efficiency, accessibility, and user experience in mind, Eventure empowers organizations to manage events of all sizes with greater ease and accuracy. Whether for academic, organizational, professional, or community events, the platform offers the tools needed to coordinate activities, monitor participation, and ensure successful event outcomes.
@@ -1257,7 +1257,7 @@
                     </div>
                     <div style="display:flex;align-items:flex-start;">
                         <div style="background:rgba(27,108,168,0.1);border:1px solid rgba(27,108,168,0.25);border-radius:14px;padding:28px 32px;width:100%;">
-                            <p style="color:#5BA4CF;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:16px;">Members</p>
+                            <p style="color:#5BA4CF;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:16px;">The Eventurers</p>
                             <ul style="list-style:none;padding:0;margin:0 0 24px 0;">
                                 <li style="color:#ffffff;font-size:15px;padding:10px 0;border-bottom:1px solid rgba(27,108,168,0.2);display:flex;align-items:center;gap:10px;">
                                     <span style="width:6px;height:6px;border-radius:50%;background:#5BA4CF;display:inline-block;flex-shrink:0;"></span>Mika Sanchez
@@ -1290,14 +1290,10 @@
                 <a href="{{ url('/') }}" class="text-xl font-bold">
                     <span class="text-white">Event</span><span class="text-em4">ure</span>
                 </a>
-                <p style="color:rgba(255,255,255,0.35); font-style:italic; font-weight:600; font-size:15px; margin-bottom:6px;">THE EVENTURERS.</p>
                 <p style="color:rgba(255,255,255,0.35); font-size:13px; line-height:1.8; margin:0;">
-                    Mika Sanchez<br>
-                    Cyro Lalusis<br>
-                    Joseph Layco<br>
-                    Kristan Roy Uri
+                    Empowering Events.<br>
+                    Connecting People.<br>
                 </p>
-                <p style="color:rgba(255,255,255,0.35); font-size:12px; margin-top:8px; margin-bottom:0;">Mentor: Mr. Marvin Atanacio</p>
             </div>
             <div>
                 <h4 class="font-semibold mb-3 text-sm text-em3">Platform</h4>
