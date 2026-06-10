@@ -13,7 +13,4 @@ Schedule::command('survey:activate-ended-events')->hourly();
 Schedule::command('evaluation-forms:activate-ended-events')
     ->dailyAt('23:00')
     ->timezone('Asia/Manila');
-// Disable evaluation forms shortly after midnight Manila time to keep forms open until 00:05
-Schedule::command('evaluation-forms:disable-ended-events')
-    ->dailyAt('00:05')
-    ->timezone('Asia/Manila');
+// Evaluation forms are closed manually by admin only - auto-disable removed
