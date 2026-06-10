@@ -1213,7 +1213,14 @@
                 <a href="{{ url('/') }}" class="text-xl font-bold">
                     <span class="text-white">Event</span><span class="text-em4">ure</span>
                 </a>
-                <p class="mt-3 text-sm" style="color:rgba(255,255,255,0.5)">Empowering Events. Connecting People.</p>
+                <p style="color:rgba(255,255,255,0.7); font-style:italic; font-weight:600; font-size:15px; margin-bottom:6px;">THE EVENTURERS.</p>
+                <p style="color:rgba(255,255,255,0.55); font-size:13px; line-height:1.8; margin:0;">
+                    Mika Sanchez<br>
+                    Cyro Lalusis<br>
+                    Joseph Layco<br>
+                    Kristan Roy Uri
+                </p>
+                <p style="color:rgba(255,255,255,0.45); font-size:12px; margin-top:8px; margin-bottom:0;">Mentor: Mr. Marvin Atanacio</p>
             </div>
             <div>
                 <h4 class="font-semibold mb-3 text-sm text-em3">Platform</h4>
