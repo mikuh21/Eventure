@@ -356,7 +356,7 @@ class ParticipantController extends Controller
         ]);
     }
 
-    public function update(UpdateParticipantRequest $request, Event $event, Participant $participant)
+    public function update(\Illuminate\Http\Request $request, Event $event, Participant $participant)
     {
         // Check permission: Event Staff can only update participants in their own events
         if (auth()->check() && auth()->user()->hasRole('event_staff') && $event->created_by !== auth()->id()) {
@@ -369,7 +369,7 @@ class ParticipantController extends Controller
 
         $wantsJson = $request->expectsJson() || $request->is('api/*');
 
-        // Allow attendance-only PATCH (from toggle) without requiring all fields
+        // Attendance-only toggle from JS
         if ($wantsJson && $request->has('attended') && !$request->has('name')) {
             $participant->update(['attended' => filter_var($request->input('attended'), FILTER_VALIDATE_BOOLEAN)]);
             return response()->json([
@@ -379,7 +379,20 @@ class ParticipantController extends Controller
             ]);
         }
 
-        $participant->update($request->validated());
+        // Full update — validate manually
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'participant_type' => ['required', \Illuminate\Validation\Rule::in(['faculty', 'student'])],
+            'email' => [
+                'required', 'string', 'email', 'max:255',
+                \Illuminate\Validation\Rule::unique('participants', 'email')
+                    ->where(fn ($q) => $q->where('event_id', $event->id))
+                    ->ignore($participant->id),
+            ],
+            'institution' => ['required', 'string', 'max:255'],
+            'attended' => ['boolean'],
+        ]);
+        $participant->update($validated);
 
         if ($wantsJson) {
             return response()->json([
