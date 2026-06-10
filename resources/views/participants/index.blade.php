@@ -2586,8 +2586,9 @@
                             row.setAttribute('data-participant-attendance', newAttended ? 'attended' : 'not_attended');
                         }
                     })
-                    .catch(function () {
-                        alert('Failed to update attendance. Please try again.');
+                    .catch(function (err) {
+                        console.error('Attendance toggle error:', err);
+                        alert('Failed to update attendance: ' + err.message);
                     })
                     .finally(function () {
                         self.style.opacity = '';
