@@ -2542,5 +2542,58 @@
                 observer.observe(paginationContainer, { childList: true, subtree: true });
             }
         })();
+
+            // Attendance toggle click handler
+            document.querySelectorAll('.badge-attended-toggle').forEach(function (badge) {
+                badge.addEventListener('click', function () {
+                    var participantId = this.dataset.participantId;
+                    var currentAttended = this.dataset.attended === 'true';
+                    var newAttended = !currentAttended;
+                    var self = this;
+
+                    var csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
+                    var csrfTokenInput = document.querySelector('input[name="_token"]');
+                    var csrfToken = csrfTokenMeta ? csrfTokenMeta.getAttribute('content') : (csrfTokenInput ? csrfTokenInput.value : '');
+
+                    var eventId = {{ $selectedEvent ? $selectedEvent->id : 'null' }};
+                    if (!eventId || !participantId) return;
+
+                    self.style.opacity = '0.5';
+                    self.style.pointerEvents = 'none';
+
+                    fetch('/events/' + eventId + '/participants/' + participantId, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify({ attended: newAttended })
+                    })
+                    .then(function (response) {
+                        if (!response.ok) throw new Error('Failed');
+                        return response.json();
+                    })
+                    .then(function () {
+                        self.dataset.attended = newAttended ? 'true' : 'false';
+                        self.textContent = newAttended ? 'Yes' : 'No';
+                        self.classList.toggle('badge-attended-yes', newAttended);
+                        self.classList.toggle('badge-attended-no', !newAttended);
+
+                        var row = self.closest('tr');
+                        if (row) {
+                            row.setAttribute('data-participant-attendance', newAttended ? 'attended' : 'not_attended');
+                        }
+                    })
+                    .catch(function () {
+                        alert('Failed to update attendance. Please try again.');
+                    })
+                    .finally(function () {
+                        self.style.opacity = '';
+                        self.style.pointerEvents = '';
+                    });
+                });
+            });
     </script>
 @endpush
