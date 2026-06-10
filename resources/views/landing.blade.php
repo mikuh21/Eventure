@@ -1291,8 +1291,7 @@
                     <span class="text-white">Event</span><span class="text-em4">ure</span>
                 </a>
                 <p style="color:rgba(255,255,255,0.35); font-size:13px; line-height:1.8; margin:0;">
-                    Empowering Events.<br>
-                    Connecting People.<br>
+                    Empowering Events. Connecting People.
                 </p>
             </div>
             <div>
