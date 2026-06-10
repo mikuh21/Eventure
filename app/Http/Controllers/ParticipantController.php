@@ -370,8 +370,8 @@ class ParticipantController extends Controller
         $wantsJson = $request->expectsJson() || $request->is('api/*');
 
         // Allow attendance-only PATCH (from toggle) without requiring all fields
-        if ($wantsJson && $request->has('attended') && count($request->keys()) === 1) {
-            $participant->update(['attended' => (bool) $request->input('attended')]);
+        if ($wantsJson && $request->has('attended') && !$request->has('name')) {
+            $participant->update(['attended' => filter_var($request->input('attended'), FILTER_VALIDATE_BOOLEAN)]);
             return response()->json([
                 'message' => 'Attendance updated successfully.',
                 'data' => $participant->fresh(),
