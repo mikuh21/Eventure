@@ -1209,52 +1209,74 @@
 
     {{-- ========== FOOTER ========== --}}
     <!-- About Section -->
-    <section id="about" class="py-20 px-6" style="border-top:1px solid rgba(27,108,168,0.12)">
+    <section id="about" class="py-20 px-6" style="position:relative;z-index:1;background:#0A2342;border-top:1px solid rgba(27,108,168,0.2);">
         <div class="max-w-7xl mx-auto">
 
-            <h2 class="text-3xl font-bold mb-2" style="color:#ffffff;">About <span class="text-em4">Eventure</span></h2>
-            <div style="width:48px;height:3px;background:#1B6CA8;border-radius:2px;margin-bottom:32px;"></div>
+            <!-- About Eventure -->
+            <div class="mb-20">
+                <p style="color:#5BA4CF;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:10px;">Who We Are</p>
+                <h2 style="color:#ffffff;font-size:2rem;font-weight:700;margin-bottom:8px;">About <span style="color:#5BA4CF;">Eventure</span></h2>
+                <div style="width:48px;height:3px;background:#1B6CA8;border-radius:2px;margin-bottom:36px;"></div>
 
-            <div class="grid md:grid-cols-2 gap-16 mb-16">
-                <div>
-                    <p style="color:rgba(255,255,255,0.7);font-size:15px;line-height:1.85;margin-bottom:16px;">
-                        Eventure is a comprehensive event management platform designed to streamline the planning, organization, and execution of events. It provides organizers with a centralized system for creating events, managing registrations, tracking attendance, communicating with participants, and gathering post-event feedback. By digitizing these processes, Eventure helps reduce administrative workload while delivering a smoother and more engaging experience for attendees.
-                    </p>
-                    <p style="color:rgba(255,255,255,0.7);font-size:15px;line-height:1.85;">
-                        Built with efficiency, accessibility, and user experience in mind, Eventure empowers organizations to manage events of all sizes with greater ease and accuracy. Whether for academic, organizational, professional, or community events, the platform offers the tools needed to coordinate activities, monitor participation, and ensure successful event outcomes.
-                    </p>
-                </div>
-                <div style="display:flex;align-items:center;">
-                    <blockquote style="border-left:3px solid #1B6CA8;padding-left:24px;margin:0;">
-                        <p style="color:rgba(255,255,255,0.85);font-size:18px;font-style:italic;line-height:1.7;margin-bottom:12px;">
-                            "Great events don't happen by chance—they happen through seamless planning, meaningful connections, and the right technology."
+                <div class="grid md:grid-cols-2 gap-16">
+                    <div>
+                        <p style="color:rgba(255,255,255,0.82);font-size:15px;line-height:1.9;margin-bottom:18px;">
+                            Eventure is a comprehensive event management platform designed to streamline the planning, organization, and execution of events. It provides organizers with a centralized system for creating events, managing registrations, tracking attendance, communicating with participants, and gathering post-event feedback. By digitizing these processes, Eventure helps reduce administrative workload while delivering a smoother and more engaging experience for attendees.
                         </p>
-                    </blockquote>
+                        <p style="color:rgba(255,255,255,0.82);font-size:15px;line-height:1.9;">
+                            Built with efficiency, accessibility, and user experience in mind, Eventure empowers organizations to manage events of all sizes with greater ease and accuracy. Whether for academic, organizational, professional, or community events, the platform offers the tools needed to coordinate activities, monitor participation, and ensure successful event outcomes.
+                        </p>
+                    </div>
+                    <div style="display:flex;align-items:center;">
+                        <blockquote style="border-left:3px solid #1B6CA8;padding:20px 24px;margin:0;background:rgba(27,108,168,0.08);border-radius:0 12px 12px 0;">
+                            <p style="color:#ffffff;font-size:17px;font-style:italic;line-height:1.75;margin:0;">
+                                "Great events don't happen by chance—they happen through seamless planning, meaningful connections, and the right technology."
+                            </p>
+                        </blockquote>
+                    </div>
                 </div>
             </div>
 
-            <h2 class="text-3xl font-bold mb-2" style="color:#ffffff;">About <span class="text-em4">The Eventurers</span></h2>
-            <div style="width:48px;height:3px;background:#1B6CA8;border-radius:2px;margin-bottom:32px;"></div>
+            <!-- Divider -->
+            <div style="border-top:1px solid rgba(27,108,168,0.2);margin-bottom:48px;"></div>
 
-            <div class="grid md:grid-cols-2 gap-16 mb-16">
-                <div>
-                    <p style="color:rgba(255,255,255,0.7);font-size:15px;line-height:1.85;margin-bottom:16px;">
-                        The Eventurers is the team behind Eventure—a group of dedicated developers and innovators committed to improving event management through technology. Inspired by the challenges commonly faced by event organizers, the team set out to create a solution that simplifies event operations while enhancing the overall experience for participants.
-                    </p>
-                    <p style="color:rgba(255,255,255,0.7);font-size:15px;line-height:1.85;">
-                        Combining technical expertise, creativity, and collaboration, The Eventurers strive to develop practical and impactful digital solutions. Through Eventure, the team aims to support organizers in delivering well-managed, accessible, and memorable events while continuously exploring new ways to innovate and improve the event management landscape.
-                    </p>
-                </div>
-                <div style="display:flex;align-items:flex-start;padding-top:4px;">
+            <!-- About The Eventurers -->
+            <div>
+                <p style="color:#5BA4CF;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:10px;">The Team</p>
+                <h2 style="color:#ffffff;font-size:2rem;font-weight:700;margin-bottom:8px;">About <span style="color:#5BA4CF;">The Eventurers</span></h2>
+                <div style="width:48px;height:3px;background:#1B6CA8;border-radius:2px;margin-bottom:36px;"></div>
+
+                <div class="grid md:grid-cols-2 gap-16">
                     <div>
-                        <p style="color:rgba(255,255,255,0.45);font-size:11px;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px;">The Team</p>
-                        <ul style="list-style:none;padding:0;margin:0 0 20px 0;">
-                            <li style="color:rgba(255,255,255,0.75);font-size:15px;padding:6px 0;border-bottom:1px solid rgba(27,108,168,0.15);">Mika Sanchez</li>
-                            <li style="color:rgba(255,255,255,0.75);font-size:15px;padding:6px 0;border-bottom:1px solid rgba(27,108,168,0.15);">Cyro Lalusis</li>
-                            <li style="color:rgba(255,255,255,0.75);font-size:15px;padding:6px 0;border-bottom:1px solid rgba(27,108,168,0.15);">Joseph Layco</li>
-                            <li style="color:rgba(255,255,255,0.75);font-size:15px;padding:6px 0;border-bottom:1px solid rgba(27,108,168,0.15);">Kristan Roy Uri</li>
-                        </ul>
-                        <p style="color:rgba(255,255,255,0.45);font-size:13px;margin:0;">Mentor: <span style="color:rgba(255,255,255,0.65);">Mr. Marvin Atanacio</span></p>
+                        <p style="color:rgba(255,255,255,0.82);font-size:15px;line-height:1.9;margin-bottom:18px;">
+                            The Eventurers is the team behind Eventure—a group of dedicated developers and innovators committed to improving event management through technology. Inspired by the challenges commonly faced by event organizers, the team set out to create a solution that simplifies event operations while enhancing the overall experience for participants.
+                        </p>
+                        <p style="color:rgba(255,255,255,0.82);font-size:15px;line-height:1.9;">
+                            Combining technical expertise, creativity, and collaboration, The Eventurers strive to develop practical and impactful digital solutions. Through Eventure, the team aims to support organizers in delivering well-managed, accessible, and memorable events while continuously exploring new ways to innovate and improve the event management landscape.
+                        </p>
+                    </div>
+                    <div style="display:flex;align-items:flex-start;">
+                        <div style="background:rgba(27,108,168,0.1);border:1px solid rgba(27,108,168,0.25);border-radius:14px;padding:28px 32px;width:100%;">
+                            <p style="color:#5BA4CF;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:16px;">Members</p>
+                            <ul style="list-style:none;padding:0;margin:0 0 24px 0;">
+                                <li style="color:#ffffff;font-size:15px;padding:10px 0;border-bottom:1px solid rgba(27,108,168,0.2);display:flex;align-items:center;gap:10px;">
+                                    <span style="width:6px;height:6px;border-radius:50%;background:#5BA4CF;display:inline-block;flex-shrink:0;"></span>Mika Sanchez
+                                </li>
+                                <li style="color:#ffffff;font-size:15px;padding:10px 0;border-bottom:1px solid rgba(27,108,168,0.2);display:flex;align-items:center;gap:10px;">
+                                    <span style="width:6px;height:6px;border-radius:50%;background:#5BA4CF;display:inline-block;flex-shrink:0;"></span>Cyro Lalusis
+                                </li>
+                                <li style="color:#ffffff;font-size:15px;padding:10px 0;border-bottom:1px solid rgba(27,108,168,0.2);display:flex;align-items:center;gap:10px;">
+                                    <span style="width:6px;height:6px;border-radius:50%;background:#5BA4CF;display:inline-block;flex-shrink:0;"></span>Joseph Layco
+                                </li>
+                                <li style="color:#ffffff;font-size:15px;padding:10px 0;display:flex;align-items:center;gap:10px;">
+                                    <span style="width:6px;height:6px;border-radius:50%;background:#5BA4CF;display:inline-block;flex-shrink:0;"></span>Kristan Roy Uri
+                                </li>
+                            </ul>
+                            <div style="border-top:1px solid rgba(27,108,168,0.2);padding-top:16px;">
+                                <p style="color:rgba(255,255,255,0.5);font-size:12px;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Mentor</p>
+                                <p style="color:rgba(255,255,255,0.85);font-size:15px;margin:0;">Mr. Marvin Atanacio</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
