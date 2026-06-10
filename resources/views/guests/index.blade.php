@@ -1544,74 +1544,35 @@
     <script>
         (function () {
             const searchInput = document.querySelector('input[name="search"]');
-            const tableRows = Array.from(document.querySelectorAll('.guests-table tbody tr[data-guest-name]'));
-            const liveSearchEmpty = document.getElementById('liveSearchEmpty');
-            const showingCount = document.getElementById('showingCount');
             const statusSelect = document.querySelector('select[name="status"]');
             const guestTypeSelect = document.querySelector('select[name="guest_type"]');
             const applyBtn = document.getElementById('filtersApplyBtn');
+            const filterForm = applyBtn ? applyBtn.closest('form') : null;
 
-            if (!searchInput || tableRows.length === 0) {
-                return;
+            // Apply button submits server-side
+            if (applyBtn && filterForm) {
+                applyBtn.addEventListener('click', function () {
+                    filterForm.submit();
+                });
             }
 
-            let appliedFilters = {
-                status: statusSelect ? statusSelect.value : '',
-                guestType: guestTypeSelect ? guestTypeSelect.value : ''
-            };
-
-            const normalize = (value) => value.toLowerCase().trim();
-
-            const filterRows = () => {
-                const query = normalize(searchInput.value);
-                const terms = query === '' ? [] : query.split(/\s+/).filter(Boolean);
-                let visibleCount = 0;
-
-                tableRows.forEach((row) => {
-                    const name = normalize(row.getAttribute('data-guest-name') || '');
-                    const email = normalize(row.getAttribute('data-guest-email') || '');
-                    const rowStatus = row.getAttribute('data-guest-status') || '';
-                    const rowGuestType = row.getAttribute('data-guest-type') || '';
-
-                    const searchable = (name + ' ' + email).trim();
-                    const matchesSearch = terms.length === 0 || terms.every((term) => searchable.includes(term));
-                    const matchesStatus = !appliedFilters.status || appliedFilters.status === rowStatus;
-                    const matchesGuestType = !appliedFilters.guestType || appliedFilters.guestType === rowGuestType;
-                    const isVisible = matchesSearch && matchesStatus && matchesGuestType;
-
-                    row.style.display = isVisible ? '' : 'none';
-
-                    if (isVisible) visibleCount++;
+            // Debounced live search across full dataset
+            if (searchInput && filterForm) {
+                var searchDebounce;
+                searchInput.addEventListener('input', function () {
+                    clearTimeout(searchDebounce);
+                    searchDebounce = setTimeout(function () {
+                        filterForm.submit();
+                    }, 400);
                 });
-
-                if (liveSearchEmpty) liveSearchEmpty.style.display = visibleCount === 0 ? '' : 'none';
-                if (showingCount) {
-                    const total = Number(showingCount.getAttribute('data-total')) || tableRows.length;
-                    showingCount.textContent = 'Showing ' + visibleCount + ' of ' + total + ' guest(s)';
-                }
-            };
-
-            searchInput.addEventListener('input', filterRows);
-
-            if (applyBtn) {
-                applyBtn.addEventListener('click', function () {
-                    appliedFilters.status = statusSelect ? statusSelect.value : '';
-                    appliedFilters.guestType = guestTypeSelect ? guestTypeSelect.value : '';
-                    filterRows();
-
-                    try {
-                        const params = new URLSearchParams(window.location.search);
-                        if (appliedFilters.status) params.set('status', appliedFilters.status); else params.delete('status');
-                        if (appliedFilters.guestType) params.set('guest_type', appliedFilters.guestType); else params.delete('guest_type');
-                        const newUrl = window.location.pathname + '?' + params.toString();
-                        window.history.replaceState({}, '', newUrl);
-                    } catch (err) {
-                        // ignore
+                searchInput.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        clearTimeout(searchDebounce);
+                        filterForm.submit();
                     }
                 });
             }
-
-            filterRows();
         })();
 
         (function () {
