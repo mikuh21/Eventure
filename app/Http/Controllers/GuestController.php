@@ -70,8 +70,8 @@ class GuestController extends Controller
 
         if ($selectedEvent && $search !== '') {
             $guestsQuery->where(function ($query) use ($search): void {
-                $query->where('name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%");
+                $query->where('name', 'ilike', "%{$search}%")
+                    ->orWhere('email', 'ilike', "%{$search}%");
             });
         }
 
