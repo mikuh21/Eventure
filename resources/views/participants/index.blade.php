@@ -1446,7 +1446,7 @@
 
             @if ($participants->hasPages())
                 <div class="eventure-pagination">
-                    {{ $participants->links() }}
+                    {{ $participants->links('vendor.pagination.eventure') }}
                 </div>
             @endif
 

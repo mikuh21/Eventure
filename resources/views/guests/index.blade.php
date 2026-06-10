@@ -1362,7 +1362,7 @@
 
             @if ($guests->hasPages())
                 <div class="eventure-pagination">
-                    {{ $guests->links() }}
+                    {{ $guests->links('vendor.pagination.eventure') }}
                 </div>
             @endif
 
