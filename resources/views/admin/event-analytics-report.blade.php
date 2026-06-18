@@ -414,21 +414,21 @@
                     @php
                         $maxRating = max(array_values($ratingDistribution));
                     @endphp
+                    <table style="width:100%; border-collapse:collapse; margin:0;">
                     @for ($rating = 5; $rating >= 1; $rating--)
-                        <div class="rating-row">
-                            <div class="rating-label">
-                                @for ($i = 1; $i <= $rating; $i++)
-                                    <span style="font-family: DejaVu Sans, sans-serif; font-size: 13px; color: #1b6ca8; display: inline;">★</span>
-                                @endfor
-                            </div>
-                            <div class="rating-count">{{ $ratingDistribution[$rating] }}</div>
-                            <div class="distribution-bar">
-                                @if ($maxRating > 0)
-                                    <div class="distribution-fill" style="width: {{ ($ratingDistribution[$rating] / $maxRating) * 100 }}%;"></div>
-                                @endif
-                            </div>
-                        </div>
+                        <tr style="margin-bottom:8px;">
+                            <td style="width:70px; font-family: DejaVu Sans, sans-serif; font-size:13px; color:#1b6ca8; white-space:nowrap; padding:4px 0;">@for ($i = 1; $i <= $rating; $i++)★@endfor</td>
+                            <td style="width:35px; text-align:right; font-size:11px; padding:4px 4px;">{{ $ratingDistribution[$rating] }}</td>
+                            <td style="padding:4px 8px;">
+                                <div style="background:#e5e7eb; height:16px; border-radius:3px; overflow:hidden;">
+                                    @if ($maxRating > 0)
+                                        <div style="width:{{ ($ratingDistribution[$rating] / $maxRating) * 100 }}%; height:100%; background:#1b6ca8; border-radius:3px;"></div>
+                                    @endif
+                                </div>
+                            </td>
+                        </tr>
                     @endfor
+                    </table>
                 </div>
             </div>
 
