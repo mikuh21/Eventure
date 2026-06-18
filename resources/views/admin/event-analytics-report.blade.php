@@ -14,7 +14,7 @@
             box-sizing: border-box;
         }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: DejaVu Sans, sans-serif;
             color: #333;
             line-height: 1.6;
         }
@@ -380,9 +380,9 @@
                 <div class="summary-card-value">{{ $avgRating > 0 ? $avgRating : '—' }}</div>
                 <div class="summary-card-sub">
                     @if ($avgRating > 0)
-                        <span class="star-rating">
+                        <span style="font-family: DejaVu Sans, sans-serif; font-size: 11px;">
                             @for ($i = 1; $i <= 5; $i++)
-                                <span class="star {{ $i <= round($avgRating) ? 'star-filled' : 'star-empty' }}"></span>
+                                <span style="color: {{ $i <= round($avgRating) ? '#1b6ca8' : '#d1d5db' }};">&#9733;</span>
                             @endfor
                         </span>
                     @else
@@ -417,10 +417,8 @@
                     @for ($rating = 5; $rating >= 1; $rating--)
                         <div class="rating-row">
                             <div class="rating-label">
-                                <span class="star-rating">
-                                    @for ($i = 1; $i <= $rating; $i++)
-                                        <span class="star star-filled"></span>
-                                    @endfor
+                                <span style="font-family: DejaVu Sans, sans-serif; font-size: 11px; color: #1b6ca8;">
+                                    @for ($i = 1; $i <= $rating; $i++)&#9733;@endfor
                                 </span>
                             </div>
                             <div class="rating-count">{{ $ratingDistribution[$rating] }}</div>
