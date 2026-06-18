@@ -197,18 +197,15 @@
             display: inline-block;
             width: 11px;
             height: 11px;
-            margin-right: 1px;
-            position: relative;
+            margin-right: 2px;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            -webkit-clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
         }
-        .star svg {
-            width: 11px;
-            height: 11px;
+        .star-filled {
+            background-color: #1b6ca8;
         }
-        .star-filled svg path {
-            fill: #1b6ca8;
-        }
-        .star-empty svg path {
-            fill: #d1d5db;
+        .star-empty {
+            background-color: #d1d5db;
         }
         .rating-count {
             width: 35px;
@@ -385,9 +382,7 @@
                     @if ($avgRating > 0)
                         <span class="star-rating">
                             @for ($i = 1; $i <= 5; $i++)
-                                <span class="star {{ $i <= round($avgRating) ? 'star-filled' : 'star-empty' }}">
-                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7-6.2-3.8L5.8 21l1.6-7L2 9.2l7.1-.6L12 2z"/></svg>
-                                </span>
+                                <span class="star {{ $i <= round($avgRating) ? 'star-filled' : 'star-empty' }}"></span>
                             @endfor
                         </span>
                     @else
@@ -424,9 +419,7 @@
                             <div class="rating-label">
                                 <span class="star-rating">
                                     @for ($i = 1; $i <= $rating; $i++)
-                                        <span class="star star-filled">
-                                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7-6.2-3.8L5.8 21l1.6-7L2 9.2l7.1-.6L12 2z"/></svg>
-                                        </span>
+                                        <span class="star star-filled"></span>
                                     @endfor
                                 </span>
                             </div>
