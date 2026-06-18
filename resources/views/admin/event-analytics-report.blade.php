@@ -418,7 +418,7 @@
                         <div class="rating-row">
                             <div class="rating-label">
                                 @for ($i = 1; $i <= $rating; $i++)
-                                    <span style="font-family: DejaVu Sans, sans-serif; font-size: 13px; color: #1b6ca8; display: inline;">&#9733;</span>
+                                    <span style="font-family: DejaVu Sans, sans-serif; font-size: 13px; color: #1b6ca8; display: inline;">★</span>
                                 @endfor
                             </div>
                             <div class="rating-count">{{ $ratingDistribution[$rating] }}</div>
