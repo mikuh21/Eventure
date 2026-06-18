@@ -185,9 +185,30 @@
             margin-bottom: 8px;
         }
         .rating-label {
-            width: 50px;
+            width: 65px;
             font-weight: 600;
             font-size: 11px;
+        }
+        .star-rating {
+            display: inline-block;
+            white-space: nowrap;
+        }
+        .star {
+            display: inline-block;
+            width: 11px;
+            height: 11px;
+            margin-right: 1px;
+            position: relative;
+        }
+        .star svg {
+            width: 11px;
+            height: 11px;
+        }
+        .star-filled svg path {
+            fill: #1b6ca8;
+        }
+        .star-empty svg path {
+            fill: #d1d5db;
         }
         .rating-count {
             width: 35px;
@@ -362,7 +383,13 @@
                 <div class="summary-card-value">{{ $avgRating > 0 ? $avgRating : '—' }}</div>
                 <div class="summary-card-sub">
                     @if ($avgRating > 0)
-                        {!! implode('', array_fill(0, round($avgRating), '&#9733;')) !!}{!! implode('', array_fill(0, 5 - round($avgRating), '&#9734;')) !!}
+                        <span class="star-rating">
+                            @for ($i = 1; $i <= 5; $i++)
+                                <span class="star {{ $i <= round($avgRating) ? 'star-filled' : 'star-empty' }}">
+                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7-6.2-3.8L5.8 21l1.6-7L2 9.2l7.1-.6L12 2z"/></svg>
+                                </span>
+                            @endfor
+                        </span>
                     @else
                         No ratings
                     @endif
@@ -395,7 +422,13 @@
                     @for ($rating = 5; $rating >= 1; $rating--)
                         <div class="rating-row">
                             <div class="rating-label">
-                                {!! implode('', array_fill(0, $rating, '&#9733;')) !!}
+                                <span class="star-rating">
+                                    @for ($i = 1; $i <= $rating; $i++)
+                                        <span class="star star-filled">
+                                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7-6.2-3.8L5.8 21l1.6-7L2 9.2l7.1-.6L12 2z"/></svg>
+                                        </span>
+                                    @endfor
+                                </span>
                             </div>
                             <div class="rating-count">{{ $ratingDistribution[$rating] }}</div>
                             <div class="distribution-bar">
