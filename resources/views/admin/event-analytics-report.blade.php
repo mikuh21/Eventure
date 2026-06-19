@@ -5,7 +5,7 @@
     <title>Event Report - {{ $event->title }}</title>
     <style>
         @page {
-            margin: 30px;
+            margin: 0;
             padding: 0;
         }
         * {
@@ -19,7 +19,7 @@
             line-height: 1.6;
         }
         .page {
-            padding: 0;
+            padding: 30px;
             background: #fff;
             position: relative;
             display: block;
@@ -283,7 +283,7 @@
         }
         .page-break {
             page-break-before: always;
-            padding-top: 0;
+            padding-top: 50px;
             margin-top: 0;
         }
         .page2-branding {
