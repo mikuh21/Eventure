@@ -373,6 +373,33 @@ class AdminController extends Controller
             1 => $evaluations->where('rating', 1)->count(),
         ];
 
+        // College/department breakdown - STRICTLY FOR EVENT 36 (NU Lipa Research Congress) ONLY
+        $collegeBreakdown = null;
+        if ($event->id === 36) {
+            $collegeOrder = ['SACE', 'SABM', 'SAHS', 'SHS'];
+            $collegeBreakdown = [];
+            foreach ($collegeOrder as $collegeCode) {
+                $collegeParticipants = $eventParticipants->where('college', $collegeCode);
+                $collegeTotal = $collegeParticipants->count();
+                $collegeAttended = $collegeParticipants->where('attended', true)->count();
+                $collegeAttendanceRate = $collegeTotal > 0 ? round(($collegeAttended / $collegeTotal) * 100, 1) : 0;
+                $collegeEvaluations = $evaluations->whereIn('participant_id', $collegeParticipants->pluck('id'));
+                $collegeEvalTotal = $collegeEvaluations->count();
+                $collegeResponseRate = $collegeTotal > 0 ? round(($collegeEvalTotal / $collegeTotal) * 100, 1) : 0;
+                $collegeAvgRating = $collegeEvalTotal > 0 ? round($collegeEvaluations->avg('rating'), 1) : 0;
+
+                $collegeBreakdown[] = [
+                    'code' => $collegeCode,
+                    'total' => $collegeTotal,
+                    'attended' => $collegeAttended,
+                    'attendance_rate' => $collegeAttendanceRate,
+                    'eval_total' => $collegeEvalTotal,
+                    'response_rate' => $collegeResponseRate,
+                    'avg_rating' => $collegeAvgRating,
+                ];
+            }
+        }
+
         $pdf = Pdf::loadView('admin.event-analytics-report', [
             'event' => $event,
             'totalParticipants' => $totalParticipants,
@@ -383,6 +410,7 @@ class AdminController extends Controller
             'avgRating' => $avgRating,
             'questions' => $questions,
             'ratingDistribution' => $ratingDistribution,
+            'collegeBreakdown' => $collegeBreakdown,
         ]);
 
         $filename = 'event-report-' . \Illuminate\Support\Str::slug($event->title) . '-' . now()->format('Y-m-d-His') . '.pdf';

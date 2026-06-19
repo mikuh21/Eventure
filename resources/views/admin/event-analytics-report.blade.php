@@ -432,6 +432,46 @@
                 </div>
             </div>
 
+            @if ($collegeBreakdown)
+                <div class="page-break">
+                    <div class="page2-branding">
+                        <div class="page2-branding-logo">
+                            <img src="{{ public_path('eventure-signinlogo.png') }}" alt="Eventure logo">
+                        </div>
+                        <div class="page2-branding-text">
+                            <div class="page2-branding-name">Eventure</div>
+                        </div>
+                    </div>
+                    <div class="section-title">Attendance &amp; Evaluation by College/Department</div>
+                    <table style="width:100%; border-collapse:collapse; margin-bottom:10px;">
+                        <thead>
+                            <tr>
+                                <th>College</th>
+                                <th>Participants</th>
+                                <th>Attended</th>
+                                <th>Attendance Rate</th>
+                                <th>Responses</th>
+                                <th>Response Rate</th>
+                                <th>Avg. Rating</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($collegeBreakdown as $college)
+                                <tr>
+                                    <td style="font-weight:700; color:#0a2342;">{{ $college['code'] }}</td>
+                                    <td>{{ $college['total'] }}</td>
+                                    <td>{{ $college['attended'] }}</td>
+                                    <td>{{ $college['attendance_rate'] }}%</td>
+                                    <td>{{ $college['eval_total'] }}</td>
+                                    <td>{{ $college['response_rate'] }}%</td>
+                                    <td>{{ $college['avg_rating'] > 0 ? $college['avg_rating'] : '—' }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
+
         @else
             <div class="section-title">Evaluation Data</div>
             <div class="empty-state">
