@@ -147,7 +147,6 @@
         }
         thead {
             display: table-header-group;
-            padding-top: 30px;
         }
         tbody tr {
             page-break-inside: avoid;
@@ -155,6 +154,7 @@
         th {
             background: #f0f4f8;
             padding: 8px;
+            padding-top: 24px;
             text-align: left;
             font-size: 10px;
             font-weight: 700;
