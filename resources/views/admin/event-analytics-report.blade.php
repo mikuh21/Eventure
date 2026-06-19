@@ -143,7 +143,10 @@
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 10px;
-            page-break-inside: avoid;
+            page-break-inside: auto;
+        }
+        thead {
+            display: table-header-group;
         }
         tbody tr {
             page-break-inside: avoid;
@@ -280,7 +283,7 @@
         }
         .page-break {
             page-break-before: always;
-            padding-top: 30px;
+            padding-top: 50px;
             margin-top: 0;
         }
         .page2-branding {
