@@ -147,6 +147,7 @@
         }
         thead {
             display: table-header-group;
+            padding-top: 30px;
         }
         tbody tr {
             page-break-inside: avoid;
