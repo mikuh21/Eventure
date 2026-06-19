@@ -400,6 +400,33 @@ class AdminController extends Controller
             }
         }
 
+        // Full participant list grouped by Faculty/Student, sorted by college - STRICTLY FOR EVENT 36 ONLY
+        $facultyList = null;
+        $studentList = null;
+        if ($event->id === 36) {
+            $collegeOrderMap = ['SACE' => 1, 'SABM' => 2, 'SAHS' => 3, 'SHS' => 4];
+            $buildRow = function ($participant) {
+                return [
+                    'name' => $participant->name,
+                    'type' => $participant->participant_type === 'faculty' ? 'Faculty' : 'Student',
+                    'college' => $participant->college ?: 'N/A',
+                    'answered_survey' => $participant->evaluations->count() > 0 ? 'Yes' : 'No',
+                ];
+            };
+
+            $facultyList = $eventParticipants
+                ->where('participant_type', 'faculty')
+                ->sortBy(fn ($p) => $collegeOrderMap[$p->college] ?? 99)
+                ->values()
+                ->map($buildRow);
+
+            $studentList = $eventParticipants
+                ->where('participant_type', 'student')
+                ->sortBy(fn ($p) => $collegeOrderMap[$p->college] ?? 99)
+                ->values()
+                ->map($buildRow);
+        }
+
         $pdf = Pdf::loadView('admin.event-analytics-report', [
             'event' => $event,
             'totalParticipants' => $totalParticipants,
@@ -411,6 +438,8 @@ class AdminController extends Controller
             'questions' => $questions,
             'ratingDistribution' => $ratingDistribution,
             'collegeBreakdown' => $collegeBreakdown,
+            'facultyList' => $facultyList,
+            'studentList' => $studentList,
         ]);
 
         $filename = 'event-report-' . \Illuminate\Support\Str::slug($event->title) . '-' . now()->format('Y-m-d-His') . '.pdf';
