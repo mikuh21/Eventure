@@ -154,7 +154,7 @@
         th {
             background: #f0f4f8;
             padding: 8px;
-            padding-top: 24px;
+            border-top: 24px solid #ffffff;
             text-align: left;
             font-size: 10px;
             font-weight: 700;
