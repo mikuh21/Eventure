@@ -1883,7 +1883,10 @@
                         setFormType(registrationTypeInput.value, currentEventType);
                         closeRegistrationModal();
                     } else {
-                        showToast(data.message || 'Registration failed. Please check your details.', 'error');
+                        const validationMessage = data.errors
+                            ? Object.values(data.errors).flat()[0]
+                            : null;
+                        showToast(validationMessage || data.message || 'Registration failed. Please check your details.', 'error');
                     }
                 } catch (error) {
                     console.error(error);

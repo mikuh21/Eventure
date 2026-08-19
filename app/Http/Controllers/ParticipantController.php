@@ -265,9 +265,16 @@ class ParticipantController extends Controller
             'event_id' => ['required', 'exists:events,id'],
             'name' => ['required', 'string', 'max:255'],
             'participant_type' => ['required', Rule::in(['faculty', 'student'])],
-            'email' => ['required', 'email', 'max:255'],
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                Rule::unique('participants', 'email')->where(fn ($query) => $query->where('event_id', $this->input('event_id'))),
+            ],
             'institution' => ['required', 'string', 'max:255'],
             'college' => ['nullable', Rule::in(['SACE', 'SABM', 'SAHS', 'SHS'])],
+        ], [
+            'email.unique' => 'Email is already registered for this event.',
         ]);
 
         $event = Event::findOrFail($validated['event_id']);
