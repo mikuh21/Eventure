@@ -104,6 +104,9 @@ Route::middleware(['auth', 'admin'])->group(function (): void {
     Route::get('participants', [ParticipantController::class, 'index'])
         ->name('participants.index');
 
+    Route::post('events/{event}/participants/attendance', [ParticipantController::class, 'bulkAttendance'])
+        ->name('events.participants.bulk-attendance');
+
     Route::resource('events.participants', ParticipantController::class)
         ->except(['create', 'store']);
 

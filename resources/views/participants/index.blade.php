@@ -1260,6 +1260,54 @@
             color: var(--color-midnight, #0A2342);
             white-space: nowrap;
         }
+        .participant-selection-bar {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px 14px;
+            margin: 14px 0 16px;
+            padding: 10px 12px;
+            border: 1px solid var(--color-sky, #BFDFFF);
+            border-radius: 10px;
+            background: #f8fbff;
+        }
+        .participant-selection-bar .btn {
+            flex-shrink: 0;
+        }
+        .participant-select-all {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--color-midnight, #0A2342);
+            font-family: 'Sora', sans-serif;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .participant-select-all input,
+        .participant-row-checkbox {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--color-ocean, #1B6CA8);
+            cursor: pointer;
+        }
+        .participant-row-checkbox {
+            display: none;
+        }
+        .participant-selection-bar.is-active .participant-row-checkbox {
+            display: inline-block;
+        }
+        .participant-selection-summary {
+            color: var(--color-ocean, #1B6CA8);
+            font-family: 'Sora', sans-serif;
+            font-size: 13px;
+            margin-left: auto;
+        }
+        @media (max-width: 640px) {
+            .participant-selection-summary {
+                width: 100%;
+                margin-left: 0;
+            }
+        }
     </style>
 @endpush
 
@@ -1334,6 +1382,16 @@
 
                 <span class="showing-text" id="showingCount" data-total="{{ $participants->total() }}">Showing {{ $participants->count() }} of {{ $participants->total() }} participant(s)</span>
             </form>
+
+            <div class="participant-selection-bar" id="participantSelectionBar" data-filtered-total="{{ $participants->total() }}" data-event-id="{{ $selectedEvent->id }}">
+                <button class="btn" type="button" id="toggleParticipantSelection">Select</button>
+                <label class="participant-select-all" for="selectAllParticipants">
+                    <input type="checkbox" id="selectAllParticipants" disabled>
+                    <span>Select all filtered participants ({{ number_format($participants->total()) }})</span>
+                </label>
+                <button class="btn btn-primary" type="button" id="markSelectedAttended" hidden>Mark as Attended</button>
+                <span class="participant-selection-summary" id="participantSelectionSummary" aria-live="polite">No participants selected</span>
+            </div>
         @endif
 
         @if (!request('event_id'))
@@ -1352,6 +1410,7 @@
             <table class="participants-table">
                 <thead>
                 <tr>
+                    <th class="participant-selection-column" style="width:5%"><span class="sr-only">Select</span></th>
                     <th style="width:18%">Name</th>
                     <th style="width:20%">Email</th>
                     <th style="width:10%">Role</th>
@@ -1364,7 +1423,7 @@
                 <tbody>
                 @if ($participants->total() === 0)
                     <tr>
-                        <td colspan="7" class="participants-empty-table">No participants registered for this event yet.</td>
+                        <td colspan="8" class="participants-empty-table">No participants registered for this event yet.</td>
                     </tr>
                 @else
                     @foreach ($participants as $participant)
@@ -1375,6 +1434,9 @@
                             data-participant-attendance="{{ $participant->attended ? 'attended' : 'not_attended' }}"
                             data-participant-type="{{ strtolower((string) $participant->participant_type) }}"
                         >
+                            <td class="participant-selection-column">
+                                <input class="participant-row-checkbox" type="checkbox" value="{{ $participant->id }}" aria-label="Select {{ $participant->name }}">
+                            </td>
                             <td>{{ $participant->name }}</td>
                             <td class="cell-muted">{{ $participant->email }}</td>
                             <td>{{ ucfirst($participant->participant_type ?? '—') }}</td>
@@ -1437,7 +1499,7 @@
                         </tr>
                     @endforeach
                     <tr id="liveSearchEmpty" style="display: none;">
-                        <td colspan="7" class="participants-empty-table">No participants match the current filters.</td>
+                        <td colspan="8" class="participants-empty-table">No participants match the current filters.</td>
                     </tr>
                 @endif
                 </tbody>
@@ -1631,6 +1693,17 @@
             <div class="delete-confirm-actions">
                 <button type="button" class="btn-delete-cancel" id="deleteConfirmCancel">Cancel</button>
                 <button type="button" class="btn-delete-confirm" id="deleteConfirmSubmit">Yes, Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="bulkAttendanceModal" class="delete-confirm-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="bulkAttendanceTitle">
+        <div class="delete-confirm-panel">
+            <h2 id="bulkAttendanceTitle" class="delete-confirm-title">Mark Participants as Attended</h2>
+            <p class="delete-confirm-body">Mark <span id="bulkAttendanceCount" class="delete-confirm-name">0</span> selected participant(s) as attended? This will change their attendance status.</p>
+            <div class="delete-confirm-actions">
+                <button type="button" class="btn-delete-cancel" id="bulkAttendanceCancel">Cancel</button>
+                <button type="button" class="btn-delete-confirm btn-approve-confirm" id="bulkAttendanceConfirm">Yes, Mark as Attended</button>
             </div>
         </div>
     </div>
@@ -2483,6 +2556,161 @@
                 const observer = new MutationObserver(hidePageNavigationText);
                 observer.observe(paginationContainer, { childList: true, subtree: true });
             }
+        })();
+
+        (function () {
+            var selectionBar = document.getElementById('participantSelectionBar');
+            if (!selectionBar) {
+                return;
+            }
+
+            var toggleButton = document.getElementById('toggleParticipantSelection');
+            var selectAll = document.getElementById('selectAllParticipants');
+            var markButton = document.getElementById('markSelectedAttended');
+            var summary = document.getElementById('participantSelectionSummary');
+            var bulkModal = document.getElementById('bulkAttendanceModal');
+            var bulkCount = document.getElementById('bulkAttendanceCount');
+            var bulkCancel = document.getElementById('bulkAttendanceCancel');
+            var bulkConfirm = document.getElementById('bulkAttendanceConfirm');
+            var selectedIds = new Set();
+            var allFiltered = false;
+
+            var showSelectionToast = function (message, type) {
+                var toastContainer = document.getElementById('toastContainer');
+                if (!toastContainer) return;
+                var toast = document.createElement('div');
+                toast.className = 'modal-floating-label modal-floating-' + type + ' modal-toast is-visible';
+                toast.textContent = message;
+                toastContainer.appendChild(toast);
+                window.setTimeout(function () {
+                    if (toast.parentNode) toast.parentNode.removeChild(toast);
+                }, 4000);
+            };
+
+            var visibleCheckboxes = function () {
+                return Array.prototype.slice.call(document.querySelectorAll('.participant-row-checkbox'));
+            };
+
+            var selectedCount = function () {
+                return allFiltered ? Number(selectionBar.dataset.filteredTotal || 0) : selectedIds.size;
+            };
+
+            var updateSelectionUi = function () {
+                var count = selectedCount();
+                markButton.hidden = count === 0;
+                summary.textContent = count ? (count + ' participant(s) selected') : 'No participants selected';
+                selectAll.checked = allFiltered;
+            };
+
+            var setSelectionMode = function (enabled) {
+                selectionBar.classList.toggle('is-active', enabled);
+                selectAll.disabled = !enabled;
+                toggleButton.textContent = enabled ? 'Clear Selection' : 'Select';
+                if (!enabled) {
+                    selectedIds.clear();
+                    allFiltered = false;
+                    visibleCheckboxes().forEach(function (checkbox) { checkbox.checked = false; });
+                }
+                updateSelectionUi();
+            };
+
+            toggleButton.addEventListener('click', function () {
+                setSelectionMode(!selectionBar.classList.contains('is-active'));
+            });
+
+            visibleCheckboxes().forEach(function (checkbox) {
+                checkbox.addEventListener('change', function () {
+                    if (this.checked) {
+                        selectedIds.add(this.value);
+                    } else {
+                        selectedIds.delete(this.value);
+                        allFiltered = false;
+                    }
+                    updateSelectionUi();
+                });
+            });
+
+            selectAll.addEventListener('change', function () {
+                allFiltered = this.checked;
+                visibleCheckboxes().forEach(function (checkbox) {
+                    checkbox.checked = allFiltered;
+                    if (allFiltered) {
+                        selectedIds.add(checkbox.value);
+                    } else {
+                        selectedIds.delete(checkbox.value);
+                    }
+                });
+                updateSelectionUi();
+            });
+
+            var closeBulkModal = function () {
+                bulkModal.classList.remove('is-visible');
+                bulkModal.setAttribute('aria-hidden', 'true');
+                document.body.style.overflow = '';
+            };
+
+            markButton.addEventListener('click', function () {
+                var count = selectedCount();
+                if (!count) return;
+                bulkCount.textContent = count;
+                bulkModal.classList.add('is-visible');
+                bulkModal.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
+            });
+
+            bulkCancel.addEventListener('click', closeBulkModal);
+
+            bulkConfirm.addEventListener('click', function () {
+                var filtersForm = document.getElementById('filtersForm');
+                var formData = filtersForm ? new FormData(filtersForm) : new FormData();
+                var payload = {
+                    participant_ids: allFiltered ? [] : Array.from(selectedIds),
+                    select_all: allFiltered,
+                    search: formData.get('search') || '',
+                    attendance: formData.get('attendance') || '',
+                    participant_type: formData.get('participant_type') || ''
+                };
+                var csrfMeta = document.querySelector('meta[name="csrf-token"]');
+
+                bulkConfirm.disabled = true;
+                bulkConfirm.textContent = 'Updating...';
+
+                fetch('{{ route('events.participants.bulk-attendance', $selectedEvent) }}', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfMeta ? csrfMeta.getAttribute('content') : '',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify(payload),
+                    credentials: 'same-origin'
+                }).then(function (response) {
+                    return response.json().then(function (data) {
+                        if (!response.ok) {
+                            throw new Error(data.message || 'Unable to update attendance.');
+                        }
+                        return data;
+                    });
+                }).then(function (data) {
+                    closeBulkModal();
+                    showSelectionToast(data.message || 'Attendance updated successfully.', 'success');
+                    selectedIds.clear();
+                    allFiltered = false;
+                    window.setTimeout(function () { window.location.reload(); }, 1000);
+                }).catch(function (error) {
+                    showSelectionToast(error.message || 'Unable to update attendance.', 'error');
+                }).finally(function () {
+                    bulkConfirm.disabled = false;
+                    bulkConfirm.textContent = 'Yes, Mark as Attended';
+                });
+            });
+
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape' && bulkModal.classList.contains('is-visible')) {
+                    closeBulkModal();
+                }
+            });
         })();
 
             // Attendance toggle click handler

@@ -9,6 +9,7 @@ use App\Models\Event;
 use App\Models\Participant;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
@@ -405,6 +406,70 @@ class ParticipantController extends Controller
         return redirect()
             ->route('events.participants.show', [$event, $participant])
             ->with('status', 'Participant updated successfully.');
+    }
+
+    public function bulkAttendance(Request $request, Event $event)
+    {
+        if (auth()->user()->hasRole('event_staff') && $event->created_by !== auth()->id()) {
+            return response()->json(['message' => 'You do not have permission to modify participants in this event.'], 403);
+        }
+
+        $validated = $request->validate([
+            'participant_ids' => ['nullable', 'array', 'required_without:select_all'],
+            'participant_ids.*' => ['integer', 'distinct'],
+            'select_all' => ['sometimes', 'boolean'],
+            'search' => ['nullable', 'string', 'max:255'],
+            'attendance' => ['nullable', Rule::in(['attended', 'not_attended'])],
+            'participant_type' => ['nullable', Rule::in(['faculty', 'student'])],
+        ]);
+
+        $selectAll = (bool) ($validated['select_all'] ?? false);
+        $participantQuery = Participant::query()->where('event_id', $event->id);
+
+        if ($selectAll) {
+            $search = trim((string) ($validated['search'] ?? ''));
+            if ($search !== '') {
+                $participantQuery->where(function ($query) use ($search): void {
+                    $query->where('name', 'ilike', "%{$search}%")
+                        ->orWhere('email', 'ilike', "%{$search}%");
+                });
+            }
+
+            if (($validated['attendance'] ?? '') !== '') {
+                $participantQuery->where('attended', $validated['attendance'] === 'attended');
+            }
+
+            if (($validated['participant_type'] ?? '') !== '') {
+                $participantQuery->where('participant_type', $validated['participant_type']);
+            }
+        } else {
+            $participantIds = $validated['participant_ids'] ?? [];
+            $matchingIds = (clone $participantQuery)->whereIn('id', $participantIds)->pluck('id');
+
+            if ($matchingIds->count() !== count($participantIds)) {
+                return response()->json(['message' => 'One or more selected participants do not belong to this event.'], 422);
+            }
+
+            $participantQuery->whereIn('id', $participantIds);
+        }
+
+        $selectedCount = (clone $participantQuery)->count();
+        $alreadyAttendedCount = (clone $participantQuery)->where('attended', true)->count();
+
+        DB::transaction(function () use ($participantQuery): void {
+            $participantQuery->where('attended', false)->update(['attended' => true]);
+        });
+
+        $updatedCount = $selectedCount - $alreadyAttendedCount;
+
+        return response()->json([
+            'message' => $updatedCount > 0
+                ? "{$updatedCount} participant(s) marked as attended."
+                : 'All selected participants were already marked as attended.',
+            'selected_count' => $selectedCount,
+            'updated_count' => $updatedCount,
+            'already_attended_count' => $alreadyAttendedCount,
+        ]);
     }
 
     public function destroy(Request $request, Event $event, Participant $participant)
