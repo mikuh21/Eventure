@@ -1310,6 +1310,9 @@
             cursor: pointer;
         }
         .participant-row-checkbox {
+            display: none;
+        }
+        .participant-selection-bar.is-active .participant-row-checkbox {
             display: inline-block;
         }
         .participant-selection-column {
@@ -2595,6 +2598,7 @@
             var bulkConfirm = document.getElementById('bulkAttendanceConfirm');
             var selectedIds = new Set();
             var allFiltered = false;
+            var selectionMode = false;
 
             var showSelectionToast = function (message, type) {
                 var toastContainer = document.getElementById('toastContainer');
@@ -2618,21 +2622,21 @@
 
             var updateSelectionUi = function () {
                 var count = selectedCount();
-                var isActive = selectionBar.classList.contains('is-active');
                 var selectAllLabel = selectAll.closest('.participant-select-all');
 
                 if (selectAllLabel) {
-                    selectAllLabel.hidden = !isActive;
+                    selectAllLabel.hidden = !selectionMode;
                 }
-                markButton.hidden = !isActive;
+                markButton.hidden = !selectionMode;
                 markButton.disabled = count === 0;
-                summary.hidden = !isActive;
+                summary.hidden = !selectionMode;
                 summary.textContent = count ? (count + ' participant(s) selected') : 'No participants selected';
                 selectAll.checked = allFiltered;
                 selectAll.indeterminate = !allFiltered && selectedIds.size > 0;
             };
 
             var setSelectionMode = function (enabled) {
+                selectionMode = enabled;
                 selectionBar.classList.toggle('is-active', enabled);
                 selectAll.disabled = !enabled;
                 toggleButton.textContent = enabled ? 'Cancel Selection' : 'Select';
@@ -2645,12 +2649,15 @@
             };
 
             toggleButton.addEventListener('click', function () {
-                setSelectionMode(!selectionBar.classList.contains('is-active'));
+                setSelectionMode(!selectionMode);
             });
 
             visibleCheckboxes().forEach(function (checkbox) {
                 checkbox.addEventListener('change', function () {
                     if (this.checked) {
+                        if (!selectionMode) {
+                            setSelectionMode(true);
+                        }
                         selectedIds.add(this.value);
                     } else {
                         selectedIds.delete(this.value);
