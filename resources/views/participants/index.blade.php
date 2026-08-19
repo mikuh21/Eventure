@@ -1264,11 +1264,11 @@
             display: flex;
             align-items: center;
             flex-wrap: wrap;
-            gap: 10px 14px;
+            gap: 12px;
             margin: 14px 0 16px;
-            padding: 10px 12px;
+            padding: 6px 12px;
             border: 1px solid var(--color-sky, #BFDFFF);
-            border-radius: 10px;
+            border-radius: 8px;
             background: #f8fbff;
         }
         .participant-selection-bar:not(.is-active) {
