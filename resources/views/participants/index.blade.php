@@ -1310,9 +1310,6 @@
             cursor: pointer;
         }
         .participant-row-checkbox {
-            display: none;
-        }
-        .participant-selection-bar.is-active .participant-row-checkbox {
             display: inline-block;
         }
         .participant-selection-column {
