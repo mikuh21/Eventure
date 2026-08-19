@@ -1312,9 +1312,6 @@
         .participant-row-checkbox {
             display: none;
         }
-        .participant-selection-bar.is-active .participant-row-checkbox {
-            display: inline-block;
-        }
         .participant-selection-column {
             text-align: center;
             vertical-align: middle;
@@ -2616,6 +2613,12 @@
                 return Array.prototype.slice.call(document.querySelectorAll('.participant-row-checkbox'));
             };
 
+            var updateRowCheckboxVisibility = function () {
+                visibleCheckboxes().forEach(function (checkbox) {
+                    checkbox.style.display = selectionMode ? 'inline-block' : 'none';
+                });
+            };
+
             var selectedCount = function () {
                 return allFiltered ? Number(selectionBar.dataset.filteredTotal || 0) : selectedIds.size;
             };
@@ -2645,6 +2648,7 @@
                     allFiltered = false;
                     visibleCheckboxes().forEach(function (checkbox) { checkbox.checked = false; });
                 }
+                updateRowCheckboxVisibility();
                 updateSelectionUi();
             };
 
