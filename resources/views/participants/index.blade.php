@@ -1331,7 +1331,7 @@
     @php
         $contextEvent = $selectedEvent ?? $event;
         $formAction = $event ? route('events.participants.index', $event) : route('participants.index');
-        $clearLink = $event ? route('events.participants.index', $event) : route('participants.index');
+        $clearLink = route('participants.index');
     @endphp
 
     <div class="card">
@@ -1349,7 +1349,7 @@
             <select id="event_id" name="event_id" class="filter-select" onchange="this.form.submit()">
                 <option value="">-- Select an Event --</option>
                 @foreach ($events as $item)
-                    <option value="{{ $item->id }}" {{ (string) request('event_id') === (string) $item->id ? 'selected' : '' }}>
+                    <option value="{{ $item->id }}" {{ $selectedEvent && (string) $selectedEvent->id === (string) $item->id ? 'selected' : '' }}>
                         {{ $item->title }} - {{ $item->getStatus() }} ({{ $item->dateRangeLabel() }})
                     </option>
                 @endforeach
@@ -1410,7 +1410,7 @@
             </div>
         @endif
 
-        @if (!request('event_id'))
+        @if (! $selectedEvent)
             <div class="participants-empty-select">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
