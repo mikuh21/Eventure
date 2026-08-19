@@ -2574,6 +2574,7 @@
             }
         })();
 
+        @if ($selectedEvent)
         (function () {
             var selectionBar = document.getElementById('participantSelectionBar');
             if (!selectionBar) {
@@ -2737,6 +2738,7 @@
                 }
             });
         })();
+        @endif
 
             // Attendance toggle click handler
             document.querySelectorAll('.badge-attended-toggle').forEach(function (badge) {
