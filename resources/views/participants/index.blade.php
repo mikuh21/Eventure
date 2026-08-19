@@ -1273,7 +1273,7 @@
         }
         .participant-selection-bar:not(.is-active) {
             margin-top: 14px;
-            margin-bottom: 0;
+            margin-bottom: 18px;
             padding: 0;
             border: 0;
             background: transparent;
@@ -1285,6 +1285,10 @@
         }
         .participant-selection-bar .btn {
             flex-shrink: 0;
+        }
+        .participant-selection-bar #toggleParticipantSelection,
+        .participant-selection-bar #markSelectedAttended {
+            font-family: 'Sora', sans-serif;
         }
         .participant-select-all {
             display: inline-flex;
