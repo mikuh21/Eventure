@@ -1271,6 +1271,18 @@
             border-radius: 10px;
             background: #f8fbff;
         }
+        .participant-selection-bar:not(.is-active) {
+            margin-top: 14px;
+            margin-bottom: 0;
+            padding: 0;
+            border: 0;
+            background: transparent;
+        }
+        .participant-selection-bar:not(.is-active) .participant-select-all,
+        .participant-selection-bar:not(.is-active) #markSelectedAttended,
+        .participant-selection-bar:not(.is-active) .participant-selection-summary {
+            display: none;
+        }
         .participant-selection-bar .btn {
             flex-shrink: 0;
         }
@@ -1295,6 +1307,10 @@
         }
         .participant-selection-bar.is-active .participant-row-checkbox {
             display: inline-block;
+        }
+        .participant-selection-column {
+            text-align: center;
+            vertical-align: middle;
         }
         .participant-selection-summary {
             color: var(--color-ocean, #1B6CA8);
@@ -1385,12 +1401,12 @@
 
             <div class="participant-selection-bar" id="participantSelectionBar" data-filtered-total="{{ $participants->total() }}" data-event-id="{{ $selectedEvent->id }}">
                 <button class="btn" type="button" id="toggleParticipantSelection">Select</button>
-                <label class="participant-select-all" for="selectAllParticipants">
+                <label class="participant-select-all" for="selectAllParticipants" hidden>
                     <input type="checkbox" id="selectAllParticipants" disabled>
                     <span>Select all filtered participants ({{ number_format($participants->total()) }})</span>
                 </label>
                 <button class="btn btn-primary" type="button" id="markSelectedAttended" hidden>Mark as Attended</button>
-                <span class="participant-selection-summary" id="participantSelectionSummary" aria-live="polite">No participants selected</span>
+                <span class="participant-selection-summary" id="participantSelectionSummary" aria-live="polite" hidden>No participants selected</span>
             </div>
         @endif
 
@@ -2597,15 +2613,24 @@
 
             var updateSelectionUi = function () {
                 var count = selectedCount();
-                markButton.hidden = count === 0;
+                var isActive = selectionBar.classList.contains('is-active');
+                var selectAllLabel = selectAll.closest('.participant-select-all');
+
+                if (selectAllLabel) {
+                    selectAllLabel.hidden = !isActive;
+                }
+                markButton.hidden = !isActive;
+                markButton.disabled = count === 0;
+                summary.hidden = !isActive;
                 summary.textContent = count ? (count + ' participant(s) selected') : 'No participants selected';
                 selectAll.checked = allFiltered;
+                selectAll.indeterminate = !allFiltered && selectedIds.size > 0;
             };
 
             var setSelectionMode = function (enabled) {
                 selectionBar.classList.toggle('is-active', enabled);
                 selectAll.disabled = !enabled;
-                toggleButton.textContent = enabled ? 'Clear Selection' : 'Select';
+                toggleButton.textContent = enabled ? 'Cancel Selection' : 'Select';
                 if (!enabled) {
                     selectedIds.clear();
                     allFiltered = false;
