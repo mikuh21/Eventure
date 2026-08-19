@@ -269,7 +269,7 @@ class ParticipantController extends Controller
                 'required',
                 'email',
                 'max:255',
-                Rule::unique('participants', 'email')->where(fn ($query) => $query->where('event_id', $this->input('event_id'))),
+                Rule::unique('participants', 'email')->where(fn ($query) => $query->where('event_id', $request->input('event_id'))),
             ],
             'institution' => ['required', 'string', 'max:255'],
             'college' => ['nullable', Rule::in(['SACE', 'SABM', 'SAHS', 'SHS'])],
