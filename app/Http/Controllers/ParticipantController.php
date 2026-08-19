@@ -50,8 +50,8 @@ class ParticipantController extends Controller
         $selectedEvent = null;
         $participants = collect();
 
-        if ($request->filled('event_id')) {
-            $selectedEvent = Event::find((int) $request->query('event_id'));
+        if ($request->filled('event_id') || $event) {
+            $selectedEvent = $event ?: Event::find((int) $request->query('event_id'));
 
             // Event Staff can only view participants of events they created
             if ($selectedEvent && auth()->check() && auth()->user()->hasRole('event_staff') && $selectedEvent->created_by !== auth()->id()) {
