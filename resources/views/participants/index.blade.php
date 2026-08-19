@@ -1289,6 +1289,9 @@
         .participant-selection-bar #toggleParticipantSelection,
         .participant-selection-bar #markSelectedAttended {
             font-family: 'Sora', sans-serif;
+            font-size: 13px;
+            padding: 6px 12px;
+            line-height: 1.2;
         }
         .participant-select-all {
             display: inline-flex;
