@@ -1266,7 +1266,7 @@
             flex-wrap: wrap;
             gap: 12px;
             margin: 14px 0 16px;
-            padding: 2px 8px;
+            padding: 8px 8px;
             border: 1px solid var(--color-sky, #BFDFFF);
             border-radius: 8px;
             background: #f8fbff;
