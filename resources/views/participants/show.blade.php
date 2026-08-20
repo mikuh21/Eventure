@@ -614,9 +614,21 @@
                             if (str_starts_with($participantPhotoPath, 'http://') || str_starts_with($participantPhotoPath, 'https://')) {
                                 $participantPhotoUrl = $participantPhotoPath;
                             } else {
-                                $participantPhotoUrl = \Illuminate\Support\Facades\Storage::disk('participant-photos')->exists($participantPhotoPath)
-                                    ? \Illuminate\Support\Facades\Storage::disk('participant-photos')->url($participantPhotoPath)
-                                    : null;
+                                try {
+                                    // Extract just the filename if path includes directory prefix
+                                    $fileName = basename($participantPhotoPath);
+                                    
+                                    // Try to get URL from participant-photos disk
+                                    if (\Illuminate\Support\Facades\Storage::disk('participant-photos')->exists($fileName)) {
+                                        $participantPhotoUrl = \Illuminate\Support\Facades\Storage::disk('participant-photos')->url($fileName);
+                                    } elseif (\Illuminate\Support\Facades\Storage::disk('s3')->exists($participantPhotoPath)) {
+                                        // Fallback to default s3 disk with full path
+                                        $participantPhotoUrl = \Illuminate\Support\Facades\Storage::disk('s3')->url($participantPhotoPath);
+                                    }
+                                } catch (\Exception $e) {
+                                    // Silently handle storage errors, show no photo
+                                    $participantPhotoUrl = null;
+                                }
                             }
                         }
                     @endphp
