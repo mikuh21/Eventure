@@ -29,6 +29,10 @@ function initializeParticipantPhotoCropper() {
                         <div class="participant-photo-crop-dialog" role="dialog" aria-modal="true" aria-labelledby="participantPhotoCropTitle">
                             <h2 class="participant-photo-crop-title" id="participantPhotoCropTitle">Participant Photo</h2>
                             <canvas class="participant-photo-crop-canvas" width="640" height="640"></canvas>
+                            <div class="participant-photo-zoom-actions" aria-label="Photo zoom controls">
+                                <button type="button" class="participant-photo-crop-action" data-photo-zoom="out" aria-label="Zoom out">-</button>
+                                <button type="button" class="participant-photo-crop-action" data-photo-zoom="in" aria-label="Zoom in">+</button>
+                            </div>
                             <p class="participant-photo-crop-help">Drag to reposition or pinch to zoom.</p>
                             <div class="participant-photo-crop-actions">
                                 <button type="button" class="participant-photo-crop-action" data-photo-crop-cancel>Cancel</button>
@@ -95,6 +99,8 @@ function initializeParticipantPhotoCropper() {
                         const point = pointFromEvent(event);
                         zoom(event.deltaY < 0 ? 1.08 : 0.92, point.x, point.y);
                     }, { passive: false });
+                    overlay.querySelector('[data-photo-zoom="out"]').addEventListener('click', () => zoom(0.9));
+                    overlay.querySelector('[data-photo-zoom="in"]').addEventListener('click', () => zoom(1.1));
 
                     const close = () => overlay.remove();
                     overlay.querySelector('[data-photo-crop-cancel]').addEventListener('click', close);
