@@ -1747,7 +1747,9 @@
             link.remove();
         };
 
-        const renderFaceDataUrl = async (selector) => {
+        const isIOSPlatform = /iP(hone|od|ad)/.test(navigator.userAgent) || (navigator.platform && /MacIntel/.test(navigator.platform) && navigator.maxTouchPoints > 1);
+
+        const renderFaceDataUrl = async (selector, iosQrSizing = false) => {
             const source = document.querySelector(selector);
 
             if (!source) {
@@ -1774,6 +1776,19 @@
             clone.style.width = '380px';
             clone.style.height = '220px';
             clone.style.overflow = 'hidden';
+
+            if (iosQrSizing) {
+                clone.querySelectorAll('img.qr-thumb, img.qr-large').forEach((qrImage) => {
+                    const qrSize = qrImage.classList.contains('qr-large') ? '110px' : '60px';
+                    qrImage.style.setProperty('width', qrSize, 'important');
+                    qrImage.style.setProperty('height', qrSize, 'important');
+                    qrImage.style.setProperty('min-width', qrSize, 'important');
+                    qrImage.style.setProperty('min-height', qrSize, 'important');
+                    qrImage.style.setProperty('max-width', qrSize, 'important');
+                    qrImage.style.setProperty('max-height', qrSize, 'important');
+                    qrImage.style.setProperty('flex', '0 0 auto', 'important');
+                });
+            }
 
             host.appendChild(clone);
             document.body.appendChild(host);
@@ -1817,9 +1832,9 @@
                 try {
                     setDownloadState(true, 'Preparing your ID...');
                     await waitForCardAssets();
-                    const frontDataUrl = await renderFaceDataUrl('.flip-card-front');
+                    const frontDataUrl = await renderFaceDataUrl('.flip-card-front', isIOSPlatform);
                     await new Promise(r => setTimeout(r, 800));
-                    const backDataUrl = await renderFaceDataUrl('.flip-card-back');
+                    const backDataUrl = await renderFaceDataUrl('.flip-card-back', isIOSPlatform);
                     
                     // build and show modal
                     var existing = document.getElementById('saveIdModal'); if (existing) existing.remove();
@@ -1836,7 +1851,6 @@
                     overlay.querySelector('.save-id-modal-close').addEventListener('click', ()=>overlay.remove());
 
                     var banner = overlay.querySelector('.save-id-modal-banner');
-                    var isIOSPlatform = /iP(hone|od|ad)/.test(navigator.userAgent) || (navigator.platform && /MacIntel/.test(navigator.platform) && navigator.maxTouchPoints > 1);
                     var isAndroidPlatform = /Android/i.test(navigator.userAgent);
                     if (isIOSPlatform) banner.textContent = 'Long press each image and tap Save to Photos to save your Digital ID';
                     if (isAndroidPlatform){
