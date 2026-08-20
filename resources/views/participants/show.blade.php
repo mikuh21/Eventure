@@ -614,8 +614,8 @@
                             if (str_starts_with($participantPhotoPath, 'http://') || str_starts_with($participantPhotoPath, 'https://')) {
                                 $participantPhotoUrl = $participantPhotoPath;
                             } else {
-                                $participantPhotoUrl = \Illuminate\Support\Facades\Storage::disk('s3')->exists($participantPhotoPath)
-                                    ? \Illuminate\Support\Facades\Storage::disk('s3')->url($participantPhotoPath)
+                                $participantPhotoUrl = \Illuminate\Support\Facades\Storage::disk('participant-photos')->exists($participantPhotoPath)
+                                    ? \Illuminate\Support\Facades\Storage::disk('participant-photos')->url($participantPhotoPath)
                                     : null;
                             }
                         }
