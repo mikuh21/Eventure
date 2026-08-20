@@ -738,6 +738,7 @@ class EventController extends Controller
             'meet_link' => $validated['meet_link'] ?? $event?->meet_link,
             'template_url' => $validated['template_url'] ?? $event?->template_url,
             'keywords' => $this->normalizeKeywords($validated['keywords'] ?? $event?->keywords),
+            'auto_activate_evaluation' => (bool) ($validated['auto_activate_evaluation'] ?? $event?->auto_activate_evaluation ?? true),
             'auto_approve' => (bool) ($validated['auto_approve'] ?? $event?->auto_approve ?? false),
         ];
 

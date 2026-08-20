@@ -16,4 +16,4 @@ cmds = [
   "npm run build"
 ]
 [start]
-cmd = "php -c php-ini/uploads.ini artisan config:clear && php -c php-ini/uploads.ini artisan serve --host=0.0.0.0 --port=$PORT"
+cmd = "php -c php-ini/uploads.ini artisan migrate --force && php -c php-ini/uploads.ini artisan config:clear && php -c php-ini/uploads.ini artisan serve --host=0.0.0.0 --port=$PORT"

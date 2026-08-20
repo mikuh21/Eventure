@@ -360,7 +360,7 @@
 </div>
 
             <div class="form-group">
-    <label for="auto_approve">Auto-Approve</label>
+    <label for="auto_approve">Auto-Approve Participants</label>
     <div style="display:flex;align-items:center;gap:8px;">
         <input type="hidden" name="auto_approve" value="0">
         <input type="checkbox" id="auto_approve" name="auto_approve" value="1" {{ old('auto_approve', $event->auto_approve ?? false) ? 'checked' : '' }} style="width:14px;height:14px;cursor:pointer;flex-shrink:0;">
