@@ -23,6 +23,7 @@ class Participant extends Model
         'digital_id_verified_at',
         'status',
         'attended',
+        'photo_path',
     ];
 
     protected $casts = [

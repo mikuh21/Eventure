@@ -577,6 +577,14 @@
                     <span class="attendance-badge {{ $participant->attended ? 'attendance-yes' : 'attendance-no' }}">
                         {{ $participant->attended ? 'Attended' : 'Not Attended' }}
                     </span>
+                                <div>
+                                    <p class="profile-item-label">Photo</p>
+                                    @if ($participant->photo_path)
+                                        <img src="{{ Storage::disk('participant-photos')->url($participant->photo_path) }}" alt="Participant Photo" style="width: 150px; height: 150px; object-fit: cover; border-radius: 8px;">
+                                    @else
+                                        <p class="profile-item-value" style="color: #9ca3af;">No photo submitted</p>
+                                    @endif
+                                </div>
                 </div>
             </div>
         </div>

@@ -1591,6 +1591,7 @@
                 </div>
 
                 <form class="participant-modal-form" action="{{ route('events.participants.store', $selectedEvent) }}" method="POST">
+                                    <form class="participant-modal-form" action="{{ route('events.participants.store', $selectedEvent) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <input type="hidden" name="redirect_to" value="{{ route('events.participants.index', $selectedEvent) }}?event_id={{ $selectedEvent->id }}">
 
@@ -1627,6 +1628,20 @@
                             <option value="SAHS" {{ old('college') === 'SAHS' ? 'selected' : '' }}>SAHS</option>
                             <option value="SHS" {{ old('college') === 'SHS' ? 'selected' : '' }}>SHS</option>
                             <option value="N/A" {{ old('college') === 'N/A' ? 'selected' : '' }}>N/A</option>
+                                            <div class="field">
+                                                <label>Photo</label>
+                                                <div class="photo-input-wrapper">
+                                                    <button class="btn btn-secondary" type="button" id="choosePhotoBtn">Choose from Photos</button>
+                                                    <button class="btn btn-secondary" type="button" id="takePhotoBtn">Take Photo</button>
+                                                    <input type="hidden" id="photoDataInput" name="photo">
+                                                    <div id="photoPreview" style="display: none; margin-top: 10px;">
+                                                        <img id="photoImg" style="max-width: 200px; max-height: 200px;">
+                                                        <p id="photoRemove" style="cursor: pointer; color: #e74c3c; text-decoration: underline;">Remove Photo</p>
+                                                                        <input type="file" id="photoFileInput" name="photo" style="display: none;" accept="image/*">
+                                                    </div>
+                                                </div>
+                                            </div>
+
                         </select>
                     </div>
 

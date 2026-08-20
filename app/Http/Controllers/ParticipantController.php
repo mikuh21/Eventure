@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class ParticipantController extends Controller
@@ -213,8 +214,12 @@ class ParticipantController extends Controller
                 ->withErrors(['registration' => $message]);
         }
 
+        $validatedData = $request->validated();
+        $photoPath = $this->handlePhotoStorage($request);
+
         $participant = $event->participants()->create([
-            ...$request->validated(),
+            ...$validatedData,
+            'photo_path' => $photoPath,
             'attended' => false,
             'status' => 'approved',
             'approved_at' => now(),
@@ -273,6 +278,7 @@ class ParticipantController extends Controller
             ],
             'institution' => ['required', 'string', 'max:255'],
             'college' => ['nullable', Rule::in(['SACE', 'SABM', 'SAHS', 'SHS', 'N/A'])],
+                    'photo' => ['nullable', 'image', 'max:5120'],
         ], [
             'email.unique' => 'Email is already registered for this event.',
         ]);
@@ -613,5 +619,16 @@ class ParticipantController extends Controller
     private function ensureParticipantBelongsToEvent(Event $event, Participant $participant): void
     {
         abort_if($participant->event_id !== $event->id, 404);
+    }
+
+    private function handlePhotoStorage(Request $request): ?string
+    {
+        if (!$request->hasFile('photo')) {
+            return null;
+        }
+
+        $filename = Str::random(40) . '.' . $request->file('photo')->getClientOriginalExtension();
+        Storage::disk('participant-photos')->putFileAs('', $request->file('photo'), $filename);
+        return $filename;
     }
 }
