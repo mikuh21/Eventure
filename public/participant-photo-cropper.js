@@ -7,11 +7,20 @@ function initializeParticipantPhotoCropper() {
         if (input.dataset.photoCropperInitialized === 'true') return;
         input.dataset.photoCropperInitialized = 'true';
         const status = document.querySelector(`[data-photo-status="${input.id}"]`);
+        const photoField = input.closest('.participant-photo-field');
+        const previewWrapper = photoField ? photoField.querySelector('.participant-photo-preview-wrapper') : null;
+        const previewImage = photoField ? photoField.querySelector('.participant-photo-preview') : null;
 
         const setStatus = (message, isError = false) => {
             if (!status) return;
             status.textContent = message;
             status.style.color = isError ? '#b91c1c' : '#1B6CA8';
+        };
+
+        const setPreview = (dataUrl) => {
+            if (!previewWrapper || !previewImage) return;
+            previewImage.src = dataUrl;
+            previewWrapper.hidden = false;
         };
 
         const openCropper = (file) => {
@@ -150,9 +159,15 @@ function initializeParticipantPhotoCropper() {
                                 close();
                                 return;
                             }
+
                             const transfer = new DataTransfer();
                             transfer.items.add(new File([blob], 'participant-photo.jpg', { type: 'image/jpeg' }));
                             input.files = transfer.files;
+
+                            const reader = new FileReader();
+                            reader.onload = () => setPreview(reader.result);
+                            reader.readAsDataURL(blob);
+
                             setStatus('Photo ready.');
                             close();
                         }, 'image/jpeg', 0.9);

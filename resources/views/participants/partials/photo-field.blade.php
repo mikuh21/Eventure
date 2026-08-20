@@ -11,6 +11,9 @@
         <button type="button" class="participant-photo-button" data-photo-source="library" data-photo-input="{{ $photoInputId }}">Choose from Photos</button>
         <button type="button" class="participant-photo-button" data-photo-source="camera" data-photo-input="{{ $photoInputId }}">Take Photo</button>
     </div>
+    <div class="participant-photo-preview-wrapper" hidden>
+        <img class="participant-photo-preview" alt="Participant photo preview" aria-live="polite">
+    </div>
     <p class="participant-photo-status" data-photo-status="{{ $photoInputId }}" aria-live="polite"></p>
 </div>
 
@@ -49,6 +52,25 @@
     .participant-photo-button:hover,
     .participant-photo-crop-action:hover {
         background: #E8F4FD;
+    }
+
+    .participant-photo-preview-wrapper {
+        width: 80px;
+        height: 80px;
+        margin-top: 8px;
+        border: 1px solid #BFDFFF;
+        border-radius: 8px;
+        background: #F3F9FF;
+        overflow: hidden;
+        box-sizing: border-box;
+    }
+
+    .participant-photo-preview {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        background: #0A2342;
     }
 
     .participant-photo-status {
