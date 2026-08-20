@@ -70,6 +70,10 @@
         font-family: 'Sora', sans-serif;
     }
 
+    .participant-photo-crop-overlay.is-landing-photo-crop {
+        z-index: 10000;
+    }
+
     .participant-photo-crop-dialog {
         width: min(420px, 100%);
         padding: 20px;

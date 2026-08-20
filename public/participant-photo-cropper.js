@@ -22,14 +22,17 @@ function initializeParticipantPhotoCropper() {
                 image.onload = () => {
                     const overlay = document.createElement('div');
                     overlay.className = 'participant-photo-crop-overlay';
+                    if (input.closest('#landingRegistrationModal')) {
+                        overlay.classList.add('is-landing-photo-crop');
+                    }
                     overlay.innerHTML = `
                         <div class="participant-photo-crop-dialog" role="dialog" aria-modal="true" aria-labelledby="participantPhotoCropTitle">
-                            <h2 class="participant-photo-crop-title" id="participantPhotoCropTitle">Crop Participant Photo</h2>
+                            <h2 class="participant-photo-crop-title" id="participantPhotoCropTitle">Participant Photo</h2>
                             <canvas class="participant-photo-crop-canvas" width="640" height="640"></canvas>
-                            <p class="participant-photo-crop-help">Drag to reposition and use the mouse wheel or pinch to zoom. The crop is always square.</p>
+                            <p class="participant-photo-crop-help">Drag to reposition or pinch to zoom.</p>
                             <div class="participant-photo-crop-actions">
                                 <button type="button" class="participant-photo-crop-action" data-photo-crop-cancel>Cancel</button>
-                                <button type="button" class="participant-photo-crop-action is-primary" data-photo-crop-confirm>Crop / Use Photo</button>
+                                <button type="button" class="participant-photo-crop-action is-primary" data-photo-crop-confirm>Use Photo</button>
                             </div>
                         </div>
                     `;
