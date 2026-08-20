@@ -605,11 +605,26 @@
                 </div>
             </div>
                 <div class="participant-photo-profile">
-                    <p class="profile-item-label">Participant Photo</p>
-                    @if ($participant->photo_path)
+                    <p class="profile-item-label">Photo</p>
+                    @php
+                        $participantPhotoPath = trim((string) ($participant->photo_path ?? ''));
+                        $participantPhotoUrl = null;
+
+                        if ($participantPhotoPath !== '') {
+                            if (str_starts_with($participantPhotoPath, ['http://', 'https://'])) {
+                                $participantPhotoUrl = $participantPhotoPath;
+                            } else {
+                                $participantPhotoUrl = \Illuminate\Support\Facades\Storage::disk('s3')->exists($participantPhotoPath)
+                                    ? \Illuminate\Support\Facades\Storage::disk('s3')->url($participantPhotoPath)
+                                    : null;
+                            }
+                        }
+                    @endphp
+
+                    @if ($participantPhotoUrl)
                         <img
                             class="participant-photo-profile-image"
-                            src="{{ \Illuminate\Support\Facades\Storage::disk('s3')->url($participant->photo_path) }}"
+                            src="{{ $participantPhotoUrl }}"
                             alt="Participant photo for {{ $participant->name }}"
                         >
                     @else
