@@ -290,7 +290,13 @@
         $initials  = collect(explode(' ', trim($adminName)))->filter()->map(fn ($p) => strtoupper(substr($p, 0, 1)))->take(2)->implode('');
         $initials  = $initials !== '' ? $initials : 'AD';
 
-        $fallbackEvent      = \App\Models\Event::query()->orderByDesc('start_date')->first();
+        $fallbackEvent      = \App\Models\Event::query()
+            ->when(
+                auth()->check() && auth()->user()->hasRole('event_staff'),
+                fn ($q) => $q->where('created_by', auth()->id())
+            )
+            ->orderByDesc('start_date')
+            ->first();
         $participantsNavUrl = $fallbackEvent ? route('events.participants.index', $fallbackEvent) : route('participants.index');
 
         // Bar chart: top 10 events by participants
