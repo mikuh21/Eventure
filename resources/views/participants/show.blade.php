@@ -615,10 +615,14 @@
                                 // Already a full URL
                                 $participantPhotoUrl = $participantPhotoPath;
                             } else {
-                                // Use the default s3 disk with the stored path
-                                // The stored path is like: participant-photos/filename.jpg
+                                // Extract filename from stored path
+                                // Stored path is like: participant-photos/C7YXfwn4Xs4htG8qkD8dF1FeRdaGyrFRVeRzACzs.jpg
+                                // or just: C7YXfwn4Xs4htG8qkD8dF1FeRdaGyrFRVeRzACzs.jpg
+                                $fileName = basename($participantPhotoPath);
+
                                 try {
-                                    $participantPhotoUrl = \Illuminate\Support\Facades\Storage::disk('s3')->url($participantPhotoPath);
+                                    // Use the dedicated participant-photos bucket/disk
+                                    $participantPhotoUrl = \Illuminate\Support\Facades\Storage::disk('participant-photos')->url($fileName);
                                 } catch (\Exception $e) {
                                     // If URL generation fails, set to null (shows "No photo submitted")
                                     $participantPhotoUrl = null;

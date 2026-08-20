@@ -23,11 +23,9 @@ class ParticipantController extends Controller
             return null;
         }
 
-        return Storage::disk('s3')->putFileAs(
-            'participant-photos',
-            $photo,
-            Str::random(40).'.jpg'
-        );
+        $fileName = Str::random(40).'.jpg';
+        Storage::disk('participant-photos')->put($fileName, $photo);
+        return $fileName;
     }
 
     private function mobileDigitalIdUrl(string $token): string
