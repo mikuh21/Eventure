@@ -1470,20 +1470,6 @@
                                     <option value="SAHS">SAHS</option>
                                     <option value="SHS">SHS</option>
                                     <option value="N/A">N/A</option>
-                                                            <div class="landing-registration-field" id="landingPhotoField">
-                                                                <label class="text-sm">Photo</label>
-                                                                <div class="photo-input-wrapper">
-                                                                    <button class="btn btn-secondary" type="button" id="landingChoosePhotoBtn" style="min-width:120px;padding:8px 12px;font-size:0.75rem;font-weight:600;background:#f1f5f9;color:#0f172a;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;transition: background 180ms ease;">Choose from Photos</button>
-                                                                    <button class="btn btn-secondary" type="button" id="landingTakePhotoBtn" style="min-width:120px;padding:8px 12px;font-size:0.75rem;font-weight:600;background:#f1f5f9;color:#0f172a;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;transition: background 180ms ease;">Take Photo</button>
-                                                                    <input type="hidden" id="landingPhotoDataInput" name="photo">
-                                                                    <div id="landingPhotoPreview" style="display: none; margin-top: 10px;">
-                                                                        <img id="landingPhotoImg" style="max-width: 200px; max-height: 200px;">
-                                                                        <p id="landingPhotoRemove" style="cursor: pointer; color: #e74c3c; text-decoration: underline; font-size: 0.75rem; margin-top: 5px;">Remove Photo</p>
-                                                                                                <input type="file" id="landingPhotoFileInput" name="photo" style="display: none;" accept="image/*">
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-
                                 </select>
                             </div>
 
@@ -1807,7 +1793,6 @@
                 acceptPrivacyBtn.style.opacity = this.checked ? '1' : '0.5';
                 acceptPrivacyBtn.style.cursor = this.checked ? 'pointer' : 'not-allowed';
             });
-    <script src="{{ asset('js/photo-cropper.js') }}"></script>
 
             acceptPrivacyBtn.addEventListener('click', function() {
                 if (!acceptPrivacyBtn.disabled) {

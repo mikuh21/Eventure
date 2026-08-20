@@ -28,7 +28,6 @@ class StoreParticipantRequest extends FormRequest
             ],
             'institution' => ['required', 'string', 'max:255'],
             'college' => ['nullable', Rule::in(['SACE', 'SABM', 'SAHS', 'SHS', 'N/A'])],
-            'photo' => ['nullable', 'image', 'max:5120'],
         ];
     }
 }

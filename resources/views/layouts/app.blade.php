@@ -1201,6 +1201,5 @@
     })();
 </script>
 @stack('scripts')
-<script src="{{ asset('js/photo-cropper.js') }}"></script>
 </body>
 </html>
