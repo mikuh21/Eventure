@@ -18,7 +18,7 @@ class StoreParticipantRequest extends FormRequest
 
         return [
             'name' => ['required', 'string', 'max:255'],
-            'participant_type' => ['required', Rule::in(['faculty', 'student'])],
+            'participant_type' => ['required', Rule::in(['faculty', 'student', 'coach', 'organizer'])],
             'email' => [
                 'required',
                 'string',
@@ -27,7 +27,6 @@ class StoreParticipantRequest extends FormRequest
                 Rule::unique('participants', 'email')->where(fn ($query) => $query->where('event_id', $eventId)),
             ],
             'institution' => ['required', 'string', 'max:255'],
-            'college' => ['nullable', Rule::in(['SACE', 'SABM', 'SAHS', 'SHS', 'N/A'])],
             'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
         ];
     }

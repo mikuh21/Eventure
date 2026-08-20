@@ -1400,6 +1400,8 @@
                     <option value="">All Types</option>
                     <option value="faculty" {{ request('participant_type') === 'faculty' ? 'selected' : '' }}>Faculty</option>
                     <option value="student" {{ request('participant_type') === 'student' ? 'selected' : '' }}>Student</option>
+                    <option value="coach" {{ request('participant_type') === 'coach' ? 'selected' : '' }}>Coach</option>
+                    <option value="organizer" {{ request('participant_type') === 'organizer' ? 'selected' : '' }}>Organizer</option>
                 </select>
 
                 <button class="btn btn-primary" type="submit" id="filtersApplyBtn">Apply</button>
@@ -1568,7 +1570,7 @@
 
     @if ($selectedEvent)
         @php
-            $modalErrorMessage = $errors->first('name') ?: $errors->first('email') ?: $errors->first('participant_type') ?: $errors->first('institution') ?: $errors->first('college') ?: $errors->first('registration');
+            $modalErrorMessage = $errors->first('name') ?: $errors->first('email') ?: $errors->first('participant_type') ?: $errors->first('institution') ?: $errors->first('registration');
         @endphp
 
         <div class="participant-modal-overlay" id="registerParticipantModal" aria-hidden="true">
@@ -1617,24 +1619,14 @@
                             <option value="">Select type</option>
                             <option value="faculty" {{ old('participant_type') === 'faculty' ? 'selected' : '' }}>Faculty</option>
                             <option value="student" {{ old('participant_type') === 'student' ? 'selected' : '' }}>Student</option>
+                            <option value="coach" {{ old('participant_type') === 'coach' ? 'selected' : '' }}>Coach</option>
+                            <option value="organizer" {{ old('participant_type') === 'organizer' ? 'selected' : '' }}>Organizer</option>
                         </select>
                     </div>
 
                     <div class="field">
                         <label for="modal_institution">School / University</label>
                         <input id="modal_institution" name="institution" type="text" value="{{ old('institution') }}" placeholder="e.g. NU Lipa" required>
-                    </div>
-
-                    <div class="field">
-                        <label for="modal_college">College / Department</label>
-                        <select id="modal_college" name="college" required>
-                            <option value="">Select college/department</option>
-                            <option value="SACE" {{ old('college') === 'SACE' ? 'selected' : '' }}>SACE</option>
-                            <option value="SABM" {{ old('college') === 'SABM' ? 'selected' : '' }}>SABM</option>
-                            <option value="SAHS" {{ old('college') === 'SAHS' ? 'selected' : '' }}>SAHS</option>
-                            <option value="SHS" {{ old('college') === 'SHS' ? 'selected' : '' }}>SHS</option>
-                            <option value="N/A" {{ old('college') === 'N/A' ? 'selected' : '' }}>N/A</option>
-                        </select>
                     </div>
 
                     @include('participants.partials.photo-field', ['inputId' => 'modalParticipantPhoto'])
@@ -1665,7 +1657,6 @@
                         <p class="participant-confirmation-item"><strong>Email:</strong> {{ $registered['email'] ?? '' }}</p>
                         <p class="participant-confirmation-item"><strong>Participant Type:</strong> {{ ucfirst($registered['participant_type'] ?? '') ?: 'N/A' }}</p>
                         <p class="participant-confirmation-item"><strong>Institution:</strong> {{ $registered['institution'] ?? 'N/A' }}</p>
-                        <p class="participant-confirmation-item"><strong>College / Department:</strong> {{ $registered['college'] ?? 'N/A' }}</p>
                         <p class="participant-confirmation-item"><strong>Event:</strong> {{ $registered['event'] ?? '' }}</p>
 
                         <div class="participant-confirmation-actions">
@@ -2095,9 +2086,9 @@
                 }
             }
 
-            @if ($errors->has('name') || $errors->has('email') || $errors->has('participant_type') || $errors->has('institution') || $errors->has('college') || $errors->has('registration'))
+            @if ($errors->has('name') || $errors->has('email') || $errors->has('participant_type') || $errors->has('institution') || $errors->has('registration'))
                 setTimeout(function () {
-                    showToast({!! json_encode($errors->first('name') ?: $errors->first('email') ?: $errors->first('participant_type') ?: $errors->first('institution') ?: $errors->first('college') ?: $errors->first('registration')) !!}, 'error', 5000);
+                    showToast({!! json_encode($errors->first('name') ?: $errors->first('email') ?: $errors->first('participant_type') ?: $errors->first('institution') ?: $errors->first('registration')) !!}, 'error', 5000);
                 }, 300);
             @endif
 

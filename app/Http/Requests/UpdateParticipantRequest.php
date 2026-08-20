@@ -19,7 +19,7 @@ class UpdateParticipantRequest extends FormRequest
 
         return [
             'name' => ['required', 'string', 'max:255'],
-            'participant_type' => ['required', Rule::in(['faculty', 'student'])],
+            'participant_type' => ['required', Rule::in(['faculty', 'student', 'coach', 'organizer'])],
             'email' => [
                 'required',
                 'string',

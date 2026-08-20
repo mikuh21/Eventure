@@ -210,6 +210,8 @@
                             <option value="">Select type</option>
                             <option value="faculty" {{ old('participant_type') === 'faculty' ? 'selected' : '' }}>Faculty</option>
                             <option value="student" {{ old('participant_type') === 'student' ? 'selected' : '' }}>Student</option>
+                            <option value="coach" {{ old('participant_type') === 'coach' ? 'selected' : '' }}>Coach</option>
+                            <option value="organizer" {{ old('participant_type') === 'organizer' ? 'selected' : '' }}>Organizer</option>
                         </select>
                     </div>
 

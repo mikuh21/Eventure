@@ -107,7 +107,7 @@ class ParticipantController extends Controller
                 if ($participantTypeFilter !== '') {
                     $normalizedParticipantType = strtolower($participantTypeFilter);
 
-                    if (in_array($normalizedParticipantType, ['faculty', 'student'], true)) {
+                    if (in_array($normalizedParticipantType, ['faculty', 'student', 'coach', 'organizer'], true)) {
                         $participantsQuery->where('participant_type', $normalizedParticipantType);
                     }
                 }
@@ -145,7 +145,7 @@ class ParticipantController extends Controller
             if ($participantTypeFilter !== '') {
                 $normalizedParticipantType = strtolower($participantTypeFilter);
 
-                if (in_array($normalizedParticipantType, ['faculty', 'student'], true)) {
+                if (in_array($normalizedParticipantType, ['faculty', 'student', 'coach', 'organizer'], true)) {
                     $participantsQuery->where('participant_type', $normalizedParticipantType);
                 }
             }
@@ -271,7 +271,6 @@ class ParticipantController extends Controller
                     'email' => $participant->email,
                     'participant_type' => $participant->participant_type,
                     'institution' => $participant->institution,
-                    'college' => $participant->college,
                     'event' => $participant->event->title,
                     'registered_by_admin' => $isAdminOrStaff,
                 ]);
@@ -287,7 +286,7 @@ class ParticipantController extends Controller
         $validated = $request->validate([
             'event_id' => ['required', 'exists:events,id'],
             'name' => ['required', 'string', 'max:255'],
-            'participant_type' => ['required', Rule::in(['faculty', 'student'])],
+            'participant_type' => ['required', Rule::in(['faculty', 'student', 'coach', 'organizer'])],
             'email' => [
                 'required',
                 'email',
@@ -295,7 +294,6 @@ class ParticipantController extends Controller
                 Rule::unique('participants', 'email')->where(fn ($query) => $query->where('event_id', $request->input('event_id'))),
             ],
             'institution' => ['required', 'string', 'max:255'],
-            'college' => ['nullable', Rule::in(['SACE', 'SABM', 'SAHS', 'SHS', 'N/A'])],
             'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
         ], [
             'email.unique' => 'Email is already registered for this event.',
@@ -420,7 +418,7 @@ class ParticipantController extends Controller
         // Full update — validate manually
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'participant_type' => ['required', \Illuminate\Validation\Rule::in(['faculty', 'student'])],
+            'participant_type' => ['required', \Illuminate\Validation\Rule::in(['faculty', 'student', 'coach', 'organizer'])],
             'email' => [
                 'required', 'string', 'email', 'max:255',
                 \Illuminate\Validation\Rule::unique('participants', 'email')
@@ -457,7 +455,7 @@ class ParticipantController extends Controller
             'select_all' => ['sometimes', 'boolean'],
             'search' => ['nullable', 'string', 'max:255'],
             'attendance' => ['nullable', Rule::in(['attended', 'not_attended'])],
-            'participant_type' => ['nullable', Rule::in(['faculty', 'student'])],
+            'participant_type' => ['nullable', Rule::in(['faculty', 'student', 'coach', 'organizer'])],
         ]);
 
         $selectAll = (bool) ($validated['select_all'] ?? false);
@@ -522,7 +520,7 @@ class ParticipantController extends Controller
             'action' => ['required', Rule::in(['approve', 'deny'])],
             'search' => ['nullable', 'string', 'max:255'],
             'attendance' => ['nullable', Rule::in(['attended', 'not_attended'])],
-            'participant_type' => ['nullable', Rule::in(['faculty', 'student'])],
+            'participant_type' => ['nullable', Rule::in(['faculty', 'student', 'coach', 'organizer'])],
         ]);
 
         $participantQuery = Participant::query()
