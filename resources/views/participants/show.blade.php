@@ -88,6 +88,31 @@
             gap: 16px 20px;
         }
 
+        .participant-photo-profile {
+            margin-top: 20px;
+            font-family: 'Sora', sans-serif;
+        }
+
+        .participant-photo-profile-image,
+        .participant-photo-profile-empty {
+            width: 160px;
+            height: 160px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid var(--color-sky);
+        }
+
+        .participant-photo-profile-empty {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            background: var(--color-ice-white);
+            color: var(--color-ocean);
+            font-size: 12px;
+            text-align: center;
+        }
+
         .profile-item-label {
             margin: 0 0 4px;
             text-transform: uppercase;
@@ -579,6 +604,18 @@
                     </span>
                 </div>
             </div>
+                <div class="participant-photo-profile">
+                    <p class="profile-item-label">Participant Photo</p>
+                    @if ($participant->photo_path)
+                        <img
+                            class="participant-photo-profile-image"
+                            src="{{ \Illuminate\Support\Facades\Storage::disk('s3')->url($participant->photo_path) }}"
+                            alt="Participant photo for {{ $participant->name }}"
+                        >
+                    @else
+                        <div class="participant-photo-profile-empty">No photo submitted</div>
+                    @endif
+                </div>
         </div>
 
         <div class="profile-card">

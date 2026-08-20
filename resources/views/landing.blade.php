@@ -1473,6 +1473,8 @@
                                 </select>
                             </div>
 
+                            @include('participants.partials.photo-field', ['inputId' => 'landingParticipantPhoto', 'fieldId' => 'landingParticipantPhotoField', 'fieldClass' => 'hidden'])
+
 
                             <div class="landing-registration-actions flex flex-row justify-end items-center gap-2 mt-2">
                                 <button type="button" class="inline-flex justify-center rounded-lg border border-slate-300 bg-white" id="landingRegistrationCancel" style="min-width:90px;padding:8px 16px;font-size:0.75rem;font-weight:600;color:#0f172a;transition: background 180ms ease, border-color 180ms ease;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='#fff'">Cancel</button>
@@ -1685,18 +1687,20 @@
                     guestBioField.querySelector('textarea').rows = 2;
                     landingInstitutionField.classList.add('hidden');
                     landingCollegeField.classList.add('hidden');
+                    document.getElementById('landingParticipantPhotoField').classList.add('hidden');
                 } else {
                     participantTypeField.style.display = '';
                     landingInstitutionField.style.display = '';
                     participantTypeField.classList.remove('hidden');
                     landingInstitutionField.classList.remove('hidden');
                     landingCollegeField.classList.remove('hidden');
-                    landingRegistrationForm.enctype = 'application/x-www-form-urlencoded';
+                    landingRegistrationForm.enctype = 'multipart/form-data';
                     participantTypeField.style.display = '';
                     landingInstitutionField.style.display = '';
                     participantTypeField.classList.remove('hidden');
                     landingInstitutionField.classList.remove('hidden');
                     landingCollegeField.classList.remove('hidden');
+                    document.getElementById('landingParticipantPhotoField').classList.remove('hidden');
                     if (guestRoleField && guestRoleField.parentNode) {
                         guestRoleField.remove();
                         guestRoleField = null;

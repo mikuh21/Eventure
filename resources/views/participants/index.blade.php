@@ -1590,7 +1590,7 @@
                     </div>
                 </div>
 
-                <form class="participant-modal-form" action="{{ route('events.participants.store', $selectedEvent) }}" method="POST">
+                <form class="participant-modal-form" action="{{ route('events.participants.store', $selectedEvent) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <input type="hidden" name="redirect_to" value="{{ route('events.participants.index', $selectedEvent) }}?event_id={{ $selectedEvent->id }}">
 
@@ -1629,6 +1629,8 @@
                             <option value="N/A" {{ old('college') === 'N/A' ? 'selected' : '' }}>N/A</option>
                         </select>
                     </div>
+
+                    @include('participants.partials.photo-field', ['inputId' => 'modalParticipantPhoto'])
 
                     <div class="participant-modal-form-actions">
                         <button class="btn btn-cancel" type="button" id="cancelRegisterParticipantModal">Cancel</button>

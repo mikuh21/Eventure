@@ -17,6 +17,7 @@ class Participant extends Model
         'participant_type',
         'institution',
         'college',
+        'photo_path',
         'email',
         'event_id',
         'digital_id_token',

@@ -8,13 +8,28 @@ use App\Mail\ParticipantRegisteredMail;
 use App\Models\Event;
 use App\Models\Participant;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class ParticipantController extends Controller
 {
+    private function storeParticipantPhoto(?UploadedFile $photo): ?string
+    {
+        if (! $photo) {
+            return null;
+        }
+
+        return Storage::disk('s3')->putFileAs(
+            'participant-photos',
+            $photo,
+            Str::random(40).'.jpg'
+        );
+    }
+
     private function mobileDigitalIdUrl(string $token): string
     {
         $baseUrl = rtrim((string) config('app.public_url', config('app.url')), '/');
@@ -213,8 +228,13 @@ class ParticipantController extends Controller
                 ->withErrors(['registration' => $message]);
         }
 
+        $validated = $request->validated();
+        $photoPath = $this->storeParticipantPhoto($request->file('photo'));
+        unset($validated['photo']);
+
         $participant = $event->participants()->create([
-            ...$request->validated(),
+            ...$validated,
+            'photo_path' => $photoPath,
             'attended' => false,
             'status' => 'approved',
             'approved_at' => now(),
@@ -273,6 +293,7 @@ class ParticipantController extends Controller
             ],
             'institution' => ['required', 'string', 'max:255'],
             'college' => ['nullable', Rule::in(['SACE', 'SABM', 'SAHS', 'SHS', 'N/A'])],
+            'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
         ], [
             'email.unique' => 'Email is already registered for this event.',
         ]);
@@ -285,8 +306,12 @@ class ParticipantController extends Controller
             ], 422);
         }
 
+        $photoPath = $this->storeParticipantPhoto($request->file('photo'));
+        unset($validated['photo']);
+
         $participant = $event->participants()->create([
             ...$validated,
+            'photo_path' => $photoPath,
             'status' => 'pending',
             'attended' => false,
         ]);
