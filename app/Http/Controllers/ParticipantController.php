@@ -61,6 +61,7 @@ class ParticipantController extends Controller
 
         $selectedEvent = null;
         $participants = collect();
+        $pendingParticipantsCount = 0;
 
         if ($request->has('event_id') || $event) {
             $selectedEvent = $request->has('event_id')
@@ -111,6 +112,10 @@ class ParticipantController extends Controller
                     }
                 }
 
+                $pendingParticipantsCount = (clone $participantsQuery)
+                    ->where('status', 'pending')
+                    ->count();
+
                 $participants = $participantsQuery
                     ->latest()
                     ->paginate(10)
@@ -156,6 +161,7 @@ class ParticipantController extends Controller
                 'participants' => $participants,
                 'events' => $events,
                 'selectedEvent' => $selectedEvent,
+                'pendingParticipantsCount' => $pendingParticipantsCount,
             ]);
         }
 
@@ -500,6 +506,97 @@ class ParticipantController extends Controller
             'selected_count' => $selectedCount,
             'updated_count' => $updatedCount,
             'already_attended_count' => $alreadyAttendedCount,
+        ]);
+    }
+
+    public function bulkStatus(Request $request, Event $event)
+    {
+        if (! auth()->check() || (! auth()->user()->hasRole('admin') && (! auth()->user()->hasRole('event_staff') || $event->created_by !== auth()->id()))) {
+            return response()->json(['message' => 'You do not have permission to modify participants in this event.'], 403);
+        }
+
+        $validated = $request->validate([
+            'participant_ids' => ['nullable', 'array', 'required_without:select_all'],
+            'participant_ids.*' => ['integer', 'distinct'],
+            'select_all' => ['sometimes', 'boolean'],
+            'action' => ['required', Rule::in(['approve', 'deny'])],
+            'search' => ['nullable', 'string', 'max:255'],
+            'attendance' => ['nullable', Rule::in(['attended', 'not_attended'])],
+            'participant_type' => ['nullable', Rule::in(['faculty', 'student'])],
+        ]);
+
+        $participantQuery = Participant::query()
+            ->where('event_id', $event->id)
+            ->where('status', 'pending');
+
+        if ((bool) ($validated['select_all'] ?? false)) {
+            $search = trim((string) ($validated['search'] ?? ''));
+            if ($search !== '') {
+                $participantQuery->where(function ($query) use ($search): void {
+                    $query->where('name', 'ilike', "%{$search}%")
+                        ->orWhere('email', 'ilike', "%{$search}%");
+                });
+            }
+
+            if (($validated['attendance'] ?? '') !== '') {
+                $participantQuery->where('attended', $validated['attendance'] === 'attended');
+            }
+
+            if (($validated['participant_type'] ?? '') !== '') {
+                $participantQuery->where('participant_type', $validated['participant_type']);
+            }
+        } else {
+            $participantIds = $validated['participant_ids'] ?? [];
+            $matchingIds = Participant::query()
+                ->where('event_id', $event->id)
+                ->whereIn('id', $participantIds)
+                ->pluck('id');
+
+            if ($matchingIds->count() !== count($participantIds)) {
+                return response()->json(['message' => 'One or more selected participants do not belong to this event.'], 422);
+            }
+
+            $participantQuery->whereIn('id', $participantIds);
+        }
+
+        $eligibleParticipants = $participantQuery->get();
+
+        DB::transaction(function () use ($eligibleParticipants, $validated, $event): void {
+            foreach ($eligibleParticipants as $participant) {
+                if ($validated['action'] === 'approve') {
+                    $participant->update([
+                        'status' => 'approved',
+                        'approved_at' => now(),
+                    ]);
+
+                    if (! $participant->digital_id_token) {
+                        $participant->update([
+                            'digital_id_token' => Str::uuid()->toString(),
+                        ]);
+                        $participant->refresh();
+                    }
+
+                    Mail::to($participant->email)->send(new ParticipantRegisteredMail(
+                        participant: $participant->loadMissing('event'),
+                        digitalIdUrl: $this->mobileDigitalIdUrl($participant->digital_id_token),
+                    ));
+                } else {
+                    $participant->delete();
+                }
+            }
+        });
+
+        $actionLabel = ucfirst($validated['action']);
+        $actionPastTense = $validated['action'] === 'approve' ? 'approved' : 'denied';
+        $updatedCount = $eligibleParticipants->count();
+
+        return response()->json([
+            'message' => $updatedCount > 0
+            ? "{$updatedCount} pending participant(s) {$actionPastTense} successfully."
+                : "No pending participants were selected to {$validated['action']}.",
+            'updated_count' => $updatedCount,
+            'action' => $validated['action'],
+            'action_label' => $actionLabel,
         ]);
     }
 

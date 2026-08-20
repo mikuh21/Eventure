@@ -1280,6 +1280,8 @@
         }
         .participant-selection-bar:not(.is-active) .participant-select-all,
         .participant-selection-bar:not(.is-active) #markSelectedAttended,
+        .participant-selection-bar:not(.is-active) #approveSelectedParticipants,
+        .participant-selection-bar:not(.is-active) #denySelectedParticipants,
         .participant-selection-bar:not(.is-active) .participant-selection-summary {
             display: none;
         }
@@ -1287,7 +1289,9 @@
             flex-shrink: 0;
         }
         .participant-selection-bar #toggleParticipantSelection,
-        .participant-selection-bar #markSelectedAttended {
+        .participant-selection-bar #markSelectedAttended,
+        .participant-selection-bar #approveSelectedParticipants,
+        .participant-selection-bar #denySelectedParticipants {
             font-family: 'Sora', sans-serif;
             font-size: 13px;
             padding: 6px 12px;
@@ -1403,13 +1407,15 @@
                 <span class="showing-text" id="showingCount" data-total="{{ $participants->total() }}">Showing {{ $participants->count() }} of {{ $participants->total() }} participant(s)</span>
             </form>
 
-            <div class="participant-selection-bar" id="participantSelectionBar" data-filtered-total="{{ $participants->total() }}" data-event-id="{{ $selectedEvent->id }}">
+            <div class="participant-selection-bar" id="participantSelectionBar" data-filtered-total="{{ $participants->total() }}" data-pending-total="{{ $pendingParticipantsCount ?? 0 }}" data-event-id="{{ $selectedEvent->id }}">
                 <button class="btn" type="button" id="toggleParticipantSelection">Select</button>
                 <label class="participant-select-all" for="selectAllParticipants" hidden>
                     <input type="checkbox" id="selectAllParticipants" disabled>
                     <span>Select all filtered participants ({{ number_format($participants->total()) }})</span>
                 </label>
                 <button class="btn btn-primary" type="button" id="markSelectedAttended" hidden>Mark as Attended</button>
+                <button class="btn-action btn-approve" type="button" id="approveSelectedParticipants" hidden>Approve</button>
+                <button class="btn-action btn-delete" type="button" id="denySelectedParticipants" hidden>Deny</button>
                 <span class="participant-selection-summary" id="participantSelectionSummary" aria-live="polite" hidden>No participants selected</span>
             </div>
         @endif
@@ -1453,6 +1459,7 @@
                             data-participant-email="{{ $participant->email }}"
                             data-participant-attendance="{{ $participant->attended ? 'attended' : 'not_attended' }}"
                             data-participant-type="{{ strtolower((string) $participant->participant_type) }}"
+                            data-participant-status="{{ $participant->status ?? 'approved' }}"
                         >
                             <td class="participant-selection-column">
                                 <input class="participant-row-checkbox" type="checkbox" value="{{ $participant->id }}" aria-label="Select {{ $participant->name }}">
@@ -1727,6 +1734,28 @@
             <div class="delete-confirm-actions">
                 <button type="button" class="btn-delete-cancel" id="bulkAttendanceCancel">Cancel</button>
                 <button type="button" class="btn-delete-confirm btn-approve-confirm" id="bulkAttendanceConfirm">Yes, Mark as Attended</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="bulkApproveModal" class="delete-confirm-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="bulkApproveTitle">
+        <div class="delete-confirm-panel">
+            <h2 id="bulkApproveTitle" class="delete-confirm-title">Approve selected participants?</h2>
+            <p class="delete-confirm-body">Are you sure you want to approve <span id="bulkApproveCount" class="delete-confirm-name">0</span> selected pending participant(s)?</p>
+            <div class="delete-confirm-actions">
+                <button type="button" class="btn-delete-cancel" id="bulkApproveCancel">Cancel</button>
+                <button type="button" class="btn-delete-confirm btn-approve-confirm" id="bulkApproveConfirm">Approve</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="bulkDenyModal" class="delete-confirm-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="bulkDenyTitle">
+        <div class="delete-confirm-panel">
+            <h2 id="bulkDenyTitle" class="delete-confirm-title">Deny selected participants?</h2>
+            <p class="delete-confirm-body">Are you sure you want to deny <span id="bulkDenyCount" class="delete-confirm-name">0</span> selected pending participant(s)?</p>
+            <div class="delete-confirm-actions">
+                <button type="button" class="btn-delete-cancel" id="bulkDenyCancel">Cancel</button>
+                <button type="button" class="btn-delete-confirm" id="bulkDenyConfirm">Deny</button>
             </div>
         </div>
     </div>
@@ -2591,11 +2620,21 @@
             var toggleButton = document.getElementById('toggleParticipantSelection');
             var selectAll = document.getElementById('selectAllParticipants');
             var markButton = document.getElementById('markSelectedAttended');
+            var approveButton = document.getElementById('approveSelectedParticipants');
+            var denyButton = document.getElementById('denySelectedParticipants');
             var summary = document.getElementById('participantSelectionSummary');
             var bulkModal = document.getElementById('bulkAttendanceModal');
             var bulkCount = document.getElementById('bulkAttendanceCount');
             var bulkCancel = document.getElementById('bulkAttendanceCancel');
             var bulkConfirm = document.getElementById('bulkAttendanceConfirm');
+            var bulkApproveModal = document.getElementById('bulkApproveModal');
+            var bulkApproveCount = document.getElementById('bulkApproveCount');
+            var bulkApproveCancel = document.getElementById('bulkApproveCancel');
+            var bulkApproveConfirm = document.getElementById('bulkApproveConfirm');
+            var bulkDenyModal = document.getElementById('bulkDenyModal');
+            var bulkDenyCount = document.getElementById('bulkDenyCount');
+            var bulkDenyCancel = document.getElementById('bulkDenyCancel');
+            var bulkDenyConfirm = document.getElementById('bulkDenyConfirm');
             var selectedIds = new Set();
             var allFiltered = false;
             var selectionMode = false;
@@ -2626,6 +2665,16 @@
                 return allFiltered ? Number(selectionBar.dataset.filteredTotal || 0) : selectedIds.size;
             };
 
+            var eligiblePendingCount = function () {
+                if (allFiltered) {
+                    return Number(selectionBar.dataset.pendingTotal || 0);
+                }
+
+                return visibleCheckboxes().filter(function (checkbox) {
+                    return selectedIds.has(checkbox.value) && checkbox.closest('tr').dataset.participantStatus === 'pending';
+                }).length;
+            };
+
             var updateSelectionUi = function () {
                 var count = selectedCount();
                 var selectAllLabel = selectAll.closest('.participant-select-all');
@@ -2635,6 +2684,11 @@
                 }
                 markButton.hidden = !selectionMode;
                 markButton.disabled = count === 0;
+                var pendingCount = eligiblePendingCount();
+                approveButton.hidden = !selectionMode;
+                approveButton.disabled = pendingCount === 0;
+                denyButton.hidden = !selectionMode;
+                denyButton.disabled = pendingCount === 0;
                 summary.hidden = !selectionMode;
                 summary.textContent = count ? (count + ' participant(s) selected') : 'No participants selected';
                 selectAll.checked = allFiltered;
@@ -2750,9 +2804,86 @@
                 });
             });
 
+            var closeBulkStatusModal = function (modal) {
+                modal.classList.remove('is-visible');
+                modal.setAttribute('aria-hidden', 'true');
+                document.body.style.overflow = '';
+            };
+
+            var openBulkStatusModal = function (action) {
+                var count = eligiblePendingCount();
+                if (!count) return;
+
+                var modal = action === 'approve' ? bulkApproveModal : bulkDenyModal;
+                var countElement = action === 'approve' ? bulkApproveCount : bulkDenyCount;
+                countElement.textContent = count;
+                modal.classList.add('is-visible');
+                modal.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
+            };
+
+            approveButton.addEventListener('click', function () { openBulkStatusModal('approve'); });
+            denyButton.addEventListener('click', function () { openBulkStatusModal('deny'); });
+            bulkApproveCancel.addEventListener('click', function () { closeBulkStatusModal(bulkApproveModal); });
+            bulkDenyCancel.addEventListener('click', function () { closeBulkStatusModal(bulkDenyModal); });
+
+            var submitBulkStatus = function (action, button, modal) {
+                var filtersForm = document.getElementById('filtersForm');
+                var formData = filtersForm ? new FormData(filtersForm) : new FormData();
+                var payload = {
+                    participant_ids: allFiltered ? [] : Array.from(selectedIds),
+                    select_all: allFiltered,
+                    action: action,
+                    search: formData.get('search') || '',
+                    attendance: formData.get('attendance') || '',
+                    participant_type: formData.get('participant_type') || ''
+                };
+                var csrfMeta = document.querySelector('meta[name="csrf-token"]');
+
+                button.disabled = true;
+                button.textContent = action === 'approve' ? 'Approving...' : 'Denying...';
+
+                fetch('{{ route('events.participants.bulk-status', $selectedEvent) }}', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfMeta ? csrfMeta.getAttribute('content') : '',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify(payload),
+                    credentials: 'same-origin'
+                }).then(function (response) {
+                    return response.json().then(function (data) {
+                        if (!response.ok) throw new Error(data.message || 'Unable to update participants.');
+                        return data;
+                    });
+                }).then(function (data) {
+                    closeBulkStatusModal(modal);
+                    selectedIds.clear();
+                    allFiltered = false;
+                    showSelectionToast(data.message || 'Participants updated successfully.', 'success');
+                    window.setTimeout(function () { window.location.reload(); }, 1000);
+                }).catch(function (error) {
+                    showSelectionToast(error.message || 'Unable to update participants.', 'error');
+                }).finally(function () {
+                    button.disabled = false;
+                    button.textContent = action === 'approve' ? 'Approve' : 'Deny';
+                });
+            };
+
+            bulkApproveConfirm.addEventListener('click', function () { submitBulkStatus('approve', bulkApproveConfirm, bulkApproveModal); });
+            bulkDenyConfirm.addEventListener('click', function () { submitBulkStatus('deny', bulkDenyConfirm, bulkDenyModal); });
+
             document.addEventListener('keydown', function (event) {
                 if (event.key === 'Escape' && bulkModal.classList.contains('is-visible')) {
                     closeBulkModal();
+                }
+                if (event.key === 'Escape' && bulkApproveModal.classList.contains('is-visible')) {
+                    closeBulkStatusModal(bulkApproveModal);
+                }
+                if (event.key === 'Escape' && bulkDenyModal.classList.contains('is-visible')) {
+                    closeBulkStatusModal(bulkDenyModal);
                 }
             });
         })();
