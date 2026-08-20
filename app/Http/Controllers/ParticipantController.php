@@ -24,8 +24,7 @@ class ParticipantController extends Controller
         }
 
         $fileName = Str::random(40).'.jpg';
-        Storage::disk('participant-photos')->put($fileName, $photo);
-        return $fileName;
+        return Storage::disk('participant-photos')->putFileAs('', $photo, $fileName);
     }
 
     private function mobileDigitalIdUrl(string $token): string
