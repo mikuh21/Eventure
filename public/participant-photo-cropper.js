@@ -4,8 +4,9 @@ function initializeParticipantPhotoCropper() {
     const inputs = document.querySelectorAll('input[type="file"][name="photo"]');
 
     inputs.forEach((input) => {
+        if (input.dataset.photoCropperInitialized === 'true') return;
+        input.dataset.photoCropperInitialized = 'true';
         const status = document.querySelector(`[data-photo-status="${input.id}"]`);
-        let cropState = null;
 
         const setStatus = (message, isError = false) => {
             if (!status) return;
@@ -38,7 +39,7 @@ function initializeParticipantPhotoCropper() {
                     const context = canvas.getContext('2d');
                     const canvasSize = canvas.width;
                     const scaleToCover = Math.max(canvasSize / image.width, canvasSize / image.height);
-                    cropState = {
+                    const cropState = {
                         scale: scaleToCover,
                         minScale: scaleToCover,
                         x: (canvasSize - image.width * scaleToCover) / 2,
@@ -52,13 +53,7 @@ function initializeParticipantPhotoCropper() {
                         context.clearRect(0, 0, canvasSize, canvasSize);
                         context.fillStyle = '#0A2342';
                         context.fillRect(0, 0, canvasSize, canvasSize);
-                        context.drawImage(
-                            image,
-                            cropState.x,
-                            cropState.y,
-                            image.width * cropState.scale,
-                            image.height * cropState.scale,
-                        );
+                        context.drawImage(image, cropState.x, cropState.y, image.width * cropState.scale, image.height * cropState.scale);
                     };
 
                     const zoom = (factor, centerX = canvasSize / 2, centerY = canvasSize / 2) => {
@@ -72,10 +67,7 @@ function initializeParticipantPhotoCropper() {
 
                     const pointFromEvent = (event) => {
                         const bounds = canvas.getBoundingClientRect();
-                        return {
-                            x: (event.clientX - bounds.left) * (canvas.width / bounds.width),
-                            y: (event.clientY - bounds.top) * (canvas.height / bounds.height),
-                        };
+                        return { x: (event.clientX - bounds.left) * (canvas.width / bounds.width), y: (event.clientY - bounds.top) * (canvas.height / bounds.height) };
                     };
 
                     canvas.addEventListener('pointerdown', (event) => {
@@ -101,15 +93,9 @@ function initializeParticipantPhotoCropper() {
                         zoom(event.deltaY < 0 ? 1.08 : 0.92, point.x, point.y);
                     }, { passive: false });
 
-                    const close = () => {
-                        cropState = null;
-                        overlay.remove();
-                    };
-
+                    const close = () => overlay.remove();
                     overlay.querySelector('[data-photo-crop-cancel]').addEventListener('click', close);
-                    overlay.addEventListener('click', (event) => {
-                        if (event.target === overlay) close();
-                    });
+                    overlay.addEventListener('click', (event) => { if (event.target === overlay) close(); });
                     overlay.querySelector('[data-photo-crop-confirm]').addEventListener('click', () => {
                         canvas.toBlob((blob) => {
                             if (!blob) {
@@ -117,15 +103,13 @@ function initializeParticipantPhotoCropper() {
                                 close();
                                 return;
                             }
-                            const croppedFile = new File([blob], 'participant-photo.jpg', { type: 'image/jpeg' });
                             const transfer = new DataTransfer();
-                            transfer.items.add(croppedFile);
+                            transfer.items.add(new File([blob], 'participant-photo.jpg', { type: 'image/jpeg' }));
                             input.files = transfer.files;
                             setStatus('Photo ready.');
                             close();
                         }, 'image/jpeg', 0.9);
                     });
-
                     draw();
                 };
                 image.onerror = () => setStatus('The selected file is not a valid image.', true);
@@ -154,11 +138,8 @@ function initializeParticipantPhotoCropper() {
 
         document.querySelectorAll(`[data-photo-input="${input.id}"]`).forEach((button) => {
             button.addEventListener('click', () => {
-                if (button.dataset.photoSource === 'camera') {
-                    input.setAttribute('capture', 'environment');
-                } else {
-                    input.removeAttribute('capture');
-                }
+                if (button.dataset.photoSource === 'camera') input.setAttribute('capture', 'environment');
+                else input.removeAttribute('capture');
                 input.click();
             });
         });

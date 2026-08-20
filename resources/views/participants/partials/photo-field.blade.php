@@ -121,4 +121,6 @@
     }
 </style>
 
-@vite('resources/js/participant-photo-cropper.js')
+@once
+    <script src="{{ asset('participant-photo-cropper.js') }}"></script>
+@endonce
