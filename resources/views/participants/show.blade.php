@@ -612,21 +612,15 @@
 
                         if ($participantPhotoPath !== '') {
                             if (str_starts_with($participantPhotoPath, 'http://') || str_starts_with($participantPhotoPath, 'https://')) {
+                                // Already a full URL
                                 $participantPhotoUrl = $participantPhotoPath;
                             } else {
+                                // Use the default s3 disk with the stored path
+                                // The stored path is like: participant-photos/filename.jpg
                                 try {
-                                    // Extract just the filename if path includes directory prefix
-                                    $fileName = basename($participantPhotoPath);
-                                    
-                                    // Try to get URL from participant-photos disk
-                                    if (\Illuminate\Support\Facades\Storage::disk('participant-photos')->exists($fileName)) {
-                                        $participantPhotoUrl = \Illuminate\Support\Facades\Storage::disk('participant-photos')->url($fileName);
-                                    } elseif (\Illuminate\Support\Facades\Storage::disk('s3')->exists($participantPhotoPath)) {
-                                        // Fallback to default s3 disk with full path
-                                        $participantPhotoUrl = \Illuminate\Support\Facades\Storage::disk('s3')->url($participantPhotoPath);
-                                    }
+                                    $participantPhotoUrl = \Illuminate\Support\Facades\Storage::disk('s3')->url($participantPhotoPath);
                                 } catch (\Exception $e) {
-                                    // Silently handle storage errors, show no photo
+                                    // If URL generation fails, set to null (shows "No photo submitted")
                                     $participantPhotoUrl = null;
                                 }
                             }
