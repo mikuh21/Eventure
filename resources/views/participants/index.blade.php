@@ -1626,6 +1626,7 @@
                             <option value="SABM" {{ old('college') === 'SABM' ? 'selected' : '' }}>SABM</option>
                             <option value="SAHS" {{ old('college') === 'SAHS' ? 'selected' : '' }}>SAHS</option>
                             <option value="SHS" {{ old('college') === 'SHS' ? 'selected' : '' }}>SHS</option>
+                            <option value="N/A" {{ old('college') === 'N/A' ? 'selected' : '' }}>N/A</option>
                         </select>
                     </div>
 

@@ -272,7 +272,7 @@ class ParticipantController extends Controller
                 Rule::unique('participants', 'email')->where(fn ($query) => $query->where('event_id', $request->input('event_id'))),
             ],
             'institution' => ['required', 'string', 'max:255'],
-            'college' => ['nullable', Rule::in(['SACE', 'SABM', 'SAHS', 'SHS'])],
+            'college' => ['nullable', Rule::in(['SACE', 'SABM', 'SAHS', 'SHS', 'N/A'])],
         ], [
             'email.unique' => 'Email is already registered for this event.',
         ]);
