@@ -29,10 +29,6 @@ function initializeParticipantPhotoCropper() {
                         <div class="participant-photo-crop-dialog" role="dialog" aria-modal="true" aria-labelledby="participantPhotoCropTitle">
                             <h2 class="participant-photo-crop-title" id="participantPhotoCropTitle">Participant Photo</h2>
                             <canvas class="participant-photo-crop-canvas" width="640" height="640"></canvas>
-                            <div class="participant-photo-zoom-actions" aria-label="Photo zoom controls">
-                                <button type="button" class="participant-photo-crop-action" data-photo-zoom="out" aria-label="Zoom out">-</button>
-                                <button type="button" class="participant-photo-crop-action" data-photo-zoom="in" aria-label="Zoom in">+</button>
-                            </div>
                             <p class="participant-photo-crop-help">Drag to reposition or pinch to zoom.</p>
                             <div class="participant-photo-crop-actions">
                                 <button type="button" class="participant-photo-crop-action" data-photo-crop-cancel>Cancel</button>
@@ -77,6 +73,50 @@ function initializeParticipantPhotoCropper() {
                         return { x: (event.clientX - bounds.left) * (canvas.width / bounds.width), y: (event.clientY - bounds.top) * (canvas.height / bounds.height) };
                     };
 
+                    const activePointers = new Map();
+                    let pinchDistance = null;
+
+                    const getPinchPoints = () => [...activePointers.values()];
+                    const getPinchDistance = (points) => Math.hypot(points[1].x - points[0].x, points[1].y - points[0].y);
+                    const getPinchCenter = (points) => ({
+                        x: (points[0].x + points[1].x) / 2,
+                        y: (points[0].y + points[1].y) / 2,
+                    });
+
+                    canvas.addEventListener('pointerdown', (event) => {
+                        activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+                        if (activePointers.size === 2) {
+                            cropState.dragging = false;
+                            pinchDistance = getPinchDistance(getPinchPoints());
+                            event.stopImmediatePropagation();
+                        }
+                    });
+                    canvas.addEventListener('pointermove', (event) => {
+                        if (!activePointers.has(event.pointerId)) return;
+                        activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+                        if (activePointers.size !== 2) return;
+                        const points = getPinchPoints();
+                        const nextDistance = getPinchDistance(points);
+                        const center = pointFromEvent({
+                            clientX: getPinchCenter(points).x,
+                            clientY: getPinchCenter(points).y,
+                        });
+                        if (pinchDistance && nextDistance > 0) {
+                            zoom(nextDistance / pinchDistance, center.x, center.y);
+                        }
+                        pinchDistance = nextDistance;
+                        event.preventDefault();
+                        event.stopImmediatePropagation();
+                    }, { passive: false });
+                    canvas.addEventListener('pointerup', (event) => {
+                        activePointers.delete(event.pointerId);
+                        if (activePointers.size < 2) pinchDistance = null;
+                    });
+                    canvas.addEventListener('pointercancel', (event) => {
+                        activePointers.delete(event.pointerId);
+                        if (activePointers.size < 2) pinchDistance = null;
+                    });
+
                     canvas.addEventListener('pointerdown', (event) => {
                         cropState.dragging = true;
                         cropState.lastX = event.clientX;
@@ -99,8 +139,6 @@ function initializeParticipantPhotoCropper() {
                         const point = pointFromEvent(event);
                         zoom(event.deltaY < 0 ? 1.08 : 0.92, point.x, point.y);
                     }, { passive: false });
-                    overlay.querySelector('[data-photo-zoom="out"]').addEventListener('click', () => zoom(0.9));
-                    overlay.querySelector('[data-photo-zoom="in"]').addEventListener('click', () => zoom(1.1));
 
                     const close = () => overlay.remove();
                     overlay.querySelector('[data-photo-crop-cancel]').addEventListener('click', close);

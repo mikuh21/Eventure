@@ -104,21 +104,6 @@
         cursor: grabbing;
     }
 
-    .participant-photo-zoom-actions {
-        display: flex;
-        justify-content: center;
-        gap: 8px;
-        margin-top: 10px;
-    }
-
-    .participant-photo-zoom-actions .participant-photo-crop-action {
-        width: 36px;
-        height: 32px;
-        padding: 0;
-        font-size: 18px;
-        line-height: 1;
-    }
-
     .participant-photo-crop-help {
         margin: 10px 0 0;
         color: #1B6CA8;
