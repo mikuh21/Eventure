@@ -138,7 +138,8 @@ class GuestController extends Controller
         }
 
         $validated['role'] = $event->type === 'conference' ? 'Presenter' : 'Exhibitor';
-        $validated['status'] = 'pending';
+        $autoApproved = (bool) $event->auto_approve;
+        $validated['status'] = $autoApproved ? 'approved' : 'pending';
 
         if ($request->hasFile('conference_paper')) {
             $originalFileName = $request->file('conference_paper')->getClientOriginalName();
@@ -149,8 +150,17 @@ class GuestController extends Controller
 
         $guest = Guest::create($validated);
 
+        if ($autoApproved) {
+            $guest->update(['digital_token' => Str::uuid()->toString()]);
+            $guest->refresh();
+
+            Mail::to($guest->email)->send(new GuestDigitalIdMail($guest->loadMissing('event')));
+        }
+
         return response()->json([
-            'message' => 'Registration submitted! You will receive your Digital ID via email once your registration is approved.',
+            'message' => $autoApproved
+                ? 'Registration successful and digital ID email sent.'
+                : 'Registration submitted! You will receive your Digital ID via email once your registration is approved.',
             'data' => $guest,
         ], 201);
     }

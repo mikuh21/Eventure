@@ -309,17 +309,32 @@ class ParticipantController extends Controller
 
         $photoPath = $this->storeParticipantPhoto($request->file('photo'));
         unset($validated['photo']);
+        $autoApproved = (bool) $event->auto_approve;
 
         $participant = $event->participants()->create([
             ...$validated,
             'photo_path' => $photoPath,
-            'status' => 'pending',
+            'status' => $autoApproved ? 'approved' : 'pending',
             'attended' => false,
         ]);
 
+        if ($autoApproved) {
+            $participant->update([
+                'digital_id_token' => Str::uuid()->toString(),
+            ]);
+            $participant->refresh();
+
+            Mail::to($participant->email)->send(new ParticipantRegisteredMail(
+                participant: $participant->loadMissing('event'),
+                digitalIdUrl: $this->mobileDigitalIdUrl($participant->digital_id_token),
+            ));
+        }
+
         return response()->json([
             'success' => true,
-            'message' => 'Registration submitted! You will receive your Digital ID via email once your registration is approved.',
+            'message' => $autoApproved
+                ? 'Registration successful and digital ID email sent.'
+                : 'Registration submitted! You will receive your Digital ID via email once your registration is approved.',
             'data' => $participant,
         ], 201);
     }

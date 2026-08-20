@@ -48,6 +48,7 @@ class Event extends Model
         'evaluation_form_enabled',
         'evaluation_form_enabled_at',
         'auto_activate_evaluation',
+        'auto_approve',
         'created_by',
         'updated_by',
     ];
@@ -62,6 +63,7 @@ class Event extends Model
         'evaluation_form_enabled' => 'boolean',
         'evaluation_form_enabled_at' => 'datetime',
         'auto_activate_evaluation' => 'boolean',
+        'auto_approve' => 'boolean',
         'attendance_type' => 'string',
     ];
 
