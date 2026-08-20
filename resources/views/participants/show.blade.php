@@ -611,7 +611,7 @@
                         $participantPhotoUrl = null;
 
                         if ($participantPhotoPath !== '') {
-                            if (str_starts_with($participantPhotoPath, ['http://', 'https://'])) {
+                            if (str_starts_with($participantPhotoPath, 'http://') || str_starts_with($participantPhotoPath, 'https://')) {
                                 $participantPhotoUrl = $participantPhotoPath;
                             } else {
                                 $participantPhotoUrl = \Illuminate\Support\Facades\Storage::disk('s3')->exists($participantPhotoPath)
