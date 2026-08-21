@@ -1775,7 +1775,7 @@
             clone.style.pointerEvents = 'none';
             clone.style.width = '380px';
             clone.style.height = '220px';
-            clone.style.overflow = 'hidden';
+            clone.style.overflow = 'visible';
 
             if (iosQrSizing) {
                 clone.querySelectorAll('img.qr-thumb, img.qr-large').forEach((qrImage) => {
@@ -1786,7 +1786,16 @@
                     qrImage.style.setProperty('min-height', qrSize, 'important');
                     qrImage.style.setProperty('max-width', qrSize, 'important');
                     qrImage.style.setProperty('max-height', qrSize, 'important');
+                    qrImage.style.setProperty('display', 'block', 'important');
                     qrImage.style.setProperty('flex', '0 0 auto', 'important');
+                    qrImage.style.setProperty('object-fit', 'contain', 'important');
+                    qrImage.style.setProperty('object-position', 'center', 'important');
+                    qrImage.style.setProperty('overflow', 'visible', 'important');
+                    qrImage.style.setProperty('padding', '0', 'important');
+                    qrImage.style.setProperty('background', 'transparent', 'important');
+                    qrImage.style.setProperty('border-radius', '0', 'important');
+                    qrImage.style.setProperty('max-inline-size', '100%', 'important');
+                    qrImage.style.setProperty('max-block-size', '100%', 'important');
                 });
             }
 
