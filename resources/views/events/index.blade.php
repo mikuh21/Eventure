@@ -1302,18 +1302,18 @@
 
                     <div class="field" id="edit-poster-field">
                         <label for="editPoster">Event Poster</label>
-                        <input id="editPoster" name="poster" type="file" accept="image/*">
+                        <input id="editPoster" name="poster" type="file">
                         <div id="currentPosterContainer" style="margin-top: 8px;"></div>
                     </div>
 
                     <div class="field" id="edit-template-file-field">
                         <label for="editTemplateFile">Conference Template</label>
-                        <input id="editTemplateFile" name="template_file" type="file" accept=".pdf,.doc,.docx,.txt,.rtf,.odt,.xls,.xlsx,.ppt,.pptx">
+                        <input id="editTemplateFile" name="template_file" type="file">
                         <div id="currentTemplateContainer" style="margin-top: 8px;"></div>
                     </div>
                     <div class="field">
                         <label for="editProgramFile">Program</label>
-                        <input id="editProgramFile" name="program_file" type="file" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.gif,.webp">
+                        <input id="editProgramFile" name="program_file" type="file">
                         <div id="currentProgramContainer" style="margin-top: 8px;"></div>
                     </div>
 

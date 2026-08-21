@@ -268,17 +268,17 @@
 
             <div class="field">
                 <label for="poster">Event Poster</label>
-                <input id="poster" name="poster" type="file" accept="image/*">
+                <input id="poster" name="poster" type="file">
             </div>
 
             <div class="field" id="template-file-field">
                 <label for="template_file">Conference Template</label>
-                <input id="template_file" name="template_file" type="file" accept=".pdf,.doc,.docx,.txt,.rtf,.odt,.xls,.xlsx,.ppt,.pptx,.png,.jpg,.jpeg">
+                <input id="template_file" name="template_file" type="file">
             </div>
 
             <div class="field">
                 <label for="program_file">Program</label>
-                <input id="program_file" name="program_file" type="file" accept=".pdf,.doc,.docx,.txt,.rtf,.odt,.xls,.xlsx,.ppt,.pptx,.png,.jpg,.jpeg">
+                <input id="program_file" name="program_file" type="file">
             </div>
 
             <div class="field" id="template-url-field">
