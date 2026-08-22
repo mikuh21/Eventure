@@ -1523,6 +1523,62 @@
             const participantPublicUrl = '{{ route('public.participant.store') }}';
             const guestPublicUrl = '{{ route('public.guest.store') }}';
             let currentEventType = 'standard';
+            let landingConfirmationPassed = false;
+            let landingConfirmationModal = null;
+
+            function closeLandingConfirmation() {
+                if (landingConfirmationModal) {
+                    landingConfirmationModal.remove();
+                    landingConfirmationModal = null;
+                }
+            }
+
+            function showLandingConfirmation() {
+                closeLandingConfirmation();
+
+                landingConfirmationModal = document.createElement('div');
+                landingConfirmationModal.className = 'participant-confirmation-modal';
+                landingConfirmationModal.setAttribute('role', 'dialog');
+                landingConfirmationModal.setAttribute('aria-modal', 'true');
+                landingConfirmationModal.innerHTML = `
+                    <div class="participant-confirmation-panel">
+                        <h2 class="participant-confirmation-title">Confirm Your Information</h2>
+                        <p class="participant-confirmation-copy">Please review your information before submitting your registration.</p>
+                        <dl class="participant-confirmation-details">
+                            <div><dt>Name</dt><dd data-confirmation-value="name"></dd></div>
+                            <div><dt>Participant Type</dt><dd data-confirmation-value="participant_type"></dd></div>
+                            <div><dt>Email</dt><dd data-confirmation-value="email"></dd></div>
+                            <div><dt>School / University</dt><dd data-confirmation-value="institution"></dd></div>
+                        </dl>
+                        <div class="participant-confirmation-actions">
+                            <button type="button" class="participant-confirmation-cancel">Cancel</button>
+                            <button type="button" class="participant-confirmation-submit">Yes, Correct</button>
+                        </div>
+                    </div>
+                `;
+
+                const values = {
+                    name: landingRegistrationForm.elements.name.value,
+                    participant_type: landingRegistrationForm.elements.participant_type.selectedOptions[0]?.textContent || '',
+                    email: landingRegistrationForm.elements.email.value,
+                    institution: landingRegistrationForm.elements.institution.value,
+                };
+                Object.entries(values).forEach(([field, value]) => {
+                    const element = landingConfirmationModal.querySelector(`[data-confirmation-value="${field}"]`);
+                    if (element) element.textContent = value || 'N/A';
+                });
+
+                document.body.appendChild(landingConfirmationModal);
+                requestAnimationFrame(() => landingConfirmationModal.classList.add('is-visible'));
+
+                landingConfirmationModal.querySelector('.participant-confirmation-cancel').addEventListener('click', closeLandingConfirmation);
+                landingConfirmationModal.querySelector('.participant-confirmation-submit').addEventListener('click', () => {
+                    landingConfirmationPassed = true;
+                    landingRegistrationForm.dataset.confirmed = 'true';
+                    closeLandingConfirmation();
+                    landingRegistrationForm.requestSubmit();
+                });
+            }
 
             function showToast(message, type = 'success') {
                 const toast = document.createElement('div');
@@ -1848,11 +1904,33 @@
                 }
             });
 
+            landingRegistrationForm.addEventListener('submit', (event) => {
+                const isParticipantRegistration = registrationTypeInput.value !== 'guest';
+                if (isParticipantRegistration && !landingConfirmationPassed) {
+                    event.preventDefault();
+                    event.stopImmediatePropagation();
+
+                    const photoInput = document.getElementById('landingParticipantPhoto');
+                    const photoRequiredError = document.querySelector('[data-photo-required-error="landingParticipantPhoto"]');
+                    if (!photoInput?.files.length) {
+                        if (photoRequiredError) photoRequiredError.hidden = false;
+                        return;
+                    }
+
+                    showLandingConfirmation();
+                    return;
+                }
+
+                landingConfirmationPassed = false;
+                closeLandingConfirmation();
+
+                landingRegistrationSubmit.disabled = true;
+                landingRegistrationSubmit.textContent = 'Submitting...';
+            }, true);
+
             landingRegistrationForm.addEventListener('submit', async (event) => {
                 event.preventDefault();
                 const formData = new FormData(landingRegistrationForm);
-                landingRegistrationSubmit.disabled = true;
-                landingRegistrationSubmit.textContent = 'Submitting...';
                 try {
                     const response = await fetch(landingRegistrationForm.action, {
                         method: 'POST',
