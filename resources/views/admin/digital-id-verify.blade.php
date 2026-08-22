@@ -329,7 +329,7 @@
         }
 
         .verify-id-photo {
-            height: 320px;
+            height: 318px;
         }
     }
 
