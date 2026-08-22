@@ -3,6 +3,54 @@ const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
 function initializeParticipantPhotoCropper() {
     const inputs = document.querySelectorAll('input[type="file"][name="photo"]');
 
+    const closeConfirmationModal = (modal) => {
+        if (!modal) return;
+        modal.remove();
+    };
+
+    const showConfirmationModal = (form) => {
+        const getValue = (name) => form.elements[name]?.value || '';
+        const modal = document.createElement('div');
+        modal.className = 'participant-confirmation-modal';
+        modal.setAttribute('role', 'dialog');
+        modal.setAttribute('aria-modal', 'true');
+        modal.innerHTML = `
+            <div class="participant-confirmation-panel">
+                <h2 class="participant-confirmation-title">Confirm Your Information</h2>
+                <p class="participant-confirmation-copy">Please review your information before submitting your registration.</p>
+                <dl class="participant-confirmation-details">
+                    <div><dt>Name</dt><dd data-confirmation-value="name"></dd></div>
+                    <div><dt>Participant Type</dt><dd data-confirmation-value="participant_type"></dd></div>
+                    <div><dt>Email</dt><dd data-confirmation-value="email"></dd></div>
+                    <div><dt>School / University</dt><dd data-confirmation-value="institution"></dd></div>
+                </dl>
+                <div class="participant-confirmation-actions">
+                    <button type="button" class="participant-confirmation-cancel">Cancel</button>
+                    <button type="button" class="participant-confirmation-submit">Yes, Correct</button>
+                </div>
+            </div>
+        `;
+
+        Object.keys({ name: true, participant_type: true, email: true, institution: true }).forEach((field) => {
+            const value = getValue(field);
+            const element = modal.querySelector(`[data-confirmation-value="${field}"]`);
+            if (element) element.textContent = field === 'participant_type' && value
+                ? value.charAt(0).toUpperCase() + value.slice(1)
+                : value || 'N/A';
+        });
+
+        document.body.appendChild(modal);
+        const cancelButton = modal.querySelector('.participant-confirmation-cancel');
+        const submitButton = modal.querySelector('.participant-confirmation-submit');
+
+        cancelButton.addEventListener('click', () => closeConfirmationModal(modal));
+        submitButton.addEventListener('click', () => {
+            form.dataset.confirmed = 'true';
+            closeConfirmationModal(modal);
+            form.requestSubmit();
+        });
+    };
+
     inputs.forEach((input) => {
         if (input.dataset.photoCropperInitialized === 'true') return;
         input.dataset.photoCropperInitialized = 'true';
@@ -214,6 +262,17 @@ function initializeParticipantPhotoCropper() {
                 } else {
                     setRequiredErrorVisible(false);
                 }
+
+                if (event.defaultPrevented || form.dataset.confirmed === 'true') {
+                    form.dataset.confirmed = '';
+                    return;
+                }
+
+                const registrationType = form.elements.registration_type?.value;
+                if (registrationType === 'guest') return;
+
+                event.preventDefault();
+                showConfirmationModal(form);
             });
         }
 

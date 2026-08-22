@@ -88,6 +88,118 @@
         font-size: 12px;
     }
 
+    .participant-confirmation-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 11000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: rgba(10, 35, 66, 0.55);
+        font-family: 'Sora', sans-serif;
+    }
+
+    .participant-confirmation-panel {
+        width: min(430px, 100%);
+        max-height: calc(100vh - 40px);
+        overflow-y: auto;
+        padding: 24px;
+        border: 1px solid #BFDFFF;
+        border-radius: 12px;
+        background: #ffffff;
+        box-shadow: 0 8px 40px rgba(10, 35, 66, 0.18);
+        box-sizing: border-box;
+    }
+
+    .participant-confirmation-title {
+        margin: 0;
+        color: #0A2342;
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .participant-confirmation-copy {
+        margin: 8px 0 18px;
+        color: #1B6CA8;
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+    .participant-confirmation-details {
+        display: grid;
+        gap: 12px;
+        margin: 0;
+    }
+
+    .participant-confirmation-details div {
+        min-width: 0;
+    }
+
+    .participant-confirmation-details dt {
+        margin-bottom: 3px;
+        color: #5BA4CF;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+
+    .participant-confirmation-details dd {
+        margin: 0;
+        color: #0A2342;
+        font-size: 13px;
+        line-height: 1.4;
+        overflow-wrap: anywhere;
+    }
+
+    .participant-confirmation-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 22px;
+    }
+
+    .participant-confirmation-actions button {
+        min-height: 38px;
+        padding: 8px 14px;
+        border: 1px solid #BFDFFF;
+        border-radius: 8px;
+        font-family: 'Sora', sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .participant-confirmation-cancel {
+        background: #ffffff;
+        color: #1B6CA8;
+    }
+
+    .participant-confirmation-submit {
+        border-color: #1B6CA8 !important;
+        background: #1B6CA8;
+        color: #ffffff;
+    }
+
+    @media (max-width: 480px) {
+        .participant-confirmation-modal {
+            padding: 14px;
+        }
+
+        .participant-confirmation-panel {
+            padding: 20px;
+        }
+
+        .participant-confirmation-actions {
+            justify-content: stretch;
+        }
+
+        .participant-confirmation-actions button {
+            flex: 1;
+        }
+    }
+
     .participant-photo-crop-overlay {
         position: fixed;
         inset: 0;
