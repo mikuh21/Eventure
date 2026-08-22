@@ -40,6 +40,7 @@ function initializeParticipantPhotoCropper() {
         });
 
         document.body.appendChild(modal);
+        requestAnimationFrame(() => modal.classList.add('is-visible'));
         const cancelButton = modal.querySelector('.participant-confirmation-cancel');
         const submitButton = modal.querySelector('.participant-confirmation-submit');
 

@@ -98,6 +98,17 @@
         padding: 20px;
         background: rgba(10, 35, 66, 0.55);
         font-family: 'Sora', sans-serif;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition: opacity 180ms ease, visibility 0s linear 180ms;
+    }
+
+    .participant-confirmation-modal.is-visible {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transition: opacity 180ms ease;
     }
 
     .participant-confirmation-panel {
@@ -110,6 +121,14 @@
         background: #ffffff;
         box-shadow: 0 8px 40px rgba(10, 35, 66, 0.18);
         box-sizing: border-box;
+        transform: translateY(10px) scale(0.98);
+        opacity: 0;
+        transition: transform 220ms ease, opacity 220ms ease;
+    }
+
+    .participant-confirmation-modal.is-visible .participant-confirmation-panel {
+        transform: translateY(0) scale(1);
+        opacity: 1;
     }
 
     .participant-confirmation-title {
