@@ -1785,6 +1785,7 @@
 
             await Promise.all(qrImages.map(async (qrImage) => {
                 const qrSize = qrImage.classList.contains('qr-large') ? 110 : 60;
+                const rasterScale = 4;
                 const qrSource = new Image();
                 qrSource.crossOrigin = 'anonymous';
                 qrSource.src = qrImage.currentSrc || qrImage.src;
@@ -1806,8 +1807,8 @@
                 }
 
                 const raster = document.createElement('canvas');
-                raster.width = qrSize;
-                raster.height = qrSize;
+                raster.width = qrSize * rasterScale;
+                raster.height = qrSize * rasterScale;
                 raster.className = qrImage.className;
                 raster.style.cssText = qrImage.style.cssText;
                 raster.style.setProperty('width', `${qrSize}px`, 'important');
@@ -1817,7 +1818,8 @@
                 raster.style.setProperty('object-position', 'center', 'important');
 
                 const context = raster.getContext('2d');
-                context.drawImage(qrSource, 0, 0, qrSize, qrSize);
+                context.imageSmoothingEnabled = false;
+                context.drawImage(qrSource, 0, 0, raster.width, raster.height);
                 qrImage.replaceWith(raster);
             }));
         };
