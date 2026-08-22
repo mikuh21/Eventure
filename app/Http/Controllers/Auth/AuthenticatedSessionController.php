@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -44,7 +45,7 @@ class AuthenticatedSessionController extends Controller
         }
 
         $password = Str::random(12);
-        $user->password = $password;
+        $user->password = Hash::make($password);
         $user->save();
 
         Mail::to($user->email)->send(new EventStaffPasswordResetMail($user, $password));
