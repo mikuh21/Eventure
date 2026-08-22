@@ -349,7 +349,32 @@
         .qr-large {
             width: 110px;
             height: 110px;
+            margin: 0;
+        }
+
+        .back-code-layout {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
             margin: 0 auto 14px;
+        }
+
+        .back-photo-frame {
+            width: 110px;
+            height: 110px;
+            flex: 0 0 110px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.12);
+            overflow: hidden;
+        }
+
+        .back-photo {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: center;
         }
 
         .token-label {
@@ -1278,7 +1303,14 @@
                     <article class="flip-card-back">
                         <div class="back-strip">Eventure Digital ID</div>
 
-                        <img class="qr-large" src="{{ $qrUrl }}" alt="Participant QR code enlarged">
+                        <div class="back-code-layout">
+                            <img class="qr-large" src="{{ $qrUrl }}" alt="Participant QR code enlarged">
+                            <div class="back-photo-frame">
+                                @if ($participantPhotoUrl)
+                                    <img class="back-photo" src="{{ $participantPhotoUrl }}" alt="Participant photo" crossorigin="anonymous">
+                                @endif
+                            </div>
+                        </div>
 
                         <div class="token-label">Token</div>
                         <p class="token-value">{{ $digitalId->token }}</p>

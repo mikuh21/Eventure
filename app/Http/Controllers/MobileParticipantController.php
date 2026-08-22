@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Participant;
+use Illuminate\Support\Facades\Storage;
 
 class MobileParticipantController extends Controller
 {
@@ -76,6 +77,20 @@ class MobileParticipantController extends Controller
         $validThru = optional($participant->event->end_registration)->format('m/d') ?? 'N/A';
         $eventDate = $participant->event?->dateRangeLabel() ?? 'TBA';
         $eventLocation = $participant->event?->location ?: 'TBA';
+        $participantPhotoPath = trim((string) ($participant->photo_path ?? ''));
+        $participantPhotoUrl = null;
+
+        if ($participantPhotoPath !== '') {
+            if (str_starts_with($participantPhotoPath, 'http://') || str_starts_with($participantPhotoPath, 'https://')) {
+                $participantPhotoUrl = $participantPhotoPath;
+            } else {
+                try {
+                    $participantPhotoUrl = Storage::disk('participant-photos')->url(basename($participantPhotoPath));
+                } catch (\Throwable $exception) {
+                    $participantPhotoUrl = null;
+                }
+            }
+        }
 
         $pages = [];
         if ($attendanceType === 'virtual') {
@@ -99,6 +114,6 @@ class MobileParticipantController extends Controller
             ];
         }
 
-        return view('participant.mobile', compact('participant', 'digitalId', 'evaluation', 'surveyAvailable', 'eventHasEnded', 'questions', 'sections', 'surveyAction', 'certificateAvailable', 'certificateType', 'attendanceType', 'qrUrl', 'validThru', 'pages', 'eventDate', 'eventLocation'));
+        return view('participant.mobile', compact('participant', 'digitalId', 'evaluation', 'surveyAvailable', 'eventHasEnded', 'questions', 'sections', 'surveyAction', 'certificateAvailable', 'certificateType', 'attendanceType', 'qrUrl', 'validThru', 'pages', 'eventDate', 'eventLocation', 'participantPhotoUrl'));
     }
 }
