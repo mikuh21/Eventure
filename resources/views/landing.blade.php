@@ -1432,7 +1432,7 @@
                             </div>
                         </div>
 
-                        <form id="landingRegistrationForm" class="landing-registration-form space-y-3" method="POST" action="{{ route('public.participant.store') }}">
+                        <form id="landingRegistrationForm" class="landing-registration-form space-y-3" method="POST" action="{{ route('public.participant.store') }}" enctype="multipart/form-data">
                             @csrf
                             <input type="hidden" name="event_id" id="landingEventId" value="">
                             <input type="hidden" name="registration_type" id="landingRegistrationType" value="participant">

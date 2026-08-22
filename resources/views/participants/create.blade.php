@@ -196,7 +196,7 @@
                     </div>
                 </div>
 
-                <form class="participant-register-form" action="{{ route('events.participants.store', $event) }}" method="POST">
+                <form class="participant-register-form" action="{{ route('events.participants.store', $event) }}" method="POST" enctype="multipart/form-data">
                     @csrf
 
                     <div class="field">
@@ -224,6 +224,8 @@
                         <label for="institution">School/University</label>
                         <input id="institution" name="institution" type="text" value="{{ old('institution') }}" placeholder="e.g. NU Lipa" required>
                     </div>
+
+                    @include('participants.partials.photo-field', ['inputId' => 'participantPhoto'])
 
                     <div class="form-actions">
                         <button class="btn btn-primary" type="submit">Register Participant</button>
