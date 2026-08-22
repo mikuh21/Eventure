@@ -1257,7 +1257,6 @@
                         <div class="card-top">
                             <div>
                                 <p class="mini-brand">Eventure</p>
-                                <p class="event-name">{{ $participant->event->title }}</p>
                             </div>
 
                             <div class="status-pill">● CONFIRMED</div>
