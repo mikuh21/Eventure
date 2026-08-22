@@ -256,10 +256,13 @@ function initializeParticipantPhotoCropper() {
         const form = input.form;
         if (form) {
             form.addEventListener('submit', (event) => {
+                const isLandingParticipantForm = form.id === 'landingRegistrationForm'
+                    && form.elements.registration_type?.value !== 'guest';
                 const isVisible = photoField && getComputedStyle(photoField).display !== 'none';
                 if (isVisible && input.files.length === 0) {
                     event.preventDefault();
                     setRequiredErrorVisible(true);
+                    if (isLandingParticipantForm) event.stopImmediatePropagation();
                 } else {
                     setRequiredErrorVisible(false);
                 }
@@ -273,6 +276,7 @@ function initializeParticipantPhotoCropper() {
                 if (registrationType === 'guest') return;
 
                 event.preventDefault();
+                if (isLandingParticipantForm) event.stopImmediatePropagation();
                 showConfirmationModal(form);
             });
         }
