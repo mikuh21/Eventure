@@ -270,9 +270,8 @@
         margin: 0;
         color: var(--ef-ocean);
         font-size: 13px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        white-space: normal;
+        overflow-wrap: anywhere;
     }
 
     .verify-id-fail-copy {
