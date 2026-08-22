@@ -6,6 +6,7 @@ use App\Models\Event;
 use App\Models\Participant;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class ParticipantDigitalIdController extends Controller
@@ -60,6 +61,7 @@ class ParticipantDigitalIdController extends Controller
                     'type' => $participant instanceof \App\Models\Guest ? 'guest' : 'participant',
                     'role' => $participant->participant_type ?? $participant->role ?? null,
                     'institution' => $participant->institution ?? null,
+                    'photo_url' => $this->participantPhotoUrl($participant),
                     'digital_id_verified_at' => $participant->digital_id_verified_at ? $participant->digital_id_verified_at->toDateTimeString() : null,
                     'verified_at' => $verificationCheckedAt ? $verificationCheckedAt->toDateTimeString() : null,
                 ] : null,
@@ -246,6 +248,7 @@ class ParticipantDigitalIdController extends Controller
                         'type' => 'participant',
                         'role' => $participant->participant_type ?? null,
                         'institution' => $participant->institution ?? null,
+                        'photo_url' => $this->participantPhotoUrl($participant),
                         'digital_id_verified_at' => $participant->digital_id_verified_at ? $participant->digital_id_verified_at->toDateTimeString() : null,
                         'verified_at' => $verificationCheckedAt->toDateTimeString(),
                     ],
@@ -272,6 +275,7 @@ class ParticipantDigitalIdController extends Controller
                     'type' => 'participant',
                     'role' => $participant->participant_type ?? null,
                     'institution' => $participant->institution ?? null,
+                    'photo_url' => $this->participantPhotoUrl($participant),
                     'digital_id_verified_at' => $participant->digital_id_verified_at ? $participant->digital_id_verified_at->toDateTimeString() : null,
                     'verified_at' => $verificationCheckedAt->toDateTimeString(),
                 ],
@@ -299,6 +303,7 @@ class ParticipantDigitalIdController extends Controller
                     'type' => 'guest',
                     'role' => $participant->role ?? null,
                     'institution' => null,
+                    'photo_url' => $this->participantPhotoUrl($participant),
                     'digital_id_verified_at' => $participant->digital_id_verified_at ? $participant->digital_id_verified_at->toDateTimeString() : null,
                     'verified_at' => $verificationCheckedAt->toDateTimeString(),
                 ],
@@ -444,6 +449,25 @@ class ParticipantDigitalIdController extends Controller
     private function canGeneratePng(): bool
     {
         return extension_loaded('imagick');
+    }
+
+    private function participantPhotoUrl($participant): ?string
+    {
+        $photoPath = trim((string) ($participant->photo_path ?? ''));
+
+        if ($photoPath === '') {
+            return null;
+        }
+
+        if (str_starts_with($photoPath, 'http://') || str_starts_with($photoPath, 'https://')) {
+            return $photoPath;
+        }
+
+        try {
+            return Storage::disk('participant-photos')->url(basename($photoPath));
+        } catch (\Throwable $exception) {
+            return null;
+        }
     }
 
     private function resolveParticipantFromInput(Request $request): ?Participant

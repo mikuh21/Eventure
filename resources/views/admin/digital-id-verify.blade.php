@@ -285,6 +285,23 @@
         margin-top: 10px;
     }
 
+    .verify-id-photo {
+        width: 100%;
+        height: 480px;
+        margin-top: 16px;
+        border-radius: 10px;
+        object-fit: contain;
+        object-position: center;
+        background: #ffffff;
+        display: block;
+    }
+
+    .verify-id-photo-empty {
+        margin-top: 16px;
+        color: #065f46;
+        font-size: 13px;
+    }
+
     .badge-pill {
         display: inline-flex;
         align-items: center;
@@ -309,6 +326,10 @@
     @media (max-width: 640px) {
         .verify-id-card {
             padding: 22px;
+        }
+
+        .verify-id-photo {
+            height: 320px;
         }
     }
 
@@ -510,6 +531,27 @@
                                 {{ $participant->attended ? 'Attended' : 'Not Attended' }}
                             </span>
                         </div>
+                        @php
+                            $participantPhotoPath = trim((string) ($participant->photo_path ?? ''));
+                            $participantPhotoUrl = null;
+
+                            if ($participantPhotoPath !== '') {
+                                if (str_starts_with($participantPhotoPath, 'http://') || str_starts_with($participantPhotoPath, 'https://')) {
+                                    $participantPhotoUrl = $participantPhotoPath;
+                                } else {
+                                    try {
+                                        $participantPhotoUrl = \Illuminate\Support\Facades\Storage::disk('participant-photos')->url(basename($participantPhotoPath));
+                                    } catch (\Throwable $exception) {
+                                        $participantPhotoUrl = null;
+                                    }
+                                }
+                            }
+                        @endphp
+                        @if ($participantPhotoUrl)
+                            <img class="verify-id-photo" src="{{ $participantPhotoUrl }}" alt="Participant photo for {{ $participant->name }}">
+                        @else
+                            <div class="verify-id-photo-empty">No photo submitted</div>
+                        @endif
                     </div>
                 @else
                     <div class="verify-id-result fail">
@@ -759,6 +801,9 @@
                 eventSegments.push(participant.event_location);
             }
             const eventLine = eventSegments.join(' • ');
+            const photoMarkup = participant.photo_url
+                ? `<img class="verify-id-photo" src="${participant.photo_url}" alt="Participant photo for ${participant.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"><div class="verify-id-photo-empty" style="display:none;">No photo submitted</div>`
+                : '<div class="verify-id-photo-empty">No photo submitted</div>';
 
             const resultHtml = `
                 <div class="verify-id-result success">
@@ -777,6 +822,7 @@
                             ${participant.attended ? 'Attended' : 'Not Attended'}
                         </span>
                     </div>
+                    ${photoMarkup}
                 </div>
             `;
 
