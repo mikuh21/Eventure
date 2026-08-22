@@ -223,6 +223,14 @@
             margin: 0 0 4px;
         }
 
+        .developer-credit {
+            margin: 0;
+            color: var(--muted-soft);
+            font-size: 6px;
+            line-height: 1.2;
+            white-space: nowrap;
+        }
+
         .event-name {
             margin: 0;
             font-size: 10px;
@@ -343,7 +351,10 @@
             display: flex;
             align-items: center;
             background: rgba(255, 255, 255, 0.07);
-            font-size: 10px;
+            font-size: 7px;
+            letter-spacing: 0;
+            white-space: nowrap;
+            overflow: hidden;
         }
 
         .qr-large {
@@ -1282,6 +1293,7 @@
                         <div class="card-top">
                             <div>
                                 <p class="mini-brand">Eventure</p>
+                                <p class="developer-credit">Developed By: NU Lipa BSIT Students</p>
                             </div>
 
                             <div class="status-pill">● CONFIRMED</div>
@@ -1301,7 +1313,7 @@
                     </article>
 
                     <article class="flip-card-back">
-                        <div class="back-strip">Eventure Digital ID</div>
+                        <div class="back-strip">Eventure Digital ID • Developed By: NU Lipa BSIT Students</div>
 
                         <div class="back-code-layout">
                             <img class="qr-large" src="{{ $qrUrl }}" alt="Participant QR code enlarged">
