@@ -1780,6 +1780,48 @@
 
         const isIOSPlatform = /iP(hone|od|ad)/.test(navigator.userAgent) || (navigator.platform && /MacIntel/.test(navigator.platform) && navigator.maxTouchPoints > 1);
 
+        const rasterizeIosQrImages = async (clone) => {
+            const qrImages = Array.from(clone.querySelectorAll('img.qr-thumb, img.qr-large'));
+
+            await Promise.all(qrImages.map(async (qrImage) => {
+                const qrSize = qrImage.classList.contains('qr-large') ? 110 : 60;
+                const qrSource = new Image();
+                qrSource.crossOrigin = 'anonymous';
+                qrSource.src = qrImage.currentSrc || qrImage.src;
+
+                if (qrSource.decode) {
+                    try {
+                        await qrSource.decode();
+                    } catch (error) {
+                        await new Promise((resolve) => {
+                            qrSource.addEventListener('load', resolve, { once: true });
+                            qrSource.addEventListener('error', resolve, { once: true });
+                        });
+                    }
+                } else if (!qrSource.complete) {
+                    await new Promise((resolve) => {
+                        qrSource.addEventListener('load', resolve, { once: true });
+                        qrSource.addEventListener('error', resolve, { once: true });
+                    });
+                }
+
+                const raster = document.createElement('canvas');
+                raster.width = qrSize;
+                raster.height = qrSize;
+                raster.className = qrImage.className;
+                raster.style.cssText = qrImage.style.cssText;
+                raster.style.setProperty('width', `${qrSize}px`, 'important');
+                raster.style.setProperty('height', `${qrSize}px`, 'important');
+                raster.style.setProperty('display', 'block', 'important');
+                raster.style.setProperty('object-fit', 'contain', 'important');
+                raster.style.setProperty('object-position', 'center', 'important');
+
+                const context = raster.getContext('2d');
+                context.drawImage(qrSource, 0, 0, qrSize, qrSize);
+                qrImage.replaceWith(raster);
+            }));
+        };
+
         const renderFaceDataUrl = async (selector, iosQrSizing = false) => {
             const source = document.querySelector(selector);
 
@@ -1806,23 +1848,10 @@
             clone.style.pointerEvents = 'none';
             clone.style.width = '380px';
             clone.style.height = '220px';
-            clone.style.overflow = iosQrSizing ? 'visible' : 'hidden';
+            clone.style.overflow = 'hidden';
 
             if (iosQrSizing) {
-                clone.querySelectorAll('img.qr-thumb, img.qr-large').forEach((qrImage) => {
-                    const qrSize = qrImage.classList.contains('qr-large') ? '110px' : '60px';
-                    qrImage.style.setProperty('width', qrSize, 'important');
-                    qrImage.style.setProperty('height', qrSize, 'important');
-                    qrImage.style.setProperty('min-width', qrSize, 'important');
-                    qrImage.style.setProperty('min-height', qrSize, 'important');
-                    qrImage.style.setProperty('max-width', qrSize, 'important');
-                    qrImage.style.setProperty('max-height', qrSize, 'important');
-                    qrImage.style.setProperty('display', 'block', 'important');
-                    qrImage.style.setProperty('object-fit', 'contain', 'important');
-                    qrImage.style.setProperty('object-position', 'center', 'important');
-                    qrImage.style.setProperty('flex', '0 0 auto', 'important');
-                    qrImage.style.setProperty('overflow', 'visible', 'important');
-                });
+                await rasterizeIosQrImages(clone);
             }
 
             host.appendChild(clone);
