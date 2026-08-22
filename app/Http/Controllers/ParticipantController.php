@@ -297,6 +297,7 @@ class ParticipantController extends Controller
             'photo' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
         ], [
             'email.unique' => 'Email is already registered for this event.',
+            'photo.required' => 'Your photo is required.',
         ]);
 
         $event = Event::findOrFail($validated['event_id']);

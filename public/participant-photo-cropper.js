@@ -7,6 +7,7 @@ function initializeParticipantPhotoCropper() {
         if (input.dataset.photoCropperInitialized === 'true') return;
         input.dataset.photoCropperInitialized = 'true';
         const status = document.querySelector(`[data-photo-status="${input.id}"]`);
+        const requiredError = document.querySelector(`[data-photo-required-error="${input.id}"]`);
         const photoField = input.closest('.participant-photo-field');
         const previewWrapper = photoField ? photoField.querySelector('.participant-photo-preview-wrapper') : null;
         const previewImage = photoField ? photoField.querySelector('.participant-photo-preview') : null;
@@ -15,6 +16,10 @@ function initializeParticipantPhotoCropper() {
             if (!status) return;
             status.textContent = message;
             status.style.color = isError ? '#b91c1c' : '#1B6CA8';
+        };
+
+        const setRequiredErrorVisible = (visible) => {
+            if (requiredError) requiredError.hidden = !visible;
         };
 
         const setPreview = (dataUrl) => {
@@ -163,6 +168,7 @@ function initializeParticipantPhotoCropper() {
                             const transfer = new DataTransfer();
                             transfer.items.add(new File([blob], 'participant-photo.jpg', { type: 'image/jpeg' }));
                             input.files = transfer.files;
+                            setRequiredErrorVisible(false);
 
                             const reader = new FileReader();
                             reader.onload = () => setPreview(reader.result);
@@ -197,6 +203,19 @@ function initializeParticipantPhotoCropper() {
             input.value = '';
             openCropper(file);
         });
+
+        const form = input.form;
+        if (form) {
+            form.addEventListener('submit', (event) => {
+                const isVisible = photoField && getComputedStyle(photoField).display !== 'none';
+                if (isVisible && input.files.length === 0) {
+                    event.preventDefault();
+                    setRequiredErrorVisible(true);
+                } else {
+                    setRequiredErrorVisible(false);
+                }
+            });
+        }
 
         document.querySelectorAll(`[data-photo-input="${input.id}"]`).forEach((button) => {
             button.addEventListener('click', () => {

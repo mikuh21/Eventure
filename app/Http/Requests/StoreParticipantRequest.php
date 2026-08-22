@@ -30,4 +30,11 @@ class StoreParticipantRequest extends FormRequest
             'photo' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'photo.required' => 'Your photo is required.',
+        ];
+    }
 }

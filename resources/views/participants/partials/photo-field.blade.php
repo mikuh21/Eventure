@@ -11,6 +11,7 @@
         <button type="button" class="participant-photo-button" data-photo-source="library" data-photo-input="{{ $photoInputId }}">Choose from Photos</button>
         <button type="button" class="participant-photo-button" data-photo-source="camera" data-photo-input="{{ $photoInputId }}">Take Photo</button>
     </div>
+    <p class="participant-photo-required-error" data-photo-required-error="{{ $photoInputId }}" role="alert" hidden>Your photo is required.</p>
     <div class="participant-photo-preview-wrapper" hidden>
         <img class="participant-photo-preview" alt="Participant photo preview" aria-live="polite">
     </div>
@@ -78,6 +79,13 @@
         margin: 6px 0 0;
         color: #1B6CA8;
         font-size: 11px;
+    }
+
+    .participant-photo-required-error {
+        margin: 6px 0 0;
+        color: #b91c1c;
+        font-family: 'Sora', sans-serif;
+        font-size: 12px;
     }
 
     .participant-photo-crop-overlay {
