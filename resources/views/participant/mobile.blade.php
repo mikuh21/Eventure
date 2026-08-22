@@ -226,7 +226,7 @@
         .developer-credit {
             margin: 0;
             color: var(--muted-soft);
-            font-size: 7px;
+            font-size: 9px;
             line-height: 1.2;
             white-space: nowrap;
         }
@@ -351,7 +351,7 @@
             display: flex;
             align-items: center;
             background: rgba(255, 255, 255, 0.07);
-            font-size: 8px;
+            font-size: 10px;
             letter-spacing: 0;
             white-space: nowrap;
             overflow: hidden;
