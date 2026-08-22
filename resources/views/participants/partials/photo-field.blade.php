@@ -6,7 +6,7 @@
 
 <div id="{{ $photoFieldId }}" class="participant-photo-field {{ $photoFieldClass }}">
     <label for="{{ $photoInputId }}" class="participant-photo-label">Participant Photo</label>
-    <input id="{{ $photoInputId }}" name="photo" type="file" accept="image/jpeg,image/png,image/webp" required hidden>
+    <input id="{{ $photoInputId }}" name="photo" type="file" accept="image/jpeg,image/png,image/webp" hidden>
     <div class="participant-photo-actions">
         <button type="button" class="participant-photo-button" data-photo-source="library" data-photo-input="{{ $photoInputId }}">Choose from Photos</button>
         <button type="button" class="participant-photo-button" data-photo-source="camera" data-photo-input="{{ $photoInputId }}">Take Photo</button>
