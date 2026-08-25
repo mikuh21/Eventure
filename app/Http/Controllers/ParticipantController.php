@@ -92,7 +92,8 @@ class ParticipantController extends Controller
                 if ($search !== '') {
                     $participantsQuery->where(function ($query) use ($search): void {
                         $query->where('name', 'ilike', "%{$search}%")
-                            ->orWhere('email', 'ilike', "%{$search}%");
+                            ->orWhere('email', 'ilike', "%{$search}%")
+                            ->orWhere('institution', 'ilike', "%{$search}%");
                     });
                 }
 
@@ -130,7 +131,8 @@ class ParticipantController extends Controller
             if ($search !== '') {
                 $participantsQuery->where(function ($query) use ($search): void {
                     $query->where('name', 'ilike', "%{$search}%")
-                        ->orWhere('email', 'ilike', "%{$search}%");
+                        ->orWhere('email', 'ilike', "%{$search}%")
+                        ->orWhere('institution', 'ilike', "%{$search}%");
                 });
             }
 
@@ -482,7 +484,8 @@ class ParticipantController extends Controller
             if ($search !== '') {
                 $participantQuery->where(function ($query) use ($search): void {
                     $query->where('name', 'ilike', "%{$search}%")
-                        ->orWhere('email', 'ilike', "%{$search}%");
+                        ->orWhere('email', 'ilike', "%{$search}%")
+                        ->orWhere('institution', 'ilike', "%{$search}%");
                 });
             }
 
@@ -548,7 +551,8 @@ class ParticipantController extends Controller
             if ($search !== '') {
                 $participantQuery->where(function ($query) use ($search): void {
                     $query->where('name', 'ilike', "%{$search}%")
-                        ->orWhere('email', 'ilike', "%{$search}%");
+                        ->orWhere('email', 'ilike', "%{$search}%")
+                        ->orWhere('institution', 'ilike', "%{$search}%");
                 });
             }
 

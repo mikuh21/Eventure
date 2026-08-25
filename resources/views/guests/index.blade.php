@@ -1547,10 +1547,44 @@
             var searchInput = filtersForm ? filtersForm.querySelector('input[name="search"]') : null;
             if (searchInput && filtersForm) {
                 var searchDebounce;
+                var searchRequest;
                 searchInput.addEventListener('input', function () {
                     clearTimeout(searchDebounce);
                     searchDebounce = setTimeout(function () {
-                        filtersForm.submit();
+                        var formData = new FormData(filtersForm);
+                        var params = new URLSearchParams(formData);
+                        params.set('page', '1');
+
+                        if (searchRequest) searchRequest.abort();
+                        searchRequest = new AbortController();
+
+                        fetch(filtersForm.action + '?' + params.toString(), {
+                            headers: { 'Accept': 'text/html' },
+                            signal: searchRequest.signal
+                        })
+                            .then(function (response) { return response.text(); })
+                            .then(function (html) {
+                                var documentParser = new DOMParser();
+                                var parsedDocument = documentParser.parseFromString(html, 'text/html');
+                                var currentTable = document.querySelector('.guests-table-wrap');
+                                var nextTable = parsedDocument.querySelector('.guests-table-wrap');
+                                var currentPagination = document.querySelector('.eventure-pagination');
+                                var nextPagination = parsedDocument.querySelector('.eventure-pagination');
+                                var currentCount = document.getElementById('showingCount');
+                                var nextCount = parsedDocument.getElementById('showingCount');
+
+                                if (currentTable && nextTable) currentTable.replaceWith(nextTable);
+                                if (currentPagination) {
+                                    nextPagination ? currentPagination.replaceWith(nextPagination) : currentPagination.remove();
+                                } else if (nextPagination && currentTable) {
+                                    currentTable.parentNode.insertAdjacentElement('afterend', nextPagination);
+                                }
+                                if (currentCount && nextCount) currentCount.replaceWith(nextCount);
+                                searchInput.focus();
+                            })
+                            .catch(function (error) {
+                                if (error.name !== 'AbortError') console.error('Guest search failed.', error);
+                            });
                     }, 400);
                 });
             }

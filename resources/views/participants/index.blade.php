@@ -1782,10 +1782,53 @@
             var searchInput = filtersForm ? filtersForm.querySelector('input[name="search"]') : null;
             if (searchInput && filtersForm) {
                 var searchDebounce;
+                var searchRequest;
                 searchInput.addEventListener('input', function () {
                     clearTimeout(searchDebounce);
                     searchDebounce = setTimeout(function () {
-                        filtersForm.submit();
+                        var formData = new FormData(filtersForm);
+                        var params = new URLSearchParams(formData);
+                        params.set('page', '1');
+
+                        if (searchRequest) searchRequest.abort();
+                        searchRequest = new AbortController();
+
+                        fetch(filtersForm.action + '?' + params.toString(), {
+                            headers: { 'Accept': 'text/html' },
+                            signal: searchRequest.signal
+                        })
+                            .then(function (response) { return response.text(); })
+                            .then(function (html) {
+                                var documentParser = new DOMParser();
+                                var parsedDocument = documentParser.parseFromString(html, 'text/html');
+                                var currentTable = document.querySelector('.participants-table-wrap');
+                                var nextTable = parsedDocument.querySelector('.participants-table-wrap');
+                                var currentPagination = document.querySelector('.eventure-pagination');
+                                var nextPagination = parsedDocument.querySelector('.eventure-pagination');
+                                var currentCount = document.getElementById('showingCount');
+                                var nextCount = parsedDocument.getElementById('showingCount');
+                                var currentSelectionBar = document.getElementById('participantSelectionBar');
+                                var nextSelectionBar = parsedDocument.getElementById('participantSelectionBar');
+
+                                if (currentTable && nextTable) currentTable.replaceWith(nextTable);
+                                if (currentPagination) {
+                                    nextPagination ? currentPagination.replaceWith(nextPagination) : currentPagination.remove();
+                                } else if (nextPagination && currentTable) {
+                                    currentTable.parentNode.insertAdjacentElement('afterend', nextPagination);
+                                }
+                                if (currentCount && nextCount) currentCount.replaceWith(nextCount);
+                                if (currentSelectionBar && nextSelectionBar) {
+                                    currentSelectionBar.dataset.filteredTotal = nextSelectionBar.dataset.filteredTotal || '0';
+                                    currentSelectionBar.dataset.pendingTotal = nextSelectionBar.dataset.pendingTotal || '0';
+                                    var selectAllLabel = currentSelectionBar.querySelector('.participant-select-all span');
+                                    var nextSelectAllLabel = nextSelectionBar.querySelector('.participant-select-all span');
+                                    if (selectAllLabel && nextSelectAllLabel) selectAllLabel.textContent = nextSelectAllLabel.textContent;
+                                }
+                                searchInput.focus();
+                            })
+                            .catch(function (error) {
+                                if (error.name !== 'AbortError') console.error('Participant search failed.', error);
+                            });
                     }, 400);
                 });
             }

@@ -1958,7 +1958,11 @@
                 }
             };
 
-            searchInput.addEventListener('input', filterCards);
+            let searchDebounce;
+            searchInput.addEventListener('input', () => {
+                clearTimeout(searchDebounce);
+                searchDebounce = setTimeout(filterCards, 350);
+            });
 
             if (applyBtn) {
                 applyBtn.addEventListener('click', function () {

@@ -1436,7 +1436,11 @@
             };
 
             // Live search
-            searchInput.addEventListener('input', filterRows);
+            let searchDebounce;
+            searchInput.addEventListener('input', () => {
+                clearTimeout(searchDebounce);
+                searchDebounce = setTimeout(filterRows, 350);
+            });
 
             // Apply button applies dropdown filters (client-side) without submitting the form
             if (applyBtn) {
