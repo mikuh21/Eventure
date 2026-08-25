@@ -1329,7 +1329,7 @@
 
                 <button class="btn btn-primary" type="submit" id="filtersApplyBtn">Apply</button>
 
-                <span class="showing-text" id="showingCount" data-total="{{ $guests->count() }}">Showing {{ $guests->count() }} guest(s)</span>
+                <span class="showing-text" id="showingCount" data-total="{{ $guests->total() }}">Showing {{ $guests->count() }} of {{ $guests->total() }} guest(s)</span>
             </form>
 
             <div class="participant-selection-bar" id="guestSelectionBar" data-filtered-total="{{ $guests->total() }}" data-event-id="{{ $selectedEvent->id }}">
