@@ -1642,12 +1642,15 @@
             if (searchInput && filtersForm) {
                 var searchDebounce;
                 var searchRequest;
+                var searchRequestSequence = 0;
                 searchInput.addEventListener('input', function () {
                     clearTimeout(searchDebounce);
                     searchDebounce = setTimeout(function () {
                         var formData = new FormData(filtersForm);
                         var params = new URLSearchParams(formData);
+                        if (!params.get('search')) params.delete('search');
                         params.set('page', '1');
+                        var requestSequence = ++searchRequestSequence;
 
                         if (searchRequest) searchRequest.abort();
                         searchRequest = new AbortController();
@@ -1658,6 +1661,8 @@
                         })
                             .then(function (response) { return response.text(); })
                             .then(function (html) {
+                                if (requestSequence !== searchRequestSequence) return;
+
                                 var documentParser = new DOMParser();
                                 var parsedDocument = documentParser.parseFromString(html, 'text/html');
                                 var currentTable = document.querySelector('.guests-table-wrap');
@@ -1672,8 +1677,8 @@
                                 if (currentTable && nextTable) currentTable.replaceWith(nextTable);
                                 if (currentPagination) {
                                     nextPagination ? currentPagination.replaceWith(nextPagination) : currentPagination.remove();
-                                } else if (nextPagination && currentTable) {
-                                    currentTable.parentNode.insertAdjacentElement('afterend', nextPagination);
+                                } else if (nextPagination && nextTable) {
+                                    nextTable.insertAdjacentElement('afterend', nextPagination);
                                 }
                                 if (currentCount && nextCount) currentCount.replaceWith(nextCount);
                                 if (currentSelectionBar && nextSelectionBar) {
@@ -1682,6 +1687,11 @@
                                     var nextSelectAllLabel = nextSelectionBar.querySelector('.participant-select-all span');
                                     if (selectAllLabel && nextSelectAllLabel) selectAllLabel.textContent = nextSelectAllLabel.textContent;
                                 }
+                                var nextUrl = new URL(filtersForm.action, window.location.origin);
+                                params.forEach(function (value, key) {
+                                    nextUrl.searchParams.set(key, value);
+                                });
+                                window.history.replaceState({}, '', nextUrl.pathname + '?' + nextUrl.searchParams.toString());
                                 searchInput.focus();
                             })
                             .catch(function (error) {
