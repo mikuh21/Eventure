@@ -877,12 +877,14 @@
             flex-wrap: wrap;
             gap: 12px;
             margin: 14px 0 16px;
-            padding: 8px;
+            padding: 8px 8px;
             border: 1px solid var(--color-sky, #BFDFFF);
             border-radius: 8px;
             background: #f8fbff;
         }
         .participant-selection-bar:not(.is-active) {
+            margin-top: 14px;
+            margin-bottom: 18px;
             padding: 0;
             border: 0;
             background: transparent;
@@ -891,6 +893,16 @@
         .participant-selection-bar:not(.is-active) #deleteSelectedGuests,
         .participant-selection-bar:not(.is-active) .participant-selection-summary {
             display: none;
+        }
+        .participant-selection-bar .btn {
+            flex-shrink: 0;
+        }
+        .participant-selection-bar #toggleGuestSelection,
+        .participant-selection-bar #deleteSelectedGuests {
+            font-family: 'Sora', sans-serif;
+            font-size: 13px;
+            padding: 6px 12px;
+            line-height: 1.2;
         }
         .participant-select-all {
             display: inline-flex;
@@ -907,6 +919,9 @@
             height: 16px;
             accent-color: var(--color-ocean, #1B6CA8);
             cursor: pointer;
+        }
+        .guest-row-checkbox {
+            display: none;
         }
         .participant-selection-column {
             text-align: center;
@@ -1323,7 +1338,7 @@
                     <input type="checkbox" id="selectAllGuests" disabled>
                     <span>Select all filtered guests ({{ number_format($guests->total()) }})</span>
                 </label>
-                <button class="btn-action btn-delete" type="button" id="deleteSelectedGuests" hidden disabled>Delete Selected</button>
+                <button class="btn btn-primary" type="button" id="deleteSelectedGuests" hidden disabled>Delete Selected</button>
                 <span class="participant-selection-summary" id="guestSelectionSummary" aria-live="polite" hidden>No guests selected</span>
             </div>
         @endif
@@ -1705,6 +1720,8 @@
             var updateUi = function () {
                 var count = selectedCount();
                 selectionBar.classList.toggle('is-active', selectionMode);
+                var selectAllLabel = selectAll.closest('.participant-select-all');
+                if (selectAllLabel) selectAllLabel.hidden = !selectionMode;
                 document.querySelectorAll('.guest-row-checkbox').forEach(function (checkbox) {
                     checkbox.style.display = selectionMode ? 'inline-block' : 'none';
                     checkbox.checked = allFiltered || selectedIds.has(checkbox.value);
@@ -1716,6 +1733,7 @@
                 deleteButton.disabled = count === 0;
                 summary.hidden = !selectionMode;
                 summary.textContent = count + ' guest(s) selected';
+                toggleButton.textContent = selectionMode ? 'Cancel Selection' : 'Select';
             };
 
             var clearSelection = function () {
