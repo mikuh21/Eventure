@@ -303,6 +303,19 @@ class AdminController extends Controller
 
         $eventsBreakdown = $eventsQuery->get();
 
+        $participants = collect();
+        if ($eventId) {
+            $participantsQuery = Participant::query()
+                ->where('event_id', $eventId)
+                ->orderBy('name');
+
+            if (auth()->user()->role !== User::ROLE_ADMIN) {
+                $participantsQuery->whereHas('event', fn ($q) => $q->where('created_by', auth()->id()));
+            }
+
+            $participants = $participantsQuery->get();
+        }
+
         $scopeLabel = match($period) {
             'month' => \Carbon\Carbon::create($year, $month)->format('F Y'),
             'year'  => (string) $year,
@@ -322,6 +335,7 @@ class AdminController extends Controller
             'responseRate' => $responseRate,
             'avgRating' => $avgRating,
             'eventsBreakdown' => $eventsBreakdown,
+            'participants' => $participants,
         ]);
 
         $filename = 'analytics-report-' . now()->format('Y-m-d-His') . '.pdf';

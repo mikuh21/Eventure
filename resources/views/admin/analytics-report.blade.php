@@ -177,6 +177,34 @@
         .page-2 table {
             page-break-inside: avoid !important;
         }
+        .participant-table {
+            page-break-inside: auto !important;
+            table-layout: fixed;
+        }
+        .participant-table thead {
+            display: table-header-group;
+        }
+        .participant-table th,
+        .participant-table td {
+            overflow-wrap: anywhere;
+            word-wrap: break-word;
+        }
+        .participant-table th:nth-child(1),
+        .participant-table td:nth-child(1) {
+            width: 30%;
+        }
+        .participant-table th:nth-child(2),
+        .participant-table td:nth-child(2) {
+            width: 35%;
+        }
+        .participant-table th:nth-child(3),
+        .participant-table td:nth-child(3) {
+            width: 20%;
+        }
+        .participant-table th:nth-child(4),
+        .participant-table td:nth-child(4) {
+            width: 15%;
+        }
         th {
             background: #f0f4f8;
             padding: 10px;
@@ -322,6 +350,30 @@
             <div class="empty-state">
                 No events found for the selected scope.
             </div>
+        @endif
+
+        @if ($participants->isNotEmpty())
+            <div class="section-title">Participant List</div>
+            <table class="participant-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Attended</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($participants as $participant)
+                        <tr>
+                            <td>{{ $participant->name }}</td>
+                            <td>{{ $participant->email }}</td>
+                            <td>{{ $participant->participant_type }}</td>
+                            <td>{{ $participant->attended ? 'Yes' : 'No' }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
         @endif
 
         <div class="footer">
