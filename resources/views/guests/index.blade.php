@@ -1791,7 +1791,7 @@
                 confirmButton.disabled = true;
                 confirmButton.textContent = 'Deleting...';
 
-                fetch('{{ route('events.guests.bulk-delete', $selectedEvent) }}', {
+                fetch('{{ $selectedEvent ? route('events.guests.bulk-delete', $selectedEvent) : '' }}', {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
