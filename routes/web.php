@@ -138,6 +138,10 @@ Route::middleware(['auth', 'admin'])->group(function (): void {
         ->name('guests.download-paper')
         ->middleware(['auth']);
 
+    Route::post('events/{event}/guests/bulk-delete', [GuestController::class, 'bulkDestroy'])
+        ->middleware('auth')
+        ->name('events.guests.bulk-delete');
+
     Route::resource('guests', GuestController::class);
 
     Route::resource('guests.evaluations', GuestEvaluationController::class);

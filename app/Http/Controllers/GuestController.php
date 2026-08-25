@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class GuestController extends Controller
 {
@@ -348,6 +349,66 @@ class GuestController extends Controller
         return redirect()
             ->route('guests.index', ['event_id' => $eventId])
             ->with('status', 'Guest deleted successfully.');
+    }
+
+    public function bulkDestroy(Request $request, Event $event)
+    {
+        if (! $this->guestModuleReady()) {
+            return response()->json(['message' => 'Guest module tables are not ready yet.'], 503);
+        }
+
+        if (auth()->user()->hasRole('event_staff') && $event->created_by !== auth()->id()) {
+            return response()->json(['message' => 'You do not have permission to modify guests in this event.'], 403);
+        }
+
+        $validated = $request->validate([
+            'guest_ids' => ['nullable', 'array', 'required_without:select_all'],
+            'guest_ids.*' => ['integer', 'distinct'],
+            'select_all' => ['sometimes', 'boolean'],
+            'search' => ['nullable', 'string', 'max:255'],
+            'status' => ['nullable', Rule::in(['pending', 'approved'])],
+            'guest_type' => ['nullable', Rule::in(['presenter', 'exhibitor'])],
+        ]);
+
+        $guestQuery = Guest::query()->where('event_id', $event->id);
+
+        if ((bool) ($validated['select_all'] ?? false)) {
+            $search = trim((string) ($validated['search'] ?? ''));
+            if ($search !== '') {
+                $guestQuery->where(function ($query) use ($search): void {
+                    $query->where('name', 'ilike', "%{$search}%")
+                        ->orWhere('email', 'ilike', "%{$search}%");
+                });
+            }
+
+            if (($validated['status'] ?? '') !== '') {
+                $guestQuery->where('status', $validated['status']);
+            }
+
+            if (($validated['guest_type'] ?? '') !== '') {
+                $guestQuery->whereRaw('LOWER(role) = ?', [$validated['guest_type']]);
+            }
+        } else {
+            $guestIds = $validated['guest_ids'] ?? [];
+            $matchingIds = (clone $guestQuery)->whereIn('id', $guestIds)->pluck('id');
+
+            if ($matchingIds->count() !== count($guestIds)) {
+                return response()->json(['message' => 'One or more selected guests do not belong to this event.'], 422);
+            }
+
+            $guestQuery->whereIn('id', $guestIds);
+        }
+
+        $guestsToDelete = $guestQuery->get();
+        $guestsToDelete->each(function (Guest $guest): void {
+            $guest->delete();
+        });
+        $deletedCount = $guestsToDelete->count();
+
+        return response()->json([
+            'message' => "{$deletedCount} guest(s) deleted successfully.",
+            'deleted_count' => $deletedCount,
+        ]);
     }
 
     public function approve(Request $request, Event $event, Guest $guest)

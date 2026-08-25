@@ -871,6 +871,60 @@
             gap: 10px;
         }
 
+        .participant-selection-bar {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 14px 0 16px;
+            padding: 8px;
+            border: 1px solid var(--color-sky, #BFDFFF);
+            border-radius: 8px;
+            background: #f8fbff;
+        }
+        .participant-selection-bar:not(.is-active) {
+            padding: 0;
+            border: 0;
+            background: transparent;
+        }
+        .participant-selection-bar:not(.is-active) .participant-select-all,
+        .participant-selection-bar:not(.is-active) #deleteSelectedGuests,
+        .participant-selection-bar:not(.is-active) .participant-selection-summary {
+            display: none;
+        }
+        .participant-select-all {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--color-midnight, #0A2342);
+            font-family: 'Sora', sans-serif;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .participant-select-all input,
+        .guest-row-checkbox {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--color-ocean, #1B6CA8);
+            cursor: pointer;
+        }
+        .participant-selection-column {
+            text-align: center;
+            vertical-align: middle;
+        }
+        .participant-selection-summary {
+            margin-left: auto;
+            color: var(--color-ocean, #1B6CA8);
+            font-family: 'Sora', sans-serif;
+            font-size: 13px;
+        }
+        @media (max-width: 640px) {
+            .participant-selection-summary {
+                width: 100%;
+                margin-left: 0;
+            }
+        }
+
         .btn-delete-cancel {
             border: 1px solid var(--color-sky);
             background: #ffffff;
@@ -1262,6 +1316,16 @@
 
                 <span class="showing-text" id="showingCount" data-total="{{ $guests->count() }}">Showing {{ $guests->count() }} guest(s)</span>
             </form>
+
+            <div class="participant-selection-bar" id="guestSelectionBar" data-filtered-total="{{ $guests->total() }}" data-event-id="{{ $selectedEvent->id }}">
+                <button class="btn" type="button" id="toggleGuestSelection">Select</button>
+                <label class="participant-select-all" for="selectAllGuests" hidden>
+                    <input type="checkbox" id="selectAllGuests" disabled>
+                    <span>Select all filtered guests ({{ number_format($guests->total()) }})</span>
+                </label>
+                <button class="btn-action btn-delete" type="button" id="deleteSelectedGuests" hidden disabled>Delete Selected</button>
+                <span class="participant-selection-summary" id="guestSelectionSummary" aria-live="polite" hidden>No guests selected</span>
+            </div>
         @endif
 
         @if (!request('event_id'))
@@ -1279,6 +1343,7 @@
                 <table class="guests-table">
                     <thead>
                     <tr>
+                        <th class="participant-selection-column" style="width:5%"><span class="sr-only">Select</span></th>
                         <th style="width:18%">Name</th>
                         <th style="width:20%">Email</th>
                         <th style="width:12%">Role</th>
@@ -1291,7 +1356,7 @@
                     <tbody>
                     @if ($guests->total() === 0)
                         <tr>
-                            <td colspan="7" class="guests-empty-table">No guests registered for this event yet.</td>
+                            <td colspan="8" class="guests-empty-table">No guests registered for this event yet.</td>
                         </tr>
                     @else
                         @foreach ($guests as $guest)
@@ -1302,6 +1367,9 @@
                                 data-guest-status="{{ strtolower((string) ($guest->status ?? 'approved')) }}"
                                 data-guest-type="{{ strtolower((string) $guest->role) }}"
                             >
+                                <td class="participant-selection-column">
+                                    <input class="guest-row-checkbox participant-row-checkbox" type="checkbox" value="{{ $guest->id }}" aria-label="Select {{ $guest->name }}">
+                                </td>
                                 <td>{{ $guest->name }}</td>
                                 <td>{{ $guest->email }}</td>
                                 <td>{{ ucfirst($guest->role) }}</td>
@@ -1353,7 +1421,7 @@
                             </tr>
                         @endforeach
                         <tr id="liveSearchEmpty" style="display: none;">
-                            <td colspan="7" class="guests-empty-table">No guests match the current filters.</td>
+                            <td colspan="8" class="guests-empty-table">No guests match the current filters.</td>
                         </tr>
                     @endif
                     </tbody>
@@ -1482,6 +1550,17 @@
         </div>
     </div>
 
+    <div id="bulkGuestDeleteModal" class="delete-confirm-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="bulkGuestDeleteTitle">
+        <div class="delete-confirm-panel">
+            <h2 id="bulkGuestDeleteTitle" class="delete-confirm-title">Delete Selected Guests?</h2>
+            <p class="delete-confirm-body">Are you sure you want to delete <span id="bulkGuestDeleteCount" class="delete-confirm-name">0</span> selected guest(s)? This action <strong>cannot be undone</strong>.</p>
+            <div class="delete-confirm-actions">
+                <button type="button" class="btn-delete-cancel" id="bulkGuestDeleteCancel">Cancel</button>
+                <button type="button" class="btn-delete-confirm" id="bulkGuestDeleteConfirm">Delete</button>
+            </div>
+        </div>
+    </div>
+
     <!-- View/Edit Guest Modal -->
     <div class="guest-modal-overlay" id="viewGuestModal" aria-hidden="true">
         <div class="guest-modal" role="dialog" aria-modal="true" aria-labelledby="viewGuestModalTitle">
@@ -1572,6 +1651,8 @@
                                 var nextPagination = parsedDocument.querySelector('.eventure-pagination');
                                 var currentCount = document.getElementById('showingCount');
                                 var nextCount = parsedDocument.getElementById('showingCount');
+                                var currentSelectionBar = document.getElementById('guestSelectionBar');
+                                var nextSelectionBar = parsedDocument.getElementById('guestSelectionBar');
 
                                 if (currentTable && nextTable) currentTable.replaceWith(nextTable);
                                 if (currentPagination) {
@@ -1580,6 +1661,12 @@
                                     currentTable.parentNode.insertAdjacentElement('afterend', nextPagination);
                                 }
                                 if (currentCount && nextCount) currentCount.replaceWith(nextCount);
+                                if (currentSelectionBar && nextSelectionBar) {
+                                    currentSelectionBar.dataset.filteredTotal = nextSelectionBar.dataset.filteredTotal || '0';
+                                    var selectAllLabel = currentSelectionBar.querySelector('.participant-select-all span');
+                                    var nextSelectAllLabel = nextSelectionBar.querySelector('.participant-select-all span');
+                                    if (selectAllLabel && nextSelectAllLabel) selectAllLabel.textContent = nextSelectAllLabel.textContent;
+                                }
                                 searchInput.focus();
                             })
                             .catch(function (error) {
@@ -1588,6 +1675,154 @@
                     }, 400);
                 });
             }
+        })();
+
+        (function () {
+            var selectionBar = document.getElementById('guestSelectionBar');
+            if (!selectionBar) return;
+
+            var toggleButton = document.getElementById('toggleGuestSelection');
+            var selectAll = document.getElementById('selectAllGuests');
+            var deleteButton = document.getElementById('deleteSelectedGuests');
+            var summary = document.getElementById('guestSelectionSummary');
+            var modal = document.getElementById('bulkGuestDeleteModal');
+            var countElement = document.getElementById('bulkGuestDeleteCount');
+            var cancelButton = document.getElementById('bulkGuestDeleteCancel');
+            var confirmButton = document.getElementById('bulkGuestDeleteConfirm');
+            var selectedIds = new Set();
+            var allFiltered = false;
+            var selectionMode = false;
+            var filtersForm = document.getElementById('filtersForm');
+
+            var visibleCheckboxes = function () {
+                return Array.prototype.slice.call(document.querySelectorAll('.guest-row-checkbox'));
+            };
+
+            var selectedCount = function () {
+                return allFiltered ? Number(selectionBar.dataset.filteredTotal || 0) : selectedIds.size;
+            };
+
+            var updateUi = function () {
+                var count = selectedCount();
+                selectionBar.classList.toggle('is-active', selectionMode);
+                document.querySelectorAll('.guest-row-checkbox').forEach(function (checkbox) {
+                    checkbox.style.display = selectionMode ? 'inline-block' : 'none';
+                    checkbox.checked = allFiltered || selectedIds.has(checkbox.value);
+                });
+                selectAll.disabled = !selectionMode;
+                selectAll.checked = allFiltered;
+                selectAll.indeterminate = !allFiltered && selectedIds.size > 0;
+                deleteButton.hidden = !selectionMode;
+                deleteButton.disabled = count === 0;
+                summary.hidden = !selectionMode;
+                summary.textContent = count + ' guest(s) selected';
+            };
+
+            var clearSelection = function () {
+                selectedIds.clear();
+                allFiltered = false;
+                updateUi();
+            };
+
+            toggleButton.addEventListener('click', function () {
+                selectionMode = !selectionMode;
+                if (!selectionMode) clearSelection();
+                updateUi();
+            });
+
+            document.addEventListener('change', function (event) {
+                if (!event.target.matches('.guest-row-checkbox')) return;
+                if (event.target.checked) selectedIds.add(event.target.value);
+                else {
+                    selectedIds.delete(event.target.value);
+                    allFiltered = false;
+                }
+                updateUi();
+            });
+
+            selectAll.addEventListener('change', function () {
+                allFiltered = this.checked;
+                if (!allFiltered) selectedIds.clear();
+                else visibleCheckboxes().forEach(function (checkbox) { selectedIds.add(checkbox.value); });
+                updateUi();
+            });
+
+            if (filtersForm) {
+                filtersForm.addEventListener('input', function (event) {
+                    if (event.target.name === 'search') clearSelection();
+                });
+                filtersForm.addEventListener('change', function (event) {
+                    if (event.target.name === 'status' || event.target.name === 'guest_type') clearSelection();
+                });
+            }
+
+            var closeModal = function () {
+                modal.classList.remove('is-visible');
+                modal.setAttribute('aria-hidden', 'true');
+                document.body.style.overflow = '';
+            };
+
+            deleteButton.addEventListener('click', function () {
+                var count = selectedCount();
+                if (!count) return;
+                countElement.textContent = count;
+                modal.classList.add('is-visible');
+                modal.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
+            });
+
+            cancelButton.addEventListener('click', closeModal);
+            modal.addEventListener('click', function (event) {
+                if (event.target === modal) closeModal();
+            });
+
+            confirmButton.addEventListener('click', function () {
+                var filtersForm = document.getElementById('filtersForm');
+                var formData = filtersForm ? new FormData(filtersForm) : new FormData();
+                var payload = {
+                    guest_ids: allFiltered ? [] : Array.from(selectedIds),
+                    select_all: allFiltered,
+                    search: formData.get('search') || '',
+                    status: formData.get('status') || '',
+                    guest_type: formData.get('guest_type') || ''
+                };
+                var csrfMeta = document.querySelector('meta[name="csrf-token"]');
+
+                confirmButton.disabled = true;
+                confirmButton.textContent = 'Deleting...';
+
+                fetch('{{ route('events.guests.bulk-delete', $selectedEvent) }}', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfMeta ? csrfMeta.getAttribute('content') : '',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify(payload),
+                    credentials: 'same-origin'
+                }).then(function (response) {
+                    return response.json().then(function (data) {
+                        if (!response.ok) throw new Error(data.message || 'Unable to delete guests.');
+                        return data;
+                    });
+                }).then(function () {
+                    closeModal();
+                    clearSelection();
+                    window.location.reload();
+                }).catch(function (error) {
+                    window.alert(error.message || 'Unable to delete guests.');
+                }).finally(function () {
+                    confirmButton.disabled = false;
+                    confirmButton.textContent = 'Delete';
+                });
+            });
+
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape' && modal.classList.contains('is-visible')) closeModal();
+            });
+
+            updateUi();
         })();
 
         (function () {
