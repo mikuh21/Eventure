@@ -422,9 +422,22 @@ class AdminController extends Controller
                     'name' => $participant->name,
                     'email' => $participant->email ?: 'N/A',
                     'role' => ucfirst(strtolower($participant->participant_type ?? 'N/A')),
+                    'institution' => $participant->institution ?: 'N/A',
                     'attended' => $participant->attended ? 'Yes' : 'No',
                 ];
             });
+
+        $normalizedInstitutions = $eventParticipants
+            ->pluck('institution')
+            ->filter(fn ($institution) => filled(trim($institution)))
+            ->map(fn ($institution) => strtolower(preg_replace('/\s+/', ' ', trim($institution))))
+            ->unique();
+
+        $studentCount = $eventParticipants->filter(fn ($participant) => strtolower((string) $participant->participant_type) === 'student')->count();
+        $coachCount = $eventParticipants->filter(fn ($participant) => strtolower((string) $participant->participant_type) === 'coach')->count();
+        $facultyCount = $eventParticipants->filter(fn ($participant) => strtolower((string) $participant->participant_type) === 'faculty')->count();
+        $organizerCount = $eventParticipants->filter(fn ($participant) => strtolower((string) $participant->participant_type) === 'organizer')->count();
+        $institutionCount = $normalizedInstitutions->count();
 
         $pdf = Pdf::loadView('admin.event-analytics-report', [
             'event' => $event,
@@ -438,6 +451,11 @@ class AdminController extends Controller
             'ratingDistribution' => $ratingDistribution,
             'collegeBreakdown' => $collegeBreakdown,
             'participantList' => $participantList,
+            'studentCount' => $studentCount,
+            'coachCount' => $coachCount,
+            'facultyCount' => $facultyCount,
+            'organizerCount' => $organizerCount,
+            'institutionCount' => $institutionCount,
         ]);
 
         $filename = 'event-report-' . \Illuminate\Support\Str::slug($event->title) . '-' . now()->format('Y-m-d-His') . '.pdf';

@@ -483,7 +483,6 @@
             </div>
         @endif
 
-        @if ($participantList->isNotEmpty())
             <div class="page-break">
                 <div class="page2-branding">
                     <div class="page2-branding-logo">
@@ -493,29 +492,59 @@
                         <div class="page2-branding-name">Eventure</div>
                     </div>
                 </div>
+                <div class="section-title">Participant Breakdown</div>
+                <table style="width:100%; border-collapse:collapse; margin-bottom:20px;">
+                    <tbody>
+                        <tr>
+                            <td style="width:70%; font-weight:700;">Students</td>
+                            <td>{{ $studentCount }}</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight:700;">Coaches</td>
+                            <td>{{ $coachCount }}</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight:700;">Faculty</td>
+                            <td>{{ $facultyCount }}</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight:700;">Organizers</td>
+                            <td>{{ $organizerCount }}</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight:700;">Different Institutions</td>
+                            <td>{{ $institutionCount }}</td>
+                        </tr>
+                    </tbody>
+                </table>
                 <div class="section-title">Participant List</div>
                 <table style="width:100%; table-layout:fixed; border-collapse:collapse; margin-bottom:10px;">
                     <thead>
                         <tr>
                             <th style="width:30%;">Name</th>
-                            <th style="width:35%;">Email</th>
-                            <th style="width:20%;">Role</th>
-                            <th style="width:15%;">Attended</th>
+                            <th style="width:25%;">Email</th>
+                            <th style="width:15%;">Role</th>
+                            <th style="width:20%;">Institution</th>
+                            <th style="width:10%;">Attended</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($participantList as $row)
+                        @forelse ($participantList as $row)
                             <tr>
                                 <td style="overflow-wrap:anywhere;">{{ $row['name'] }}</td>
                                 <td style="overflow-wrap:anywhere;">{{ $row['email'] }}</td>
                                 <td style="overflow-wrap:anywhere;">{{ $row['role'] }}</td>
+                                <td style="overflow-wrap:anywhere;">{{ $row['institution'] }}</td>
                                 <td>{{ $row['attended'] }}</td>
                             </tr>
-                        @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="5" class="empty-state">No participants registered for this event.</td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
-        @endif
 
         <div class="footer">
             <p>Eventure | Event Report Summary</p>
