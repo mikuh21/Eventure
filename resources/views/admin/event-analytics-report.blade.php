@@ -476,78 +476,44 @@
                 </div>
             @endif
 
-            @if ($facultyList)
-                <div class="page-break">
-                    <div class="page2-branding">
-                        <div class="page2-branding-logo">
-                            <img src="{{ public_path('eventure-signinlogo.png') }}" alt="Eventure logo">
-                        </div>
-                        <div class="page2-branding-text">
-                            <div class="page2-branding-name">Eventure</div>
-                        </div>
-                    </div>
-                    <div class="section-title">Faculty Participants</div>
-                    <table style="width:100%; border-collapse:collapse; margin-bottom:10px;">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Type</th>
-                                <th>College/Department</th>
-                                <th>Answered Feedback Survey</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($facultyList as $row)
-                                <tr>
-                                    <td>{{ $row['name'] }}</td>
-                                    <td>{{ $row['type'] }}</td>
-                                    <td>{{ $row['college'] }}</td>
-                                    <td>{{ $row['answered_survey'] }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            @endif
-
-            @if ($studentList)
-                <div class="page-break">
-                    <div class="page2-branding">
-                        <div class="page2-branding-logo">
-                            <img src="{{ public_path('eventure-signinlogo.png') }}" alt="Eventure logo">
-                        </div>
-                        <div class="page2-branding-text">
-                            <div class="page2-branding-name">Eventure</div>
-                        </div>
-                    </div>
-                    <div class="section-title">Student Participants</div>
-                    <table style="width:100%; border-collapse:collapse; margin-bottom:10px;">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Type</th>
-                                <th>College/Department</th>
-                                <th>Answered Feedback Survey</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($studentList as $row)
-                                <tr>
-                                    <td>{{ $row['name'] }}</td>
-                                    <td>{{ $row['type'] }}</td>
-                                    <td>{{ $row['college'] }}</td>
-                                    <td>{{ $row['answered_survey'] }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            @endif
-
         @else
             <div class="section-title">Evaluation Data</div>
             <div class="empty-state">
                 No evaluations submitted for this event yet.
+            </div>
+        @endif
+
+        @if ($participantList->isNotEmpty())
+            <div class="page-break">
+                <div class="page2-branding">
+                    <div class="page2-branding-logo">
+                        <img src="{{ public_path('eventure-signinlogo.png') }}" alt="Eventure logo">
+                    </div>
+                    <div class="page2-branding-text">
+                        <div class="page2-branding-name">Eventure</div>
+                    </div>
+                </div>
+                <div class="section-title">Participant List</div>
+                <table style="width:100%; table-layout:fixed; border-collapse:collapse; margin-bottom:10px;">
+                    <thead>
+                        <tr>
+                            <th style="width:30%;">Name</th>
+                            <th style="width:35%;">Email</th>
+                            <th style="width:20%;">Role</th>
+                            <th style="width:15%;">Attended</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($participantList as $row)
+                            <tr>
+                                <td style="overflow-wrap:anywhere;">{{ $row['name'] }}</td>
+                                <td style="overflow-wrap:anywhere;">{{ $row['email'] }}</td>
+                                <td style="overflow-wrap:anywhere;">{{ $row['role'] }}</td>
+                                <td>{{ $row['attended'] }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         @endif
 
