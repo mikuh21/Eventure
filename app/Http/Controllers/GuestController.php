@@ -87,7 +87,7 @@ class GuestController extends Controller
         if ($selectedEvent && $guestTypeFilter !== '') {
             $normalizedGuestType = strtolower($guestTypeFilter);
 
-            if (in_array($normalizedGuestType, ['presenter', 'exhibitor'], true)) {
+            if (in_array($normalizedGuestType, ['speaker/officer', 'presenter', 'exhibitor'], true)) {
                 $guestsQuery->whereRaw('LOWER(role) = ?', [$normalizedGuestType]);
             }
         }
@@ -138,7 +138,7 @@ class GuestController extends Controller
             ], 422);
         }
 
-        $validated['role'] = $event->type === 'conference' ? 'Presenter' : 'Exhibitor';
+        $validated['role'] = $event->type === 'conference' ? 'Speaker/Officer' : 'Exhibitor';
         $autoApproved = (bool) $event->auto_approve;
         $validated['status'] = $autoApproved ? 'approved' : 'pending';
 
@@ -192,7 +192,7 @@ class GuestController extends Controller
         }
 
         // Set role server-side based on event type
-        $validated['role'] = $event->type === 'conference' ? 'Presenter' : 'Exhibitor';
+        $validated['role'] = $event->type === 'conference' ? 'Speaker/Officer' : 'Exhibitor';
 
         // Directly added guests by admin/event staff are approved immediately
         $validated['status'] = 'approved';
@@ -367,7 +367,7 @@ class GuestController extends Controller
             'select_all' => ['sometimes', 'boolean'],
             'search' => ['nullable', 'string', 'max:255'],
             'status' => ['nullable', Rule::in(['pending', 'approved'])],
-            'guest_type' => ['nullable', Rule::in(['presenter', 'exhibitor'])],
+            'guest_type' => ['nullable', Rule::in(['speaker/officer', 'presenter', 'exhibitor'])],
         ]);
 
         $guestQuery = Guest::query()->where('event_id', $event->id);

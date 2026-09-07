@@ -1723,7 +1723,7 @@
                     document.getElementById('landingInstitution').required = false;
                     landingRegistrationForm.enctype = 'multipart/form-data';
                     landingGuestRole.required = true;
-                    landingGuestRole.value = eventType === 'conference' ? 'Presenter' : 'Exhibitor';
+                    landingGuestRole.value = eventType === 'conference' ? 'Speaker/Officer' : 'Exhibitor';
                     landingGuestRole.className = 'bg-slate-100 text-slate-500 border border-slate-200 rounded-lg px-3 py-1.5 text-sm cursor-not-allowed';
                     guestBioField.querySelector('textarea').rows = 2;
                     landingInstitutionField.classList.add('hidden');
@@ -1776,7 +1776,7 @@
                 resetForm();
                 setFormType('participant', currentEventType);
                 landingGuestOptionDescription.textContent = currentEventType === 'conference'
-                    ? 'Register as a Presenter for the event.'
+                    ? 'Register as a Speaker/Officer for the event.'
                     : 'Register as an Exhibitor for the event.';
                 modal.classList.add('is-visible');
                 modal.setAttribute('aria-hidden', 'false');
@@ -1857,7 +1857,7 @@
                         resetForm();
                         setFormType('participant', eventType);
                         landingGuestOptionDescription.textContent = eventType === 'conference'
-                            ? 'Register as a Presenter for the event.'
+                            ? 'Register as a Speaker/Officer for the event.'
                             : 'Register as an Exhibitor for the event.';
                         modal.classList.add('is-visible');
                         modal.setAttribute('aria-hidden', 'false');

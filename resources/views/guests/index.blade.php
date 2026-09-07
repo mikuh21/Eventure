@@ -1323,8 +1323,11 @@
 
                 <select class="filter-select" name="guest_type">
                     <option value="">All Types</option>
-                    <option value="presenter" {{ request('guest_type') === 'presenter' ? 'selected' : '' }}>Presenter</option>
-                    <option value="exhibitor" {{ request('guest_type') === 'exhibitor' ? 'selected' : '' }}>Exhibitor</option>
+                    @if ($selectedEvent->type === 'conference')
+                        <option value="speaker/officer" {{ request('guest_type') === 'speaker/officer' ? 'selected' : '' }}>Speaker/Officer</option>
+                    @else
+                        <option value="exhibitor" {{ request('guest_type') === 'exhibitor' ? 'selected' : '' }}>Exhibitor</option>
+                    @endif
                 </select>
 
                 <button class="btn btn-primary" type="submit" id="filtersApplyBtn">Apply</button>
@@ -2055,7 +2058,7 @@
             }
 
             const eventType = eventTypes[eventId];
-            const role = eventType === 'conference' ? 'Presenter' : 'Exhibitor';
+            const role = eventType === 'conference' ? 'Speaker/Officer' : 'Exhibitor';
             document.getElementById('guestRoleDisplay').textContent = role;
             document.getElementById('guestRoleInput').value = role;
         }
