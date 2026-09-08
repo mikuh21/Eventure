@@ -277,6 +277,13 @@
             opacity: 1;
         }
 
+        .cloudswyft-registration-logo {
+            display: block;
+            width: min(100%, 220px);
+            height: auto;
+            margin-top: 20px;
+        }
+
         .landing-registration-body {
             display: grid;
             grid-template-columns: 1.1fr 0.9fr;
@@ -1419,6 +1426,7 @@
                                 <p class="text-sm text-slate-600 mt-2" id="landingGuestOptionDescription">Register as a guest speaker or exhibitor for the event.</p>
                             </button>
                         </div>
+                        <img src="https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/eventure-assets/logos/cloudswyftlogo.png" alt="CloudSwyft" class="cloudswyft-registration-logo">
                     </div>
 
                     <div id="landingRegistrationFormPanel" class="hidden space-y-3">
