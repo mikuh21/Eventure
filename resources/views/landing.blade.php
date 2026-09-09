@@ -1740,7 +1740,7 @@
                     document.getElementById('landingInstitution').required = false;
                     landingRegistrationForm.enctype = 'multipart/form-data';
                     landingGuestRole.required = true;
-                    landingGuestRole.value = eventType === 'conference' ? 'Speaker/Officer' : 'Exhibitor';
+                    landingGuestRole.value = eventType === 'conference' || eventType === 'event' ? 'Speaker/Officer' : 'Exhibitor';
                     landingGuestRole.className = 'bg-slate-100 text-slate-500 border border-slate-200 rounded-lg px-3 py-1.5 text-sm cursor-not-allowed';
                     guestBioField.querySelector('textarea').rows = 2;
                     landingInstitutionField.classList.add('hidden');

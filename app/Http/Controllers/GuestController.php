@@ -138,7 +138,9 @@ class GuestController extends Controller
             ], 422);
         }
 
-        $validated['role'] = $event->type === 'conference' ? 'Speaker/Officer' : 'Exhibitor';
+        $validated['role'] = in_array($event->type, ['conference', 'event'], true)
+            ? 'Speaker/Officer'
+            : 'Exhibitor';
         $autoApproved = (bool) $event->auto_approve;
         $validated['status'] = $autoApproved ? 'approved' : 'pending';
 
@@ -192,7 +194,9 @@ class GuestController extends Controller
         }
 
         // Set role server-side based on event type
-        $validated['role'] = $event->type === 'conference' ? 'Speaker/Officer' : 'Exhibitor';
+        $validated['role'] = in_array($event->type, ['conference', 'event'], true)
+            ? 'Speaker/Officer'
+            : 'Exhibitor';
 
         // Directly added guests by admin/event staff are approved immediately
         $validated['status'] = 'approved';

@@ -1323,7 +1323,7 @@
 
                 <select class="filter-select" name="guest_type">
                     <option value="">All Types</option>
-                    @if ($selectedEvent->type === 'conference')
+                    @if (in_array($selectedEvent->type, ['conference', 'event'], true))
                         <option value="speaker/officer" {{ request('guest_type') === 'speaker/officer' ? 'selected' : '' }}>Speaker/Officer</option>
                     @else
                         <option value="exhibitor" {{ request('guest_type') === 'exhibitor' ? 'selected' : '' }}>Exhibitor</option>
@@ -1378,19 +1378,24 @@
                         </tr>
                     @else
                         @foreach ($guests as $guest)
+                            @php
+                                $displayRole = in_array($guest->event->type, ['conference', 'event'], true)
+                                    ? 'Speaker/Officer'
+                                    : ucfirst($guest->role);
+                            @endphp
                             <tr
                                 data-guest-id="{{ $guest->id }}"
                                 data-guest-name="{{ $guest->name }}"
                                 data-guest-email="{{ $guest->email }}"
                                 data-guest-status="{{ strtolower((string) ($guest->status ?? 'approved')) }}"
-                                data-guest-type="{{ strtolower((string) $guest->role) }}"
+                                data-guest-type="{{ strtolower($displayRole) }}"
                             >
                                 <td class="participant-selection-column">
                                     <input class="guest-row-checkbox participant-row-checkbox" type="checkbox" value="{{ $guest->id }}" aria-label="Select {{ $guest->name }}">
                                 </td>
                                 <td>{{ $guest->name }}</td>
                                 <td>{{ $guest->email }}</td>
-                                <td>{{ ucfirst($guest->role) }}</td>
+                                <td>{{ $displayRole }}</td>
                                 <td>{{ \Carbon\Carbon::parse($guest->created_at)->format('M d, Y h:i A') }}</td>
                                 <td><span class="guest-status-badge status-{{ $guest->status ?? 'approved' }}">{{ ucfirst($guest->status ?? 'approved') }}</span></td>
                                 <td>
@@ -1409,7 +1414,7 @@
                                 <td>
                                     <div class="guest-actions">
                                     <div class="guest-actions-row">
-                                        <button class="btn-action btn-view" type="button" data-guest-id="{{ $guest->id }}" data-guest-name="{{ $guest->name }}" data-guest-email="{{ $guest->email }}" data-guest-role="{{ $guest->role }}" data-guest-bio="{{ $guest->bio }}" data-guest-event="{{ $guest->event->title }}" data-guest-event-id="{{ $guest->event_id }}" data-guest-paper-path="{{ $guest->conference_paper_path }}" data-guest-paper-original-name="{{ $guest->conference_paper_original_name }}" onclick="openViewGuestModal(this)">View</button>
+                                        <button class="btn-action btn-view" type="button" data-guest-id="{{ $guest->id }}" data-guest-name="{{ $guest->name }}" data-guest-email="{{ $guest->email }}" data-guest-role="{{ $displayRole }}" data-guest-bio="{{ $guest->bio }}" data-guest-event="{{ $guest->event->title }}" data-guest-event-id="{{ $guest->event_id }}" data-guest-paper-path="{{ $guest->conference_paper_path }}" data-guest-paper-original-name="{{ $guest->conference_paper_original_name }}" onclick="openViewGuestModal(this)">View</button>
                                         <form id="delete-form-guest-{{ $guest->id }}" action="{{ route('guests.destroy', $guest) }}" method="POST" style="display:inline;">
                                             @csrf
                                             @method('DELETE')
@@ -2058,7 +2063,7 @@
             }
 
             const eventType = eventTypes[eventId];
-            const role = eventType === 'conference' ? 'Speaker/Officer' : 'Exhibitor';
+            const role = eventType === 'conference' || eventType === 'event' ? 'Speaker/Officer' : 'Exhibitor';
             document.getElementById('guestRoleDisplay').textContent = role;
             document.getElementById('guestRoleInput').value = role;
         }
