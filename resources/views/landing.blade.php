@@ -1792,7 +1792,7 @@
                 updateEventDetails(title, dateText, locationText, statusText);
                 resetForm();
                 setFormType('participant', currentEventType);
-                landingGuestOptionDescription.textContent = currentEventType === 'conference'
+                landingGuestOptionDescription.textContent = currentEventType === 'conference' || currentEventType === 'event'
                     ? 'Register as a Speaker/Officer for the event.'
                     : 'Register as an Exhibitor for the event.';
                 modal.classList.add('is-visible');
@@ -1873,7 +1873,7 @@
                         updateEventDetails(eventTitle, eventDateRange, eventLocation, eventStatus);
                         resetForm();
                         setFormType('participant', eventType);
-                        landingGuestOptionDescription.textContent = eventType === 'conference'
+                        landingGuestOptionDescription.textContent = eventType === 'conference' || eventType === 'event'
                             ? 'Register as a Speaker/Officer for the event.'
                             : 'Register as an Exhibitor for the event.';
                         modal.classList.add('is-visible');
