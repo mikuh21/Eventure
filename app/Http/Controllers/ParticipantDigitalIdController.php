@@ -6,8 +6,6 @@ use App\Models\Event;
 use App\Models\Participant;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -607,36 +605,68 @@ class ParticipantDigitalIdController extends Controller
     {
         $fontCacheDir = storage_path('framework/fonts');
 
-        try {
-            $signatureResponse = Http::timeout(15)->get(
-                'https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/eventure-assets/signatures/doc-alice-esign.png'
-            );
-            $signatureResponse->throw();
-            $signatureContents = $signatureResponse->body();
-            $signatureMime = $signatureResponse->header('Content-Type') ?: 'image/png';
-        } catch (\Throwable $exception) {
-            Log::error('CODITE certificate signature loading failed.', [
-                'exception' => $exception,
-            ]);
-            abort(500, 'Unable to load the CODITE certificate signature.');
+        $isParticipation = $type === 'participation';
+        $templateUrl = 'https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/eventure-assets/certificates/'.($isParticipation ? 'CODITE-CERT-PART.png' : 'CODITE-CERT-APPEAR.png');
+        $imageData = @file_get_contents($templateUrl);
+        if ($imageData === false) {
+            abort(500, 'Unable to load the CODITE certificate template.');
         }
 
-        $signatureData = 'data:'.$signatureMime.';base64,'.base64_encode($signatureContents);
-        $isParticipation = $type === 'participation';
-        $description = $isParticipation
-            ? 'In recognition of the active participation in the Council of Deans in IT Education (CODITE) Region IV General Assembly with the theme, “Beyond Academics: Strengthening Partnerships for Future-Ready Academe”, held on September 11, 2026, at National University – Laguna.\n\nThis general assembly serves as a venue for meaningful engagement, collaboration, and the exchange of ideas among academic leaders, faculty members and stakeholders in advancing excellence, innovation, and professional development in Computing and Information Technology education.\n\nGiven this 11th day of September 2026 at National University – Laguna.'
-            : 'In recognition of their presence and attendance at the Council of Deans in IT Education (CODITE) Region IV General Assembly with the theme, “Beyond Academics: Strengthening Partnerships for Future-Ready Academe”, held on September 11, 2026, at National University – Laguna.\n\nGiven this 11th day of September 2026 at National University – Laguna.';
+        $image = @imagecreatefromstring($imageData);
+        if ($image === false) {
+            abort(500, 'Unable to process the CODITE certificate template.');
+        }
+
+        $fontPath = public_path('fonts/Sora-Bold.ttf');
+        if (! file_exists($fontPath)) {
+            imagedestroy($image);
+            abort(500, 'Certificate font file not found.');
+        }
+
+        $width = imagesx($image);
+        $height = imagesy($image);
+        $name = trim((string) $participant->name) ?: 'Participant';
+        $fontSize = 64;
+        $maxWidth = (int) ($width * 0.68);
+
+        do {
+            $bounds = imagettfbbox($fontSize, 0, $fontPath, $name);
+            if ($bounds === false) {
+                imagedestroy($image);
+                abort(500, 'Unable to calculate participant name bounds.');
+            }
+
+            $textWidth = abs($bounds[4] - $bounds[0]);
+            if ($textWidth <= $maxWidth || $fontSize <= 28) {
+                break;
+            }
+
+            $fontSize -= 2;
+        } while (true);
+
+        $textHeight = abs($bounds[5] - $bounds[1]);
+        $x = (int) (($width - $textWidth) / 2);
+        // The template's name line is at roughly 50% height; place the baseline above it.
+        $y = (int) ($height * 0.505 - ($textHeight * 0.55));
+        $color = imagecolorallocate($image, 18, 18, 18);
+        if (imagettftext($image, $fontSize, 0, $x, $y, $color, $fontPath, $name) === false) {
+            imagedestroy($image);
+            abort(500, 'Unable to draw participant name on the CODITE certificate.');
+        }
+
+        ob_start();
+        imagepng($image, null, 9);
+        $renderedImage = ob_get_clean();
+        imagedestroy($image);
+
+        if ($renderedImage === false) {
+            abort(500, 'Unable to render the CODITE certificate template.');
+        }
 
         $pdf = Pdf::loadView('participants.certificate', [
             'participant' => $participant,
-            'eventDate' => $event->dateRangeLabel(),
-            'eventLocation' => $event->location ?: 'TBA',
-            'pages' => [[
-                'certificateType' => $isParticipation ? 'Participation' : 'Appearance',
-                'description' => $description,
-            ]],
             'isCodite' => true,
-            'coditeSignatureData' => $signatureData,
+            'coditeImageData' => 'data:image/png;base64,'.base64_encode($renderedImage),
         ]);
 
         $pdf->setPaper([0, 0, 841.89, 595.28], 'landscape');
