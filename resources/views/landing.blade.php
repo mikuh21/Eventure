@@ -973,7 +973,7 @@
                                 </div>
                                 <h3 class="text-xl font-bold text-white mb-2">{{ $event->title }}</h3>
                                 @if($event->description)
-                                    <p class="mb-4 text-sm whitespace-pre-line break-words" style="color:rgba(255,255,255,0.72)">{{ $event->description }}</p>
+                                    <p class="mb-4 text-sm whitespace-pre-line break-words" style="color:rgba(255,255,255,0.6)">{{ $event->description }}</p>
                                 @endif
                                 <div class="space-y-1 text-sm" style="color:rgba(255,255,255,0.6)">
                                     <p><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 21s7-5.2 7-11a7 7 0 1 0-14 0c0 5.8 7 11 7 11z"></path><circle cx="12" cy="10" r="2.5"></circle></svg></span> {{ $event->location ?? 'TBA' }}</p>
@@ -1064,7 +1064,7 @@
                             <div class="p-6 flex flex-col flex-1">
                                 <h3 class="text-xl font-bold text-white mb-2">{{ $event->title }}</h3>
                                 @if($event->description)
-                                    <p class="mb-4 text-sm whitespace-pre-line break-words" style="color:rgba(255,255,255,0.72)">{{ $event->description }}</p>
+                                    <p class="mb-4 text-sm whitespace-pre-line break-words" style="color:rgba(255,255,255,0.6)">{{ $event->description }}</p>
                                 @endif
                                 <div class="space-y-1 text-sm mb-4" style="color:rgba(255,255,255,0.6)">
                                     <p><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 10h18"></path></svg></span> {{ $event->dateRangeLabel() }}</p>
@@ -1135,7 +1135,7 @@
                                 </div>
                                 <h3 class="text-lg font-bold text-white truncate">{{ $event->title }}</h3>
                                 @if($event->description)
-                                    <p class="mt-2 text-sm whitespace-pre-line break-words" style="color:rgba(255,255,255,0.72)">{{ $event->description }}</p>
+                                    <p class="mt-2 text-sm whitespace-pre-line break-words" style="color:rgba(255,255,255,0.6)">{{ $event->description }}</p>
                                 @endif
                                 <div class="flex flex-wrap gap-4 mt-1 text-sm" style="color:rgba(255,255,255,0.6)">
                                     <span><span class="icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 10h18"></path></svg></span> {{ $event->dateRangeLabel() }}</span>
