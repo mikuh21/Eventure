@@ -1273,7 +1273,7 @@
     </style>
 </head>
 <body>
-    <main class="page" data-participant-name="{{ addslashes($participant->name) }}" data-participant-id="{{ $participant->digital_id_token }}" data-token="{{ $digitalId->token }}" data-certificate-url="{{ route('participants.certificate.show', ['token' => $participant->digital_id_token, 'type' => $certificateType]) }}" data-certificate-type="{{ $certificateType }}">
+    <main class="page" data-participant-name="{{ addslashes($participant->name) }}" data-participant-id="{{ $participant->digital_id_token }}" data-token="{{ $digitalId->token }}" data-certificate-url="{{ route('participants.certificate.show', ['token' => $participant->digital_id_token, 'type' => $certificateType]) }}" data-certificate-base-url="{{ url('/certificate/'.$participant->digital_id_token) }}" data-certificate-type="{{ $certificateType }}" data-codite="{{ $isCodite ? '1' : '0' }}">
         <nav class="topbar" aria-label="Participant navigation">
             <div class="wordmark">
                 <img src="{{ asset('eventurelogo.png') }}" alt="Eventure logo">
@@ -1612,7 +1612,7 @@
 
         <section class="survey-section">
             @php
-                $certificateTitle = match ($attendanceType) {
+                $certificateTitle = $isCodite ? 'CODITE Certificates' : match ($attendanceType) {
                     'virtual' => 'Certificate of Participation',
                     'both' => 'Certificate of Attendance & Participation',
                     default => 'Certificate of Attendance',
@@ -1629,9 +1629,17 @@
                 </div>
 
                 @if ($certificateAvailable)
-                    <button type="button" class="survey-button cert-download-btn" data-cert-url="{{ route('participants.certificate.show', ['token' => $participant->digital_id_token, 'type' => $certificateType]) }}">
-                        Save Certificate
-                    </button>
+                    @if ($isCodite)
+                        @foreach ($certificateOptions as $option)
+                            <button type="button" class="survey-button cert-download-btn" data-cert-format="pdf" data-cert-filename="certificate-of-{{ $option }}-{{ \Illuminate\Support\Str::slug($participant->name ?: 'participant') }}.pdf" data-cert-url="{{ route('participants.certificate.show', ['token' => $participant->digital_id_token, 'type' => $option]) }}">
+                                Save Certificate of {{ ucfirst($option) }}
+                            </button>
+                        @endforeach
+                    @else
+                        <button type="button" class="survey-button cert-download-btn" data-cert-url="{{ route('participants.certificate.show', ['token' => $participant->digital_id_token, 'type' => $certificateType]) }}">
+                            Save Certificate
+                        </button>
+                    @endif
                     <p id="cert-ios-tip" style="display:none;font-size:12px;color:#10b981;text-align:center;margin-top:8px;">Image generated. Long press the preview and select "Save to Photos" or "Save Image".</p>
                 @else
                     <div class="survey-pending">
@@ -2198,8 +2206,8 @@
                 }, 2600);
             };
 
-            async function downloadCertificate(url) {
-    const btn = document.querySelector('.cert-download-btn');
+                async function downloadCertificate(url, button) {
+            const btn = button || document.querySelector('.cert-download-btn');
     if (btn) {
         btn.textContent = 'Saving...';
         btn.disabled = true;
@@ -2207,6 +2215,22 @@
     const isIOS = /iP(hone|od|ad)/.test(navigator.userAgent) ||
         (navigator.platform && /MacIntel/.test(navigator.platform) && navigator.maxTouchPoints > 1);
     try {
+        if (btn?.dataset.certFormat === 'pdf') {
+            const response = await fetch(url, { method: 'GET', headers: { 'Accept': 'application/pdf' } });
+            if (!response.ok) throw new Error('Certificate download failed.');
+            const blob = await response.blob();
+            const downloadUrl = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = downloadUrl;
+            a.download = btn.dataset.certFilename || 'certificate.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(downloadUrl);
+            btn.textContent = 'Saved!';
+            setTimeout(() => { btn.textContent = btn.dataset.originalLabel || 'Save Certificate'; btn.disabled = false; }, 2000);
+            return;
+        }
         // Try fetching the certificate PNG directly from the controller
         const response = await fetch(url, { method: 'GET', headers: { 'Accept': 'image/png' } });
         if (response.ok && response.headers.get('Content-Type')?.includes('image/png')) {
@@ -2327,7 +2351,8 @@
                 e.preventDefault();
 
                 const url = btn.dataset.certUrl || btn.getAttribute('href');
-                downloadCertificate(url);
+                btn.dataset.originalLabel = btn.textContent;
+                downloadCertificate(url, btn);
             });
 
             mobileSurveyForm.addEventListener('submit', async (event) => {
@@ -2385,6 +2410,8 @@
                         const pageEl = document.querySelector('.page');
                         const certUrl = pageEl?.dataset?.certificateUrl || '';
                         const certType = pageEl?.dataset?.certificateType || '';
+                        const isCodite = pageEl?.dataset?.codite === '1';
+                        const certificateBaseUrl = pageEl?.dataset?.certificateBaseUrl || '';
                         const certSection = Array.from(document.querySelectorAll('section.survey-section')).find(s => {
                             const svg = s.querySelector('svg');
                             return svg && svg.querySelector('path[d*="M4 5h16v14H4V5"]');
@@ -2392,7 +2419,10 @@
                         if (certSection) {
                             const certCard = certSection.querySelector('.survey-card');
                             if (certCard) {
-                                const certTitle = certType === 'participation' ? 'Certificate of Participation' : (certType === 'attendance-participation' ? 'Certificate of Attendance & Participation' : 'Certificate of Attendance');
+                                const certTitle = isCodite ? 'CODITE Certificates' : (certType === 'participation' ? 'Certificate of Participation' : (certType === 'attendance-participation' ? 'Certificate of Attendance & Participation' : 'Certificate of Attendance'));
+                                const certButtons = isCodite
+                                    ? '<button type="button" class="survey-button cert-download-btn" data-cert-format="pdf" data-cert-filename="certificate-of-participation.pdf" data-cert-url="' + certificateBaseUrl + '/participation">Save Certificate of Participation</button><button type="button" class="survey-button cert-download-btn" data-cert-format="pdf" data-cert-filename="certificate-of-appearance.pdf" data-cert-url="' + certificateBaseUrl + '/appearance">Save Certificate of Appearance</button>'
+                                    : '<button type="button" class="survey-button cert-download-btn" data-cert-url="' + certUrl + '">Save Certificate</button>';
                                 certCard.innerHTML = `
                                     <div class="survey-title">
                                         <svg class="icon-lg" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -2400,7 +2430,7 @@
                                         </svg>
                                         <span>${certTitle}</span>
                                     </div>
-                                    <button type="button" class="survey-button cert-download-btn" data-cert-url="${certUrl}">Save Certificate</button>
+                                    ${certButtons}
                                     <p id="cert-ios-tip" style="display:none;font-size:12px;color:#10b981;text-align:center;margin-top:8px;">Image generated. Long press the preview and select "Save to Photos" or "Save Image".</p>
                                 `;
                             }

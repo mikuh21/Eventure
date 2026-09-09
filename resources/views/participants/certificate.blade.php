@@ -12,6 +12,32 @@ html, body { width: 841.89pt; height: 595.28pt; overflow: hidden; }
 </style>
 </head>
 <body>
+@if (!empty($isCodite))
+<table width="841" height="595" cellpadding="0" cellspacing="0" style="background-color:#0d2d55;width:841pt;height:595pt;overflow:hidden;">
+  <tr><td style="vertical-align:middle;height:595pt;text-align:center;padding:0;">
+    <div style="position:relative;width:841pt;height:595pt;box-sizing:border-box;padding:34pt 72pt 28pt;border:1.5pt solid #00C896;">
+      <div style="position:absolute;top:6pt;left:6pt;right:6pt;bottom:6pt;border:1pt solid #C9A84C;"></div>
+      <div style="position:absolute;top:-55pt;right:-55pt;width:190pt;height:190pt;border-radius:50%;background-color:#1B6CA8;opacity:0.4;"></div>
+      <div style="position:absolute;bottom:-55pt;left:-55pt;width:175pt;height:175pt;border-radius:50%;background-color:#1B6CA8;opacity:0.3;"></div>
+      <div style="position:relative;z-index:2;text-align:center;">
+        <p style="font-family:'Sora',sans-serif;font-weight:700;font-size:10pt;letter-spacing:5pt;color:#ffffff;margin:0;">EVENTURE</p>
+        <div style="width:80pt;height:1pt;background-color:#00C896;margin:6pt auto 0;"></div>
+        <p style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:25pt;letter-spacing:2.5pt;color:#ffffff;margin:10pt 0 0;">CERTIFICATE OF {{ strtoupper($pages[0]['certificateType']) }}</p>
+        <p style="font-family:'Sora',sans-serif;font-size:7.5pt;letter-spacing:2.5pt;color:#00C896;margin:8pt 0 0;">THIS CERTIFICATE IS AWARDED TO</p>
+        <p style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:25pt;color:#ffffff;margin:5pt 0 0;">{{ $participant->name }}</p>
+        <div style="width:145pt;height:1pt;background-color:#00C896;margin:5pt auto 0;"></div>
+        <p style="font-family:'Montserrat',sans-serif;font-weight:400;font-size:8.2pt;line-height:1.45;color:#d0e8f8;text-align:center;margin:9pt auto 0;max-width:650pt;">{!! nl2br(e($pages[0]['description'])) !!}</p>
+        <div style="width:100%;height:1pt;background-color:#00C896;margin:9pt auto 0;"></div>
+        @if (!empty($coditeSignatureData))
+          <img src="{{ $coditeSignatureData }}" alt="Signature" style="display:block;width:115pt;height:auto;max-height:34pt;object-fit:contain;margin:7pt auto 1pt;">
+        @endif
+        <p style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:10pt;color:#ffffff;margin:0;">Dr. Alice M. Lacorte</p>
+        <p style="font-family:'Sora',sans-serif;font-size:7pt;color:#d0e8f8;margin:2pt 0 0;">President, CODITE [AY 2025-2026]</p>
+      </div>
+    </div>
+  </td></tr>
+</table>
+@else
 @foreach ($pages as $page)
 <table width="841" height="595" cellpadding="0" cellspacing="0" style="background-color:#0d2d55; width:841pt; height:595pt; overflow:hidden; {{ $loop->last ? '' : 'page-break-after: always;' }}">
   <tr>
@@ -104,5 +130,6 @@ html, body { width: 841.89pt; height: 595.28pt; overflow: hidden; }
   </tr>
 </table>
 @endforeach
+@endif
 </body>
 </html>

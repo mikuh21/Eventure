@@ -143,15 +143,22 @@ class ParticipantDigitalIdController extends Controller
             abort(403, 'Certificate is not available yet.');
         }
 
-        if ($type !== $participant->event->certificateRouteType()) {
+        $event = $participant->event;
+        $allowedTypes = $event->isCodite()
+            ? ['participation', 'appearance']
+            : [$event->certificateRouteType()];
+
+        if (! in_array($type, $allowedTypes, true)) {
             abort(404);
         }
 
-        $event = $participant->event;
-        
         // Custom image-based certificate for Converge 2026 (Event ID 27)
         if (in_array($event->id, [27, 36])) {
             return $this->generateConverge2026Certificate($participant, $event);
+        }
+
+        if ($event->isCodite()) {
+            return $this->generateCoditeCertificate($participant, $event, $type);
         }
         
         $eventDate = $event->dateRangeLabel();
@@ -592,5 +599,76 @@ class ParticipantDigitalIdController extends Controller
         } catch (\Exception $e) {
             abort(500, 'Error generating certificate: ' . $e->getMessage());
         }
+    }
+
+    private function generateCoditeCertificate(Participant $participant, Event $event, string $type)
+    {
+        $fontCacheDir = storage_path('framework/fonts');
+
+        $signatureDisk = Storage::disk('s3');
+        $signaturePaths = [
+            'eventure-assets/signatures/doc-alice-esign.png',
+            'signatures/doc-alice-esign.png',
+        ];
+
+        try {
+            $signaturePath = null;
+            foreach ($signaturePaths as $candidatePath) {
+                try {
+                    if ($signatureDisk->exists($candidatePath)) {
+                        $signaturePath = $candidatePath;
+                        break;
+                    }
+                } catch (\Throwable $exception) {
+                    continue;
+                }
+            }
+
+            if (! $signaturePath) {
+                throw new \RuntimeException('Signature file not found.');
+            }
+
+            $signatureContents = $signatureDisk->get($signaturePath);
+            $signatureMime = $signatureDisk->mimeType($signaturePath) ?: 'image/png';
+        } catch (\Throwable $exception) {
+            abort(500, 'Unable to load the CODITE certificate signature.');
+        }
+
+        $signatureData = 'data:'.$signatureMime.';base64,'.base64_encode($signatureContents);
+        $isParticipation = $type === 'participation';
+        $description = $isParticipation
+            ? 'In recognition of the active participation in the Council of Deans in IT Education (CODITE) Region IV General Assembly with the theme, “Beyond Academics: Strengthening Partnerships for Future-Ready Academe”, held on September 11, 2026, at National University – Laguna.\n\nThis general assembly serves as a venue for meaningful engagement, collaboration, and the exchange of ideas among academic leaders, faculty members and stakeholders in advancing excellence, innovation, and professional development in Computing and Information Technology education.\n\nGiven this 11th day of September 2026 at National University – Laguna.'
+            : 'In recognition of their presence and attendance at the Council of Deans in IT Education (CODITE) Region IV General Assembly with the theme, “Beyond Academics: Strengthening Partnerships for Future-Ready Academe”, held on September 11, 2026, at National University – Laguna.\n\nGiven this 11th day of September 2026 at National University – Laguna.';
+
+        $pdf = Pdf::loadView('participants.certificate', [
+            'participant' => $participant,
+            'eventDate' => $event->dateRangeLabel(),
+            'eventLocation' => $event->location ?: 'TBA',
+            'pages' => [[
+                'certificateType' => $isParticipation ? 'Participation' : 'Appearance',
+                'description' => $description,
+            ]],
+            'isCodite' => true,
+            'coditeSignatureData' => $signatureData,
+        ]);
+
+        $pdf->setPaper([0, 0, 841.89, 595.28], 'landscape');
+        $pdf->setOptions([
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled' => true,
+            'defaultFont' => 'Montserrat',
+            'fontDir' => $fontCacheDir,
+            'fontCache' => $fontCacheDir,
+        ]);
+
+        $filename = 'certificate-of-'.($isParticipation ? 'participation' : 'appearance').'-'.Str::slug($participant->name ?: 'participant').'.pdf';
+
+        return response($pdf->output(), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+            'Cache-Control' => 'no-cache, no-store, must-revalidate',
+            'Pragma' => 'no-cache',
+            'Expires' => '0',
+        ]);
     }
 }

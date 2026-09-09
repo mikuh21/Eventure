@@ -21,6 +21,7 @@ class Event extends Model
     public const TYPE_SCHOOL = 'school_event';
     public const TYPE_CONFERENCE = 'conference';
     public const TYPE_EVENT = 'event';
+    public const CODITE_TITLE = 'CODITE Region IV General Assembly 2026';
 
     protected $fillable = [
         'type',
@@ -183,6 +184,12 @@ class Event extends Model
     public function typeLabel(): string
     {
         return self::typeLabels()[$this->type] ?? $this->type;
+    }
+
+    public function isCodite(): bool
+    {
+        return $this->type === self::TYPE_EVENT
+            && trim((string) $this->title) === self::CODITE_TITLE;
     }
 
     public function dateRangeLabel(): string

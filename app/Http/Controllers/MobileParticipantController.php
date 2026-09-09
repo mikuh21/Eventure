@@ -71,7 +71,9 @@ class MobileParticipantController extends Controller
         $sections = $questions->groupBy('section');
         $surveyAction = route('participants.evaluations.store', $participant);
         $certificateAvailable = $participant->hasSubmittedSurvey();
-        $certificateType = $participant->event->certificateRouteType();
+        $isCodite = $participant->event->isCodite();
+        $certificateType = $isCodite ? 'participation' : $participant->event->certificateRouteType();
+        $certificateOptions = $isCodite ? ['participation', 'appearance'] : [$certificateType];
         $attendanceType = $participant->event->attendance_type ?? 'face_to_face';
         $qrUrl = route('participants.digital-id.show', $participant, false) . '?format=qr';
         $validThru = optional($participant->event->end_registration)->format('m/d') ?? 'N/A';
@@ -114,6 +116,6 @@ class MobileParticipantController extends Controller
             ];
         }
 
-        return view('participant.mobile', compact('participant', 'digitalId', 'evaluation', 'surveyAvailable', 'eventHasEnded', 'questions', 'sections', 'surveyAction', 'certificateAvailable', 'certificateType', 'attendanceType', 'qrUrl', 'validThru', 'pages', 'eventDate', 'eventLocation', 'participantPhotoUrl'));
+        return view('participant.mobile', compact('participant', 'digitalId', 'evaluation', 'surveyAvailable', 'eventHasEnded', 'questions', 'sections', 'surveyAction', 'certificateAvailable', 'certificateType', 'certificateOptions', 'isCodite', 'attendanceType', 'qrUrl', 'validThru', 'pages', 'eventDate', 'eventLocation', 'participantPhotoUrl'));
     }
 }
