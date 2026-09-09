@@ -313,6 +313,11 @@
             color: var(--color-sky);
         }
 
+        .badge-type-event {
+            background: #dff6ed;
+            color: #126044;
+        }
+
         .badge-attendance-face-to-face {
             background: #cfe8ff;
             color: #0A2342;
@@ -996,6 +1001,10 @@
                 <div class="overview-label">Conference</div>
                 <div class="overview-value">{{ number_format($overview['conference_events'] ?? 0) }}</div>
             </div>
+            <div class="overview-card">
+                <div class="overview-label">Event</div>
+                <div class="overview-value">{{ number_format($overview['events'] ?? 0) }}</div>
+            </div>
         </div>
 
         <form class="filters-row" action="{{ route('events.index') }}" method="GET">
@@ -1023,6 +1032,7 @@
                 <option value="">All Types</option>
                 <option value="school_event" {{ request('type') === 'school_event' ? 'selected' : '' }}>School Event</option>
                 <option value="conference" {{ request('type') === 'conference' ? 'selected' : '' }}>Conference</option>
+                <option value="event" {{ request('type') === 'event' ? 'selected' : '' }}>Event</option>
             </select>
 
             @if ($isBackofficeUser)
@@ -1091,12 +1101,12 @@
                     @foreach ($events as $event)
                         @php
                             $registrationStatus = $event->isRegistrationOpen() ? 'Open' : 'Closed';
-                            $typeLabel = $event->type === 'conference' ? 'Conference' : 'School Event';
+                            $typeLabel = $event->typeLabel();
                         @endphp
                         <tr data-event-title="{{ strtolower($event->title) }}" data-event-type="{{ $event->type }}" data-event-registration="{{ $event->isRegistrationOpen() ? 'open' : 'closed' }}">
                             <td>{{ $event->title }}</td>
                             <td>
-                                <span class="badge-pill {{ $event->type === 'conference' ? 'badge-type-conference' : 'badge-type-student' }}">
+                                <span class="badge-pill {{ $event->type === 'conference' ? 'badge-type-conference' : ($event->type === 'event' ? 'badge-type-event' : 'badge-type-student') }}">
                                     {{ $typeLabel }}
                                 </span>
                             </td>
@@ -1221,6 +1231,7 @@
                         <select id="editType" name="type">
                             <option value="school_event">School Event</option>
                             <option value="conference">Conference</option>
+                            <option value="event">Event</option>
                         </select>
                     </div>
 
@@ -1234,7 +1245,7 @@
                     </div>
 
                     <div class="field" id="edit-event-title-field">
-                        <label for="editEventTitle">School Event Title</label>
+                        <label id="edit-event-title-label" for="editEventTitle">School Event Title</label>
                         <input id="editEventTitle" name="event_title" type="text">
                     </div>
 
@@ -1411,7 +1422,7 @@
                         typeText = normalize(badge.innerText);
                     } else {
                         // fallback map
-                        typeText = normalize(rowType === 'conference' ? 'conference' : 'school event');
+                        typeText = normalize(rowType === 'conference' ? 'conference' : (rowType === 'event' ? 'event' : 'school event'));
                     }
 
                     const searchable = (title + ' ' + typeText).trim();
@@ -1527,6 +1538,7 @@
             var editEventId = document.getElementById('editEventId');
             var editType = document.getElementById('editType');
             var editEventTitle = document.getElementById('editEventTitle');
+            var editEventTitleLabel = document.getElementById('edit-event-title-label');
             var editConferenceTitle = document.getElementById('editConferenceTitle');
             var editTheme = document.getElementById('editTheme');
             var editKeywords = document.getElementById('editKeywords');
@@ -1654,6 +1666,7 @@
                 var isConference = editType.value === 'conference';
 
                 if (eventTitleField) eventTitleField.style.display = isConference ? 'none' : 'block';
+                if (editEventTitleLabel) editEventTitleLabel.textContent = editType.value === 'event' ? 'Event Title' : 'School Event Title';
                 if (standardDescriptionField) standardDescriptionField.style.display = isConference ? 'none' : 'block';
 
                 if (conferenceTitleField) conferenceTitleField.style.display = isConference ? 'block' : 'none';

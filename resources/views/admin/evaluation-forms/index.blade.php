@@ -1519,8 +1519,9 @@
 
             <select class="ef-filter-select" name="type">
                 <option value="">All Types</option>
-                <option value="student_event" {{ request('type') === 'student_event' ? 'selected' : '' }}>School Event</option>
+                <option value="school_event" {{ request('type') === 'school_event' ? 'selected' : '' }}>School Event</option>
                 <option value="conference" {{ request('type') === 'conference' ? 'selected' : '' }}>Conference</option>
+                <option value="event" {{ request('type') === 'event' ? 'selected' : '' }}>Event</option>
             </select>
 
             <button class="btn btn-primary" type="button" id="efFiltersApplyBtn">Apply</button>
@@ -1539,11 +1540,7 @@
                         <div>
                             <h3 class="evaluation-form-title">{{ $event->title }}</h3>
                             <p class="evaluation-form-subtitle">
-                                @if($event->type === 'conference')
-                                    Conference
-                                @else
-                                    School Event
-                                @endif
+                                {{ $event->typeLabel() }}
                                 | {{ $event->attendanceTypeLabel() }}
                             </p>
                         </div>
@@ -1938,7 +1935,7 @@
                         // subtitle contains 'Conference | ...' or 'School Event | ...' so extract first part
                         typeText = normalize(subtitle.innerText.split('|')[0] || subtitle.innerText);
                     } else {
-                        typeText = normalize(cardType === 'conference' ? 'conference' : 'school event');
+                        typeText = normalize(cardType === 'conference' ? 'conference' : (cardType === 'event' ? 'event' : 'school event'));
                     }
 
                     const searchable = (title + ' ' + typeText).trim();
@@ -2522,7 +2519,7 @@
                             const matrixRows = rows.filter(row => row.dataset.section === 'Session Feedback' && row.dataset.isMatrixItem === 'true');
                             const nonMatrixRows = rows.filter(row => row.dataset.isMatrixItem !== 'true');
 
-                    if ((eventType === 'school_event' || eventType === 'conference') && matrixRows.length > 0) {
+                    if (['school_event', 'conference', 'event'].includes(eventType) && matrixRows.length > 0) {
                         const matrixItems = matrixRows
                             .sort((a, b) => parseInt(a.querySelector('.sort-order-input').value, 10) - parseInt(b.querySelector('.sort-order-input').value, 10))
                             .map(row => row.querySelector('.question-text-input').value.trim())

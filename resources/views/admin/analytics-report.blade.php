@@ -427,7 +427,7 @@
                         <td>{{ $event->dateRangeLabel() }}</td>
                         <td>
                             <span class="badge {{ $event->type === 'conference' ? 'badge-conference' : 'badge-school' }}">
-                                {{ $event->type === 'conference' ? 'Conference' : 'School' }}
+                                {{ $event->typeLabel() }}
                             </span>
                         </td>
                         <td>{{ number_format($event->participants_count) }}</td>

@@ -17,7 +17,7 @@
                 <select class="admin-management-select" id="event_id" name="event_id">
                     <option value="">All events / template</option>
                     @foreach($events as $eventOption)
-                        <option value="{{ $eventOption->id }}" {{ old('event_id', $question->event_id) == $eventOption->id ? 'selected' : '' }}>{{ $eventOption->title }} ({{ $eventOption->type === 'conference' ? 'Conference' : 'School Event' }})</option>
+                        <option value="{{ $eventOption->id }}" {{ old('event_id', $question->event_id) == $eventOption->id ? 'selected' : '' }}>{{ $eventOption->title }} ({{ $eventOption->typeLabel() }})</option>
                     @endforeach
                 </select>
                 <div class="admin-management-helper">Assign this question to a specific event form. Leave blank to keep it as a shared template.</div>

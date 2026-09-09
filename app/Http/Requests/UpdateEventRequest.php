@@ -16,11 +16,11 @@ class UpdateEventRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'type' => ['sometimes', 'required', Rule::in(['school_event', 'conference'])],
+            'type' => ['sometimes', 'required', Rule::in(['school_event', 'conference', 'event'])],
             'attendance_type' => ['sometimes', 'required', Rule::in(['face_to_face', 'virtual', 'both'])],
-            'event_title' => ['nullable', 'string', 'max:255'],
-            'conference_title' => ['nullable', 'string', 'max:255'],
-            'theme' => ['nullable', 'string', 'max:255'],
+            'event_title' => ['required_if:type,school_event,event', 'nullable', 'string', 'max:255'],
+            'conference_title' => ['required_if:type,conference', 'nullable', 'string', 'max:255'],
+            'theme' => ['required_if:type,conference', 'nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'start_date' => ['sometimes', 'required', 'date'],
             'end_date' => ['sometimes', 'required', 'date', 'after_or_equal:start_date'],

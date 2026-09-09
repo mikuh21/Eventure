@@ -18,6 +18,7 @@ class EvaluationQuestion extends Model
 
     public const EVENT_TYPE_SCHOOL = 'school_event';
     public const EVENT_TYPE_CONFERENCE = 'conference';
+    public const EVENT_TYPE_EVENT = 'event';
     public const EVENT_TYPE_ALL = 'all';
 
     protected $fillable = [
@@ -81,7 +82,8 @@ class EvaluationQuestion extends Model
         return [
             self::EVENT_TYPE_SCHOOL => 'School Event',
             self::EVENT_TYPE_CONFERENCE => 'Conference',
-            self::EVENT_TYPE_ALL => 'Both Event Types',
+            self::EVENT_TYPE_EVENT => 'Event',
+            self::EVENT_TYPE_ALL => 'All Event Types',
         ];
     }
 

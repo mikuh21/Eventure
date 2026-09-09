@@ -454,7 +454,7 @@
             </div>
             <div class="event-view-item">
                 <span class="event-view-label">Type</span>
-                <span class="event-view-value">{{ $event->type === 'conference' ? 'Conference' : 'School Event' }}</span>
+                <span class="event-view-value">{{ $event->typeLabel() }}</span>
             </div>
             <div class="event-view-item">
                 <span class="event-view-label">Attendance Type</span>

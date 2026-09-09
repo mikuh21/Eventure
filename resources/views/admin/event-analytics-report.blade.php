@@ -354,7 +354,7 @@
         <div class="event-details">
             <div><strong>Event Name:</strong> {{ $event->title }}</div>
             <div><strong>Date:</strong> {{ $event->dateRangeLabel() }}</div>
-            <div><strong>Type:</strong> <span class="badge {{ $event->type === 'conference' ? 'badge-conference' : 'badge-school' }}">{{ $event->type === 'conference' ? 'Conference' : 'School Event' }}</span></div>
+            <div><strong>Type:</strong> <span class="badge {{ $event->type === 'conference' ? 'badge-conference' : 'badge-school' }}">{{ $event->typeLabel() }}</span></div>
             <div><strong>Location:</strong> {{ $event->location ?? 'N/A' }}</div>
         </div>
 

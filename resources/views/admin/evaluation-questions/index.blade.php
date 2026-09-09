@@ -156,7 +156,7 @@
                                     <strong>{{ $event->title }}</strong>
                                     <div class="admin-management-metadata">{{ $event->location }}</div>
                                 </td>
-                                <td>{{ $event->type === 'conference' ? 'Conference' : 'School Event' }}</td>
+                                   <td>{{ $event->typeLabel() }}</td>
                                 <td>{{ $event->dateRangeLabel() }}</td>
                                 <td>{{ $event->participants_count }}</td>
                                 <td>{{ $event->guests_count }}</td>

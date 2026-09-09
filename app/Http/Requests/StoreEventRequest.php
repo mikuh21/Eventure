@@ -16,9 +16,9 @@ class StoreEventRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'type' => ['required', Rule::in(['school_event', 'conference'])],
+            'type' => ['required', Rule::in(['school_event', 'conference', 'event'])],
             'attendance_type' => ['required', Rule::in(['face_to_face', 'virtual', 'both'])],
-            'event_title' => ['required_if:type,school_event', 'nullable', 'string', 'max:255'],
+            'event_title' => ['required_if:type,school_event,event', 'nullable', 'string', 'max:255'],
             'conference_title' => ['required_if:type,conference', 'nullable', 'string', 'max:255'],
             'theme' => ['required_if:type,conference', 'nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string'],

@@ -89,7 +89,7 @@ class EventController extends Controller
                 $normalizedType = 'school_event';
             }
 
-            $allowedTypes = ['school_event', 'conference'];
+            $allowedTypes = [Event::TYPE_SCHOOL, Event::TYPE_CONFERENCE, Event::TYPE_EVENT];
             if (in_array($normalizedType, $allowedTypes, true)) {
                 $eventsQuery->where('type', $normalizedType);
             }
@@ -150,6 +150,7 @@ class EventController extends Controller
             'total_events' => (clone $overviewQuery)->count(),
             'student_events' => (clone $overviewQuery)->where('type', 'school_event')->count(),
             'conference_events' => (clone $overviewQuery)->where('type', 'conference')->count(),
+            'events' => (clone $overviewQuery)->where('type', Event::TYPE_EVENT)->count(),
         ];
 
         if (! $wantsJson) {
@@ -742,7 +743,7 @@ class EventController extends Controller
             'auto_approve' => (bool) ($validated['auto_approve'] ?? $event?->auto_approve ?? false),
         ];
 
-        if ($data['type'] === 'school_event') {
+        if (in_array($data['type'], [Event::TYPE_SCHOOL, Event::TYPE_EVENT], true)) {
             $data['conference_title'] = null;
             $data['theme'] = null;
 
@@ -759,9 +760,9 @@ class EventController extends Controller
             }
         }
 
-        if ($data['type'] === 'school_event' && ! $data['event_title']) {
+        if (in_array($data['type'], [Event::TYPE_SCHOOL, Event::TYPE_EVENT], true) && ! $data['event_title']) {
             throw ValidationException::withMessages([
-                'event_title' => 'The school event title field is required.',
+                'event_title' => 'The event title field is required.',
             ]);
         }
 

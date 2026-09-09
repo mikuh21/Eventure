@@ -323,6 +323,7 @@
 
         $conferenceCount = $eventsBreakdown->where('type', \App\Models\Event::TYPE_CONFERENCE)->count();
         $studentCount    = $eventsBreakdown->where('type', \App\Models\Event::TYPE_SCHOOL)->count();
+        $eventCount      = $eventsBreakdown->where('type', \App\Models\Event::TYPE_EVENT)->count();
         $nonRespondentRate = $analytics['total_participants'] > 0
             ? max(0, round(($analytics['participants_minus_evaluations'] / $analytics['total_participants']) * 100, 1))
             : 0;
@@ -606,6 +607,13 @@
                                 <span class="type-count">{{ $conferenceCount }}</span>
                             </div>
                         </div>
+                        <div class="type-row">
+                            <span class="type-label">Events</span>
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <span class="event-badge badge-student">Event</span>
+                                <span class="type-count">{{ $eventCount }}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -619,6 +627,7 @@
                     <button class="event-tab active" data-tab="all" role="tab" aria-selected="true">All Events</button>
                     <button class="event-tab" data-tab="school_event" role="tab" aria-selected="false">School Events</button>
                     <button class="event-tab" data-tab="conference" role="tab" aria-selected="false">Conferences</button>
+                    <button class="event-tab" data-tab="event" role="tab" aria-selected="false">Events</button>
                 </div>
 
                 <div class="table-wrap">
@@ -654,7 +663,7 @@
                                 <tr class="event-row" data-event-type="{{ $ev->type }}">
                                     <td style="font-weight:600;color:#111827;max-width:200px;overflow:hidden;text-overflow:ellipsis;">{{ $ev->title }}</td>
                                     <td class="muted">{{ $ev->dateRangeLabel() }}</td>
-                                    <td><span class="event-badge {{ $ev->type === 'conference' ? 'badge-conference' : 'badge-student' }}">{{ $ev->type === 'conference' ? 'Conference' : 'School' }}</span></td>
+                                    <td><span class="event-badge {{ $ev->type === 'conference' ? 'badge-conference' : 'badge-student' }}">{{ $ev->typeLabel() }}</span></td>
                                     <td style="font-weight:600;">{{ number_format($ev->participants_count) }}</td>
                                     <td>
                                         {{ number_format($ev->attended_count) }}

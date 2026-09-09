@@ -177,6 +177,7 @@
                 <select id="type" name="type">
                     <option value="school_event" {{ old('type', 'school_event') === 'school_event' ? 'selected' : '' }}>School Event</option>
                     <option value="conference" {{ old('type') === 'conference' ? 'selected' : '' }}>Conference</option>
+                    <option value="event" {{ old('type') === 'event' ? 'selected' : '' }}>Event</option>
                 </select>
             </div>
 
@@ -190,7 +191,7 @@
             </div>
 
             <div class="field" id="event-title-field">
-                <label for="event_title">School Event Title</label>
+                <label id="event-title-label" for="event_title">School Event Title</label>
                 <input id="event_title" name="event_title" type="text" value="{{ old('event_title') }}">
             </div>
 
@@ -322,6 +323,7 @@
         (function () {
             var typeInput = document.getElementById('type');
             var eventTitleField = document.getElementById('event-title-field');
+            var eventTitleLabel = document.getElementById('event-title-label');
             var conferenceTitleField = document.getElementById('conference-title-field');
             var conferenceThemeField = document.getElementById('conference-theme-field');
             var conferenceKeywordsField = document.getElementById('conference-keywords-field');
@@ -332,6 +334,7 @@
                 var isConference = typeInput.value === 'conference';
 
                 eventTitleField.style.display = isConference ? 'none' : 'block';
+                eventTitleLabel.textContent = typeInput.value === 'event' ? 'Event Title' : 'School Event Title';
                 standardDescriptionField.style.display = isConference ? 'none' : 'block';
 
                 conferenceTitleField.style.display = isConference ? 'block' : 'none';

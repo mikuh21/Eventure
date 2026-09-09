@@ -20,6 +20,7 @@ class Event extends Model
 
     public const TYPE_SCHOOL = 'school_event';
     public const TYPE_CONFERENCE = 'conference';
+    public const TYPE_EVENT = 'event';
 
     protected $fillable = [
         'type',
@@ -167,7 +168,21 @@ class Event extends Model
 
     public function resolvedTitle(): string
     {
-        return (string) ($this->type === 'conference' ? $this->conference_title : $this->event_title);
+        return (string) ($this->type === self::TYPE_CONFERENCE ? $this->conference_title : $this->event_title);
+    }
+
+    public static function typeLabels(): array
+    {
+        return [
+            self::TYPE_SCHOOL => 'School Event',
+            self::TYPE_CONFERENCE => 'Conference',
+            self::TYPE_EVENT => 'Event',
+        ];
+    }
+
+    public function typeLabel(): string
+    {
+        return self::typeLabels()[$this->type] ?? $this->type;
     }
 
     public function dateRangeLabel(): string
