@@ -12,13 +12,6 @@ html, body { width: 841.89pt; height: 595.28pt; overflow: hidden; }
 </style>
 </head>
 <body>
-@if (!empty($isCodite))
-<table width="841" height="595" cellpadding="0" cellspacing="0" style="width:841pt;height:595pt;margin:0;padding:0;">
-  <tr><td style="width:841pt;height:595pt;margin:0;padding:0;text-align:center;vertical-align:middle;">
-    <img src="{{ $coditeImageData }}" alt="CODITE certificate" style="display:block;width:841pt;height:595pt;margin:0;padding:0;">
-  </td></tr>
-</table>
-@else
 @foreach ($pages as $page)
 <table width="841" height="595" cellpadding="0" cellspacing="0" style="background-color:#0d2d55; width:841pt; height:595pt; overflow:hidden; {{ $loop->last ? '' : 'page-break-after: always;' }}">
   <tr>
@@ -111,6 +104,5 @@ html, body { width: 841.89pt; height: 595.28pt; overflow: hidden; }
   </tr>
 </table>
 @endforeach
-@endif
 </body>
 </html>

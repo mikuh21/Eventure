@@ -603,8 +603,6 @@ class ParticipantDigitalIdController extends Controller
 
     private function generateCoditeCertificate(Participant $participant, Event $event, string $type)
     {
-        $fontCacheDir = storage_path('framework/fonts');
-
         $isParticipation = $type === 'participation';
         $templateUrl = 'https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/eventure-assets/certificates/'.($isParticipation ? 'CODITE-CERT-PART.png' : 'CODITE-CERT-APPEAR.png');
         $imageData = @file_get_contents($templateUrl);
@@ -663,29 +661,16 @@ class ParticipantDigitalIdController extends Controller
             abort(500, 'Unable to render the CODITE certificate template.');
         }
 
-        $pdf = Pdf::loadView('participants.certificate', [
-            'participant' => $participant,
-            'isCodite' => true,
-            'coditeImageData' => 'data:image/png;base64,'.base64_encode($renderedImage),
-        ]);
+        $filename = 'certificate-of-'.($isParticipation ? 'participation' : 'appearance').'-'.Str::slug($participant->name ?: 'participant').'.png';
 
-        $pdf->setPaper([0, 0, 841.89, 595.28], 'landscape');
-        $pdf->setOptions([
-            'isHtml5ParserEnabled' => true,
-            'isRemoteEnabled' => true,
-            'defaultFont' => 'Montserrat',
-            'fontDir' => $fontCacheDir,
-            'fontCache' => $fontCacheDir,
-        ]);
-
-        $filename = 'certificate-of-'.($isParticipation ? 'participation' : 'appearance').'-'.Str::slug($participant->name ?: 'participant').'.pdf';
-
-        return response($pdf->output(), 200, [
-            'Content-Type' => 'application/pdf',
+        return response($renderedImage, 200, [
+            'Content-Type' => 'image/png',
+            'Content-Length' => strlen($renderedImage),
             'Content-Disposition' => 'attachment; filename="'.$filename.'"',
             'Cache-Control' => 'no-cache, no-store, must-revalidate',
             'Pragma' => 'no-cache',
             'Expires' => '0',
+            'Accept-Ranges' => 'bytes',
         ]);
     }
 }

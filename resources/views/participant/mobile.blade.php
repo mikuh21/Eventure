@@ -1638,7 +1638,7 @@
                     @if ($isCodite)
                         <div class="codite-certificate-actions">
                             @foreach ($certificateOptions as $option)
-                                <button type="button" class="survey-button cert-download-btn" data-cert-format="pdf" data-cert-filename="certificate-of-{{ $option }}-{{ \Illuminate\Support\Str::slug($participant->name ?: 'participant') }}.pdf" data-cert-url="{{ route('participants.certificate.show', ['token' => $participant->digital_id_token, 'type' => $option]) }}">
+                                <button type="button" class="survey-button cert-download-btn" data-cert-format="image" data-cert-label="Certificate of {{ ucfirst($option) }}" data-cert-filename="certificate-of-{{ $option }}-{{ \Illuminate\Support\Str::slug($participant->name ?: 'participant') }}.png" data-cert-url="{{ route('participants.certificate.show', ['token' => $participant->digital_id_token, 'type' => $option]) }}">
                                     Save Certificate of {{ ucfirst($option) }}
                                 </button>
                             @endforeach
@@ -2223,21 +2223,7 @@
     const isIOS = /iP(hone|od|ad)/.test(navigator.userAgent) ||
         (navigator.platform && /MacIntel/.test(navigator.platform) && navigator.maxTouchPoints > 1);
     try {
-        if (btn?.dataset.certFormat === 'pdf') {
-            const downloadUrl = url;
-            const a = document.createElement('a');
-            a.href = downloadUrl;
-            a.download = btn.dataset.certFilename || 'certificate.pdf';
-            a.target = '_blank';
-            a.rel = 'noopener';
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            btn.textContent = 'Saved!';
-            setTimeout(() => { btn.textContent = btn.dataset.originalLabel || 'Save Certificate'; btn.disabled = false; }, 2000);
-            return;
-        }
-        // Try fetching the certificate PNG directly from the controller
+        // Follow the Converge image flow: iOS previews for long-press saving, other browsers download PNG.
         const response = await fetch(url, { method: 'GET', headers: { 'Accept': 'image/png' } });
         if (response.ok && response.headers.get('Content-Type')?.includes('image/png')) {
             const blob = await response.blob();
@@ -2246,13 +2232,12 @@
                 reader.onload = () => resolve(reader.result);
                 reader.readAsDataURL(blob);
             });
-            const filename = 'Certificate-of-Participation.png';
             if (isIOS) {
-                showCertModal([{ dataUrl, label: 'Certificate of Participation' }]);
+                showCertModal([{ dataUrl, label: btn?.dataset.certLabel || 'Certificate of Participation' }]);
             } else {
                 const a = document.createElement('a');
                 a.href = dataUrl;
-                a.download = filename;
+                a.download = btn?.dataset.certFilename || 'certificate.png';
                 document.body.appendChild(a);
                 a.click();
                 a.remove();
@@ -2427,7 +2412,7 @@
                             if (certCard) {
                                 const certTitle = isCodite ? 'CODITE Certificates' : (certType === 'participation' ? 'Certificate of Participation' : (certType === 'attendance-participation' ? 'Certificate of Attendance & Participation' : 'Certificate of Attendance'));
                                 const certButtons = isCodite
-                                    ? '<div class="codite-certificate-actions"><button type="button" class="survey-button cert-download-btn" data-cert-format="pdf" data-cert-filename="certificate-of-participation.pdf" data-cert-url="' + certificateBaseUrl + '/participation">Save Certificate of Participation</button><button type="button" class="survey-button cert-download-btn" data-cert-format="pdf" data-cert-filename="certificate-of-appearance.pdf" data-cert-url="' + certificateBaseUrl + '/appearance">Save Certificate of Appearance</button></div>'
+                                    ? '<div class="codite-certificate-actions"><button type="button" class="survey-button cert-download-btn" data-cert-format="image" data-cert-label="Certificate of Participation" data-cert-filename="certificate-of-participation.png" data-cert-url="' + certificateBaseUrl + '/participation">Save Certificate of Participation</button><button type="button" class="survey-button cert-download-btn" data-cert-format="image" data-cert-label="Certificate of Appearance" data-cert-filename="certificate-of-appearance.png" data-cert-url="' + certificateBaseUrl + '/appearance">Save Certificate of Appearance</button></div>'
                                     : '<button type="button" class="survey-button cert-download-btn" data-cert-url="' + certUrl + '">Save Certificate</button>';
                                 certCard.innerHTML = `
                                     <div class="survey-title">
