@@ -6,6 +6,8 @@ use App\Models\Event;
 use App\Models\Participant;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -605,32 +607,17 @@ class ParticipantDigitalIdController extends Controller
     {
         $fontCacheDir = storage_path('framework/fonts');
 
-        $signatureDisk = Storage::disk('s3');
-        $signaturePaths = [
-            'eventure-assets/signatures/doc-alice-esign.png',
-            'signatures/doc-alice-esign.png',
-        ];
-
         try {
-            $signaturePath = null;
-            foreach ($signaturePaths as $candidatePath) {
-                try {
-                    if ($signatureDisk->exists($candidatePath)) {
-                        $signaturePath = $candidatePath;
-                        break;
-                    }
-                } catch (\Throwable $exception) {
-                    continue;
-                }
-            }
-
-            if (! $signaturePath) {
-                throw new \RuntimeException('Signature file not found.');
-            }
-
-            $signatureContents = $signatureDisk->get($signaturePath);
-            $signatureMime = $signatureDisk->mimeType($signaturePath) ?: 'image/png';
+            $signatureResponse = Http::timeout(15)->get(
+                'https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/eventure-assets/signatures/doc-alice-esign.png'
+            );
+            $signatureResponse->throw();
+            $signatureContents = $signatureResponse->body();
+            $signatureMime = $signatureResponse->header('Content-Type') ?: 'image/png';
         } catch (\Throwable $exception) {
+            Log::error('CODITE certificate signature loading failed.', [
+                'exception' => $exception,
+            ]);
             abort(500, 'Unable to load the CODITE certificate signature.');
         }
 
