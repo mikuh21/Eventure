@@ -809,9 +809,10 @@ class EventController extends Controller
                 Storage::disk('s3')->delete($event->template_file_path);
             }
 
+            // The uploaded template file remains conference-only, but the Resources Link
+            // (template_url) is valid for all event types and must not be cleared here.
             $data['template_file_path'] = null;
             $data['template_file_name'] = null;
-            $data['template_url'] = null;
             $data['keywords'] = null;
         } else {
             // For conference events, preserve template_url if not provided in validated data
