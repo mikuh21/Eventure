@@ -1638,7 +1638,11 @@
                 </div>
 
                 @if ($certificateAvailable)
-                    @if ($showDualCertificates)
+                    @if ($isPreConverge2027)
+                        <button type="button" class="survey-button cert-download-btn" data-cert-format="image" data-cert-label="Certificate of Participation" data-cert-filename="certificate-of-participation-{{ IlluminateSupportStr::slug($participant->name ?: 'participant') }}.png" data-cert-url="{{ route('participants.certificate.show', ['token' => $participant->digital_id_token, 'type' => 'participation']) }}">
+                            Save Certificate of Participation
+                        </button>
+                    @elseif ($showDualCertificates)
                         <div class="codite-certificate-actions">
                             @foreach ($certificateOptions as $option)
                                 @php
