@@ -1639,7 +1639,7 @@
 
                 @if ($certificateAvailable)
                     @if ($isPreConverge2027)
-                        <button type="button" class="survey-button cert-download-btn" data-cert-format="image" data-cert-label="Certificate of Participation" data-cert-filename="certificate-of-participation-{{ IlluminateSupportStr::slug($participant->name ?: 'participant') }}.png" data-cert-url="{{ route('participants.certificate.show', ['token' => $participant->digital_id_token, 'type' => 'participation']) }}">
+                        <button type="button" class="survey-button cert-download-btn" data-cert-format="image" data-cert-label="Certificate of Participation" data-cert-filename="certificate-of-participation-{{ \Illuminate\Support\Str::slug($participant->name ?: 'participant') }}.png" data-cert-url="{{ route('participants.certificate.show', ['token' => $participant->digital_id_token, 'type' => 'participation']) }}">
                             Save Certificate of Participation
                         </button>
                     @elseif ($showDualCertificates)
@@ -1650,7 +1650,7 @@
                                         ? ($option === 'appearance' ? 'Appearance' : 'Participation')
                                         : ucfirst($option);
                                 @endphp
-                                <button type="button" class="survey-button cert-download-btn" data-cert-format="image" data-cert-label="Certificate of {{ $certificateLabel }}" data-cert-filename="certificate-of-{{ $option }}-{{ IlluminateSupportStr::slug($participant->name ?: 'participant') }}.png" data-cert-url="{{ route('participants.certificate.show', ['token' => $participant->digital_id_token, 'type' => $option]) }}">
+                                <button type="button" class="survey-button cert-download-btn" data-cert-format="image" data-cert-label="Certificate of {{ $certificateLabel }}" data-cert-filename="certificate-of-{{ $option }}-{{ \Illuminate\Support\Str::slug($participant->name ?: 'participant') }}.png" data-cert-url="{{ route('participants.certificate.show', ['token' => $participant->digital_id_token, 'type' => $option]) }}">
                                     Save Certificate of {{ $certificateLabel }}
                                 </button>
                             @endforeach
