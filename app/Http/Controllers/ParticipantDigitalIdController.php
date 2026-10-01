@@ -144,8 +144,8 @@ class ParticipantDigitalIdController extends Controller
         }
 
         $event = $participant->event;
-        $allowedTypes = $event->isCodite()
-            ? ['participation', 'appearance']
+        $allowedTypes = ($event->isCodite() || $event->type === Event::TYPE_SCHOOL)
+            ? ['participation', 'attendance']
             : [$event->certificateRouteType()];
 
         if (! in_array($type, $allowedTypes, true)) {
@@ -159,6 +159,11 @@ class ParticipantDigitalIdController extends Controller
 
         if ($event->isCodite()) {
             return $this->generateCoditeCertificate($participant, $event, $type);
+        }
+
+        // PRE-CONVERGE 2027 is a School Event with a dedicated certificate template.
+        if ($event->type === Event::TYPE_SCHOOL && trim((string) $event->title) === 'PRE-CONVERGE 2027') {
+            return $this->generatePreConverge2027Certificate($participant, $event, $type);
         }
         
         $eventDate = $event->dateRangeLabel();
@@ -599,6 +604,91 @@ class ParticipantDigitalIdController extends Controller
         } catch (\Exception $e) {
             abort(500, 'Error generating certificate: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Generate the PRE-CONVERGE 2027 certificate from the uploaded Supabase template.
+     * The same approved template is used for both attendance and participation options;
+     * the participant name is rendered onto the designated name area.
+     */
+    private function generatePreConverge2027Certificate(Participant $participant, Event $event, string $type)
+    {
+        $templateUrl = 'https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/eventure-assets/certificates/'.rawurlencode('PRE-CONVERGE 2027 CERT.png');
+        $imageData = @file_get_contents($templateUrl);
+
+        if ($imageData === false) {
+            abort(500, 'Unable to load the PRE-CONVERGE 2027 certificate template.');
+        }
+
+        $image = @imagecreatefromstring($imageData);
+        if ($image === false) {
+            abort(500, 'Unable to process the PRE-CONVERGE 2027 certificate template.');
+        }
+
+        $fontPath = public_path('fonts/Sora-Bold.ttf');
+        if (! file_exists($fontPath)) {
+            imagedestroy($image);
+            abort(500, 'Certificate font file not found.');
+        }
+
+        $width = imagesx($image);
+        $height = imagesy($image);
+        $name = trim((string) $participant->name) ?: 'Participant';
+
+        // Keep the name centered and automatically scale long names to fit.
+        $fontSize = 64;
+        $maxWidth = (int) ($width * 0.68);
+
+        do {
+            $bounds = imagettfbbox($fontSize, 0, $fontPath, $name);
+            if ($bounds === false) {
+                imagedestroy($image);
+                abort(500, 'Unable to calculate participant name bounds.');
+            }
+
+            $textWidth = abs($bounds[4] - $bounds[0]);
+            if ($textWidth <= $maxWidth || $fontSize <= 28) {
+                break;
+            }
+
+            $fontSize -= 2;
+        } while (true);
+
+        $textHeight = abs($bounds[5] - $bounds[1]);
+        $x = (int) (($width - $textWidth) / 2);
+
+        // The uploaded template uses a centered designated name area.
+        // Keep the baseline aligned just above the name line.
+        $y = (int) ($height * 0.505 - ($textHeight * 0.55));
+
+        $color = imagecolorallocate($image, 18, 18, 18);
+
+        if (imagettftext($image, $fontSize, 0, $x, $y, $color, $fontPath, $name) === false) {
+            imagedestroy($image);
+            abort(500, 'Unable to draw participant name on the PRE-CONVERGE 2027 certificate.');
+        }
+
+        ob_start();
+        imagepng($image, null, 9);
+        $renderedImage = ob_get_clean();
+        imagedestroy($image);
+
+        if ($renderedImage === false) {
+            abort(500, 'Unable to render the PRE-CONVERGE 2027 certificate.');
+        }
+
+        $certificateKind = $type === 'participation' ? 'participation' : 'attendance';
+        $filename = 'certificate-of-'.$certificateKind.'-'.Str::slug($participant->name ?: 'participant').'.png';
+
+        return response($renderedImage, 200, [
+            'Content-Type' => 'image/png',
+            'Content-Length' => strlen($renderedImage),
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+            'Cache-Control' => 'no-cache, no-store, must-revalidate',
+            'Pragma' => 'no-cache',
+            'Expires' => '0',
+            'Accept-Ranges' => 'bytes',
+        ]);
     }
 
     private function generateCoditeCertificate(Participant $participant, Event $event, string $type)
