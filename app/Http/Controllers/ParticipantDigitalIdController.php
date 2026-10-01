@@ -144,9 +144,14 @@ class ParticipantDigitalIdController extends Controller
         }
 
         $event = $participant->event;
-        $allowedTypes = ($event->isCodite() || $event->type === Event::TYPE_SCHOOL)
-            ? ['participation', 'attendance']
-            : [$event->certificateRouteType()];
+        $isPreConverge2027 = $event->type === Event::TYPE_SCHOOL
+            && trim((string) $event->title) === 'PRE-CONVERGE 2027';
+
+        $allowedTypes = $isPreConverge2027
+            ? ['participation']
+            : (($event->isCodite() || $event->type === Event::TYPE_SCHOOL)
+                ? ['participation', 'attendance']
+                : [$event->certificateRouteType()]);
 
         if (! in_array($type, $allowedTypes, true)) {
             abort(404);
@@ -162,7 +167,7 @@ class ParticipantDigitalIdController extends Controller
         }
 
         // PRE-CONVERGE 2027 is a School Event with a dedicated certificate template.
-        if ($event->type === Event::TYPE_SCHOOL && trim((string) $event->title) === 'PRE-CONVERGE 2027') {
+        if ($isPreConverge2027) {
             return $this->generatePreConverge2027Certificate($participant, $event, $type);
         }
         
@@ -619,12 +624,16 @@ class ParticipantDigitalIdController extends Controller
     }
 
     /**
-     * Generate the PRE-CONVERGE 2027 certificate from the uploaded Supabase template.
-     * The same approved template is used for both attendance and participation options;
-     * the participant name is rendered onto the designated name area.
+     * Generate the PRE-CONVERGE 2027 participation certificate from the uploaded Supabase template.
+     * This event intentionally exposes participation only; the participant name is rendered
+     * onto the designated name area.
      */
     private function generatePreConverge2027Certificate(Participant $participant, Event $event, string $type)
     {
+        if ($type !== 'participation') {
+            abort(404);
+        }
+
         $templateUrl = 'https://sesmcvjwmkphgkzawewn.supabase.co/storage/v1/object/public/eventure-assets/certificates/'.rawurlencode('PRE-CONVERGE 2027 CERT.png');
         $imageData = @file_get_contents($templateUrl);
 
@@ -669,9 +678,8 @@ class ParticipantDigitalIdController extends Controller
         $textHeight = abs($bounds[5] - $bounds[1]);
         $x = (int) (($width - $textWidth) / 2);
 
-        // The uploaded template uses a centered designated name area.
-        // Keep the baseline aligned just above the name line.
-        $y = (int) ($height * 0.505 - ($textHeight * 0.55));
+        // Keep the participant name centered and slightly higher above the designated name line.
+        $y = (int) ($height * 0.495 - ($textHeight * 0.55));
 
         $color = imagecolorallocate($image, 18, 18, 18);
 
@@ -689,8 +697,7 @@ class ParticipantDigitalIdController extends Controller
             abort(500, 'Unable to render the PRE-CONVERGE 2027 certificate.');
         }
 
-        $certificateKind = $type === 'participation' ? 'participation' : 'attendance';
-        $filename = 'certificate-of-'.$certificateKind.'-'.Str::slug($participant->name ?: 'participant').'.png';
+        $filename = 'certificate-of-participation-'.Str::slug($participant->name ?: 'participant').'.png';
 
         return response($renderedImage, 200, [
             'Content-Type' => 'image/png',
