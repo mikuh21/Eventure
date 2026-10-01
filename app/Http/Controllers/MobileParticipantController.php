@@ -73,10 +73,14 @@ class MobileParticipantController extends Controller
         $certificateAvailable = $participant->hasSubmittedSurvey();
         $isCodite = $participant->event->isCodite();
         $isSchoolEvent = $participant->event->type === \App\Models\Event::TYPE_SCHOOL;
+        $isPreConverge2027 = $isSchoolEvent
+            && trim((string) $participant->event->title) === 'PRE-CONVERGE 2027';
         $certificateType = ($isCodite || $isSchoolEvent) ? 'participation' : $participant->event->certificateRouteType();
-        $certificateOptions = ($isCodite || $isSchoolEvent)
-            ? ($isCodite ? ['participation', 'appearance'] : ['participation', 'attendance'])
-            : [$certificateType];
+        $certificateOptions = $isPreConverge2027
+            ? ['participation']
+            : (($isCodite || $isSchoolEvent)
+                ? ($isCodite ? ['participation', 'appearance'] : ['participation', 'attendance'])
+                : [$certificateType]);
         $attendanceType = $participant->event->attendance_type ?? 'face_to_face';
         $qrUrl = route('participants.digital-id.show', $participant, false) . '?format=qr';
         $validThru = optional($participant->event->end_registration)->format('m/d') ?? 'N/A';
@@ -119,6 +123,6 @@ class MobileParticipantController extends Controller
             ];
         }
 
-        return view('participant.mobile', compact('participant', 'digitalId', 'evaluation', 'surveyAvailable', 'eventHasEnded', 'questions', 'sections', 'surveyAction', 'certificateAvailable', 'certificateType', 'certificateOptions', 'isCodite', 'isSchoolEvent', 'attendanceType', 'qrUrl', 'validThru', 'pages', 'eventDate', 'eventLocation', 'participantPhotoUrl'));
+        return view('participant.mobile', compact('participant', 'digitalId', 'evaluation', 'surveyAvailable', 'eventHasEnded', 'questions', 'sections', 'surveyAction', 'certificateAvailable', 'certificateType', 'certificateOptions', 'isCodite', 'isSchoolEvent', 'isPreConverge2027', 'attendanceType', 'qrUrl', 'validThru', 'pages', 'eventDate', 'eventLocation', 'participantPhotoUrl'));
     }
 }
