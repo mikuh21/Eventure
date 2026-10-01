@@ -171,7 +171,19 @@ class ParticipantDigitalIdController extends Controller
 
         $pages = [];
 
-        if ($event->attendance_type === Event::ATTENDANCE_VIRTUAL) {
+        if ($event->type === Event::TYPE_SCHOOL) {
+            if ($type === 'participation') {
+                $pages[] = [
+                    'certificateType' => 'Participation',
+                    'description' => 'This certificate is awarded to '.$participant->name.' in recognition of their valuable participation in the '.$event->title.' held on '.$eventDate.' at '.$eventLocation.'. Their involvement, cooperation, and contribution throughout the activity demonstrated enthusiasm, dedication, and support toward the success of the event.',
+                ];
+            } else {
+                $pages[] = [
+                    'certificateType' => 'Attendance',
+                    'description' => 'This certificate is awarded to '.$participant->name.' in recognition of their active participation and attendance during the '.$event->title.' held on '.$eventDate.' at '.$eventLocation.'. Their presence and engagement contributed to the success of the event and demonstrated their commitment to learning, professional growth, and continuous development.',
+                ];
+            }
+        } elseif ($event->attendance_type === Event::ATTENDANCE_VIRTUAL) {
             $pages[] = [
                 'certificateType' => 'Participation',
                 'description' => 'This certificate is awarded to '.$participant->name.' in recognition of their valuable participation in the '.$event->title.' held on '.$eventDate.' at '.$eventLocation.'. Their involvement, cooperation, and contribution throughout the activity demonstrated enthusiasm, dedication, and support toward the success of the event.',
