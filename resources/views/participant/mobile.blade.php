@@ -1279,7 +1279,7 @@
     </style>
 </head>
 <body>
-    <main class="page" data-participant-name="{{ addslashes($participant->name) }}" data-participant-id="{{ $participant->digital_id_token }}" data-token="{{ $digitalId->token }}" data-certificate-url="{{ route('participants.certificate.show', ['token' => $participant->digital_id_token, 'type' => $certificateType]) }}" data-certificate-base-url="{{ url('/certificate/'.$participant->digital_id_token) }}" data-certificate-type="{{ $certificateType }}" data-codite="{{ $isCodite ? '1' : '0' }}" data-school-event="{{ $isSchoolEvent ? '1' : '0' }}">
+    <main class="page" data-participant-name="{{ addslashes($participant->name) }}" data-participant-id="{{ $participant->digital_id_token }}" data-token="{{ $digitalId->token }}" data-certificate-url="{{ route('participants.certificate.show', ['token' => $participant->digital_id_token, 'type' => $certificateType]) }}" data-certificate-base-url="{{ url('/certificate/'.$participant->digital_id_token) }}" data-certificate-type="{{ $certificateType }}" data-codite="{{ $isCodite ? '1' : '0' }}" data-school-event="{{ $isSchoolEvent ? '1' : '0' }}" data-pre-converge-2027="{{ $isPreConverge2027 ? '1' : '0' }}">
         <nav class="topbar" aria-label="Participant navigation">
             <div class="wordmark">
                 <img src="{{ asset('eventurelogo.png') }}" alt="Eventure logo">
@@ -1618,12 +1618,14 @@
 
         <section class="survey-section">
             @php
-                $certificateTitle = $isCodite ? 'CODITE Certificates' : ($isSchoolEvent ? 'School Event Certificates' : match ($attendanceType) {
-                    'virtual' => 'Certificate of Participation',
-                    'both' => 'Certificate of Attendance & Participation',
-                    default => 'Certificate of Attendance',
-                });
-                $showDualCertificates = $isCodite || $isSchoolEvent;
+                $certificateTitle = $isPreConverge2027
+                    ? 'Certificate of Participation'
+                    : ($isCodite ? 'CODITE Certificates' : ($isSchoolEvent ? 'School Event Certificates' : match ($attendanceType) {
+                        'virtual' => 'Certificate of Participation',
+                        'both' => 'Certificate of Attendance & Participation',
+                        default => 'Certificate of Attendance',
+                    }));
+                $showDualCertificates = $isCodite || ($isSchoolEvent && ! $isPreConverge2027);
             @endphp
             <p class="survey-label">Certificate</p>
 
@@ -2409,6 +2411,7 @@
                         const certType = pageEl?.dataset?.certificateType || '';
                         const isCodite = pageEl?.dataset?.codite === '1';
                         const isSchoolEvent = pageEl?.dataset?.schoolEvent === '1';
+                        const isPreConverge2027 = pageEl?.dataset?.preConverge2027 === '1';
                         const certificateBaseUrl = pageEl?.dataset?.certificateBaseUrl || '';
                         const certSection = Array.from(document.querySelectorAll('section.survey-section')).find(s => {
                             const svg = s.querySelector('svg');
@@ -2417,12 +2420,16 @@
                         if (certSection) {
                             const certCard = certSection.querySelector('.survey-card');
                             if (certCard) {
-                                const certTitle = isCodite ? 'CODITE Certificates' : (isSchoolEvent ? 'School Event Certificates' : (certType === 'participation' ? 'Certificate of Participation' : (certType === 'attendance-participation' ? 'Certificate of Attendance & Participation' : 'Certificate of Attendance')));
-                                const certButtons = isCodite
-                                    ? '<div class="codite-certificate-actions"><button type="button" class="survey-button cert-download-btn" data-cert-format="image" data-cert-label="Certificate of Participation" data-cert-filename="certificate-of-participation.png" data-cert-url="' + certificateBaseUrl + '/participation">Save Certificate of Participation</button><button type="button" class="survey-button cert-download-btn" data-cert-format="image" data-cert-label="Certificate of Appearance" data-cert-filename="certificate-of-appearance.png" data-cert-url="' + certificateBaseUrl + '/appearance">Save Certificate of Appearance</button></div>'
-                                    : isSchoolEvent
-                                        ? '<div class="codite-certificate-actions"><button type="button" class="survey-button cert-download-btn" data-cert-format="image" data-cert-label="Certificate of Participation" data-cert-filename="certificate-of-participation.png" data-cert-url="' + certificateBaseUrl + '/participation">Save Certificate of Participation</button><button type="button" class="survey-button cert-download-btn" data-cert-format="image" data-cert-label="Certificate of Attendance" data-cert-filename="certificate-of-attendance.png" data-cert-url="' + certificateBaseUrl + '/attendance">Save Certificate of Attendance</button></div>'
-                                        : '<button type="button" class="survey-button cert-download-btn" data-cert-url="' + certUrl + '">Save Certificate</button>';
+                                const certTitle = isPreConverge2027
+                                    ? 'Certificate of Participation'
+                                    : (isCodite ? 'CODITE Certificates' : (isSchoolEvent ? 'School Event Certificates' : (certType === 'participation' ? 'Certificate of Participation' : (certType === 'attendance-participation' ? 'Certificate of Attendance & Participation' : 'Certificate of Attendance'))));
+                                const certButtons = isPreConverge2027
+                                    ? '<button type="button" class="survey-button cert-download-btn" data-cert-format="image" data-cert-label="Certificate of Participation" data-cert-filename="certificate-of-participation.png" data-cert-url="' + certificateBaseUrl + '/participation">Save Certificate of Participation</button>'
+                                    : (isCodite
+                                        ? '<div class="codite-certificate-actions"><button type="button" class="survey-button cert-download-btn" data-cert-format="image" data-cert-label="Certificate of Participation" data-cert-filename="certificate-of-participation.png" data-cert-url="' + certificateBaseUrl + '/participation">Save Certificate of Participation</button><button type="button" class="survey-button cert-download-btn" data-cert-format="image" data-cert-label="Certificate of Appearance" data-cert-filename="certificate-of-appearance.png" data-cert-url="' + certificateBaseUrl + '/appearance">Save Certificate of Appearance</button></div>'
+                                        : isSchoolEvent
+                                            ? '<div class="codite-certificate-actions"><button type="button" class="survey-button cert-download-btn" data-cert-format="image" data-cert-label="Certificate of Participation" data-cert-filename="certificate-of-participation.png" data-cert-url="' + certificateBaseUrl + '/participation">Save Certificate of Participation</button><button type="button" class="survey-button cert-download-btn" data-cert-format="image" data-cert-label="Certificate of Attendance" data-cert-filename="certificate-of-attendance.png" data-cert-url="' + certificateBaseUrl + '/attendance">Save Certificate of Attendance</button></div>'
+                                            : '<button type="button" class="survey-button cert-download-btn" data-cert-url="' + certUrl + '">Save Certificate</button>');
                                 certCard.innerHTML = `
                                     <div class="survey-title">
                                         <svg class="icon-lg" viewBox="0 0 24 24" fill="none" aria-hidden="true">
