@@ -679,7 +679,7 @@ class ParticipantDigitalIdController extends Controller
         $x = (int) (($width - $textWidth) / 2);
 
         // Keep the participant name centered and slightly higher above the designated name line.
-        $y = (int) ($height * 0.495 - ($textHeight * 0.55));
+        $y = (int) ($height * 0.485 - ($textHeight * 0.55));
 
         $color = imagecolorallocate($image, 18, 18, 18);
 
